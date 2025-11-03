@@ -1,0 +1,59 @@
+Metadata-Version: 2.4
+Name: ez-skelgen
+Version: 0.1.2
+Summary: project skeleton generator with templates
+Home-page: https://github.com/y1cho-HIU/ez-skelgen
+Author: y1cho-HIU
+Author-email: yongil4209@gmail.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: requires-python
+Dynamic: summary
+
+# skelgen
+
+A simple Python CLI tool that generates project skeletons from text-based structure files.
+
+## Installation
+
+```bash
+pip install git+https://github.com/y1cho-HIU/ez-skelgen.git
+```
+
+## Usage
+```bash
+skelgen <structure.txt>
+```
+
+### Input file example:
+```css
+project/
+    include/
+        header.h
+    src/
+        main.c
+    data/
+    makefile
+```
+
+### This creates:
+```css
+project/
+├── include/
+│   └── header1.h
+├── src/
+│   └── main.c
+├── data/
+└── makefile
+```
