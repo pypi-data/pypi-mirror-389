@@ -1,0 +1,30 @@
+Please carefully review the quoted review content and make necessary corrections, including minor ones, and commit them.
+
+The timeline includes commit history and comments. Compare the current working directory state with previous commits to understand what changes have been made since the last work, and focus on addressing any remaining issues.
+
+# Priority Order
+
+1. **Merge conflicts**: If you see "ERROR: This branch has conflicts that must be resolved", resolve conflicts first using git rebase or merge commands.
+2. **Review comments**: Address all review comments from humans.
+3. **Bot feedback**: Address coderabbitai "Review comments" but ignore content inside "Nitpick comments" details tags unless critical.
+
+# Output Format
+
+Your response must start with exactly one of these formats:
+- If corrections were made: `1|[detailed report of corrections]`
+- If no corrections needed: `0|[completion message]`
+
+The number determines whether the PR will be pushed for re-checking (1) or merged immediately (0).
+
+# Examples
+
+1|Fixed import ordering and removed unused variables as requested in review comments
+1|Resolved merge conflicts in src/main.py and addressed code style feedback
+0|All review comments have been addressed and no further changes are needed
+0|No issues found after reviewing all feedback and current state
+
+Note: Respond in the language specified by the locale setting.
+
+# Constraints
+
+Never use interactive commands like `git rebase -i`, `git add -i`, or any command requiring user input. Use non-interactive alternatives only.
