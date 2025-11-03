@@ -1,0 +1,23 @@
+[project]
+name = "mm-read"
+version = "0.0.4"
+description = "Readability utilities for personal use"
+requires-python = ">=3.12"
+dependencies = [
+    "html2text2~=1.0",
+    "mistune~=3.1.4",
+    "niquests~=3.11",
+    "python-readability~=1.0.0rc0",
+]
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+includes = [
+    "m",
+    "mm_read",
+]
