@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "async-decorator"
+dynamic = ["version"]
+description = "A flexible async/sync execution library with dedicated thread pools"
+authors = [
+    {name = "FadsII", email = "594604366@qq.com"},
+]
+readme = "README.md"
+license = {text = "MIT"}
+keywords = ["async", "threading", "executor", "decorator"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/FadsII/async-decorator"
+Documentation = "https://github.com/FadsII/async-decorator#readme"
+Repository = "https://github.com/FadsII/async-decorator"
+Issues = "https://github.com/FadsII/async-decorator/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-asyncio>=0.15",
+    "black>=21.0",
+    "isort>=5.0",
+    "mypy>=0.900",
+    "twine>=4.0",
+]
+
+[tool.setuptools_scm]
+write_to = "src/async_decorator/_version.py"
