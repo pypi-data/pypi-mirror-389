@@ -1,0 +1,274 @@
+name: Build and Publish Package
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (matrix)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.11, 3.12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pre-commit ruff mypy black isort build
+      - name: Auto-fix style issues where possible (ruff/isort/black)
+        run: |
+          ruff check --fix . || true
+          isort --profile black . || true
+          black . || true
+      - name: Run pre-commit (report-only)
+        continue-on-error: true
+        run: |
+          pre-commit run --all-files || true
+      - name: Run linters
+        run: |
+          ruff check .
+          mypy mnemoreg --ignore-missing-imports || true
+      - name: Run tests
+        run: |
+          python -m pytest -q
+
+  determine_tag:
+    name: Determine or create tag
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # required to push tags when creating them
+    outputs:
+      tag: ${{ steps.create_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Determine / create tag for this commit
+        id: create_tag
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Ensure we have remote tags
+          git fetch --tags origin || true
+
+          echo "Event: $GITHUB_EVENT_NAME"
+          echo "Ref: $GITHUB_REF"
+          echo "SHA: $GITHUB_SHA"
+
+          # If this workflow was triggered by a tag push, use that tag
+          case "${GITHUB_REF}" in
+            refs/tags/*)
+              TAG="${GITHUB_REF#refs/tags/}"
+              echo "Triggered by tag push: $TAG"
+              echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+
+          # If the commit already has a tag pointing at it, use the first one
+          if git tag --points-at "$GITHUB_SHA" | grep -q .; then
+            TAG=$(git tag --points-at "$GITHUB_SHA" | head -n 1)
+            echo "Commit already has tag: $TAG"
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Compute next semantic patch version based on the highest vMAJOR.MINOR.PATCH tag
+          CURRENT_VERSION=$(git tag --list 'v*.*.*' --sort=-v:refname | head -n 1 || true)
+          echo "Latest semver tag: $CURRENT_VERSION"
+
+          if [ -z "${CURRENT_VERSION}" ]; then
+            NEW_VERSION="v0.1.0"
+          else
+            VERSION_STR="${CURRENT_VERSION#v}"
+            IFS='.' read -r MAJOR MINOR PATCH <<< "${VERSION_STR}" || true
+
+            if printf '%s\n' "$MAJOR" "$MINOR" "$PATCH" | grep -Eq '^[0-9]+$'; then
+              PATCH=$((PATCH + 1))
+              NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+            else
+              echo "Warning: could not parse '$CURRENT_VERSION' as semver, falling back to timestamped tag"
+              NEW_VERSION="v0.0.0-$(date -u +%Y%m%d%H%M%S)"
+            fi
+          fi
+
+          TAG="$NEW_VERSION"
+          echo "Creating tag $TAG -> $GITHUB_SHA"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Auto tag for $GITHUB_SHA"
+
+          if git push origin "$TAG"; then
+            echo "Pushed $TAG"
+          else
+            SHORT_SHA=$(printf '%s' "$GITHUB_SHA" | cut -c1-7)
+            FALLBACK_TAG="${NEW_VERSION}-${SHORT_SHA}"
+            echo "Push failed; falling back to unique tag $FALLBACK_TAG"
+            git tag -d "$TAG" || true
+            git tag -a "$FALLBACK_TAG" -m "Auto tag (fallback) for $GITHUB_SHA"
+            git push origin "$FALLBACK_TAG"
+            TAG="$FALLBACK_TAG"
+            echo "Pushed fallback tag $FALLBACK_TAG"
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build distributions from tag
+    needs: determine_tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source at tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.determine_tag.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip setuptools wheel build twine
+
+      - name: Build distributions
+        run: python -m build --sdist --wheel
+
+      - name: List dist contents
+        run: ls -la dist || true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (default branch)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+
+      - name: Validate package version matches built artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # pick a distribution file from dist/ (sdist or wheel)
+          ART_FILE=$(ls -A dist | head -n 1 || true)
+          if [ -z "${ART_FILE}" ]; then
+            echo "::error::No artifact found in dist/"
+            exit 1
+          fi
+          echo "Artifact found: $ART_FILE"
+
+          ART_VER=""
+
+          # If wheel, read METADATA
+          if printf "%s" "$ART_FILE" | grep -E '\.whl$' >/dev/null 2>&1; then
+            echo "Inspecting wheel METADATA"
+            ART_VER=$(unzip -p "dist/$ART_FILE" '*/METADATA' 2>/dev/null | awk -F': ' '/^Version: / {print $2; exit}' || true)
+          fi
+
+          # If sdist (tar.gz or zip), try to read PKG-INFO
+          if [ -z "${ART_VER}" ] && (printf "%s" "$ART_FILE" | grep -E '\.(tar\.gz|zip)$' >/dev/null 2>&1); then
+            echo "Inspecting sdist PKG-INFO"
+            if printf "%s" "$ART_FILE" | grep -E '\.tar\.gz$' >/dev/null 2>&1; then
+              ART_VER=$(tar -xOzf "dist/$ART_FILE" --wildcards --no-anchored '*/PKG-INFO' 2>/dev/null | awk -F': ' '/^Version: / {print $2; exit}' || true)
+            else
+              ART_VER=$(unzip -p "dist/$ART_FILE" '*/PKG-INFO' 2>/dev/null | awk -F': ' '/^Version: / {print $2; exit}' || true)
+            fi
+          fi
+
+          # Fallback: extract first semver-like token from filename
+          if [ -z "${ART_VER}" ]; then
+            ART_VER=$(printf "%s" "$ART_FILE" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 || true)
+          fi
+
+          if [ -z "${ART_VER}" ]; then
+            echo "::warning::Could not determine artifact version from filename or metadata. Skipping strict version match."
+            echo "Artifact: $ART_FILE"
+          else
+            echo "Artifact version: $ART_VER"
+            if [ -f mnemoreg/VERSION ]; then
+              PKG_VER=$(cat mnemoreg/VERSION | tr -d '\n')
+              echo "Package version file: $PKG_VER"
+              if [ "${PKG_VER}" != "${ART_VER}" ]; then
+                echo "::error::Package version does not match artifact version (pkg: ${PKG_VER} != artifact: ${ART_VER})"
+                exit 1
+              fi
+            else
+              echo "mnemoreg/VERSION not found; skipping version file validation"
+            fi
+          fi
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install twine
+        run: python -m pip install --upgrade pip twine
+
+      - name: Validate distribution
+        run: |
+          ls -la dist
+          python -m twine check dist/*
+
+      - name: Check for PyPI token
+        id: check_token
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.MNEMOREG_PY_PI_TOKEN }}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload to PyPI (twine)
+        if: ${{ steps.check_token.outputs.present == 'true' }}
+        shell: bash
+        run: |
+          python -m twine upload --non-interactive --username __token__ --password "${{ secrets.MNEMOREG_PY_PI_TOKEN }}" dist/*
