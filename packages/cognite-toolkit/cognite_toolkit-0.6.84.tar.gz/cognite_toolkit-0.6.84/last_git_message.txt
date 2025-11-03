@@ -1,0 +1,36 @@
+[CDF-26150, CDF-24840] 🏎 Slow processing (#2155)
+
+# Description
+
+This PR fixes two issues
+1. If an internal ID no longer exists, the result is cached and it does
+not continue to do a lookup.
+2. In the `data_to_json_chunk` for assets/events/timeseries/file we now
+do bulk lookup of referenced resources instead of one-by-one.
+
+During fixing of the the two above issues, I discovered another issue.
+We do not have a graceful handling of externalIds that does not exists
+in CDF. So I fixed that as well. This turned out to be a task from last
+a while back: CDF-24840
+
+Finally, I added a rich console to the `ToolkitClient`. This is such
+that the API (lookup APIs) can use that console when printing messages.
+This is necessary as if not the warnings from the API will be lost when
+running in a multi-thread context such as it does in the download
+command.
+
+## Changelog
+
+- [x] Patch
+- [ ] Skip
+
+## cdf
+
+### Improved
+
+- [alpha] The `cdf data download assets/hierarchy` has improved
+processing making for faster run time.
+
+## templates
+
+No changes.
