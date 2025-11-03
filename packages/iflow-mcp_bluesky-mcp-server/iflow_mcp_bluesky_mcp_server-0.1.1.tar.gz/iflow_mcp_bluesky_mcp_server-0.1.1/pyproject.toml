@@ -1,0 +1,24 @@
+
+[project]
+name = "iflow-mcp_bluesky-mcp-server"
+version = "0.1.1"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp>=0.1.0",
+    "atproto>=0.0.47",
+    "pydantic>=2.0.0"
+]
+
+[build-system]
+requires = [ "hatchling",]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bluesky_mcp"]
+
+[project.scripts]
+bluesky-mcp = "bluesky_mcp:main_entry"
+
+[[project.authors]]
+name = "berlinbra"
+email = "BMBpsn@gmail.com"
