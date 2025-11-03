@@ -1,0 +1,15 @@
+
+[:python_version < "3.10"]
+websockets<14.0,>=10.0
+
+[:python_version >= "3.10"]
+websockets<16.0,>=10.0
+
+[docs]
+mkdocs>=1.5.0
+mkdocs-material>=9.5.0
+mkdocs-static-i18n>=1.2.0
+mkdocstrings[python]>=0.24.0
+mkdocstrings-python>=1.8.0
+pymdown-extensions>=10.7
+mike>=2.0.0
