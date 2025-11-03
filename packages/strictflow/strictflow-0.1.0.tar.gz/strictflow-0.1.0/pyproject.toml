@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "strictflow"
+version = "0.1.0"
+authors = [
+    { name="chiro", email="chiro6466@gmail.com" },
+]
+description = "A lightweight, strict flow controller for enforcing thread-safe Read (P2) and Write (P1) priority in concurrent Python applications."
+readme = "README.txt"
+license = "MIT"
+keywords = ["concurrency", "thread-safe", "priority", "locking", "queue", "strict"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+]
+requires-python = ">=3.8"
+
+[tool.setuptools.packages]
+find = {}
+
+[project.urls]
+"Homepage" = "https://github.com/chiro6466/strictflow/blob/main/strictflow" 
+
+[tool.setuptools.package-data]
+"strictflow" = ["*.py"]
