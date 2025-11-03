@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: bizyairsdk
+Version: 0.1.4
+Summary: SDK for [a/BizyAir](https://github.com/siliconflow/BizyAir)
+Author-email: SiliconFlow <yaochi@siliconflow.cn>
+Requires-Python: >=3.10
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: safetensors>=0.3.0
+Requires-Dist: torch>=1.9.0
+Requires-Dist: pillow>=8.0.0
+Provides-Extra: dev
+Requires-Dist: black==24.4.2; extra == "dev"
+Requires-Dist: isort==5.9.3; extra == "dev"
+Requires-Dist: pre-commit>=3.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-xdist>=3.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: build>=0.10.0; extra == "dev"
+Requires-Dist: twine>=4.0.0; extra == "dev"
