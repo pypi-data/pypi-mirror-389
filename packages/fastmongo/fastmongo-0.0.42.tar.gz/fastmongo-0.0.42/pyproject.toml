@@ -1,0 +1,29 @@
+[project]
+name = "fastmongo"
+version = "0.0.42"
+authors = [
+  { name="ZeroSeeker", email="zeroseeker@foxmail.com" },
+]
+description = "make it easy to use pymongo"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://gitee.com/ZeroSeeker/fastmongo"
+Issues = "https://gitee.com/ZeroSeeker/fastmongo/issues"
+
+[build-system]
+requires = [
+    "hatchling >= 1.26",
+
+    "envx>=1.0.1",
+    "pymongo==3.11.2",
+    "showlog>=0.0.6"
+]
+build-backend = "hatchling.build"
