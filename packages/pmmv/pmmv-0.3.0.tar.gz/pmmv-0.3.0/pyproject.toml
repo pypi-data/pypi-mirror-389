@@ -1,0 +1,26 @@
+[project]
+name = "pmmv"
+version = "0.3.0"
+description = "PMMV - Python Mass Move: A tool for batch renaming/moving files with an interactive editor"
+authors = [
+    {name = "Akemi Izuko", email = "author@example.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = []
+
+[project.scripts]
+pmmv = "pmmv.main:main"
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://codeberg.org/akemi/pmmv"
+Repository = "https://codeberg.org/akemi/pmmv.git"

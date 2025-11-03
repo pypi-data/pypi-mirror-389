@@ -1,0 +1,47 @@
+# PMMV - Python Mass Move
+
+PMMV is a tool for batch renaming/moving files with an interactive editor. Most
+useful when you need to rename a huge amount of files and could benefit from
+scripted macros. Works best with [fd](https://github.com/sharkdp/fd).
+
+Features:
+
+ - Rename files in the comfort of your favourite editor.
+ - .pmmv.undo files allow you to undo your last renaming!
+ - Git integration for renaming files.
+
+## Installation
+
+Install using pip:
+
+```bash
+uv tool install pmmv
+```
+
+## Usage
+
+This was built with vim in mind, though any editor will work. The script will
+look at the `EDITOR` variable to determine which editor to use. For instance,
+`export EDITOR=code` would open vscode.
+
+```bash
+uvx pmmv *.txt readme.md
+# Or include a full directory
+uvx pmmv my_dir/
+```
+
+Or pipe files from another command:
+
+```bash
+find . -name "*.txt" | uvx pmmv -
+# Or try the much faster fd-find
+fd -e txt | uvx pmmv -
+```
+
+## Acknowledgements
+
+This is my first project that's almost entirely vibe-coded. I used an initial
+prompt to claude sonnet 4.5 which can be seen at `docs/initial_prompt.txt`. I
+then used qwen3-coder-30b-a3 from
+[cpatonn](https://huggingface.co/cpatonn/Qwen3-Coder-30B-A3B-Instruct-AWQ-4bit)
+through vllm 0.11.0 and Qwen Code 0.0.14 to iterate further on the code.
