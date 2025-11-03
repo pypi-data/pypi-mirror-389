@@ -1,0 +1,46 @@
+[project]
+name = "vlm-sdk"
+authors = [
+    {name = "Rishabh", email = "rishabh@observee.com"},
+]
+version = "0.0.3"
+description = "VLMS - Video Intelligence SDK with event-based processing"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+keywords = ["video", "ai", "vlm", "gemini", "vision", "rtdetr", "detection", "rtsp", "onvif"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "opencv-python>=4.10.0",
+    "numpy>=1.26.0",
+    "google-genai>=0.8.0",
+    "torch>=2.1.0",
+    "transformers>=4.36.0",
+    "pillow>=10.0.0",
+    "onvif-zeep>=0.2.12",
+    "aiortc>=1.6.0",
+    "av>=11.0.0",
+    "openai>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["vlm", "vlm.*"]
