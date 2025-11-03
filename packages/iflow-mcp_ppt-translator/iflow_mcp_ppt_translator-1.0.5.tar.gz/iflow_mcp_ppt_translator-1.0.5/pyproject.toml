@@ -1,0 +1,24 @@
+[project]
+name = "iflow-mcp_ppt-translator"
+version = "1.0.5"
+description = "PowerPoint Translator using Amazon Bedrock"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "boto3>=1.40.21",
+    "click>=8.2.1",
+    "fastmcp>=2.11.3",
+    "python-dotenv>=1.1.1",
+    "python-pptx>=1.0.2",
+]
+
+[project.scripts]
+ppt-translate = "ppt_translator.cli:cli"
+mcp_server = "mcp_server:main"
+
+[tool.setuptools.packages.find]
+include = ["ppt_translator*"]
+
+[build-system]
+requires = ["setuptools>=80.0", "wheel"]
+build-backend = "setuptools.build_meta"
