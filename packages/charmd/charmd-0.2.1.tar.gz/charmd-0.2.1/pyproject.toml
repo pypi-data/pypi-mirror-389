@@ -1,0 +1,128 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "charmd"
+description = "CLI to start a PyCharm debug session and then run a Python target in-process"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [ { name = "python-charmd contributors" } ]
+keywords = ["pycharm", "debug", "pydevd", "debugger", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Debuggers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+]
+# Single-source version and provide README as long description
+# (intentionally no static `version = "..."` here)
+dynamic = ["version"]
+readme = { file = "README.md", content-type = "text/markdown" }
+
+# pydevd-pycharm is NOT a dependency.
+# When using pycharm, it provides its own version of the module specific to the running ide.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0.0",
+  "pytest-cov>=4.0.0",
+  "black>=23.0.0",
+  "ruff>=0.1.0",
+  "build>=1.0.0",
+  "twine>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/TekWizely/python-charmd"
+Repository = "https://github.com/TekWizely/python-charmd"
+Issues = "https://github.com/TekWizely/python-charmd/issues"
+Changelog = "https://github.com/TekWizely/python-charmd/releases"
+
+[project.scripts]
+charmd = "charmd.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["charmd*"]
+
+[tool.setuptools.package-dir]
+charmd = "src/charmd"
+
+# Tool configurations
+[tool.black]
+line-length = 88
+target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "C90", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+#"__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra -q --strict-markers"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+# Fail if total coverage is below this percentage
+# NOTE: To override threshold from command line
+#     pytest --cov --cov-fail-under=50
+#fail_under = 90
+
+[tool.coverage.paths]
+source = [
+    "src/charmd",
+    "*/site-packages/charmd",
+]
+
+[tool.setuptools]
+license-files = ["LICENSE*", "COPYING*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "charmd.__version__" }
