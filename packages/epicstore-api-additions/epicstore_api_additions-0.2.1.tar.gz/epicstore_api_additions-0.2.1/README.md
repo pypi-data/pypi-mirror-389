@@ -1,0 +1,110 @@
+# epicstore_api_additions
+
+[![Current pypi version](https://img.shields.io/pypi/v/epicstore-api-additions.svg)](https://pypi.org/project/epicstore-api-additions/)
+[![Supported py versions](https://img.shields.io/pypi/pyversions/epicstore-api-additions.svg)](https://pypi.org/project/epicstore-api-additions/)
+[![Downloads](https://pepy.tech/badge/epicstore-api-additions)](https://pypi.org/project/epicstore-api-additions/)
+
+An unofficial library to work with Epic Games Store Web API.
+**The library works with `cloudscraper` under the hood to battle the anti-bot protections, please be careful with the amount of requests you do, as this is not a silver bullet.**
+
+## About This Fork
+
+This is a customized fork of the original `epicstore_api` library with additional features and improvements:
+
+- Added `get_store_config()` method to retrieve store configuration for products by sandbox ID
+- Added `get_product_by_id()` method to retrieve product details by product ID
+- Added `get_product_offer_by_id()` method to retrieve offer details by product ID and offer ID
+- Implemented support for persisted GraphQL queries with hash caching mechanism
+- Added configurable hash endpoint for fetching GraphQL operation hashes
+- Enhanced performance with caching for sha256Hash values
+- Improved error handling and flexibility for API interactions
+
+## Installing
+
+**Python 3.7 or higher is required**
+
+To install the library you can just run the following command:
+
+``` sh
+# Linux/macOS
+python3 -m pip install -U epicstore_api_additions
+
+# Windows
+py -3 -m pip install -U epicstore_api_additions
+```
+
+
+### Quick Example
+
+``` py
+api = EpicGamesStoreAPI()
+namespace, slug = next(iter(api.get_product_mapping().items()))
+first_product = api.get_product(slug)
+offers = [
+    OfferData(page['namespace'], page['offer']['id'])
+    for page in first_product['pages']
+    if page.get('offer') and 'id' in page['offer']
+]
+offers_data = api.get_offers_data(*offers)
+for offer_data in offers_data:
+    data = offer_data['data']['Catalog']['catalogOffer']
+    developer_name = ''
+    for custom_attribute in data['customAttributes']:
+        if custom_attribute['key'] == 'developerName':
+            developer_name = custom_attribute['value']
+    print('Offer ID:', data['id'], '\nDeveloper Name:', developer_name)
+```
+
+### New Feature: Get Store Configuration
+
+```python
+from epicstore_api import EpicGamesStoreAPI
+
+# Initialize API
+api = EpicGamesStoreAPI(locale="zh-CN")
+
+# Get store configuration for a product by sandbox ID
+sandbox_id = "b4bb52a95d0b43d9af543c6ec3c54e04"  # Example sandbox ID
+config = api.get_store_config(sandbox_id)
+print(config)
+```
+
+### New Feature: Get Product by ID
+
+```python
+from epicstore_api import EpicGamesStoreAPI
+
+# Initialize API
+api = EpicGamesStoreAPI(locale="zh-CN", country="TW")
+
+# Get product details by product ID
+product_id = "3ac65ef5cdf44b8084fcac818002635f"  # Example product ID
+product = api.get_product_by_id(product_id)
+print(product)
+```
+
+### New Feature: Get Product Offer by ID
+
+```python
+from epicstore_api import EpicGamesStoreAPI
+
+# Initialize API
+api = EpicGamesStoreAPI(locale="zh-CN", country="TW")
+
+# Get offer details by product ID and offer ID
+product_id = "3ac65ef5cdf44b8084fcac818002635f"  # Example product ID
+offer_id = "cb49140c3c11429589ab22fd75c41504"  # Example offer ID
+offer = api.get_product_offer_by_id(product_id, offer_id)
+print(offer)
+```
+
+You can find more examples in the examples directory.
+
+### Contributing
+Feel free to contribute by creating PRs and sending your issues
+
+## Links
+* [Documentation](https://epicstore-api.readthedocs.io/en/latest/)
+
+## License
+MIT
