@@ -1,0 +1,30 @@
+Metadata-Version: 2.4
+Name: pynter2
+Version: 2.0.0
+Summary: Tools for atomistic calculations, provides features for point-defect calculations
+Author: Lorenzo Villa
+Description-Content-Type: text/markdown
+Requires-Dist: ase
+Requires-Dist: paramiko
+Requires-Dist: pymatgen>=2023.3.23
+Requires-Dist: PyYAML
+Requires-Dist: schedule
+Dynamic: author
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-dist
+Dynamic: summary
+
+# pynter
+
+Python library for flexible workflows for atomistic calculations. Provides a `ssh` interface for high performance computing (HPC). Uses the [`pymatgen`](https://pymatgen.org) package.
+
+It can be installed with the Python Package Index (PyPI) by running:
+```sh
+pip install pynter2
+```
+
+To configure settings for High-Performance Computer job submissions and for LAMMPS or VASP calculations, run:
+```sh
+pynter configure
+```
