@@ -1,0 +1,41 @@
+Metadata-Version: 2.4
+Name: linear_regression_ayoub_lab3
+Version: 1.0.0
+Summary: Simple Linear Regression from scratch
+Home-page: https://pypi.org/project/linear-regression-ayoub/
+Author: Ayoub Aziba
+Author-email: ma.aziba@esi-sba.dz
+License: MIT
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: numpy
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# linear_regression_ayoub
+
+A simple linear regression model built from scratch in Python.
+
+## Usage
+
+```python
+from linear_regression_ayoub import SimpleLinearRegression
+
+X = [1, 2, 3, 4, 5]
+y = [2, 4, 5, 4, 5]
+
+model = SimpleLinearRegression()
+model.fit(X, y)
+print("Slope:", model.m)
+print("Intercept:", model.c)
+print("RÂ²:", model.score(X, y))
+```
