@@ -1,0 +1,70 @@
+# Virtual environments
+.venv/
+venv/
+env/
+*_env/
+test_env2/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+docs/build/
+docs/source/_build/
+
+# Packaging metadata
+*.egg-info/
+
+# Python cache
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+
+# Output files
+*_output/
+demos/
+
+# Slides
+slides/FastMDAnalysis_demo_slides.pptx
+*.pptx
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test/backup files
+*.bak
+.pytest_cache/
+.coverage
+htmlcov/
+.python-version
+
+# Working and Old files
+hsp90_casestudy.md
+**/old_*.py
+**/old_*/
+.github/workflows/old_*.yml
+
+# Note
+NOTE
+coverage.xml
+examples/ubiquitin-md-generated-ensemble/
+hsp90_casestudy_indev.md
