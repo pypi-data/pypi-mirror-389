@@ -1,0 +1,49 @@
+Metadata-Version: 2.4
+Name: kellyml
+Version: 0.1.5
+Summary: Lightweight ML helpers for preprocessing and evaluation
+Author: Kelly
+Author-email: kellykoty@gmail.com
+Requires-Python: <3.13,>=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: scikit-learn<2.0,>=1.5.1
+Requires-Dist: pandas<3.0,>=2.2.2
+Requires-Dist: joblib<2.0,>=1.4.2
+Requires-Dist: xgboost<3.0,>=2.1.0
+Requires-Dist: lightgbm<5.0,>=4.6.0
+Requires-Dist: imbalanced-learn<1.0,>=0.12.3
+Requires-Dist: statsmodels<0.15,>=0.14.2
+Provides-Extra: viz
+Requires-Dist: matplotlib>=3.8; extra == "viz"
+Requires-Dist: seaborn>=0.13; extra == "viz"
+Requires-Dist: lime>=0.2; extra == "viz"
+Provides-Extra: tuning
+Requires-Dist: optuna>=3.6; extra == "tuning"
+Requires-Dist: hyperopt>=0.2.7; extra == "tuning"
+Requires-Dist: wandb>=0.17; extra == "tuning"
+Provides-Extra: api
+Requires-Dist: fastapi>=0.111; extra == "api"
+Requires-Dist: uvicorn>=0.30; extra == "api"
+
+# MLToolkit
+
+A lightweight ML helper package for preprocessing, splitting, evaluation, and simple model wrappers.  
+
+---
+
+## Features
+- Preprocessing: scaling, encoding, outlier handling, SMOTE
+- Dataset splitting: load and save dataset, train/validation/test with random, time-based, target and feature split
+- Evaluation: classification, regression, clustering, anomaly
+- Models: simple wrappers for scikit-learn (KNN, regression, clustering)
+
+---
+
+## Installation
+#1. Clone the repository
+git clone https://github.com/kellykoty/kellyml.git
+cd kellyml
+
+#2. Install dependencies and activate the virtual environment
+poetry install
+poetry shell
