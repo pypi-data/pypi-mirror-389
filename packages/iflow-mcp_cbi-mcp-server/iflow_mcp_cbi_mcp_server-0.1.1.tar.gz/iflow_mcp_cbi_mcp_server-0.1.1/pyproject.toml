@@ -1,0 +1,17 @@
+[project]
+name = "iflow-mcp_cbi-mcp-server"
+version = "0.1.1"
+description = "MCP Server for interacting with ChatCBI"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx==0.28.1",
+    "mcp[cli]==1.12.0",
+    "python-dotenv==1.1.1",
+]
+
+[project.scripts]
+cbi-mcp-server = "server:main"
+
+[tool.uv]
+dev-dependencies = []
