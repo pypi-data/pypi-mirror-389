@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AI2GIS"
+version = "0.1.0"
+authors = [
+  { name = "TheToanDiep", email = "toand.diep.e@ctuav.vn" }
+]
+description = "Thư viện Python để chuyển đổi kết quả AI sang định dạng GIS"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: GIS"
+]
+
+dependencies = [
+  "rasterio",
+  "geopandas",
+  "shapely",
+  "numpy",
+  "scipy",
+  "opencv-python",
+  "numba",
+  "scikit-image",
+  "topojson",
+  "fiona"
+]
+
+[tool.setuptools]
+packages = ["AI2GIS"]
+
+[project.urls]
+Homepage = "https://gitlab.ctgroupvietnam.com/ctuav-data-ai/gis-conversion"
