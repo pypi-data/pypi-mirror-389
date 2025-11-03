@@ -1,0 +1,36 @@
+Metadata-Version: 2.1
+Name: structuralpy
+Version: 0.0.4
+Summary: A library for analysis and design of structures based on NSCP 2015.
+Author: Jaydee Lucero
+Author-email: jaydee.lucero@gmail.com
+License: MIT
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pytest
+Requires-Dist: sympy
+
+## Usage
+
+The following functions are currently available in this module.
+- Functions for analyzing and designing RC beams for flexure
+
+## Example code
+
+```python
+from structuralpy import rc_beam
+
+# Beam analysis and design
+b = 300             # beam width (mm)
+h = 600             # beam depth (mm)
+fcp = 20.7          # concrete strength (MPa)
+fy = 415            # rebar strength (MPa)
+As = 600            # tension rebar area (mm^2)
+cover_bot = 65      # cover to centroid of tension reinforcement (mm)
+Mu = 300e6          # factored moment (N-mm)
+
+print(analyze_flexure(b, h, fcp, fy, As, cover_bot, Asp=0, cover_top=None, n_iter=10))
+print(design_flexure_size(Mu, fcp, fy, cover_bot, aspect_ratio=2.0))
+print(design_flexure_rebar(Mu, b, h, fcp, fy, cover_bot, cover_top=None))
+```
