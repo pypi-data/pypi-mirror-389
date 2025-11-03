@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: pyfwapi
+Version: 0.2.8
+Summary: Work with the Fotoware API in Python
+Author-email: Redmer Kronemeijer <12477216+redmer@users.noreply.github.com>
+License-Expression: MPL-2.0
+Requires-Python: >=3.12
+Requires-Dist: aiolimiter>=1.2.1
+Requires-Dist: aiostream>=0.6.4
+Requires-Dist: authlib>=1.4.1
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: pydantic>=2.10.6
+Description-Content-Type: text/markdown
+
+# `pyfwapi`
+
+Work with the Fotoware API in Python.
+
+## Examples
+
+```py
+>>> from pyfwapi import Tenant
+... fw = Tenant("https://tenant.example.org", client_id="abd123", client_secret="sekret")
+...
+... async for archive in fw.archives():
+...     print(a.name)
+Marketing
+Technical docs
+```
+
+## Design considerations
+
+The API responses are parsed using Pydantic.
+It's a hefty dependency, but -- for now -- allows easy parsing of the JSON responses.
+And it also enables easy integration with FastAPI.
+
+Explorations of `attrs`, `cattrs`, and `msgspec` failed to quickly result in satisfactory objects from the API JSON responses.

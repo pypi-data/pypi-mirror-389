@@ -1,0 +1,29 @@
+[project]
+name = "pyfwapi"
+version = "0.2.8"
+description = "Work with the Fotoware API in Python"
+license = "mpl-2.0"
+readme = "README.md"
+authors = [
+    { name = "Redmer Kronemeijer", email = "12477216+redmer@users.noreply.github.com" }
+]
+
+requires-python = ">=3.12"
+dependencies = [
+    "aiolimiter>=1.2.1",
+    "aiostream>=0.6.4",
+    "authlib>=1.4.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.10.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "python-dotenv>=1.0.1",
+    "ruff>=0.9.3",
+]
