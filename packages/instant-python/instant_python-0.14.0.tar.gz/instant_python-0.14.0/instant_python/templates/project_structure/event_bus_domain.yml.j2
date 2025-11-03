@@ -1,0 +1,45 @@
+- name: event
+  type: directory
+  python: True
+  children:
+    - name: event_bus/domain_event
+      type: boilerplate_file
+      extension: .py
+    - name: event_bus/domain_event_subscriber
+      type: boilerplate_file
+      extension: .py
+    - name: event_bus/event_bus
+      type: boilerplate_file
+      extension: .py
+    - name: event_bus/exchange_type
+      type: boilerplate_file
+      extension: .py
+- name: errors
+  type: directory
+  python: True
+  children:
+    - name: exceptions/base_error
+      type: boilerplate_file
+      extension: .py
+    - name: exceptions/domain_error
+      type: boilerplate_file
+      extension: .py
+    - name: exceptions/domain_event_type_not_found_error
+      type: boilerplate_file
+      extension: .py
+    - name: exceptions/rabbit_mq_connection_not_established_error
+      type: boilerplate_file
+      extension: .py
+- name: value_objects
+  type: directory
+  python: True
+  children:
+    - name: value_object/aggregate
+      type: boilerplate_file
+      extension: .py
+    - name: value_object/value_object
+      type: boilerplate_file
+      extension: .py
+    - name: event_bus/event_aggregate
+      type: boilerplate_file
+      extension: .py
