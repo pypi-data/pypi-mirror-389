@@ -1,0 +1,190 @@
+<div align="center">
+
+# QThreadWithReturn
+
+![QThreadWithReturn](https://socialify.git.ci/271374667/QThreadWithReturn/image?description=1&language=1&name=1&pattern=Plus&theme=Auto)
+
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
+[![PySide6](https://img.shields.io/badge/PySide6-6.4+-green.svg)](https://www.qt.io/qt-for-python)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-252%20passed-brightgreen.svg)](tests/)
+
+基于 PySide6 的多线程高度封装库，简化 GUI 应用中的多线程编程。
+
+简单易用，支持返回值和回调机制，避免复杂的信号槽设置、完善的内存回收、超时控制和任务取消功能、线程池支持、以及完整的类型提示。
+
+</div>
+
+## 简介
+
+`QThreadWithReturn` 灵感来自日常的工作以及该库的前辈 `qasync` 库，由于 qasync 会有异步传染的问题，如果需要在以往的项目里面引入 qasync 会导致需要对现有代码进行大规模的修改。QThreadWithReturn 为了能够在旧项目里面渐进式地引入多线程编程，提供了一个类似于 `concurrent.futures.Future` 的 API，能够让您在不改变现有代码结构的情况下，轻松地改善多线程。
+
+## 快速开始
+
+下面是一个简单的银行取款的例子
+
+```python
+"""
+QThreadWithReturn的基础例子
+"""
+
+import time
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLabel
+
+from qthreadwithreturn import QThreadWithReturn
+
+
+class Bank:
+    """模拟银行取款操作
+
+    这里是耗时操作的例子，在实际的项目中逻辑应该放在其他的模块中，不应该和界面代码混在一起
+    这样做只是为了演示 QThreadWithReturn 的使用
+    """
+
+    def draw(self, amount: float) -> str:
+        """模拟取款操作"""
+        time.sleep(2)  # 模拟耗时操作
+        return f"成功取款 {amount} 元"
+
+
+class MyWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("QThreadWithReturn 示例")
+        self.setGeometry(100, 100, 300, 200)
+
+        self.bank = Bank()
+
+        self.button = QPushButton("取款 100 元", self)
+        self.button.setGeometry(50, 50, 200, 40)
+
+        self.label = QLabel("等待取款...", self)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.label.setGeometry(50, 100, 200, 40)
+
+        self.button.clicked.connect(self.start_draw)
+
+    def start_draw(self):
+        """开始取款操作"""
+        self.button.setEnabled(False)
+        self.label.setText("取款中...")
+
+        # 使用 QThreadWithReturn 进行取款操作
+        # 通过finished和failure两个闭包函数节约了两个信号，运行完毕之后返回值会自动传入finished函数
+        # 如果发生异常则会传入failure函数
+        def finished(result: str):
+            # 成功后自动调用(传入参数为self.bank.draw的返回值)
+            self.label.setText(result)
+            self.button.setEnabled(True)
+
+        def failure(result: Exception):
+            # 失败后自动调用(传入参数为self.bank.draw抛出的异常)
+            self.label.setText(f"取款失败: {result}")
+            self.button.setEnabled(True)
+
+        thread = QThreadWithReturn(self.bank.draw, 100)  # 调用取款方法,传入参数100
+        thread.add_done_callback(finished)
+        thread.add_failure_callback(failure)
+        thread.start()
+
+
+if __name__ == '__main__':
+    app = QApplication([])
+    window = MyWindow()
+    window.show()
+    app.exec()
+
+```
+
+## 🚀 安装
+
+```bash
+# 使用 uv
+uv add qthreadwithreturn
+
+uv sync # 安装依赖
+
+# 使用 pip  
+pip install qthreadwithreturn
+pip install PySide6 # 如果还没有安装 PySide6 的话(可选)
+```
+
+## ✨ 特性
+
+### 🎯 QThreadWithReturn
+
+- `concurrent.futures.Future` 的 API，无需二次学习，快速上手
+- 内置超时控制和任务取消(包括强制停止)
+- 自动管理线程生命周期，防止内存泄漏
+- 支持任意可调用对象（函数、方法、lambda 等）
+- 完整的类型提示
+- 与 Qt 事件循环无缝集成
+
+### 🏊‍♂️ QThreadPoolExecutor
+
+- `concurrent.futures.ThreadPoolExecutor` 的 API，无需二次学习，快速上手
+- 线程池管理和任务调度
+- 支持线程初始化器和命名
+- 支持 `as_completed` 方法按完成顺序处理任务
+- 任务取消和强制停止支持
+- 完整的类型提示
+- 上下文管理器支持
+
+
+## 📖 API 参考
+
+这里只给出公开方法的简要说明，完整的文档请参考具体的函数文档,在安装了 `qthreadwithreturn` 之后在 IDE 中悬浮就可以查看帮助
+
+### QThreadWithReturn
+
+带返回值的 Qt 线程类，提供类似 `concurrent.futures.Future` 的 API。
+
+| 方法                                                   | 描述                         |
+| ------------------------------------------------------ | ---------------------------- |
+| `start(timeout_ms: int = -1)`                          | 启动线程执行任务             |
+| `result(timeout_ms: int = -1)`                         | 获取任务执行结果，阻塞等待   |
+| `exception(timeout_ms: int = -1)`                      | 获取任务执行时抛出的异常     |
+| `cancel(force_stop: bool = False)`                     | 取消线程执行                 |
+| `running()`                                            | 检查任务是否正在运行         |
+| `done()`                                               | 检查任务是否已完成           |
+| `cancelled()`                                          | 检查任务是否被取消           |
+| `wait(timeout_ms: int = -1, force_stop: bool = False)` | 等待任务完成                 |
+| `add_done_callback(callback: Callable)`                | 添加任务成功完成后的回调函数 |
+| `add_failure_callback(callback: Callable)`             | 添加任务失败后的回调函数     |
+
+### QThreadPoolExecutor
+
+线程池执行器，API 兼容 `concurrent.futures.ThreadPoolExecutor`。
+
+不建议使用 `with` 语句，因为在 GUI 应用中会导致 UI 阻塞。
+
+#### 静态方法
+
+| 方法                                                                   | 返回类型                        | 描述                                       |
+| ---------------------------------------------------------------------- | ------------------------------- | ------------------------------------------ |
+| `as_completed(fs: Iterable["QThreadWithReturn"], timeout: float = -1)` | `Iterator["QThreadWithReturn"]` | 返回一个迭代器，按完成顺序生成 Future 对象 |
+
+#### 实例方法
+
+| 方法                                                                                      | 描述                                       |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `submit(fn: Callable, /, *args, **kwargs)`                                                | 提交任务到线程池执行                       |
+| `shutdown(wait: bool = False, *, cancel_futures: bool = False, force_stop: bool = False)` | 关闭线程池                                 |
+| `add_done_callback(callback: Callable)`                                                   | 添加池级别完成回调，当所有任务完成时执行   |
+| `add_failure_callback(callback: Callable)`                                                | 添加任务级别失败回调，当任何任务失败时执行 |
+
+- **add_done_callback**：当所有活跃任务完成且没有待处理任务时触发
+- **add_failure_callback**：每个失败任务都会触发一次
+
+## 📄 许可证
+
+本项目使用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+## 📞 支持
+
+- **问题报告**: [GitHub Issues](https://github.com/271374667/QThreadWithReturn/issues)
+- **讨论**: [GitHub Discussions](https://github.com/271374667/QThreadWithReturn/discussions)
+- **邮件**: 271374667@qq.com
