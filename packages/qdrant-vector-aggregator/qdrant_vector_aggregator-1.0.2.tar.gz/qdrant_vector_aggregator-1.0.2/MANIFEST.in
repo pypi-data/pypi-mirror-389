@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include SETUP_INSTRUCTIONS.md
+include .env.example
+recursive-include qdrant_vector_aggregator *.py
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
