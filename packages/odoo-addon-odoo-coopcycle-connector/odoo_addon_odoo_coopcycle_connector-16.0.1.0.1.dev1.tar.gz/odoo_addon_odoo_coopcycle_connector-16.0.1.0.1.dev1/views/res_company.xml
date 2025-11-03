@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_company_form">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page
+                    string='Coopcycle'
+                    name="page_coopcycle"
+                    groups="base.group_erp_manager"
+                >
+                    <group>
+                        <field name="coopcycle_user" />
+                        <field name="coopcycle_password" password="True"/>
+                        <field name="coopcycle_instance" placeholder="https://my_company.coopcycle.org/api"/>
+                        <field name="coopcycle_sync_max_days"/>
+                        <field name="coopcycle_product"/>
+                        <field name="coopcycle_tax"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
