@@ -1,0 +1,21 @@
+en:
+  portal:
+    description: "brainframe-sys-tools is a group of commands written in Python. They
+    help to monitor brainframe system and debug the system deployment related issues.
+    To see options of each command, run \"brainframe-sys-tools {command} --help\"."
+    usage: >-
+      brainframe-sys-tools <command> [<args>]
+
+      commands:
+        fps-monitor
+        perf-monitor
+        service-monitor
+        sys-info
+        ssh-tunnel
+
+      Examples:
+        brainframe-sys-tools fps_monitor
+ 
+    command-help: "The brainframe-sys-tools command to run"
+    unknown-command: "Unknown command: {command}"
+    interrupted: "The operation was interrupted"
