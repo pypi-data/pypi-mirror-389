@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "google-search-aj"
+version = "1.0.1"
+description = "Fast, lightweight Google search scraper with stealth mode"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+    {name = "Aditya Jangam", email = "adityajangam25@gmail.com"}
+]
+keywords = ["google", "search", "scraper", "web-scraping", "playwright", "automation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "playwright>=1.40.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Aaditya17032002/google-search"
+Documentation = "https://github.com/Aaditya17032002/google-search#readme"
+Repository = "https://github.com/Aaditya17032002/google-search"
+"Bug Tracker" = "https://github.com/Aaditya17032002/google-search/issues"
+
+[project.scripts]
+google-search = "google_search_scraper.cli:main"
+
+[tool.setuptools]
+packages = ["google_search_scraper"]
+
+[tool.setuptools.package-data]
+google_search_scraper = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
