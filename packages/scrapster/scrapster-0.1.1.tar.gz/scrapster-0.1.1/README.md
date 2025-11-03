@@ -1,0 +1,74 @@
+# Scrapster
+
+Rust-powered system metrics collector exposed to Python via PyO3.
+
+## Installation
+
+```
+pip install scrapster
+```
+
+## Quickstart
+
+```python
+import scrapster
+
+# Collect one sample after ~1 second
+m = scrapster.get_metrics_once(1000)  # milliseconds
+
+print(
+    {
+        "cpu_usage_percent": m["cpu_usage_percent"],
+        "mem_used_bytes": m["mem_used_bytes"],
+        "uptime_seconds": m["uptime_seconds"],
+    }
+)
+```
+
+## API
+
+- `get_metrics_once(interval_ms: int) -> dict`
+  - Waits `interval_ms` milliseconds and returns a dictionary snapshot with the following keys:
+    - `timestamp` (float seconds since UNIX epoch)
+    - CPU: `cpu_usage_percent`, `cpu_user_percent`, `cpu_system_percent`, `cpu_idle_percent`, `cpu_iowait_percent`, `cpu_irq_percent`, `cpu_softirq_percent`, `cpu_steal_percent`, `run_queue_length`, `context_switches_per_sec`
+    - Temperature/Throttle: `cpu_temp_celsius`, `throttle_status`
+    - Memory: `mem_total_bytes`, `mem_used_bytes`, `page_faults_minor_per_sec`, `page_faults_major_per_sec`
+    - Uptime/Load: `uptime_seconds`, `load_avg_1`, `load_avg_5`, `load_avg_15`
+    - Disk: `disk_read_bytes_per_sec`, `disk_write_bytes_per_sec`
+    - Network: `net_rx_bytes_per_sec`, `net_tx_bytes_per_sec`
+
+## Platform support
+
+- Linux: full functionality (reads from `/proc/*`, `/sys/*`).
+- macOS: many values will be `0` because `/proc/*` isn’t available.
+- Raspberry Pi: throttle/temperature fields may use `vcgencmd`; install it to populate `throttle_status`.
+
+## Building from source
+
+You need a Rust toolchain and Python headers. Easiest path is with `maturin`:
+
+```
+pip install maturin
+maturin develop --release
+```
+
+Then:
+
+```python
+import scrapster
+print(scrapster.get_metrics_once(1000))
+```
+
+## Publish (maintainers)
+
+Build wheels and upload to PyPI:
+
+```
+maturin build --release -o dist
+maturin publish --skip-existing -u __token__ -p <pypi-token>
+```
+
+## License
+
+MIT
+
