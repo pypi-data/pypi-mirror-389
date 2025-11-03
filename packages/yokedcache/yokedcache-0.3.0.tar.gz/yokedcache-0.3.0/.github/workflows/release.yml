@@ -1,0 +1,157 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  check-version:
+    name: Check for Version Change
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.version-check.outputs.changed }}
+      current_version: ${{ steps.version-check.outputs.current_version }}
+      previous_version: ${{ steps.version-check.outputs.previous_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check version change
+        id: version-check
+        run: |
+          # Get current version from __init__.py without importing (safer)
+          CURRENT_VERSION=$(grep '__version__ = ' src/yokedcache/__init__.py | sed 's/__version__ = "\(.*\)"/\1/')
+
+          echo "Current version: $CURRENT_VERSION"
+
+          # Get the previous version from the last tag
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$PREVIOUS_TAG" ]; then
+            PREVIOUS_VERSION=${PREVIOUS_TAG#v}
+            echo "Previous version: $PREVIOUS_VERSION"
+          else
+            PREVIOUS_VERSION=""
+            echo "No previous version found"
+          fi
+
+          # Check if current version already has a tag
+          if git tag --list | grep -q "^v${CURRENT_VERSION}$"; then
+            echo "Tag v${CURRENT_VERSION} already exists, no release needed"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          elif [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No version change detected"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "previous_version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: needs.check-version.outputs.version_changed == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          CURRENT_TAG="v${{ needs.check-version.outputs.current_version }}"
+          PREV_TAG="${{ needs.check-version.outputs.previous_version }}"
+          if [ -n "$PREV_TAG" ]; then
+            PREV_TAG="v$PREV_TAG"
+            RANGE="$PREV_TAG..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+
+          export CURRENT_TAG PREV_TAG RANGE
+          python scripts/gen_changelog.py > release_notes.md
+
+          echo "Generated release notes:"
+          cat release_notes.md
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TAG="v${{ needs.check-version.outputs.current_version }}"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+
+      - name: Update CHANGELOG.md
+        run: |
+          if [ -f CHANGELOG.md ]; then
+            TAG="v${{ needs.check-version.outputs.current_version }}"
+
+            # Check if this version is already in the changelog
+            if ! grep -q "^## \[${{ needs.check-version.outputs.current_version }}\]" CHANGELOG.md; then
+              # Create a temp file with the new changelog entry
+              echo "## [${{ needs.check-version.outputs.current_version }}] - $(date '+%Y-%m-%d')" > temp_changelog.md
+              echo "" >> temp_changelog.md
+
+              # Add the generated release notes (skip the first line which is the ## tag)
+              tail -n +2 release_notes.md >> temp_changelog.md
+              echo "" >> temp_changelog.md
+
+              # Append the existing changelog
+              cat CHANGELOG.md >> temp_changelog.md
+              mv temp_changelog.md CHANGELOG.md
+
+              # Commit the updated changelog
+              git add CHANGELOG.md
+              git commit -m "docs(changelog): add ${{ needs.check-version.outputs.current_version }}" || true
+              git push || true
+            fi
+          fi
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Check package
+        run: |
+          twine check dist/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.current_version }}
+          name: Release ${{ needs.check-version.outputs.current_version }}
+          body_path: release_notes.md
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+          draft: false
+          prerelease: ${{ contains(needs.check-version.outputs.current_version, 'rc') || contains(needs.check-version.outputs.current_version, 'beta') || contains(needs.check-version.outputs.current_version, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
