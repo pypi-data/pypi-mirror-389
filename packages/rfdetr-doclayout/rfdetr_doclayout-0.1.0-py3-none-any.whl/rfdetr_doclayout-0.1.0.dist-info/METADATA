@@ -1,0 +1,89 @@
+Metadata-Version: 2.3
+Name: rfdetr-doclayout
+Version: 0.1.0
+Summary: Add your description here
+Author: neka-nat
+Author-email: neka-nat <nekanat.stock@gmail.com>
+Requires-Dist: numpy>=1.26.4
+Requires-Dist: onnxruntime>=1.23.2
+Requires-Dist: tqdm>=4.67.1
+Requires-Dist: onnx>=1.19.0 ; extra == 'export'
+Requires-Dist: onnxscript>=0.5.0 ; extra == 'export'
+Requires-Dist: onnxsim>=0.4.36 ; extra == 'export'
+Requires-Dist: boto3>=1.40.60 ; extra == 'train'
+Requires-Dist: python-dotenv>=1.2.0 ; extra == 'train'
+Requires-Dist: rfdetr[metrics]>=1.3.0 ; extra == 'train'
+Requires-Dist: sagemaker>=2.253.1 ; extra == 'train'
+Requires-Python: >=3.12
+Provides-Extra: export
+Provides-Extra: train
+Description-Content-Type: text/markdown
+
+# RF-DETR For Document Layout Analysis
+
+This is a repository for RF-DETR For Document Layout Analysis training with DocLayNet dataset.
+
+This repository is based on [rf-detr-onnx](https://github.com/PierreMarieCurie/rf-detr-onnx).
+
+|Original Image|Result Image|
+|---|---|
+|![academic](./assets/academic.jpg) | ![academic_result](./assets/academic_result.jpg) |
+|![textbook](./assets/textbook.jpg) | ![textbook_result](./assets/textbook_result.jpg) |
+
+## Installation
+
+```bash
+pip install rfdetr-doclayout
+```
+
+## Quick Start
+
+```python
+from rfdetr_doclayout.rfdetr import RfDetrDoclayout
+import time
+
+# Initialize the model
+model = RfDetrDoclayout()
+
+# Run inference and get detections
+_, labels, boxes, masks = model.predict("path/to/image.jpg")
+model.save_detections("path/to/image.jpg", boxes, labels, masks, "path/to/output.jpg")
+```
+
+
+## Training
+
+```bash
+git clone https://github.com/neka-nat/rfdetr-doclayout.git
+cd rfdetr-doclayout
+uv sync --extra train
+```
+
+### Download Dataset
+
+```bash
+wget https://codait-cos-dax.s3.us.cloud-object-storage.appdomain.cloud/dax-doclaynet/1.0.0/DocLayNet_core.zip
+unzip DocLayNet_core.zip -d DocLayNet_core
+```
+
+Convert dataset to RF-DETR format.
+
+```bash
+uv run scripts/convert_dataset.py --src DocLayNet_core --dst dataset
+```
+
+### Training Locally
+
+```bash
+uv run scripts/doclaynet_train.py --dataset_dir dataset --output_dir models/rfdetr-doclayout
+```
+
+### Training on AWS SageMaker
+
+```bash
+aws s3 sync dataset/  s3://<your-bucket-name>/dataset
+touch .env
+echo "AWS_BUCKET_NAME=<your-bucket-name>" >> .env
+echo "AWS_SAGEMAKER_ROLE_NAME=<your-role-name>" >> .env
+uv run scripts/deploy_train.py
+```
