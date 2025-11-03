@@ -1,0 +1,82 @@
+Metadata-Version: 2.4
+Name: hinen-open-api
+Version: 1.0.1
+Summary: Hinen Open API Client
+Author: Hinen-WeiFeng
+License: MIT
+Project-URL: Homepage, https://github.com/Hinen-IoT/hinen_open_api.git
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: aiohttp<4.0.0,>=3.8.0
+Requires-Dist: pydantic<3.0.0,>=2.0.0
+Requires-Dist: yarl<2.0.0,>=1.9.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.15; extra == "dev"
+Requires-Dist: black>=21.0; extra == "dev"
+Requires-Dist: flake8>=3.9; extra == "dev"
+Dynamic: license-file
+
+﻿# Hinen Open API Client
+
+A Python client library for the Hinen Open API.
+
+## Installation
+
+```bash
+pip install hinen-open-api
+```
+
+## Usage
+
+```python
+import asyncio
+from hinen_open_api import HinenOpen
+
+async def main():
+    async with HinenOpen(
+        host="https://api.hinen.com",
+        app_id="your_app_id",
+        app_secret="your_app_secret"
+    ) as client:
+        # Set user authentication if needed
+        await client.set_user_authentication(
+            token="user_token",
+            refresh_token="refresh_token"
+        )
+        
+        # Use the client to make requests
+        print("Hinen Open API client initialized successfully!")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Development
+
+To install the package in development mode:
+
+```bash
+pip install -e .
+```
+
+To run tests:
+
+```bash
+pytest tests/
+```
+
+This project uses `pyproject.toml` for packaging configuration instead of `setup.py`.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

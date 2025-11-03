@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hinen-open-api"
+version = "1.0.1"
+description = "Hinen Open API Client"
+authors = [
+    {name = "Hinen-WeiFeng"},
+]
+readme = { file = "README.md", content-type = "text/markdown" }
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "aiohttp>=3.8.0,<4.0.0",
+    "pydantic>=2.0.0,<3.0.0",
+    "yarl>=1.9.0,<2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-asyncio>=0.15",
+    "black>=21.0",
+    "flake8>=3.9",
+]
+
+[project.urls]
+Homepage = "https://github.com/Hinen-IoT/hinen_open_api.git"
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "tests.*"]
