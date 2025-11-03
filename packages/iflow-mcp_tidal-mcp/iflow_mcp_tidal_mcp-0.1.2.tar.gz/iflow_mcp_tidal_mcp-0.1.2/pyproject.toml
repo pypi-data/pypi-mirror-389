@@ -1,0 +1,21 @@
+[project]
+name = "iflow-mcp_tidal-mcp"
+version = "0.1.2"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.1.0",
+    "mcp[cli]>=1.6.0",
+    "requests>=2.32.3",
+    "tidalapi>=0.8.3",
+]
+
+[project.scripts]
+tidal-mcp = "mcp_server.server:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["mcp_server", "tidal_api"]
