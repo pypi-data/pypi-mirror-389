@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Preview Docs",
+      "type": "shell",
+      "command": "if [ ! -d .git ]; then echo 'Initializing new Git repo...'; git init; fi && git add . && git commit -m 'Update documentation' && chmod +x ./run-mkdocs.sh && ./run-mkdocs.sh",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Markdown MCP",
+      "type": "shell",
+      "command": "source .venv/bin/activate && pip install -r mcp_deps.txt && python3 -m fastMcp.md_converter",
+      "dependsOrder": "parallel",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
