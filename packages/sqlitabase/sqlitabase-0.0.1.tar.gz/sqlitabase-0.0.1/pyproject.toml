@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sqlitabase"
+version = "0.0.1"
+authors = [
+  { name="Edgars Kosovojs", email="kosovojs@gmail.com" },
+]
+description = "A simple and robust helper package for Sqlite operations."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
