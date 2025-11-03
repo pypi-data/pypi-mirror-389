@@ -1,0 +1,181 @@
+
+# ReasonTrack Configuration Example
+storage:
+  archive:
+    backend: "elasticsearch"
+    path: "./storage/archives"
+    retention_days: 30
+    compression: true
+    batch_size: 1000
+  state:
+    backend: "redis"
+    path: "./storage/state"
+    retention_days: 7
+    compression: true
+    batch_size: 100
+  metrics:
+    backend: "influxdb"
+    url: "http://localhost:8086"
+    token: "QaT9ZVRWIx7zj5QbyjZJQfwKPPgsYg6Hs7kcC_51Fx6EOGwfckroIZjNE0zRbNUgH-8n8agNXq_RrMlwZmdu1w=="
+    org: "reasonflow"
+    bucket: "reasonflow"
+    retention_days: 30
+    batch_size: 1000
+  events:
+    backend: "kafka"
+    path: "./storage/events"
+    retention_days: 30
+    compression: true
+    batch_size: 500
+  versions:
+    backend: "elasticsearch"
+    path: "./storage/versions"
+    retention_days: 365
+    compression: true
+    batch_size: 100
+  archives:
+    backend: "elasticsearch"
+    path: "./storage/archives"
+    retention_days: 365
+    compression: true
+    batch_size: 100
+
+kafka:
+  broker_url: "localhost:9092"
+  topic_prefix: "reasontrack"
+  client_id: "reasontrack-client"
+  batch_size: 100
+  flush_interval: 10
+
+prometheus:
+  pushgateway_url: "http://localhost:9091"
+  job_name: "reasontrack"
+  push_interval: 15
+  metric_prefix: "reasontrack"
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  encoding: "utf-8"
+  url: "redis://localhost:6379/0"
+
+alerts:
+  storage:
+    backend: "elasticsearch"
+    path: "./storage/alerts"
+    retention_days: 90
+    compression: true
+    batch_size: 100
+  severity_levels: ["INFO", "WARNING", "ERROR", "CRITICAL"]
+  notification_backends:
+    slack:
+      webhook_url: "https://hooks.slack.com/services/xxx/yyy/zzz"
+      default_channel: "#monitoring"
+    email:
+      smtp_host: "smtp.gmail.com"
+      smtp_port: 587
+      username: "alerts@example.com"
+      password: "your-password"
+      from_address: "alerts@example.com"
+      to_addresses: ["team@example.com"]
+  deduplication_window: 300
+  aggregation_window: 60
+
+events:
+  event_config:
+    enabled: true
+    batch_size: 100
+    max_retries: 3
+  storage:
+    backend: "elasticsearch"
+    index_prefix: "reasontrack_events"
+    retention_days: 30
+    compression: true
+    shards: 5
+    replicas: 1
+
+metrics:
+  storage:
+    backend: "influxdb"
+    url: "http://localhost:8086"
+    token: "QaT9ZVRWIx7zj5QbyjZJQfwKPPgsYg6Hs7kcC_51Fx6EOGwfckroIZjNE0zRbNUgH-8n8agNXq_RrMlwZmdu1w=="
+    org: "reasonflow"
+    bucket: "reasonflow"
+    retention_days: 30
+    batch_size: 1000
+    buffer_size: 10000
+    flush_interval: 60
+  system_metrics:
+    enabled: true
+    collection_interval: 60
+  application_metrics:
+    enabled: true
+    collection_interval: 30
+
+versions:
+  version_config:
+    enabled: true
+    batch_size: 100
+    max_versions: 10
+  storage:
+    backend: "elasticsearch"
+    index_prefix: "reasontrack_versions"
+    retention_days: 90
+
+archives:
+  archive_config:
+    enabled: true
+    batch_size: 100
+    compression: true
+  storage:
+    backend: "elasticsearch"
+    index_prefix: "reasontrack_archives"
+    retention_days: 365
+
+state:
+  storage:
+    backend: "redis"
+    prefix: "reasontrack_state"
+    compression: true
+
+auth:
+  secret_key: "your-secret-key"
+  token_expiry: 3600
+  algorithm: "HS256"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins: ["*"]
+  rate_limit: 100
+
+websocket:
+  enabled: true
+  path: "/ws"
+  ping_interval: 20
+
+analytics:
+  enabled: true
+  storage_retention: 90
+  batch_size: 1000
+
+performance:
+  enabled: true
+  sampling_rate: 0.1
+  trace_enabled: true
+
+telemetry:
+  tracing:
+    enabled: true
+    service_name: "reasontrack"
+    endpoint: "http://localhost:4317"
+  metrics_export:
+    enabled: true
+    interval: 60
+  logging_export:
+    enabled: true
+    level: "INFO"
+  resource_attributes:
+    service_namespace: "reasontrack"
+    deployment_environment: "development"

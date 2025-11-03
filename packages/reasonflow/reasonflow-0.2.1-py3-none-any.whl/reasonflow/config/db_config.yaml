@@ -1,0 +1,27 @@
+vector_databases:
+  faiss:
+    use_gpu: false
+    dimension: 384
+    metric: "l2"
+    index_type: "IndexFlatL2"
+  milvus:
+    host: "localhost"
+    port: 19530
+    collection_name: "documents"
+    dimension: 384
+  pinecone:
+    environment: ""
+    project_name: ""
+    dimension: 384
+    metric: "cosine"
+  qdrant:
+    mode: "local"  # or "cloud"
+    host: "localhost"
+    port: 6333
+    collection_name: "documents"
+    dimension: 384
+  weaviate:
+    mode: "local"  # or "cloud"
+    host: "http://localhost:8080"
+    class_name: "auto_generated"
+    dimension: "auto_generated"
