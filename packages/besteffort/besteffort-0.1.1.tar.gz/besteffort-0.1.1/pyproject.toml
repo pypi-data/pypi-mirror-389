@@ -1,0 +1,47 @@
+[project]
+name = "besteffort"
+version = "0.1.1"
+description = "Best-effort importer and decorator that suppresses exceptions."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Grant Jenks" },
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities",
+]
+keywords = ["import", "exceptions", "contextlib", "resilience"]
+urls.Homepage = "https://github.com/grantjenks/python-besteffort"
+urls."Issue Tracker" = "https://github.com/grantjenks/python-besteffort/issues"
+urls."Source Code" = "https://github.com/grantjenks/python-besteffort"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "nox>=2024.4.15",
+]
+
+[tool.setuptools.packages.find]
+include = ["besteffort*"]
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0",
+    "nox>=2024.4.15",
+]
