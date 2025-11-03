@@ -1,0 +1,20 @@
+[project]
+name = "iflow-mcp_unichat-mcp-server"
+version = "0.2.20"
+description = "Unichat MCP Server"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [ "mcp>=1.0.0","unichat>=4.1.30"]
+[[project.authors]]
+name = "Stefan"
+email = "shear.0-corned@icloud.com"
+
+[build-system]
+requires = [ "hatchling",]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/unichat_mcp_server"]
+
+[project.scripts]
+unichat-mcp-server = "unichat_mcp_server:main"
