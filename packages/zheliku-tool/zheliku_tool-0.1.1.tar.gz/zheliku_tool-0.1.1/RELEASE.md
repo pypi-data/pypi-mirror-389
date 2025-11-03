@@ -1,0 +1,15 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
+
+## [0.1.1] - 2025-11-03
+### Fixed
+- 日志正文中的线程名不再显示为 `%(threadName)s`，改为真实线程名（`MainThread` 等）。
+- `time_log()` / 上下文管理器模式下的**调用点路径**解析更稳健：排除本模块、`contextlib`、标准库与 site-packages，日志落地到用户代码目录。
+
+### Changed
+- 文档：README 与类 docstring 更新了环境变量别名说明。
+
+## [0.1.0] - 2025-11-03
+- 初始发布：同步/异步装饰器、上下文管理器、函数式 API、滚动日志、片段计时器等。
