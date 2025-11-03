@@ -1,0 +1,35 @@
+# Include configuration files
+include reasonflow/config/*.yaml
+include reasonflow/config/*.yml
+
+# Include documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+
+# Include example files
+include example/*.py
+include example/*.yaml
+
+# Exclude cache files and environment-specific files
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude .git*
+global-exclude .env
+global-exclude .env.*
+global-exclude *.log
+global-exclude .DS_Store
+global-exclude *.index
+global-exclude *.faiss
+global-exclude *.pkl
+global-exclude *.bin
+global-exclude *.pt
+global-exclude *.onnx
+
+# Exclude test cache
+recursive-exclude tests/__pycache__ *
+recursive-exclude tests/.pytest_cache *
+recursive-exclude .mypy_cache *
+recursive-exclude .coverage * 
