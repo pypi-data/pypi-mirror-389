@@ -1,0 +1,91 @@
+0.5.0
+ - fix: cosine and shepp-logan filters off by factor of two (#2, Tim Hetkämper)
+ - setup: migrate to pyproject.toml
+0.4.14
+ - maintenance release
+0.4.13
+ - ci: skip tests that fail on GitHub Actions (Linux/macOS)
+0.4.12
+ - maintenance release
+0.4.11
+ - ref: cleanup
+0.4.10
+ - fix: handle more special cases when computing weights for
+   projections (#7)
+ - ref: make `util` submodule available upon import
+0.4.9
+ - build: setup.py test is deprecated
+ - build: moved from travisCI to GitHub Actions
+ - docs: refurbish docs
+ - tests: allow 2D Fourier mapping test to fail on macOS
+   and Windows (don't know why it fails, probably unstable)
+ - ref: replace np.complex256 with np.complex128 in
+   _alg_int.py:integrate which does not break any tests but
+   works on Windows which sometimes has not support for longdouble
+ - ref: replace np.bool with bool due to numpy deprecation warnings
+0.4.8
+ - ref: move sinogram generation in tests to separate file, thanks @SZanko
+ - ref: deprecation warning int for numpy 1.20.0, thanks @SZanko
+ - ref: more type hints, thanks @SZanko
+0.4.7
+ - ref: added PEP 484 type hints, thanks @SZanko (#3)
+0.4.6
+ - maintenance release
+0.4.5
+ - setup: bump scipy to 1.4.0 (updated QHull in griddata)
+0.4.4
+ - fix: correctly increment `count` in `_alg_fmp.py`
+0.4.3
+ - fix: correctly compute `max_count` for 3D wrapper
+0.4.2
+ - fix: use `Value.get_lock()` when tracking progress
+ - docs: minor improvements
+0.4.1
+ - docs: add index link and include changelog
+0.4.0
+ - BREAKING CHANGE: volumetric reconstruction is now done according to
+   the ODTbrain indexing convention. To get the original behavior,
+   transpose the output, i.e. ``volout.transpose(1, 0, 2)``.
+0.3.2
+ - ci: automated deployment with travis-ci
+0.3.1
+ - Convenience fix: Make algorithm source files private
+0.3.0
+ - BREAKING CHANGES:
+   - Renamed several functions
+   - Dropped support for Python 2
+ - Refactoring:
+   - Moved each reconstruction algorithm to a separate file
+   - Modified code to comply with PEP8
+   - Moved long doc strings from source to docs directory
+   - Removed complicated and redundant 3D reconstruction methods
+   - Improved 3D algorithm (`threed.py`) to support progress-monitoring
+0.2.1
+ - Do not include compiled docs in sdist
+0.2.0
+ - Updated docs and examples (#1)
+ - Moved docs to readthedocs.io
+0.1.9
+ - No code changes
+0.1.8
+ - Added support for NumPy 1.10
+0.1.7
+ - Improved padding for backprojection
+0.1.6
+ - Removed a memory leak
+ - Increase compatibility to jobmanager
+ - Improved documentation
+0.1.5
+ - Fixed an example
+ - Fixed bug in 3D reconstruction
+0.1.4
+ - Added 3D reconstruction methods
+0.1.3
+ - Switched to jobamanger package for tracking of progress
+ - Adde fan-beam helper methods
+0.1.2
+ - Renamed callback functions
+0.1.1
+ - Mainly code cleanup
+0.1.0
+ - Initial GitHub commit
