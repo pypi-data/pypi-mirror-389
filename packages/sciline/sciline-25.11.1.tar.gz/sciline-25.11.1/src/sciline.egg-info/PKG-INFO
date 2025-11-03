@@ -1,0 +1,58 @@
+Metadata-Version: 2.4
+Name: sciline
+Version: 25.11.1
+Summary: Build scientific pipelines for your data
+Author: Scipp contributors
+License-Expression: BSD-3-Clause
+Project-URL: Bug Tracker, https://github.com/scipp/sciline/issues
+Project-URL: Documentation, https://scipp.github.io/sciline
+Project-URL: Source, https://github.com/scipp/sciline
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Scientific/Engineering
+Classifier: Typing :: Typed
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: cyclebane>=24.06.0
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-randomly>=3; extra == "test"
+Requires-Dist: dask; extra == "test"
+Requires-Dist: graphviz; extra == "test"
+Requires-Dist: jsonschema; extra == "test"
+Requires-Dist: numpy; extra == "test"
+Requires-Dist: pandas; extra == "test"
+Requires-Dist: pydantic; extra == "test"
+Requires-Dist: rich; extra == "test"
+Provides-Extra: progress
+Requires-Dist: rich; extra == "progress"
+Dynamic: license-file
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![PyPI badge](http://img.shields.io/pypi/v/sciline.svg)](https://pypi.python.org/pypi/sciline)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/sciline/badges/version.svg)](https://anaconda.org/conda-forge/sciline)
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
+
+![logo](docs/_static/logo.svg)
+
+# Sciline
+
+## About
+
+Build scientific pipelines for your data.
+Sciline uses a dependency-injection mechanism to build task graphs that can be executed, e.g., with a Dask scheduler.
+
+See the [documentation](https://scipp.github.io/sciline/) for details.
+
+## Installation
+
+```sh
+python -m pip install sciline
+```
