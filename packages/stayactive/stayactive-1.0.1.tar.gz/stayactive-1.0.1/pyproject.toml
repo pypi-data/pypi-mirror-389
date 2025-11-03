@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stayactive"
+version = "1.0.1"
+description = "A smart activity simulator utility that keeps your computer active while respecting your actual usage"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Rajdeep Banik", email = "banik.rajdeep1056@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Monitoring",
+    "Topic :: Utilities"
+]
+keywords = ["activity", "simulator", "automation", "mouse", "keyboard", "stay-active"]
+requires-python = ">=3.6"
+dependencies = [
+    "pyautogui",
+    "pynput"
+]
+
+[project.urls]
+Homepage = "https://github.com/rajdeepbanik/stayactive"
+Repository = "https://github.com/rajdeepbanik/stayactive"
+Issues = "https://github.com/rajdeepbanik/stayactive/issues"
+
+[project.scripts]
+stayactive = "stayactive.__main__:main"
