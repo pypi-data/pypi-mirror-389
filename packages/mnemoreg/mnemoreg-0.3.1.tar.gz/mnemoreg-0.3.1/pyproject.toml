@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm[toml]>=6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mnemoreg"
+dynamic = ["version"]
+description = "A tiny thread-safe registry mapping for simple plugin/registry use-cases."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [ { name = "Björn Schrammel", email = "mnemoreg@schrammel.dev" } ]
+requires-python = ">=3.8"
+dependencies = []
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Source = "https://github.com/i3iorn/mnemoreg"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pre-commit",
+    "ruff",
+    "mypy",
+    "black",
+    "isort",
+]
+
+[tool.ruff]
+line-length = 88
+lint.select = ["E", "F", "W", "C", "N", "I"]
+exclude = [".venv", "build", "dist"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+
+[tool.setuptools_scm]
+write_to = "mnemoreg/VERSION"
+write_to_template = "{version}\n"
+local_scheme = "no-local-version"
+version_scheme = "guess-next-dev"
