@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git reset:*)",
+      "Bash(jlpm build)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(git push)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)",
+      "Bash(mkdir:*)",
+      "Bash(pip install:*)",
+      "Bash(awk:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(make mrproper:*)",
+      "Bash(jlpm install:*)",
+      "Bash(jupyter labextension:*)",
+      "Bash(jupyter server extension list:*)",
+      "Bash(jupyter server extension enable:*)",
+      "Bash(/opt/conda/etc/jupyter/jupyter_server_config.d/jupyterlab_tabular_data_viewer_extension.json)",
+      "Bash(git log:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
