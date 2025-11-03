@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "brainframe-sys-tools"
+version = "0.4.5.5"
+description = "This is the package including tools for BrainFrame developers to monitor and debug the system."
+readme = "README.md"
+authors = ["Stephen Li <stephen@aotu.ai>"]
+license = "BSD License"
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python_i18n = "^0.3.9"
+PyYAML = "^6.0.2"
+requests = "^2.32.3"
+brainframe_apps = "^0.4.5.4"
+brainframe-api = "^0.30.4"
+apscheduler = "^3.10.4"
+psutil = "^5.8.0"
+tabulate = "^0.8.9"
+
+[tool.poetry.dev-dependencies]
+black = "^22.10.0"
+isort = "^5.7.0,<5.8.0"
+typing-extensions = ">=3.7.4"
+
+[tool.poetry.scripts]
+brainframe-sys-tools = 'brainframe_sys_tools.cli:cli_main'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
