@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+<record model="ir.ui.view" id="sale_order_search_coopcycle">
+  <field name="name">sale.order.search.coopcycle</field>
+  <field name="model">sale.order</field>
+  <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+  <field name="arch" type="xml">
+    <filter name="my_sale_orders_filter" position="after">
+      <separator/>
+      <filter string="Coopcycle" name="Coopcycle" domain="[('is_coopcycle_import','=',True)]"/>
+      <filter string="No Coopcycle" name="No Coopcycle" domain="[('is_coopcycle_import','=',False)]"/>
+    </filter>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="sale_order_tree_coopcycle">
+  <field name="name">sale.order.tree.coopcycle</field>
+  <field name="model">sale.order</field>
+  <field name="inherit_id" ref="sale.view_order_tree"/>
+  <field name="arch" type="xml">
+     <field name="state" position="after">
+       <field string="Coopcycle?" name="is_coopcycle_import" optional="hide"/>
+     </field>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="sale_quotation_tree_coopcycle">
+  <field name="name">sale.quotation.tree.coopcycle</field>
+  <field name="model">sale.order</field>
+  <field name="inherit_id" ref="sale.view_quotation_tree"/>
+  <field name="arch" type="xml">
+     <field name="state" position="after">
+       <field string="Coopcycle?" name="is_coopcycle_import" optional="hide"/>
+     </field>
+   </field>
+</record>
+
+</data>
+</odoo>
+
