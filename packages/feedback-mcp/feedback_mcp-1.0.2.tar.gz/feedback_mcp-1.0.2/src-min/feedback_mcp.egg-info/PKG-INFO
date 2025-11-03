@@ -1,0 +1,154 @@
+Metadata-Version: 2.4
+Name: feedback-mcp
+Version: 1.0.2
+Summary: Interactive Feedback MCP Server with UI - 支持工作空间管理、任务追踪、检查点恢复的反馈系统
+Author-email: Yang <your.email@example.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/yourusername/feedback-mcp
+Project-URL: Repository, https://github.com/yourusername/feedback-mcp
+Project-URL: Issues, https://github.com/yourusername/feedback-mcp/issues
+Keywords: mcp,feedback,interactive,workspace,task-management,checkpoint,ai-assistant,development-tools
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: User Interfaces
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: fastmcp==2.5.1
+Requires-Dist: PySide6<7.0.0,>=6.8.0
+Requires-Dist: psutil<8.0.0,>=6.0.0
+Requires-Dist: markdown<4.0.0,>=3.6
+Requires-Dist: pyyaml<7.0.0,>=6.0.0
+Requires-Dist: requests<3.0.0,>=2.28.0
+Requires-Dist: python-dotenv<2.0.0,>=1.0.0
+Requires-Dist: urllib3<3.0.0,>=2.0.0
+Requires-Dist: websockets==15.0.1
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+
+# Interactive Feedback MCP
+
+一个功能强大的 MCP (Model Context Protocol) 服务器,提供交互式反馈界面,支持工作空间管理、任务追踪和检查点恢复。
+
+## ✨ 核心特性
+
+- 🎯 **交互式反馈界面**: 基于 PySide6 的现代化 UI,支持文本、图片等多种反馈方式
+- 📁 **工作空间管理**: 完整的工作空间生命周期管理,支持阶段切换
+- ✅ **任务追踪**: 强大的任务管理系统,支持依赖关系、优先级、并行执行
+- 💾 **检查点恢复**: 创建、恢复、对比工作检查点,确保工作安全
+- 🔄 **工作流支持**: 模板化工作流,支持自定义工作流程
+- 📊 **会话管理**: 完整的会话历史记录和统计
+
+## 🚀 快速开始
+
+### 安装
+
+```bash
+
+# 国内用户推荐使用镜像加速
+export UV_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple"
+uvx feedback-mcp@latest
+
+# 或使用 pip
+pip install feedback-mcp
+
+# 国内用户使用镜像
+pip install feedback-mcp -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+### 配置 MCP
+
+在你的 MCP 客户端配置文件中添加:
+
+```json
+{
+  "mcpServers": {
+    "feedback": {
+      "command": "uvx",
+      "args": ["feedback-mcp@latest", "--ide", "qoder"],
+      "timeout": 600,
+      "autoApprove": ["interactive_feedback"]
+    }
+  }
+}
+```
+
+--ide 后跟的是想要打开的ide名称
+
+### 使用示例
+
+```python
+# MCP 工具会自动调用
+# AI 助手可以通过 feedback 工具与用户交互
+```
+
+## 📦 主要功能
+
+### 1. 工作空间管理
+
+- 创建工作空间并设置目标
+- 管理工作空间的不同阶段
+- 记录工作记忆和相关文件
+- 支持多个并行工作空间
+
+### 2. 任务管理
+
+- 创建和更新任务列表
+- 设置任务依赖关系和优先级
+- 支持任务并行执行
+- 实时任务状态追踪
+
+### 3. 检查点系统
+
+- 创建工作检查点快照
+- 恢复到历史检查点
+- 对比不同检查点的差异
+- 自动收集相关文件
+
+### 4. 工作流引擎
+
+- 预定义工作流模板
+- 自定义工作流步骤
+- 工作流状态管理
+- 步骤依赖和执行控制
+
+## 🔧 系统要求
+
+- Python >= 3.13
+- PySide6 >= 6.8.0
+- FastMCP >= 2.5.1
+
+## 📝 开发
+
+```bash
+# 克隆仓库
+git clone https://github.com/yourusername/interactive-feedback-mcp.git
+cd interactive-feedback-mcp
+
+# 安装开发依赖
+pip install -e ".[dev]"
+
+# 运行服务器
+python -m src-min.server
+```
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request!
+
+## 📄 许可证
+
+MIT License
+
+## 🔗 相关链接
+
+- [GitHub Repository](https://github.com/yourusername/interactive-feedback-mcp)
+- [MCP Documentation](https://modelcontextprotocol.io/)
+- [Issue Tracker](https://github.com/yourusername/interactive-feedback-mcp/issues)
