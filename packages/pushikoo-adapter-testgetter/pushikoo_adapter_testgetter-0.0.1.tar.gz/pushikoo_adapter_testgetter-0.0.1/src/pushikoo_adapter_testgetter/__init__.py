@@ -1,0 +1,1 @@
+from pushikoo_adapter_testgetter.main import TestGetter

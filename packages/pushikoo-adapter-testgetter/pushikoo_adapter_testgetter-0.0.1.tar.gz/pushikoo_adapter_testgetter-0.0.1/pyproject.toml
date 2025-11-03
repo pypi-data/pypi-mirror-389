@@ -1,0 +1,41 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools", "wheel", "setuptools-scm"]
+
+[project]
+authors = [{ name = "Pushikoo" }]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+dependencies = ["pushikoo-interface", "requests"]
+description = "TestGetter for pushikoo-adapter development as a template."
+name = "pushikoo-adapter-testgetter"
+readme = "README.md"
+requires-python = ">=3.6"
+dynamic = ['version']
+
+[project.optional-dependencies]
+dev = ["black", "isort", "flake8", "pytest", "pre-commit"]
+build = ["build"]
+
+[project.urls]
+"Homepage" = "https://github.com/Pushikoo/pushikoo-adapter-testgetter"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["test"]
+
+[tool.isort]
+profile = "black"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "node-and-date"
+
+[project.entry-points."pushikoo.adapter"]
+# Define your adapter export point here
+testgetter = "pushikoo_adapter_testgetter:TestGetter"
