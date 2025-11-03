@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "checklang"
+version = "0.1.0"
+description = "a language utils module"
+authors = [{name = "Yu Moqing", email = "yumoqing@gmail.com"}]
+license = {text = "MIT"}
+dependencies = ["fasttext", "ahserver", "sqlor", "appPublic"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["checklang*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+checklang = ["lid.176.ftz"]
