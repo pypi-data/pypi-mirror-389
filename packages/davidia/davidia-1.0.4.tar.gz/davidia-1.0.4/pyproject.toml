@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools >= 40.6.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+ignore = ["E501", "W505"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
