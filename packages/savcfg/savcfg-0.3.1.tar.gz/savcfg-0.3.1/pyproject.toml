@@ -1,0 +1,60 @@
+[project]
+name = "savcfg"
+version = "0.3.1"
+description = "ConfigService implementation for SAVIA software projects"
+authors = [
+    {name = "Salvador Ruiz",email = "sruiz@gruposavia.eu"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "azure-identity (>=1.25.1,<2.0.0)",
+    "azure-keyvault-secrets (>=4.10.0,<5.0.0)",
+    "azure-keyvault-keys (>=4.11.0,<5.0.0)",
+    "azure-keyvault-certificates (>=4.10.0,<5.0.0)"
+]
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+pytest = "^7.3.1"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
+pyright = "^1.1.309"
+pre-commit = "^3.3.2"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.1.0"
+commitizen = "^3.20.0"
+ipython = "^8.22.2"
+# pytest-azurepipelines = "^1.0.5"
+pytest-nunit = "^1.0.7"
+testcontainers = "^4.13.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests"
+]
+python_files = "test_* feat_*"
+python_classes = "A_* An_* UseCase_* Test*"
+python_functions = "should_* scenario_* test_*"
+markers = [
+    "integration: tests comunication to simulated external systems(devel mode)",
+    "acceptance: test application layer as external user",
+    "skip_publish: Skip publishing coverage data"
+]
+asyncio_mode = "auto"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+bump_message = "bump: version $current_version → $new_version [skip ci]"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "pep621"
+update_changelog_on_bump = true

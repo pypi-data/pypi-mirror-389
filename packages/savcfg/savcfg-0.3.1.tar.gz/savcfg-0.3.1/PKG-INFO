@@ -1,0 +1,66 @@
+Metadata-Version: 2.4
+Name: savcfg
+Version: 0.3.1
+Summary: ConfigService implementation for SAVIA software projects
+Author: Salvador Ruiz
+Author-email: sruiz@gruposavia.eu
+Requires-Python: >=3.11,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Dist: azure-identity (>=1.25.1,<2.0.0)
+Requires-Dist: azure-keyvault-certificates (>=4.10.0,<5.0.0)
+Requires-Dist: azure-keyvault-keys (>=4.11.0,<5.0.0)
+Requires-Dist: azure-keyvault-secrets (>=4.10.0,<5.0.0)
+Description-Content-Type: text/markdown
+
+# Savia config service
+
+Library to centralize the management of config variables for applications.
+This library is created and used by [SAVIA](https://www.gruposavia.eu/en) to develop their applications.
+
+
+## Several environments
+
+Each environment has its own variables:
+- *production* environment where all the config variables are centralized in the config service. 
+- *preproduction* environment, where the application can run in a very closed environment to *production*. Some of the variables can be common to production, so there is a merge between the two config variables. It means that if the config service doesn't find the variable in preproduction, it will look in production environment.
+- *devel*: environment where the application run locally and insollated. Their variables should be not related to other environment but only should share the variable name. There is no merge with preproduction or production
+
+
+## Usage
+Here you have a example of tipical code:
+
+```python
+
+cs = ConfigService(prod_vars_reader, pre_vars_reader, devel_vars_reader)
+cs.set_application('app-name')  # optional if you have app-variables
+cs.set_environment('pre')
+
+value = cs.get('var-name')
+
+```
+
+Where there are `prod_vars_reader`, `pred_vars_reader`, `devel_vars_reader` which implements the interface `VarsReader`
+
+The library has available a implementation with AzureKeyVault and a constructor in `savcfg.keyvault` called `new_keyvault-`
+Now it is implemented the ConfigService with Azure KeyVault. There is a constructor for this purpose.
+
+The output of method `get` can be:
+1. A string, if the variable exist. It's the responsability of the developer to convert to the type he needs
+2. A dictionary of strings if the variable name is a group (see below).
+3. `None` if the variable doesn't exist. It means the ConfigService will not raise any exception if you have a mistake with the variable names.
+
+## Grouping the variables hierardically
+
+Using the dot you can group variables. When a group variable is called, the ConfigService object will return a dictionary of variables.
+
+For example, if we have two variables with names `group.var1` and `group.var2`, a call to `get('group')` will return `{'var1': 'value1', 'var2': 'value2'}`
+
+
+## Several applications
+
+Each application has its own variables which can overwrite the general variables. For example, supose you have a infrastructure group `group` with two variables `{'var1': 'value1', 'var2': 'value2'}` and you want for your application `app-name` to overwrite `group.var2`. If you have a variable defined `app-name.group.var2` with value `val-app`, calling `cs.get('group')` will return `{'var1': 'value1', 'var2': 'val-app'}`
+
