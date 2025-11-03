@@ -1,0 +1,33 @@
+{
+    "config": {
+        "step": {
+            "auth": {
+                "data": {
+                    "country": "Zemlja",
+                    "override_mqtt_url": "MQTT URL",
+                    "override_rest_url": "REST URL",
+                    "password": "Lozinka",
+                    "username": "Korisni\u010dko ime",
+                    "verify_mqtt_certificate": "Provera MQTT SSL sertifikata"
+                }
+            }
+        }
+    },
+    "entity": {
+        "button": {
+            "station_action_clean_base": {
+                "name": "O\u010distite bazu"
+            }
+        },
+        "sensor": {
+            "error": {
+                "name": "Gre\u0161ka"
+            },
+            "station_state": {
+                "state": {
+                    "idle": "Mirovanje"
+                }
+            }
+        }
+    }
+}
