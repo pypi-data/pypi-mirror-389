@@ -1,0 +1,127 @@
+[build-system]
+# Minimum requirements for the build system to execute
+requires = ["setuptools>64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pastastore"
+dynamic = ["version"]
+description = "Tools for managing Pastas time series models."
+license = { file = "LICENSE" }
+readme = "readme.md"
+authors = [{ name = "D.A. Brakenhoff" }]
+maintainers = [
+    { name = "D.A. Brakenhoff", email = "d.brakenhoff@artesia-water.nl" },
+    { name = "R. Calje", email = "r.calje@artesia-water.nl" },
+    { name = "M.A. Vonk", email = "m.vonk@artesia-water.nl" },
+]
+requires-python = ">= 3.10"
+dependencies = ["pastas>=0.13", "tqdm>=4.36", "pyyaml", "colorama"]
+
+keywords = ["hydrology", "groundwater", "time series", "analysis", "database"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Hydrology",
+]
+
+[project.urls]
+homepage = "https://github.com/pastas/pastastore"
+repository = "https://github.com/pastas/pastastore"
+documentation = "https://pastastore.readthedocs.io/en/latest/"
+
+[project.optional-dependencies]
+full = ["pastastore[arcticdb,optional]", "hydropandas"]
+extensions = ["hydropandas"]
+optional = ["contextily", "pyproj", "adjustText"]
+arcticdb = ["arcticdb"]
+lint = ["ruff"]
+pytest = [
+    "coverage",
+    "codecov",
+    "pytest",
+    "pytest-cov",
+    "pytest-dependency",
+    "pytest-benchmark",
+    "codacy-coverage",
+]
+docs = [
+    "pastastore[optional]",
+    "sphinx_rtd_theme",
+    "Ipython",
+    "ipykernel",
+    "nbsphinx",
+    "nbsphinx_link",
+]
+test = ["pastastore[arcticdb,optional,pytest]", "hydropandas[full]"]
+dev = ["pastastore[test,lint,docs]"]
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.dynamic]
+version = { attr = "pastastore.version.__version__" }
+
+[tool.ruff]
+line-length = 88
+extend-include = ["*.ipynb"]
+show-fixes = true
+fix = true
+
+[tool.ruff.lint]
+extend-select = ["I"]
+# See: https://docs.astral.sh/ruff/rules/
+select = [
+    "C4",  # flake8-comprehensions
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort
+    "PT",  # pytest-style
+    "D",   # pydocstyle
+    "B",   # flake8-bugbear
+    "NPY", # numpy
+]
+
+[tool.ruff.format]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.pytest.ini_options]
+addopts = "--durations=0 --cov-report xml:coverage.xml --cov pastastore -v"
+markers = [
+    "bgmap: test tile download for background map",
+    "pastas150: tests only working for pastas>=1.5.0",
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = [
+    'matplotlib.*',
+    'scipy.stats.*',
+    'mypy-setuptools.*',
+    'mypy-pypandoc.*',
+    'mypy-numpy.*',
+    'mypy-pandas.*',
+    'mypy-art_tools.*',
+    'mypy-tqdm.*',
+    'mypy-pastas.*',
+]
+ignore_missing_imports = true
