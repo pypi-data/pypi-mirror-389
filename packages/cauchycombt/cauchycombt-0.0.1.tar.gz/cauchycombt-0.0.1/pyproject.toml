@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools >= 68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cauchycombt"
+version = "0.0.1"
+authors = [{ name="Yao Lei (Leo)", email="leiyao1997@outlook.com" }]
+description = "A package to perform Cauchy combination test."
+readme = "README.md"
+requires-python = ">=3.0"
+dependencies = ["scipy", "numpy"]
+license = {text = "MIT"}
+
+[project.urls]
+Homepage = "https://github.com/YaoLei-Leo/cct"
+Issues = "https://github.com/YaoLei-Leo/cct/issues"
+
+[tool.setuptools]
+license-files = []
