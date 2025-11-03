@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: tracebackSilencer
+Version: 0.1.0
+Summary: Silence the anyoing tracebacks
+Author-email: Avash <Th3ou1d3x@bloodcircuit.org>
+Requires-Python: >=3.0
+Description-Content-Type: text/markdown
+Requires-Dist: AnsiCoolFORMATING
+Requires-Dist: customTraceback
+
+# tracebackSilencer
+## A python package for silencing the anyoing tracebacks
+### **Here is a coding example:**
+
+```py
+
+from Packages import tracebackSilencer
+
+ts = tracebackSilencer.Silencer()
+ts.activate(__file__)
+sfdihjur
+print("Hello, World")
+```
+**The Output Will Be:**
+```
+/home/th3ou1d3x/Hehe/.venv/bin/python /home/th3ou1d3x/Hehe/Haha.py 
+Using Traceback Silencer
+By: Anthony R. + Avash K.
+Hello, World
+
+Process finished with exit code 1
+```
+*You Can Also Optionaly Use ts.debug(True) before activation in that code that was given to get debug prints and a debug report*
+#### This is very useful but because it uses its own code parser at the current time functions , variables and classes may have some trouble

@@ -1,0 +1,17 @@
+[project]
+name = "tracebackSilencer"
+version = "0.1.0"
+description = "Silence the anyoing tracebacks"
+authors = [
+    { name = "Avash", email = "Th3ou1d3x@bloodcircuit.org" }
+]
+readme = "README.md"
+requires-python = ">=3.0"
+dependencies = [
+    "AnsiCoolFORMATING",
+    "customTraceback"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
