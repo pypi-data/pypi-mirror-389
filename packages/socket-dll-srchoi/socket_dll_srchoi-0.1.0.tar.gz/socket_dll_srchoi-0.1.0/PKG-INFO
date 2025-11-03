@@ -1,0 +1,267 @@
+Metadata-Version: 2.4
+Name: socket-dll-srchoi
+Version: 0.1.0
+Summary: 고성능 C++ 소켓 라이브러리를 위한 Python 래퍼
+Home-page: https://github.com/srchoi/socket-dll
+Author: srchoi
+Author-email: srchoi@example.com
+Project-URL: Bug Reports, https://github.com/srchoi/socket-dll/issues
+Project-URL: Source, https://github.com/srchoi/socket-dll
+Keywords: socket tcp networking dll c++
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Networking
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-python
+Dynamic: summary
+
+# SocketDLL - Python Socket Library (C++ Based)
+
+Python에서 사용하기 쉬운 고성능 C++ 소켓 라이브러리
+
+## 특징
+
+- C++ 기반으로 구현된 고성능 TCP 소켓 통신
+- 사용하기 쉬운 Python 객체 지향 인터페이스
+- 서버/클라이언트 모두 지원
+- Windows 플랫폼 지원 (Linux, macOS 지원 예정)
+
+## 설치
+
+```bash
+pip install socket-dll
+```
+
+## 빠른 시작
+
+### TCP 서버 예제
+
+```python
+from socket_dll import TCPServer
+
+# 서버 생성 및 시작
+server = TCPServer(8080)
+server.start()
+print("[OK] 서버가 8080 포트에서 시작되었습니다")
+
+try:
+    # 클라이언트 연결 대기
+    print("클라이언트 연결 대기 중...")
+    client = server.accept()
+    print("[OK] 클라이언트 연결됨")
+
+    # 데이터 수신
+    data = client.receive()
+    print(f"수신: {data.decode('utf-8')}")
+
+    # 응답 전송
+    client.send("Hello from server!")
+
+    client.close()
+finally:
+    server.close()
+```
+
+### TCP 클라이언트 예제
+
+```python
+from socket_dll import TCPClient
+
+# 서버에 연결
+client = TCPClient(host="127.0.0.1", port=8080)
+print("[OK] 서버에 연결되었습니다")
+
+# 메시지 전송
+client.send("Hello from client!")
+print("[OK] 메시지 전송 완료")
+
+# 응답 수신
+response = client.receive()
+print(f"서버 응답: {response.decode('utf-8')}")
+
+client.close()
+```
+
+## API 레퍼런스
+
+### TCPServer 클래스
+
+TCP 서버를 생성하고 관리하는 클래스입니다.
+
+```python
+server = TCPServer(port, dll_path=None)
+```
+
+**매개변수:**
+- `port` (int): 서버가 사용할 포트 번호
+- `dll_path` (str, optional): DLL 파일 경로 (기본값: 자동 탐색)
+
+**메서드:**
+
+- `start()`: 서버를 시작합니다
+- `accept()`: 클라이언트 연결을 수락하고 TCPClient 객체를 반환합니다
+- `close()`: 서버를 종료합니다
+
+### TCPClient 클래스
+
+TCP 클라이언트를 생성하고 관리하는 클래스입니다.
+
+```python
+client = TCPClient(host=None, port=None, dll_path=None)
+```
+
+**매개변수:**
+- `host` (str, optional): 연결할 서버 주소
+- `port` (int, optional): 연결할 서버 포트
+- `dll_path` (str, optional): DLL 파일 경로 (기본값: 자동 탐색)
+
+**메서드:**
+
+- `connect(host, port)`: 서버에 연결합니다
+- `send(data)`: 데이터를 전송합니다 (str 또는 bytes)
+- `receive(buffer_size=4096)`: 데이터를 수신합니다 (bytes 반환)
+- `close()`: 연결을 종료합니다
+
+### SocketDLL 클래스
+
+저수준 DLL 래퍼 클래스입니다. 고급 사용자용입니다.
+
+```python
+from socket_dll import SocketDLL
+
+dll = SocketDLL(dll_path=None)
+```
+
+## 전체 예제
+
+### 에코 서버
+
+```python
+from socket_dll import TCPServer
+
+def echo_server(port=8080):
+    server = TCPServer(port)
+    server.start()
+    print(f"[OK] 에코 서버 시작 (포트: {port})")
+
+    try:
+        while True:
+            print("클라이언트 연결 대기...")
+            client = server.accept()
+            print("[OK] 클라이언트 연결됨")
+
+            try:
+                while True:
+                    # 데이터 수신
+                    data = client.receive()
+                    if not data:
+                        break
+
+                    message = data.decode('utf-8')
+                    print(f"수신: {message}")
+
+                    # 에코 응답
+                    client.send(f"Echo: {message}")
+
+            except Exception as e:
+                print(f"[ERROR] {e}")
+            finally:
+                client.close()
+                print("클라이언트 연결 종료")
+
+    except KeyboardInterrupt:
+        print("\n서버 종료 중...")
+    finally:
+        server.close()
+
+if __name__ == "__main__":
+    echo_server()
+```
+
+### 멀티 메시지 클라이언트
+
+```python
+from socket_dll import TCPClient
+
+def chat_client(host="127.0.0.1", port=8080):
+    client = TCPClient(host=host, port=port)
+    print(f"[OK] {host}:{port}에 연결됨")
+
+    try:
+        while True:
+            # 사용자 입력
+            message = input("메시지 입력 (quit로 종료): ")
+
+            if message.lower() == 'quit':
+                break
+
+            # 전송
+            client.send(message)
+
+            # 응답 수신
+            response = client.receive()
+            print(f"서버: {response.decode('utf-8')}")
+
+    except Exception as e:
+        print(f"[ERROR] {e}")
+    finally:
+        client.close()
+        print("연결 종료")
+
+if __name__ == "__main__":
+    chat_client()
+```
+
+## 에러 처리
+
+```python
+from socket_dll import TCPServer
+
+try:
+    server = TCPServer(8080)
+    server.start()
+except Exception as e:
+    print(f"서버 시작 실패: {e}")
+```
+
+## 요구사항
+
+- Python 3.7 이상
+- Windows OS (현재 버전)
+
+## 라이선스
+
+MIT License
+
+## 기여
+
+버그 리포트나 기능 제안은 GitHub Issues를 이용해주세요.
+
+## 변경 이력
+
+### 0.1.0 (2025-11-03)
+- 첫 릴리스
+- TCP 서버/클라이언트 기능
+- Windows 지원
