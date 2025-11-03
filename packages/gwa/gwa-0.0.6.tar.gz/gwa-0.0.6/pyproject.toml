@@ -1,0 +1,66 @@
+[project]
+name = "gwa"
+version = "0.0.6"
+requires-python = ">=3.10"
+description = "A command-line scaffolder for General Web App (GWA) projects."
+authors = [
+    { name = "Fernando Bryan Reza Campos", email = "fer.rezac@outlook.com" }
+]
+readme = {file = "README.md", content-type = "text/markdown"}
+license = { file = "LICENSE" }
+keywords = ["cli", "scaffolding", "template", "web", "fullstack"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Code Generators",
+    "Typing :: Typed",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "rich>=14.2.0", # rich text and formatting
+    "typer>=0.20.0", # cli
+]
+
+[project.urls]
+# Homepage = "https://pypi.org/project/gwa/"
+Repository = "https://github.com/Yrrrrrf/gwa-cli"
+Documentation = "https://docs.rs/gwa"
+
+[project.scripts]
+gwa = "gwa:main"
+
+[tool.maturin]
+module-name = "gwa._core"
+python-packages = ["gwa"]
+python-source = "src"
+# exclude = [
+#     ".github",
+#     ".venv",
+#     "resources/",
+#     "docs/",
+#     "scirpts/",
+#     "examples/*.rs",
+#     "target/",
+#     "*.lock",
+# ]
+
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "src/**/*.rs" }, { file = "Cargo.toml" }, { file = "Cargo.lock" }]
+
+[tool.uv.build-backend]
+source-exclude = [
+    # rust related files
+    # "Cargo.toml",
+    # "Cargo.lock",
+]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
