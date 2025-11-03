@@ -1,0 +1,397 @@
+Metadata-Version: 2.4
+Name: google-search-aj
+Version: 1.0.5
+Summary: Fast, lightweight Google search scraper with stealth mode
+Home-page: https://github.com/Aaditya17032002/google-search
+Author: Aditya Jangam
+Author-email: Aditya Jangam <adityajangam25@gmail.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/Aaditya17032002/google-search
+Project-URL: Documentation, https://github.com/Aaditya17032002/google-search#readme
+Project-URL: Repository, https://github.com/Aaditya17032002/google-search
+Project-URL: Bug Tracker, https://github.com/Aaditya17032002/google-search/issues
+Keywords: google,search,scraper,web-scraping,playwright,automation
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Internet :: WWW/HTTP :: Indexing/Search
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: playwright>=1.40.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
+# Google Search Scraper
+
+[![PyPI version](https://badge.fury.io/py/google-search-scraper.svg)](https://badge.fury.io/py/google-search-scraper)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+
+A fast, lightweight, and easy-to-use Python package for scraping Google search results with built-in stealth mode to avoid detection.
+
+## ✨ Features
+
+- 🚀 **Fast**: Optimized for speed with minimal overhead
+- 🥷 **Stealth Mode**: Built-in anti-detection features
+- 🎯 **Simple API**: Easy to use for both beginners and experts
+- 📦 **Zero Config**: Playwright browser auto-installs on package installation
+- 🔧 **Flexible**: Highly configurable with sensible defaults
+- 💻 **CLI Support**: Use from command line or as a Python module
+- 🎨 **Multiple Output Formats**: JSON and text output supported
+
+## 📦 Installation
+
+```bash
+pip install google-search-scraper
+```
+
+The package will automatically install Playwright and download the Chromium browser during installation.
+
+If automatic installation fails, manually install Playwright browsers:
+
+```bash
+playwright install chromium
+```
+
+## 🚀 Quick Start
+
+### Python API
+
+```python
+from google_search_scraper import search
+
+# Simple search
+results = search("python tutorial")
+print(results.urls)
+# ['https://docs.python.org/3/tutorial/', 'https://www.w3schools.com/python/', ...]
+
+# Access the direct answer (if available)
+print(results.answer)
+# 'Python is a high-level, general-purpose programming language...'
+
+# Get more details
+print(f"Found {results.total_results} results in {results.search_time:.2f} seconds")
+```
+
+### Command Line
+
+```bash
+# Simple search
+google-search "python tutorial"
+
+# Limit results
+google-search "best restaurants" --max-results 20
+
+# Save to file
+google-search "machine learning" --output results.txt
+
+# JSON output
+google-search "data science" --format json
+
+# Run with visible browser (debugging)
+google-search "web scraping" --visible
+```
+
+## 📖 Usage Examples
+
+### Basic Usage
+
+```python
+from google_search_scraper import search
+
+# Default: 10 results with answer extraction
+results = search("artificial intelligence")
+
+for i, url in enumerate(results.urls, 1):
+    print(f"{i}. {url}")
+```
+
+### Advanced Usage
+
+```python
+from google_search_scraper import GoogleSearchScraper
+
+# Create a scraper with custom settings
+scraper = GoogleSearchScraper(
+    max_results=20,          # Get more results
+    timeout=60000,           # Increase timeout
+    headless=False,          # Show browser (for debugging)
+    stealth_mode=True        # Enable anti-detection (default)
+)
+
+# Perform search
+results = scraper.search("python web scraping", extract_answer=True)
+
+# Access results
+print(f"Query: {results.query}")
+print(f"Time: {results.search_time:.2f}s")
+print(f"Answer: {results.answer}")
+print(f"URLs: {len(results.urls)}")
+
+# Convert to dictionary
+data = results.to_dict()
+```
+
+### Multiple Searches
+
+```python
+from google_search_scraper import search
+
+queries = ["python", "javascript", "rust"]
+
+for query in queries:
+    results = search(query, max_results=5)
+    print(f"\n{query}: {len(results.urls)} results")
+    print(results.urls[0] if results.urls else "No results")
+```
+
+### Error Handling
+
+```python
+from google_search_scraper import search
+from google_search_scraper.exceptions import (
+    GoogleSearchError,
+    RateLimitError,
+    BrowserError,
+    SearchTimeoutError
+)
+
+try:
+    results = search("test query", timeout=10000)
+except RateLimitError:
+    print("Being rate limited by Google. Try again later.")
+except SearchTimeoutError:
+    print("Search timed out. Try increasing the timeout.")
+except BrowserError:
+    print("Browser failed to launch.")
+except GoogleSearchError as e:
+    print(f"Search failed: {e}")
+```
+
+### Batch Processing
+
+```python
+from google_search_scraper import search
+import time
+
+queries = [
+    "machine learning",
+    "deep learning",
+    "neural networks"
+]
+
+all_results = []
+
+for query in queries:
+    print(f"Searching: {query}")
+    results = search(query, max_results=15)
+    all_results.append(results)
+    
+    # Be respectful - add delay between searches
+    time.sleep(5)
+
+# Process results
+for result in all_results:
+    print(f"\n{result.query}:")
+    print(f"  - Answer: {result.answer[:100] if result.answer else 'N/A'}")
+    print(f"  - URLs: {len(result.urls)}")
+```
+
+## 🎯 API Reference
+
+### Main Functions
+
+#### `search(query, max_results=10, extract_answer=True, headless=True, timeout=30000)`
+
+Convenience function for quick searches.
+
+**Parameters:**
+- `query` (str): Search query string
+- `max_results` (int): Maximum URLs to return (default: 10)
+- `extract_answer` (bool): Extract Google's direct answer (default: True)
+- `headless` (bool): Run browser in headless mode (default: True)
+- `timeout` (int): Page load timeout in milliseconds (default: 30000)
+
+**Returns:** `SearchResult` object
+
+### Classes
+
+#### `GoogleSearchScraper`
+
+Main scraper class with configurable options.
+
+```python
+scraper = GoogleSearchScraper(
+    max_results=10,
+    timeout=30000,
+    headless=True,
+    stealth_mode=True,
+    user_agent=None
+)
+```
+
+**Methods:**
+- `search(query, extract_answer=True)`: Perform a search
+
+#### `SearchResult`
+
+Container for search results.
+
+**Attributes:**
+- `query` (str): The search query
+- `answer` (str | None): Google's direct answer if available
+- `urls` (List[str]): List of result URLs
+- `total_results` (int): Number of URLs returned
+- `search_time` (float): Time taken for search in seconds
+- `timestamp` (float): Unix timestamp of search
+
+**Methods:**
+- `to_dict()`: Convert to dictionary
+
+### Exceptions
+
+- `GoogleSearchError`: Base exception for all errors
+- `RateLimitError`: Raised when rate limited by Google
+- `BrowserError`: Raised when browser fails
+- `SearchTimeoutError`: Raised when search times out
+- `NoResultsError`: Raised when no results found
+
+## 🎛️ CLI Reference
+
+```
+usage: google-search [-h] [-n N] [--no-answer] [--visible] [--timeout MS]
+                     [-o FILE] [-f {text,json}] [-v] [-q]
+                     [query]
+
+positional arguments:
+  query                 Search query (if not provided, enters interactive mode)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n N, --max-results N
+                        Maximum number of results to return (default: 10)
+  --no-answer           Skip extracting Google's direct answer
+  --visible             Run browser in visible mode (for debugging)
+  --timeout MS          Page load timeout in milliseconds (default: 30000)
+  -o FILE, --output FILE
+                        Save results to file
+  -f {text,json}, --format {text,json}
+                        Output format: text or json (default: text)
+  -v, --version         show program's version number and exit
+  -q, --quiet           Suppress all output except results
+```
+
+## ⚠️ Important Notes
+
+### Rate Limiting
+
+Google may rate limit or block requests if you make too many searches too quickly. To avoid this:
+
+1. Add delays between searches (5-10 seconds recommended)
+2. Use residential proxies for large-scale scraping
+3. Respect robots.txt and Google's Terms of Service
+
+### Legal Considerations
+
+Web scraping may have legal implications. This tool is for educational and research purposes. Users are responsible for:
+
+- Complying with Google's Terms of Service
+- Respecting robots.txt
+- Following applicable laws and regulations
+- Not using for commercial purposes without permission
+
+### Detection
+
+While this package includes stealth features, Google continuously updates their detection methods. If you're being blocked:
+
+1. Increase delays between requests
+2. Use `headless=False` to run in visible mode
+3. Consider using residential proxies
+4. Rotate user agents
+
+## 🛠️ Development
+
+### Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/google-search-scraper.git
+cd google-search-scraper
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Install Playwright browsers
+playwright install chromium
+```
+
+### Running Tests
+
+```bash
+pytest tests/
+```
+
+### Code Formatting
+
+```bash
+black google_search_scraper/
+flake8 google_search_scraper/
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Playwright](https://playwright.dev/)
+- Inspired by the need for a simple, reliable Google search scraper
+
+## 📧 Support
+
+If you encounter any issues or have questions:
+
+- Open an issue on [GitHub](https://github.com/yourusername/google-search-scraper/issues)
+- Check existing issues for solutions
+
+## 🔄 Changelog
+
+### v1.0.0 (2024-11-03)
+- Initial release
+- Fast Google search scraping
+- Stealth mode with anti-detection
+- CLI and Python API
+- Auto-installation of Playwright
+- JSON and text output formats
+
+---
+
+Made with ❤️ by developers, for developers
