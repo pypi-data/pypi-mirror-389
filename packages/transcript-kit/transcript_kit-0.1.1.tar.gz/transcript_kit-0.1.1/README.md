@@ -1,0 +1,345 @@
+# transcript-kit
+
+**AI-powered YouTube transcript processor** - Clean, tag, and organize video transcripts automatically.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+
+**Author:** Kevin Callens
+
+---
+
+## Features
+
+- 🎬 **Download** YouTube subtitles automatically
+- 🤖 **AI-powered cleaning** - Fixes speech-to-text errors, creates proper paragraphs
+- 🏷️ **Smart tagging** - Automatically tags transcripts with relevant topics
+- 📁 **Organized storage** - Clean file naming with dates and tags
+- 🔧 **Configurable** - Customize AI model, storage location, and processing options
+- 🌍 **Cross-platform** - Works on Linux, macOS, and Windows
+
+---
+
+## Quick Start
+
+### Installation
+
+```bash
+pip3 install transcript-kit
+```
+
+Or using pipx (recommended):
+
+```bash
+pipx install transcript-kit
+```
+
+**That's it!** All dependencies (including yt-dlp) install automatically.
+
+### Setup
+
+Run the interactive setup wizard:
+
+```bash
+transcript-kit setup
+```
+
+This will:
+- Prompt for your OpenRouter API key
+- Configure AI model preferences
+- Set up storage locations
+- Optionally add starter tags
+
+### Process a Video
+
+```bash
+transcript-kit process "https://www.youtube.com/watch?v=VIDEO_ID"
+```
+
+That's it! Your cleaned transcript will be saved to `~/Documents/transcript-kit/`
+
+---
+
+## Requirements
+
+- **Python 3.8+**
+- All other dependencies install automatically with `pip3 install transcript-kit`
+
+---
+
+## Configuration
+
+### Getting an API Key
+
+1. Visit [OpenRouter](https://openrouter.ai/keys)
+2. Sign up for an account
+3. Generate an API key
+4. Run `transcript-kit setup` and enter your key
+
+**Note:** transcript-kit uses OpenRouter which provides access to various AI models. Some models are free, others are pay-per-use.
+
+### Configuration File
+
+Config is stored at:
+- **Linux/macOS:** `~/.config/transcript-kit/config.yaml`
+- **Windows:** `%APPDATA%/transcript-kit/config.yaml`
+
+See `examples/config.yaml.example` for all available options.
+
+### Environment Variables
+
+You can also configure via environment variables:
+
+```bash
+export OPENROUTER_API_KEY="your-key-here"
+export TRANSCRIPT_KIT_AI_MODEL="openai/gpt-4o-mini"
+export TRANSCRIPT_KIT_DATA_DIR="~/Documents/my-transcripts"
+```
+
+---
+
+## Usage
+
+### Commands
+
+```bash
+# Interactive setup wizard
+transcript-kit setup
+
+# Process a YouTube video
+transcript-kit process "https://youtube.com/watch?v=xxx"
+
+# Process with custom model
+transcript-kit process "URL" --model anthropic/claude-3-haiku
+
+# Process without tagging
+transcript-kit process "URL" --no-tag
+
+# Process to custom directory
+transcript-kit process "URL" --output ~/custom/path
+
+# Show current configuration
+transcript-kit config
+
+# Show configuration with API key visible
+transcript-kit config --show-secrets
+
+# Show version
+transcript-kit --version
+
+# Get help
+transcript-kit --help
+```
+
+### Output Format
+
+Transcripts are saved as:
+
+```
+YYYY-MM-DD-video-title-[tag1,tag2].txt
+```
+
+Example:
+```
+2025-11-03-how-ai-works-[AI,Education].txt
+```
+
+File contents:
+```markdown
+# How AI Works
+
+**Date**: 2025-11-03
+**Tags**: AI, Education
+**Context**: This video explains the fundamentals of artificial intelligence...
+
+---
+
+[Cleaned transcript with proper paragraphs and fixed errors...]
+```
+
+---
+
+## How It Works
+
+1. **Download** - Uses yt-dlp to fetch YouTube subtitles (.srt format)
+2. **Analyze** - AI analyzes the video title and content to understand context
+3. **Tag** - Assigns 1-2 relevant tags (reuses existing tags when possible)
+4. **Clean** - Processes transcript in chunks to:
+   - Fix speech-to-text errors
+   - Add proper punctuation
+   - Create readable paragraphs
+   - Maintain original meaning
+5. **Save** - Organized file with metadata and cleaned content
+
+---
+
+## Tag System
+
+### How Tags Work
+
+- Starts with **empty tag database** (or optional starter tags)
+- AI assigns **1-2 tags maximum** per transcript
+- **Prefers existing tags** to maintain consistency
+- **Creates new tags** only when necessary
+- All tags saved to `tags-database.txt`
+
+### Example Tag Evolution
+
+```
+First video:  [AI]
+Second video: [Marketing]
+Third video:  [AI, Marketing]  ← Uses existing tags
+Fourth video: [Tutorial]       ← Creates new tag when needed
+```
+
+---
+
+## Advanced Configuration
+
+### AI Models
+
+Popular models (via OpenRouter):
+- `openai/gpt-oss-20b` - Fast, good quality (default)
+- `openai/gpt-4o-mini` - Higher quality, moderate cost
+- `anthropic/claude-3-haiku` - Fast Claude model
+
+### Processing Options
+
+Edit `~/.config/transcript-kit/config.yaml`:
+
+```yaml
+ai:
+  chunk_size: 8000          # Words per API call
+  max_retries: 3            # Retry attempts on error
+
+processing:
+  analyze_context: true     # Context analysis before processing
+  auto_tag: true            # Automatic tagging
+
+tags:
+  max_tags: 2               # Maximum tags per transcript
+  starter_tags: []          # Optional starter tags
+```
+
+---
+
+## Troubleshooting
+
+### "yt-dlp not found"
+
+This shouldn't happen since yt-dlp is automatically installed with transcript-kit.
+
+If you see this error, try reinstalling:
+```bash
+pip3 install --force-reinstall transcript-kit
+```
+
+### "API key not configured"
+
+Run the setup wizard:
+```bash
+transcript-kit setup
+```
+
+Or set environment variable:
+```bash
+export OPENROUTER_API_KEY="your-key-here"
+```
+
+### "No subtitles found"
+
+The video may not have auto-generated subtitles. Try a different video or check if subtitles are available on YouTube.
+
+### "Configuration error"
+
+Verify your config file:
+```bash
+transcript-kit config
+```
+
+Re-run setup if needed:
+```bash
+transcript-kit setup
+```
+
+---
+
+## Security
+
+### API Key Protection
+
+- **NEVER** commit your `config.yaml` to git
+- Config file permissions are set to `0600` (owner read/write only)
+- API keys are never logged or printed
+- Use `.env` files for additional security (also gitignored)
+
+### Example Files
+
+Safe to commit:
+- ✅ `examples/config.yaml.example`
+- ✅ `.env.example`
+
+**NEVER** commit:
+- ❌ `~/.config/transcript-kit/config.yaml`
+- ❌ `.env`
+
+---
+
+## Development
+
+### Local Installation
+
+```bash
+git clone https://github.com/kevincallens/transcript-kit.git
+cd transcript-kit
+pip3 install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black src/
+ruff check src/
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+---
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+Copyright (c) 2025 Kevin Callens
+
+---
+
+## Acknowledgments
+
+- Uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) for downloading subtitles
+- Powered by [OpenRouter](https://openrouter.ai) for AI processing
+- Built with [Click](https://click.palletsprojects.com/) for the CLI
+
+---
+
+## Links
+
+- **Repository:** https://github.com/kevincallens/transcript-kit
+- **Issues:** https://github.com/kevincallens/transcript-kit/issues
+- **OpenRouter:** https://openrouter.ai
