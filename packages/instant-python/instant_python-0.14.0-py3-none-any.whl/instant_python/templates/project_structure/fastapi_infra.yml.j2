@@ -1,0 +1,10 @@
+- name: http
+  type: directory
+  python: True
+  children:
+    - name: fastapi/error_response
+      type: boilerplate_file
+      extension: .py
+    - name: fastapi/success_response
+      type: boilerplate_file
+      extension: .py
