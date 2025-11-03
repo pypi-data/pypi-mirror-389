@@ -1,0 +1,58 @@
+[project]
+name = "neo-data-svc"
+version = "1.3.0"
+description = "A data base svc"
+authors = [
+    {name = "Eric", email = "xiaoxiang.cn@gmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.12.3"
+license = {text = "Proprietary"}
+
+dependencies = [
+    "redis==6.4.0",
+    "pyspark==3.4.4",
+    "delta-spark==2.4.0",
+    "apscheduler==3.11.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.mypy]
+files = "."
+strict = true
+warn_unreachable = true
+warn_no_return = true
+
+[tool.ruff]
+preview = true
+line-length = 100
+exclude = ["docs"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D203", "D213", "F403", "E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportAttributeAccessIssue = "none"
+reportMissingImports = false
+reportPrivateImportUsage = false
+reportUndefinedVariable = false
+enableTypeIgnoreComments = true
+reportPrivateUsage = false
+reportGeneralTypeIssues = false
+reportWildcardImportFromLibrary = false
+disableDiagnostics = [
+    "attr-defined",
+    "reportUnknownMemberType",
+    "reportUnknownArgumentType",
+    "reportUnknownVariableType",
+    "reportOperatorIssue"
+]
