@@ -1,0 +1,69 @@
+[package]
+name = "gwa"
+version = "0.1.4"
+edition = "2024"
+description = "General Web App (GWA) project generator engine CLI tool."
+authors = [
+    "Fernando Bryan Reza Campos <fer.rezac@outlook.com>"
+]
+readme = "README.md"
+license = "MIT"
+
+# homepage = "https://crates.io/crates/gwa"
+repository = "https://github.com/Yrrrrrf/gwa-cli"
+documentation = "https://docs.rs/gwa"
+
+keywords = ["cli", "scaffolding", "template", "web", "fullstack"]
+categories = ["command-line-utilities", "development-tools"]
+
+exclude = [
+    ".*",  # all that start with a dot
+    "dist/",
+    "examples/*.py",
+    "src/gwa/",  # python source code
+    "**/**/__pycache__/",  # python cache folders
+    "target/",
+    "tests/*.py",
+    "**/*.lock",
+    "pyproject.toml",
+]
+
+# * COMPILE OPTIMIZATION ------------------------------------------------------------------------
+[profile.dev]
+opt-level = 0  # no optimizations (fastest compile time, slowest runtime)
+
+[profile.dev.package."*"]
+opt-level = 3  # Optimize the dependencies at the highest level
+
+# * Use it only during building to allow maximum optimizations on release builds
+# Release Profile for optimized, smaller binaries
+# These settings make the final executable faster and smaller
+[profile.release]
+opt-level = 3       # Enable full optimizations.
+lto = true          # Enable Link-Time Optimization for a smaller/faster binary.
+codegen-units = 1   # Compile everything in one unit for max optimization (slower compile time).
+strip = true        # Strip debug symbols from the final binary to reduce size.
+
+[lib]
+name = "_core"
+# "cdylib" is necessary to produce a shared library for Python to import from.
+crate-type = [
+    "cdylib",   # C-compatible dynamic library
+    "rlib"      # Rust library
+]
+
+[dependencies]
+cargo-generate = "0.23.5"
+clap = "4.5.51"
+dev_utils = "0.1.4"
+fs_extra = "1.3"
+git2 = "0.20.2"
+inquire = "0.9.1"
+tempfile = "3.19.1"
+thiserror = "2.0.17"
+# "extension-module" tells pyo3 we want to build an extension module (skips linking against libpython.so)
+# "abi3-py39" tells pyo3 (and maturin) to build using the stable ABI with minimum Python version 3.9
+pyo3 = { version = "0.27.1", features = ["extension-module", "abi3-py310"] }
+
+[dev-dependencies]
+criterion = "0.7.0" # Example: for adding benchmarks later
