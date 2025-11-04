@@ -1,0 +1,223 @@
+# Prometheus Configuration for UCBLLogger Monitoring
+# This configuration provides comprehensive metrics collection for the enhanced logging system
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-ucbl-logger-config
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: ucbl-logger-monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'eks-graphrag-toolkit'
+        environment: 'production'
+
+    rule_files:
+      - "/etc/prometheus/rules/*.yml"
+
+    scrape_configs:
+    # UCBLLogger application metrics
+    - job_name: 'ucbl-logger-app'
+      kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+          - default
+          - production
+          - staging
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        action: replace
+        target_label: kubernetes_node_name
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'ucbl_logger_.*'
+        action: keep
+
+    # UCBLLogger health endpoints
+    - job_name: 'ucbl-logger-health'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - default
+          - production
+          - staging
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_label_app]
+        action: keep
+        regex: graphrag-toolkit
+      - source_labels: [__meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: health
+      - source_labels: [__meta_kubernetes_service_name]
+        action: replace
+        target_label: service
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+      metrics_path: /health/metrics
+      scrape_interval: 30s
+
+    # Kubernetes cluster metrics
+    - job_name: 'kubernetes-nodes'
+      kubernetes_sd_configs:
+      - role: node
+      relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+      - target_label: __address__
+        replacement: kubernetes.default.svc:443
+      - source_labels: [__meta_kubernetes_node_name]
+        regex: (.+)
+        target_label: __metrics_path__
+        replacement: /api/v1/nodes/${1}/proxy/metrics
+
+    # cAdvisor metrics for container monitoring
+    - job_name: 'kubernetes-cadvisor'
+      kubernetes_sd_configs:
+      - role: node
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        insecure_skip_verify: true
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+      - target_label: __address__
+        replacement: kubernetes.default.svc:443
+      - source_labels: [__meta_kubernetes_node_name]
+        regex: (.+)
+        target_label: __metrics_path__
+        replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+      metric_relabel_configs:
+      - source_labels: [container_name]
+        regex: 'graphrag-toolkit'
+        action: keep
+
+  # UCBLLogger specific recording rules
+  ucbl-logger-rules.yml: |
+    groups:
+    - name: ucbl_logger_recording_rules
+      interval: 30s
+      rules:
+      # Log volume metrics
+      - record: ucbl_logger:log_volume_rate
+        expr: rate(ucbl_logger_logs_total[5m])
+      
+      - record: ucbl_logger:log_volume_rate_by_level
+        expr: rate(ucbl_logger_logs_total[5m]) by (level, service, namespace)
+      
+      # Sampling metrics
+      - record: ucbl_logger:sampling_rate_current
+        expr: ucbl_logger_sampling_rate
+      
+      - record: ucbl_logger:logs_sampled_rate
+        expr: rate(ucbl_logger_logs_sampled_total[5m])
+      
+      - record: ucbl_logger:sampling_efficiency
+        expr: ucbl_logger:logs_sampled_rate / ucbl_logger:log_volume_rate
+      
+      # Performance metrics
+      - record: ucbl_logger:cpu_usage_percent
+        expr: ucbl_logger_cpu_usage_percent
+      
+      - record: ucbl_logger:memory_usage_percent
+        expr: ucbl_logger_memory_usage_percent
+      
+      - record: ucbl_logger:performance_alerts_rate
+        expr: rate(ucbl_logger_performance_alerts_total[5m])
+      
+      # Buffer metrics
+      - record: ucbl_logger:buffer_usage_percent
+        expr: (ucbl_logger_buffer_size / ucbl_logger_buffer_max_size) * 100
+      
+      - record: ucbl_logger:buffer_flush_rate
+        expr: rate(ucbl_logger_buffer_flushes_total[5m])
+      
+      - record: ucbl_logger:buffer_failures_rate
+        expr: rate(ucbl_logger_buffer_failures_total[5m])
+      
+      # CloudWatch metrics
+      - record: ucbl_logger:cloudwatch_delivery_rate
+        expr: rate(ucbl_logger_cloudwatch_logs_sent_total[5m])
+      
+      - record: ucbl_logger:cloudwatch_error_rate
+        expr: rate(ucbl_logger_cloudwatch_errors_total[5m])
+      
+      - record: ucbl_logger:cloudwatch_rate_limit_rate
+        expr: rate(ucbl_logger_cloudwatch_rate_limits_total[5m])
+      
+      # Tracing metrics
+      - record: ucbl_logger:trace_generation_rate
+        expr: rate(ucbl_logger_traces_generated_total[5m])
+      
+      - record: ucbl_logger:trace_propagation_rate
+        expr: rate(ucbl_logger_traces_propagated_total[5m])
+      
+      # Health metrics
+      - record: ucbl_logger:health_check_success_rate
+        expr: rate(ucbl_logger_health_checks_total{status="success"}[5m]) / rate(ucbl_logger_health_checks_total[5m])
+      
+      - record: ucbl_logger:system_health_score
+        expr: |
+          (
+            (ucbl_logger:health_check_success_rate * 0.3) +
+            ((100 - ucbl_logger:buffer_usage_percent) / 100 * 0.3) +
+            ((1 - ucbl_logger:cloudwatch_error_rate / ucbl_logger:cloudwatch_delivery_rate) * 0.4)
+          )
+
+---
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: ucbl-logger-service-monitor
+  namespace: monitoring
+  labels:
+    app: ucbl-logger
+    component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: graphrag-toolkit
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    honorLabels: true
+  - port: health
+    interval: 60s
+    path: /health/metrics
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - default
+    - production
+    - staging

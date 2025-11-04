@@ -1,0 +1,121 @@
+import sys
+from pathlib import Path
+import unittest
+from unittest.mock import patch, MagicMock
+import logging
+from io import StringIO
+
+# Add the project root to the Python path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# Importing UCBLLogger from your module
+from ucbl_logger.logger import UCBLLogger  # Assuming you saved the logger in a module named `ucbl_logger`
+
+class TestUCBLLogger(unittest.TestCase):
+
+
+    def setUp(self):
+        """
+        Set up a new UCBLLogger instance and capture logs using StringIO.
+        """
+        self.log_stream = StringIO()  # This stream captures the log output
+        self.logger = UCBLLogger(log_level=logging.INFO)  # Create a logger instance
+        self.stream_handler = logging.StreamHandler(self.log_stream)  # Handler to send logs to the stream
+        self.logger.logger.addHandler(self.stream_handler)  # Attach the handler to UCBLLogger
+        self.logger.task_type = "User"  # Set a task type
+
+        # Set the stack level globally for all tests
+        self.logger.stack_level = 2  # This will ensure the correct frame is captured
+
+    def tearDown(self):
+        """
+        Clean up after each test by removing the stream handler.
+        """
+        self.logger.logger.handlers = []  # Remove all handlers to avoid side effects between tests
+
+    def test_log_risk(self):
+        """
+        Test the log_risk method to ensure it logs risks correctly.
+        """
+        self.logger.log_risk("This is a test risk", log_level=logging.WARNING)
+        log_output = self.log_stream.getvalue()  # Get the log output from the stream
+        self.assertIn("~RISK~ This is a test risk ~RISK~", log_output)  # Assert that the risk is logged correctly
+
+    def test_log_anomaly_with_level(self):
+        """
+        Test the log_anomaly method with task type and correct level adjustment.
+        """
+        self.logger.task_type = "User"  # Set a task type
+
+
+
+        # Now call the logger's anomaly method
+        self.logger.log_anomaly("Anomaly detected", log_level=logging.ERROR)
+
+        log_output = self.log_stream.getvalue()
+
+        # Ensure the correct log format is captured
+        self.assertIn("~ANOMALY~", log_output)
+        self.assertIn("Anomaly Detected: Anomaly detected", log_output)
+        self.assertIn("~ANOMALY~", log_output)
+        self.assertIn("[USER_TASK]", log_output)  # Verify the task type was included
+
+    def test_log_anomaly(self):
+        """
+        Test the log_anomaly method to ensure it logs anomalies correctly.
+        """
+        self.logger.log_anomaly("Anomaly detected", log_level=logging.ERROR)
+        log_output = self.log_stream.getvalue()  # Get the log output from the stream
+
+        # Update the assertion to match the actual format of the log message
+        self.assertIn("~ANOMALY~", log_output)
+        self.assertIn("Anomaly Detected: Anomaly detected", log_output)
+        self.assertIn("~ANOMALY~", log_output)
+
+    def test_task_stack(self):
+        """
+        Test that task types can be pushed and popped correctly.
+        """
+        self.logger.task_type = "User"
+        self.logger.push_task_type()  # Push the current task type onto the stack
+        self.assertEqual(self.logger._task_type_stack[-1], "User")  # Assert the stack contains the task type
+
+        self.logger.pop_task_type()  # Pop the task type
+        self.assertEqual(len(self.logger._task_type_stack), 0)  # Assert the stack is empty after popping
+
+    def test_log_task_start_stop(self):
+        """
+        Test the log_task_start and log_task_stop methods.
+        """
+        self.logger.log_task_start("TestTask")  # Log the start of a task
+        self.logger.log_task_stop("TestTask")  # Log the stop of a task
+        log_output = self.log_stream.getvalue()  # Get the log output from the stream
+
+        # Assert that both the start and stop of the task are logged correctly
+        self.assertIn("Task '<? TestTask ?>' started", log_output)
+        self.assertIn("Task '<? TestTask ?>' stopped", log_output)
+
+    def test_timezone_setter(self):
+        """
+        Test setting an invalid timezone and ensure it falls back to UTC.
+        """
+        self.logger.timezone = "Invalid/Timezone"  # Set an invalid timezone
+        self.assertEqual(self.logger.timezone, "UTC")  # Assert the fallback to UTC
+        log_output = self.log_stream.getvalue()
+        self.assertIn("Unknown timezone: Invalid/Timezone. Reverting to UTC.", log_output)  # Check if the warning is logged
+
+    def test_slow_step_threshold(self):
+        """
+        Test setting valid and invalid slow step thresholds.
+        """
+        self.logger.slow_step_threshold = 10  # Set a valid threshold
+        self.assertEqual(self.logger.slow_step_threshold, 10)  # Assert the threshold is set correctly
+
+        # Test setting an invalid threshold (negative value)
+        self.logger.slow_step_threshold = -5
+        self.assertEqual(self.logger.slow_step_threshold, 5)  # Assert it falls back to the default threshold of 5
+        log_output = self.log_stream.getvalue()
+        self.assertIn("Invalid slow step threshold: -5. Setting to default (5).", log_output)  # Check if the warning is logged
+
+if __name__ == '__main__':
+    unittest.main()

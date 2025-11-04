@@ -1,0 +1,192 @@
+# Grafana Provisioning Configuration for UCBLLogger Dashboards
+# This configuration automatically provisions dashboards and datasources
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: monitoring
+  labels:
+    app: grafana
+    component: ucbl-logger
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://prometheus-server:80
+      isDefault: true
+      editable: true
+      jsonData:
+        timeInterval: "30s"
+        queryTimeout: "60s"
+        httpMethod: "POST"
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki:3100
+      editable: true
+      jsonData:
+        maxLines: 1000
+        derivedFields:
+        - datasourceUid: "prometheus"
+          matcherRegex: "correlation_id=(\\w+)"
+          name: "Correlation ID"
+          url: "/explore?left=%5B%22now-1h%22,%22now%22,%22Prometheus%22,%7B%22expr%22:%22%7Bcorrelation_id%3D%5C%22$${__value.raw}%5C%22%7D%22%7D%5D"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-providers
+  namespace: monitoring
+  labels:
+    app: grafana
+    component: ucbl-logger
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+    - name: 'ucbl-logger'
+      orgId: 1
+      folder: 'UCBLLogger'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards/ucbl-logger
+    - name: 'kubernetes'
+      orgId: 1
+      folder: 'Kubernetes'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards/kubernetes
+---
+# Additional dashboard for Kubernetes cluster monitoring
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-kubernetes-dashboard
+  namespace: monitoring
+  labels:
+    app: grafana
+    component: kubernetes
+data:
+  kubernetes-cluster.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Kubernetes Cluster Overview - UCBLLogger Focus",
+        "tags": ["kubernetes", "cluster", "ucbl-logger"],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Cluster Resource Usage",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\",container!=\"\"}[5m])) by (namespace)",
+                "legendFormat": "CPU - {{namespace}}"
+              },
+              {
+                "expr": "sum(container_memory_working_set_bytes{container!=\"POD\",container!=\"\"}) by (namespace) / 1024 / 1024 / 1024",
+                "legendFormat": "Memory - {{namespace}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "UCBLLogger Pod Status",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "sum(kube_pod_status_ready{condition=\"true\", pod=~\"graphrag-toolkit.*\"})",
+                "legendFormat": "Ready Pods"
+              },
+              {
+                "expr": "sum(kube_pod_status_ready{condition=\"false\", pod=~\"graphrag-toolkit.*\"})",
+                "legendFormat": "Not Ready Pods"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": null},
+                    {"color": "yellow", "value": 1},
+                    {"color": "green", "value": 3}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Network I/O by Pod",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "sum(rate(container_network_receive_bytes_total{pod=~\"graphrag-toolkit.*\"}[5m])) by (pod)",
+                "legendFormat": "RX - {{pod}}"
+              },
+              {
+                "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"graphrag-toolkit.*\"}[5m])) by (pod)",
+                "legendFormat": "TX - {{pod}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "Bps"
+              }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Pod Restart Count",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "sum(increase(kube_pod_container_status_restarts_total{pod=~\"graphrag-toolkit.*\"}[1h])) by (pod, container)",
+                "format": "table"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+          },
+          {
+            "id": 5,
+            "title": "Storage Usage",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "sum(container_fs_usage_bytes{container!=\"POD\", pod=~\"graphrag-toolkit.*\"}) by (pod) / 1024 / 1024 / 1024",
+                "legendFormat": "Storage - {{pod}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "GB"
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+          }
+        ]
+      }
+    }

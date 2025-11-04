@@ -1,0 +1,292 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "UCBLLogger Enhanced EKS Monitoring",
+    "tags": ["ucbl-logger", "eks", "logging", "graphrag"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Log Volume Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(ucbl_logger:log_volume_rate)",
+            "legendFormat": "Total Logs/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 100},
+                {"color": "red", "value": 1000}
+              ]
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Log Volume by Level",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (level) (ucbl_logger:log_volume_rate_by_level)",
+            "legendFormat": "{{level}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Sampling Efficiency",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(ucbl_logger:sampling_efficiency) * 100",
+            "legendFormat": "Sampling %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "green", "value": 50}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Buffer Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "ucbl_logger:buffer_usage_percent",
+            "legendFormat": "{{service}} - {{namespace}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 9, "x": 6, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "System Health Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(ucbl_logger:system_health_score) * 100",
+            "legendFormat": "Health Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 70},
+                {"color": "green", "value": 90}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 9, "x": 15, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Performance Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "ucbl_logger:cpu_usage_percent",
+            "legendFormat": "CPU Usage %"
+          },
+          {
+            "expr": "ucbl_logger:memory_usage_percent",
+            "legendFormat": "Memory Usage %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "CloudWatch Delivery Status",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "ucbl_logger:cloudwatch_delivery_rate",
+            "legendFormat": "Delivered/sec"
+          },
+          {
+            "expr": "ucbl_logger:cloudwatch_error_rate",
+            "legendFormat": "Errors/sec"
+          },
+          {
+            "expr": "ucbl_logger:cloudwatch_rate_limit_rate",
+            "legendFormat": "Rate Limited/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Distributed Tracing Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "ucbl_logger:trace_generation_rate",
+            "legendFormat": "Traces Generated/sec"
+          },
+          {
+            "expr": "ucbl_logger:trace_propagation_rate",
+            "legendFormat": "Traces Propagated/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Error Rate by Component",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "sum by (component) (rate(ucbl_logger_errors_total[5m]))",
+            "legendFormat": "{{component}}",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.01},
+                {"color": "red", "value": 0.1}
+              ]
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Top Error Messages",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"ucbl-logger-app\"} |= \"ERROR\" | json | line_format \"{{.timestamp}} [{{.level}}] {{.message}}\"",
+            "legendFormat": ""
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "namespace",
+          "type": "query",
+          "query": "label_values(ucbl_logger_logs_total, namespace)",
+          "refresh": 1,
+          "includeAll": true,
+          "allValue": ".*"
+        },
+        {
+          "name": "service",
+          "type": "query",
+          "query": "label_values(ucbl_logger_logs_total{namespace=~\"$namespace\"}, service)",
+          "refresh": 1,
+          "includeAll": true,
+          "allValue": ".*"
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "Prometheus",
+          "expr": "changes(kube_deployment_status_replicas{deployment=~\"graphrag-toolkit.*\"}[5m]) > 0",
+          "titleFormat": "Deployment: {{deployment}}",
+          "textFormat": "Replicas changed to {{value}}"
+        }
+      ]
+    }
+  }
+}

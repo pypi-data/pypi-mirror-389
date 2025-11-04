@@ -1,0 +1,257 @@
+# AlertManager Rules for UCBLLogger Enhanced EKS Monitoring
+# These rules provide proactive alerting for logging system health issues
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ucbl-logger-alerts
+  namespace: monitoring
+  labels:
+    app: ucbl-logger
+    component: alerting
+spec:
+  groups:
+  - name: ucbl_logger_critical_alerts
+    interval: 30s
+    rules:
+    # Critical: Logging system completely down
+    - alert: UCBLLoggerDown
+      expr: up{job="ucbl-logger-app"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: ucbl-logger
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/ucbl-logger-down"
+      annotations:
+        summary: "UCBLLogger instance is down"
+        description: "UCBLLogger instance {{ $labels.instance }} in namespace {{ $labels.namespace }} has been down for more than 1 minute."
+        action: "Check pod status and logs immediately"
+
+    # Critical: Buffer overflow imminent
+    - alert: UCBLLoggerBufferOverflow
+      expr: ucbl_logger:buffer_usage_percent > 95
+      for: 2m
+      labels:
+        severity: critical
+        component: buffer
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/buffer-overflow"
+      annotations:
+        summary: "UCBLLogger buffer near overflow"
+        description: "Buffer usage is {{ $value }}% for service {{ $labels.service }} in namespace {{ $labels.namespace }}. Log loss imminent."
+        action: "Scale up resources or reduce log volume immediately"
+
+    # Critical: CloudWatch delivery completely failing
+    - alert: UCBLLoggerCloudWatchFailure
+      expr: ucbl_logger:cloudwatch_error_rate / ucbl_logger:cloudwatch_delivery_rate > 0.5
+      for: 5m
+      labels:
+        severity: critical
+        component: cloudwatch
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/cloudwatch-failure"
+      annotations:
+        summary: "UCBLLogger CloudWatch delivery failing"
+        description: "CloudWatch error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}. Logs may be lost."
+        action: "Check AWS credentials, network connectivity, and CloudWatch service status"
+
+  - name: ucbl_logger_warning_alerts
+    interval: 60s
+    rules:
+    # Warning: High log volume
+    - alert: UCBLLoggerHighVolume
+      expr: ucbl_logger:log_volume_rate > 1000
+      for: 5m
+      labels:
+        severity: warning
+        component: volume
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/high-log-volume"
+      annotations:
+        summary: "UCBLLogger experiencing high log volume"
+        description: "Log volume is {{ $value }} logs/sec for service {{ $labels.service }}. Consider enabling or adjusting sampling."
+        action: "Review log levels and enable sampling if not already active"
+
+    # Warning: Buffer usage high
+    - alert: UCBLLoggerBufferHigh
+      expr: ucbl_logger:buffer_usage_percent > 80
+      for: 5m
+      labels:
+        severity: warning
+        component: buffer
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/buffer-high"
+      annotations:
+        summary: "UCBLLogger buffer usage high"
+        description: "Buffer usage is {{ $value }}% for service {{ $labels.service }}. Monitor for potential overflow."
+        action: "Monitor buffer trends and consider scaling resources"
+
+    # Warning: Performance degradation
+    - alert: UCBLLoggerPerformanceDegradation
+      expr: ucbl_logger:cpu_usage_percent > 80 or ucbl_logger:memory_usage_percent > 80
+      for: 10m
+      labels:
+        severity: warning
+        component: performance
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/performance-degradation"
+      annotations:
+        summary: "UCBLLogger performance degradation detected"
+        description: "CPU usage: {{ $labels.cpu_usage }}%, Memory usage: {{ $labels.memory_usage }}% for service {{ $labels.service }}"
+        action: "Review resource allocation and consider scaling"
+
+    # Warning: CloudWatch rate limiting
+    - alert: UCBLLoggerCloudWatchRateLimit
+      expr: ucbl_logger:cloudwatch_rate_limit_rate > 0
+      for: 2m
+      labels:
+        severity: warning
+        component: cloudwatch
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/cloudwatch-rate-limit"
+      annotations:
+        summary: "UCBLLogger hitting CloudWatch rate limits"
+        description: "CloudWatch rate limiting at {{ $value }} requests/sec for service {{ $labels.service }}"
+        action: "Review batch sizes and delivery patterns"
+
+    # Warning: Sampling efficiency low
+    - alert: UCBLLoggerSamplingInefficient
+      expr: ucbl_logger:sampling_efficiency < 0.1 and ucbl_logger:log_volume_rate > 100
+      for: 10m
+      labels:
+        severity: warning
+        component: sampling
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/sampling-inefficient"
+      annotations:
+        summary: "UCBLLogger sampling efficiency low"
+        description: "Sampling efficiency is {{ $value | humanizePercentage }} with high log volume for service {{ $labels.service }}"
+        action: "Review sampling configuration and thresholds"
+
+    # Warning: Health check failures
+    - alert: UCBLLoggerHealthCheckFailing
+      expr: ucbl_logger:health_check_success_rate < 0.9
+      for: 3m
+      labels:
+        severity: warning
+        component: health
+        runbook: "https://docs.graphrag-toolkit.com/runbooks/health-check-failing"
+      annotations:
+        summary: "UCBLLogger health checks failing"
+        description: "Health check success rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+        action: "Check application health and dependencies"
+
+  - name: ucbl_logger_info_alerts
+    interval: 300s
+    rules:
+    # Info: Configuration change detected
+    - alert: UCBLLoggerConfigChange
+      expr: increase(ucbl_logger_config_reloads_total[5m]) > 0
+      labels:
+        severity: info
+        component: configuration
+      annotations:
+        summary: "UCBLLogger configuration reloaded"
+        description: "Configuration was reloaded {{ $value }} times in the last 5 minutes for service {{ $labels.service }}"
+        action: "Verify configuration changes are working as expected"
+
+    # Info: Trace volume anomaly
+    - alert: UCBLLoggerTraceVolumeAnomaly
+      expr: |
+        (
+          ucbl_logger:trace_generation_rate - 
+          avg_over_time(ucbl_logger:trace_generation_rate[1h])
+        ) / avg_over_time(ucbl_logger:trace_generation_rate[1h]) > 2
+      for: 10m
+      labels:
+        severity: info
+        component: tracing
+      annotations:
+        summary: "UCBLLogger trace volume anomaly detected"
+        description: "Trace generation rate is significantly higher than normal for service {{ $labels.service }}"
+        action: "Investigate potential traffic spikes or trace generation issues"
+
+---
+# AlertManager Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-ucbl-logger-config
+  namespace: monitoring
+  labels:
+    app: alertmanager
+    component: ucbl-logger
+data:
+  alertmanager.yml: |
+    global:
+      smtp_smarthost: 'localhost:587'
+      smtp_from: 'alerts@graphrag-toolkit.com'
+      
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1h
+      receiver: 'default'
+      routes:
+      # Critical alerts go to on-call
+      - match:
+          severity: critical
+        receiver: 'critical-alerts'
+        group_wait: 0s
+        repeat_interval: 5m
+      # Warning alerts go to team channel
+      - match:
+          severity: warning
+        receiver: 'warning-alerts'
+        repeat_interval: 30m
+      # Info alerts go to logs channel
+      - match:
+          severity: info
+        receiver: 'info-alerts'
+        repeat_interval: 4h
+
+    receivers:
+    - name: 'default'
+      slack_configs:
+      - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+        channel: '#alerts'
+        title: 'UCBLLogger Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+    - name: 'critical-alerts'
+      slack_configs:
+      - api_url: 'YOUR_CRITICAL_SLACK_WEBHOOK_URL'
+        channel: '#critical-alerts'
+        title: 'CRITICAL: UCBLLogger Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Action:* {{ .Annotations.action }}
+          *Runbook:* {{ .Labels.runbook }}
+          {{ end }}
+        send_resolved: true
+      pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY'
+        description: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+    - name: 'warning-alerts'
+      slack_configs:
+      - api_url: 'YOUR_WARNING_SLACK_WEBHOOK_URL'
+        channel: '#warnings'
+        title: 'WARNING: UCBLLogger Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Action:* {{ .Annotations.action }}
+          {{ end }}
+        send_resolved: true
+
+    - name: 'info-alerts'
+      slack_configs:
+      - api_url: 'YOUR_INFO_SLACK_WEBHOOK_URL'
+        channel: '#info-logs'
+        title: 'INFO: UCBLLogger Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      equal: ['alertname', 'cluster', 'service']

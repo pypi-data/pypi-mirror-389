@@ -1,0 +1,166 @@
+# ConfigMap for Enhanced UCBLLogger Configuration
+# This provides configuration for different deployment scenarios
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ucbl-logger-config
+  namespace: default
+  labels:
+    app: ucbl-logger
+    component: logging
+data:
+  # Basic configuration
+  service_name: "graphrag-toolkit"
+  log_level: "INFO"
+  
+  # Tracing configuration
+  enable_tracing: "true"
+  enable_opentelemetry: "false"
+  
+  # Performance monitoring configuration
+  enable_performance_monitoring: "true"
+  performance_collection_interval: "60"
+  cpu_warning_threshold: "80.0"
+  cpu_critical_threshold: "95.0"
+  memory_warning_threshold: "80.0"
+  memory_critical_threshold: "95.0"
+  
+  # Sampling configuration
+  enable_sampling: "true"
+  default_sampling_rate: "1.0"
+  volume_threshold: "1000"
+  sampling_window_size: "60"
+  preserve_errors: "true"
+  
+  # Buffer configuration
+  buffer_max_size: "10000"
+  buffer_flush_interval: "5"
+  max_retry_attempts: "3"
+  retry_backoff_multiplier: "2.0"
+  
+  # CloudWatch configuration
+  enable_cloudwatch: "true"
+  cloudwatch_log_group: "/aws/eks/graphrag-toolkit"
+  cloudwatch_region: "us-west-2"
+  enable_compression: "true"
+  batch_size: "100"
+  
+  # Security configuration
+  enable_security_monitoring: "true"
+  enable_data_redaction: "true"
+  
+  # Health monitoring configuration
+  enable_health_monitoring: "true"
+  health_check_port: "8080"
+  health_check_path: "/health"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ucbl-logger-config-production
+  namespace: default
+  labels:
+    app: ucbl-logger
+    component: logging
+    environment: production
+data:
+  # Production-optimized configuration
+  service_name: "graphrag-toolkit"
+  log_level: "WARN"
+  
+  # Tracing configuration - optimized for production
+  enable_tracing: "true"
+  enable_opentelemetry: "true"
+  
+  # Performance monitoring - reduced frequency for production
+  enable_performance_monitoring: "true"
+  performance_collection_interval: "300"
+  cpu_warning_threshold: "70.0"
+  cpu_critical_threshold: "90.0"
+  memory_warning_threshold: "75.0"
+  memory_critical_threshold: "90.0"
+  
+  # Aggressive sampling for production
+  enable_sampling: "true"
+  default_sampling_rate: "0.1"
+  volume_threshold: "500"
+  sampling_window_size: "60"
+  preserve_errors: "true"
+  
+  # Larger buffers for production
+  buffer_max_size: "50000"
+  buffer_flush_interval: "10"
+  max_retry_attempts: "5"
+  retry_backoff_multiplier: "1.5"
+  
+  # CloudWatch optimized for cost
+  enable_cloudwatch: "true"
+  cloudwatch_log_group: "/aws/eks/graphrag-toolkit-prod"
+  cloudwatch_region: "us-west-2"
+  enable_compression: "true"
+  batch_size: "500"
+  
+  # Enhanced security for production
+  enable_security_monitoring: "true"
+  enable_data_redaction: "true"
+  
+  # Health monitoring
+  enable_health_monitoring: "true"
+  health_check_port: "8080"
+  health_check_path: "/health"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ucbl-logger-config-development
+  namespace: default
+  labels:
+    app: ucbl-logger
+    component: logging
+    environment: development
+data:
+  # Development-friendly configuration
+  service_name: "graphrag-toolkit-dev"
+  log_level: "DEBUG"
+  
+  # Full tracing for development
+  enable_tracing: "true"
+  enable_opentelemetry: "false"
+  
+  # Detailed performance monitoring
+  enable_performance_monitoring: "true"
+  performance_collection_interval: "30"
+  cpu_warning_threshold: "85.0"
+  cpu_critical_threshold: "95.0"
+  memory_warning_threshold: "85.0"
+  memory_critical_threshold: "95.0"
+  
+  # No sampling in development
+  enable_sampling: "false"
+  default_sampling_rate: "1.0"
+  volume_threshold: "10000"
+  sampling_window_size: "60"
+  preserve_errors: "true"
+  
+  # Smaller buffers for development
+  buffer_max_size: "5000"
+  buffer_flush_interval: "2"
+  max_retry_attempts: "3"
+  retry_backoff_multiplier: "2.0"
+  
+  # CloudWatch for development
+  enable_cloudwatch: "false"
+  cloudwatch_log_group: "/aws/eks/graphrag-toolkit-dev"
+  cloudwatch_region: "us-west-2"
+  enable_compression: "false"
+  batch_size: "50"
+  
+  # Basic security for development
+  enable_security_monitoring: "true"
+  enable_data_redaction: "false"
+  
+  # Health monitoring
+  enable_health_monitoring: "true"
+  health_check_port: "8080"
+  health_check_path: "/health"

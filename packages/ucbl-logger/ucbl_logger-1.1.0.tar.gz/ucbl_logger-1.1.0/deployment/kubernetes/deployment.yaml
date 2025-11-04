@@ -1,0 +1,215 @@
+# Production-ready Kubernetes Deployment for GraphRAG Toolkit with Enhanced UCBLLogger
+# This deployment includes proper resource limits, security context, and health checks
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphrag-toolkit
+  namespace: default
+  labels:
+    app: graphrag-toolkit
+    component: application
+    version: v1.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: graphrag-toolkit
+      component: application
+  template:
+    metadata:
+      labels:
+        app: graphrag-toolkit
+        component: application
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: ucbl-logger-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: graphrag-toolkit
+        image: graphrag-toolkit:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        - name: health
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        # Service identification
+        - name: SERVICE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: service_name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        
+        # UCBLLogger configuration from ConfigMap
+        - name: UCBL_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: log_level
+        - name: UCBL_ENABLE_TRACING
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: enable_tracing
+        - name: UCBL_ENABLE_PERFORMANCE_MONITORING
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: enable_performance_monitoring
+        - name: UCBL_ENABLE_SAMPLING
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: enable_sampling
+        - name: UCBL_ENABLE_CLOUDWATCH
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: enable_cloudwatch
+        - name: UCBL_CLOUDWATCH_LOG_GROUP
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: cloudwatch_log_group
+        - name: UCBL_CLOUDWATCH_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: ucbl-logger-config
+              key: cloudwatch_region
+        
+        # AWS credentials (use IAM roles for service accounts in production)
+        - name: AWS_REGION
+          value: "us-west-2"
+        
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: health
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: health
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/cache
+        - name: logs
+          mountPath: /app/logs
+      
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: cache
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: logs
+        emptyDir:
+          sizeLimit: 2Gi
+      
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - graphrag-toolkit
+              topologyKey: kubernetes.io/hostname
+      
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphrag-toolkit-service
+  namespace: default
+  labels:
+    app: graphrag-toolkit
+    component: application
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP
+  - name: health
+    port: 8080
+    targetPort: health
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app: graphrag-toolkit
+    component: application

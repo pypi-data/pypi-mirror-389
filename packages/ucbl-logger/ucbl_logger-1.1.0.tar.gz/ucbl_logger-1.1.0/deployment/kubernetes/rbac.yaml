@@ -1,0 +1,64 @@
+# RBAC Configuration for Enhanced UCBLLogger
+# This configuration provides the necessary permissions for the logger to collect Kubernetes metadata
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ucbl-logger-service-account
+  namespace: default
+  labels:
+    app: ucbl-logger
+    component: logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ucbl-logger-cluster-role
+  labels:
+    app: ucbl-logger
+    component: logging
+rules:
+# Pod metadata collection
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+# Node metadata collection
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch"]
+# Service and endpoint discovery
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+# Deployment and ReplicaSet metadata
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+# ConfigMap access for configuration
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+# Events for security monitoring
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+# Namespace information
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ucbl-logger-cluster-role-binding
+  labels:
+    app: ucbl-logger
+    component: logging
+subjects:
+- kind: ServiceAccount
+  name: ucbl-logger-service-account
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: ucbl-logger-cluster-role
+  apiGroup: rbac.authorization.k8s.io
