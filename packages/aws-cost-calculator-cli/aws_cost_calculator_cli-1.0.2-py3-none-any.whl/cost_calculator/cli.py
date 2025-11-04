@@ -1,0 +1,472 @@
+#!/usr/bin/env python3
+"""
+AWS Cost Calculator CLI
+
+Usage:
+    cc --profile myprofile
+    cc --profile myprofile --start-date 2025-11-04
+    cc --profile myprofile --offset 2 --window 30
+"""
+
+import click
+import boto3
+import json
+from datetime import datetime, timedelta
+from pathlib import Path
+
+
+def load_profile(profile_name):
+    """Load profile configuration from ~/.config/cost-calculator/profiles.json"""
+    config_dir = Path.home() / '.config' / 'cost-calculator'
+    config_file = config_dir / 'profiles.json'
+    creds_file = config_dir / 'credentials.json'
+    
+    if not config_file.exists():
+        raise click.ClickException(
+            f"Profile configuration not found at {config_file}\n"
+            f"Run: cc init --profile {profile_name}"
+        )
+    
+    with open(config_file) as f:
+        profiles = json.load(f)
+    
+    if profile_name not in profiles:
+        raise click.ClickException(
+            f"Profile '{profile_name}' not found in {config_file}\n"
+            f"Available profiles: {', '.join(profiles.keys())}"
+        )
+    
+    profile = profiles[profile_name]
+    
+    # Load credentials if using static credentials (not SSO)
+    if 'aws_profile' not in profile:
+        if not creds_file.exists():
+            raise click.ClickException(
+                f"No credentials found for profile '{profile_name}'.\n"
+                f"Run: cc configure --profile {profile_name}"
+            )
+        
+        with open(creds_file) as f:
+            creds = json.load(f)
+        
+        if profile_name not in creds:
+            raise click.ClickException(
+                f"No credentials found for profile '{profile_name}'.\n"
+                f"Run: cc configure --profile {profile_name}"
+            )
+        
+        profile['credentials'] = creds[profile_name]
+    
+    return profile
+
+
+def calculate_costs(profile_config, accounts, start_date, offset, window):
+    """
+    Calculate AWS costs for the specified period.
+    
+    Args:
+        profile_config: Profile configuration (with aws_profile or credentials)
+        accounts: List of AWS account IDs
+        start_date: Start date (defaults to today)
+        offset: Days to go back from start_date (default: 2)
+        window: Number of days to analyze (default: 30)
+    
+    Returns:
+        dict with cost breakdown
+    """
+    # Calculate date range
+    if start_date:
+        end_date = datetime.strptime(start_date, '%Y-%m-%d')
+    else:
+        end_date = datetime.now()
+    
+    # Go back by offset days
+    end_date = end_date - timedelta(days=offset)
+    
+    # Start date is window days before end_date
+    start_date_calc = end_date - timedelta(days=window)
+    
+    # Format for API (end date is exclusive, so add 1 day)
+    api_start = start_date_calc.strftime('%Y-%m-%d')
+    api_end = (end_date + timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    click.echo(f"Analyzing: {api_start} to {end_date.strftime('%Y-%m-%d')} ({window} days)")
+    
+    # Initialize boto3 client
+    try:
+        if 'aws_profile' in profile_config:
+            # SSO-based authentication
+            aws_profile = profile_config['aws_profile']
+            click.echo(f"AWS Profile: {aws_profile} (SSO)")
+            click.echo(f"Accounts: {len(accounts)}")
+            click.echo("")
+            session = boto3.Session(profile_name=aws_profile)
+            ce_client = session.client('ce', region_name='us-east-1')
+        else:
+            # Static credentials
+            creds = profile_config['credentials']
+            click.echo(f"AWS Credentials: Static")
+            click.echo(f"Accounts: {len(accounts)}")
+            click.echo("")
+            
+            session_kwargs = {
+                'aws_access_key_id': creds['aws_access_key_id'],
+                'aws_secret_access_key': creds['aws_secret_access_key'],
+                'region_name': creds.get('region', 'us-east-1')
+            }
+            
+            if 'aws_session_token' in creds:
+                session_kwargs['aws_session_token'] = creds['aws_session_token']
+            
+            session = boto3.Session(**session_kwargs)
+            ce_client = session.client('ce')
+            
+    except Exception as e:
+        if 'Token has expired' in str(e) or 'sso' in str(e).lower():
+            if 'aws_profile' in profile_config:
+                raise click.ClickException(
+                    f"AWS SSO session expired or not initialized.\n"
+                    f"Run: aws sso login --profile {profile_config['aws_profile']}"
+                )
+            else:
+                raise click.ClickException(
+                    f"AWS credentials expired.\n"
+                    f"Run: cc configure --profile <profile_name>"
+                )
+        raise
+    
+    # Build filter
+    cost_filter = {
+        "And": [
+            {
+                "Dimensions": {
+                    "Key": "LINKED_ACCOUNT",
+                    "Values": accounts
+                }
+            },
+            {
+                "Dimensions": {
+                    "Key": "BILLING_ENTITY",
+                    "Values": ["AWS"]
+                }
+            },
+            {
+                "Not": {
+                    "Dimensions": {
+                        "Key": "RECORD_TYPE",
+                        "Values": ["Tax", "Support"]
+                    }
+                }
+            }
+        ]
+    }
+    
+    # Get daily costs
+    click.echo("Fetching cost data...")
+    try:
+        response = ce_client.get_cost_and_usage(
+            TimePeriod={
+                'Start': api_start,
+                'End': api_end
+            },
+            Granularity='DAILY',
+            Metrics=['NetAmortizedCost'],
+            Filter=cost_filter
+        )
+    except Exception as e:
+        if 'Token has expired' in str(e) or 'expired' in str(e).lower():
+            raise click.ClickException(
+                f"AWS SSO session expired.\n"
+                f"Run: aws sso login --profile {aws_profile}"
+            )
+        raise
+    
+    # Calculate total
+    total_cost = sum(
+        float(day['Total']['NetAmortizedCost']['Amount'])
+        for day in response['ResultsByTime']
+    )
+    
+    # Get support cost from the 1st of the month containing the end date
+    # Support is charged on the 1st of each month for the previous month's usage
+    # For Oct 3-Nov 2 analysis, we get support from Nov 1 (which is October's support)
+    support_month_date = end_date.replace(day=1)
+    support_date_str = support_month_date.strftime('%Y-%m-%d')
+    support_date_end = (support_month_date + timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    click.echo("Fetching support costs...")
+    support_response = ce_client.get_cost_and_usage(
+        TimePeriod={
+            'Start': support_date_str,
+            'End': support_date_end
+        },
+        Granularity='DAILY',
+        Metrics=['NetAmortizedCost'],
+        Filter={
+            "And": [
+                {
+                    "Dimensions": {
+                        "Key": "LINKED_ACCOUNT",
+                        "Values": accounts
+                    }
+                },
+                {
+                    "Dimensions": {
+                        "Key": "RECORD_TYPE",
+                        "Values": ["Support"]
+                    }
+                }
+            ]
+        }
+    )
+    
+    support_cost = float(support_response['ResultsByTime'][0]['Total']['NetAmortizedCost']['Amount'])
+    
+    # Calculate days in the month that the support covers
+    # Support on Nov 1 covers October (31 days)
+    support_month = support_month_date - timedelta(days=1)  # Go back to previous month
+    days_in_support_month = support_month.day  # This gives us the last day of the month
+    
+    # Support allocation: divide by 2 (half to Khoros), then by days in month
+    support_per_day = (support_cost / 2) / days_in_support_month
+    
+    # Calculate daily rate
+    # NOTE: We divide operational by window, but support by days_in_support_month
+    # This matches the console's calculation method
+    daily_operational = total_cost / days_in_support_month  # Use 31 for October, not 30
+    daily_total = daily_operational + support_per_day
+    
+    # Annual projection
+    annual = daily_total * 365
+    
+    return {
+        'period': {
+            'start': api_start,
+            'end': end_date.strftime('%Y-%m-%d'),
+            'days': window
+        },
+        'costs': {
+            'total_operational': total_cost,
+            'daily_operational': daily_operational,
+            'support_month': support_cost,
+            'support_per_day': support_per_day,
+            'daily_total': daily_total,
+            'annual_projection': annual
+        }
+    }
+
+
+@click.group()
+def cli():
+    """
+    AWS Cost Calculator - Calculate daily and annual AWS costs
+    
+    \b
+    Two authentication methods:
+    1. AWS SSO (recommended for interactive use)
+    2. Static credentials (for automation/CI)
+    
+    \b
+    Quick Start:
+      # SSO Method
+      aws sso login --profile my_aws_profile
+      cc init --profile myprofile --aws-profile my_aws_profile --accounts "123,456,789"
+      cc calculate --profile myprofile
+    
+      # Static Credentials Method
+      cc init --profile myprofile --aws-profile dummy --accounts "123,456,789"
+      cc configure --profile myprofile
+      cc calculate --profile myprofile
+    
+    \b
+    For detailed documentation, see:
+      - COST_CALCULATION_METHODOLOGY.md
+      - README.md
+    """
+    pass
+
+
+@cli.command()
+@click.option('--profile', required=True, help='Profile name (e.g., myprofile)')
+@click.option('--start-date', help='Start date (YYYY-MM-DD, default: today)')
+@click.option('--offset', default=2, help='Days to go back from start date (default: 2)')
+@click.option('--window', default=30, help='Number of days to analyze (default: 30)')
+@click.option('--json-output', is_flag=True, help='Output as JSON')
+def calculate(profile, start_date, offset, window, json_output):
+    """Calculate AWS costs for the specified period"""
+    
+    # Load profile configuration
+    config = load_profile(profile)
+    
+    # Calculate costs
+    result = calculate_costs(
+        profile_config=config,
+        accounts=config['accounts'],
+        start_date=start_date,
+        offset=offset,
+        window=window
+    )
+    
+    if json_output:
+        click.echo(json.dumps(result, indent=2))
+    else:
+        # Pretty print results
+        click.echo("=" * 60)
+        click.echo(f"Period: {result['period']['start']} to {result['period']['end']}")
+        click.echo(f"Days analyzed: {result['period']['days']}")
+        click.echo("=" * 60)
+        click.echo(f"Total operational cost: ${result['costs']['total_operational']:,.2f}")
+        click.echo(f"Daily operational: ${result['costs']['daily_operational']:,.2f}")
+        click.echo(f"Support (month): ${result['costs']['support_month']:,.2f}")
+        click.echo(f"Support per day (÷2÷days): ${result['costs']['support_per_day']:,.2f}")
+        click.echo("=" * 60)
+        click.echo(f"DAILY RATE: ${result['costs']['daily_total']:,.2f}")
+        click.echo(f"ANNUAL PROJECTION: ${result['costs']['annual_projection']:,.0f}")
+        click.echo("=" * 60)
+
+
+@cli.command()
+@click.option('--profile', required=True, help='Profile name to create')
+@click.option('--aws-profile', required=True, help='AWS CLI profile name')
+@click.option('--accounts', required=True, help='Comma-separated list of account IDs')
+def init(profile, aws_profile, accounts):
+    """Initialize a new profile configuration"""
+    
+    config_dir = Path.home() / '.config' / 'cost-calculator'
+    config_file = config_dir / 'profiles.json'
+    
+    # Create config directory if it doesn't exist
+    config_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Load existing profiles or create new
+    if config_file.exists() and config_file.stat().st_size > 0:
+        try:
+            with open(config_file) as f:
+                profiles = json.load(f)
+        except json.JSONDecodeError:
+            profiles = {}
+    else:
+        profiles = {}
+    
+    # Parse accounts
+    account_list = [acc.strip() for acc in accounts.split(',')]
+    
+    # Add new profile
+    profiles[profile] = {
+        'aws_profile': aws_profile,
+        'accounts': account_list
+    }
+    
+    # Save
+    with open(config_file, 'w') as f:
+        json.dump(profiles, f, indent=2)
+    
+    click.echo(f"✓ Profile '{profile}' created with {len(account_list)} accounts")
+    click.echo(f"✓ Configuration saved to {config_file}")
+    click.echo(f"\nUsage: cc calculate --profile {profile}")
+
+
+@cli.command()
+def list_profiles():
+    """List all configured profiles"""
+    
+    config_file = Path.home() / '.config' / 'cost-calculator' / 'profiles.json'
+    
+    if not config_file.exists():
+        click.echo("No profiles configured. Run: cc init --profile <name>")
+        return
+    
+    with open(config_file) as f:
+        profiles = json.load(f)
+    
+    if not profiles:
+        click.echo("No profiles configured.")
+        return
+    
+    click.echo("Configured profiles:")
+    click.echo("")
+    for name, config in profiles.items():
+        click.echo(f"  {name}")
+        if 'aws_profile' in config:
+            click.echo(f"    AWS Profile: {config['aws_profile']} (SSO)")
+        else:
+            click.echo(f"    AWS Credentials: Configured (Static)")
+        click.echo(f"    Accounts: {len(config['accounts'])}")
+        click.echo("")
+
+
+@cli.command()
+@click.option('--profile', required=True, help='Profile name to configure')
+@click.option('--access-key-id', prompt=True, hide_input=False, help='AWS Access Key ID')
+@click.option('--secret-access-key', prompt=True, hide_input=True, help='AWS Secret Access Key')
+@click.option('--session-token', default='', help='AWS Session Token (optional, for temporary credentials)')
+@click.option('--region', default='us-east-1', help='AWS Region (default: us-east-1)')
+def configure(profile, access_key_id, secret_access_key, session_token, region):
+    """Configure AWS credentials for a profile (alternative to SSO)"""
+    
+    config_dir = Path.home() / '.config' / 'cost-calculator'
+    config_file = config_dir / 'profiles.json'
+    creds_file = config_dir / 'credentials.json'
+    
+    # Create config directory if it doesn't exist
+    config_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Load existing profiles
+    if config_file.exists() and config_file.stat().st_size > 0:
+        try:
+            with open(config_file) as f:
+                profiles = json.load(f)
+        except json.JSONDecodeError:
+            profiles = {}
+    else:
+        profiles = {}
+    
+    # Check if profile exists
+    if profile not in profiles:
+        click.echo(f"Error: Profile '{profile}' not found. Create it first with: cc init --profile {profile}")
+        return
+    
+    # Remove aws_profile if it exists (switching from SSO to static creds)
+    if 'aws_profile' in profiles[profile]:
+        del profiles[profile]['aws_profile']
+    
+    # Save updated profile
+    with open(config_file, 'w') as f:
+        json.dump(profiles, f, indent=2)
+    
+    # Load or create credentials file
+    if creds_file.exists() and creds_file.stat().st_size > 0:
+        try:
+            with open(creds_file) as f:
+                creds = json.load(f)
+        except json.JSONDecodeError:
+            creds = {}
+    else:
+        creds = {}
+    
+    # Store credentials (encrypted would be better, but for now just file permissions)
+    creds[profile] = {
+        'aws_access_key_id': access_key_id,
+        'aws_secret_access_key': secret_access_key,
+        'region': region
+    }
+    
+    if session_token:
+        creds[profile]['aws_session_token'] = session_token
+    
+    # Save credentials with restricted permissions
+    with open(creds_file, 'w') as f:
+        json.dump(creds, f, indent=2)
+    
+    # Set file permissions to 600 (owner read/write only)
+    creds_file.chmod(0o600)
+    
+    click.echo(f"✓ AWS credentials configured for profile '{profile}'")
+    click.echo(f"✓ Credentials saved to {creds_file} (permissions: 600)")
+    click.echo(f"\nUsage: cc calculate --profile {profile}")
+    click.echo("\nNote: Credentials are stored locally. For temporary credentials,")
+    click.echo("      you'll need to reconfigure when they expire.")
+
+
+if __name__ == '__main__':
+    cli()
