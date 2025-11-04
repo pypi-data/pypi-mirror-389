@@ -1,0 +1,242 @@
+<html lang="en">
+  <head>
+    <title>TPDS - Documentation</title>
+    <style>
+      body {
+        font-family: "Open Sans", sans-serif;
+        font-size: 15;
+        font-weight: 400;
+        line-height: 24px;
+        color: #000;
+      }
+      p {
+          padding-left: 20;
+      }
+      a {
+        color: #4b4d49;
+        font-weight: 600;
+      }
+      a:hover {
+        color: #f68d2e;
+      }
+      h1 {
+        color: #34333e;
+        text-decoration: underline overline red;
+        font-size: 35;
+        font-weight: 600;
+        line-height: 40px;
+      }
+      h2 {
+        color: #34333e;
+        text-decoration: underline double;
+        font-size: 23;
+        font-weight: 600;
+        line-height: 27px;
+      }
+      h3 {
+        color: #34333e;
+        font-size: 17;
+        font-weight: 600;
+        line-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div><h1 id="trust-platform-design-suite-v2">Trust Platform Design Suite V2</h1>
+<div class="toc">
+<ul>
+<li><a href="#trust-platform-design-suite-v2">Trust Platform Design Suite V2</a><ul>
+<li><a href="#trust-platform-design-suite-v2-introduction">Trust Platform Design Suite V2 introduction</a></li>
+<li><a href="#home-page-walkthrough">Home Page walkthrough</a><ul>
+<li><a href="#select-your-security-solution">Select your Security Solution</a></li>
+<li><a href="#part-number-parametric-list">Part Number Parametric List</a></li>
+<li><a href="#learning-center">Learning Center</a></li>
+</ul>
+</li>
+<li><a href="#use-case-walkthrough">Use Case walkthrough</a><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#cryptographic-asset-list-and-use-case-implementation">Cryptographic asset list and Use Case implementation</a></li>
+<li><a href="#interactive-transaction-diagram">Interactive transaction diagram</a></li>
+</ul>
+</li>
+<li><a href="#trustflex-configurator-walkthrough">TrustFlex Configurator walkthrough</a><ul>
+<li><a href="#atecc608-trustflex-configurator">ATECC608-TrustFlex Configurator</a></li>
+</ul>
+</li>
+<li><a href="#trustcustom-configurator-walkthrough">TrustCustom Configurator walkthrough</a><ul>
+<li><a href="#atecc608-trustcustom-configurator">ATECC608-TrustCustom Configurator</a></li>
+<li><a href="#ta100-trustcustom-configurator">TA100-TrustCustom Configurator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="trust-platform-design-suite-v2-introduction">Trust Platform Design Suite V2 introduction</h2>
+<p>Dear User - thank you for onboarding with Microchip Security solutions through the Trust Platform Design Suite V2.</p>
+<p>You will find all necessary information to learn, understand and prototype security Use Cases and you will be able to integrate the relevant security features inside your embedded system as well as starting the provisioning process. The typical journey is as follow:</p>
+<p><img alt="Trust Platform Provisioning Journey" src="images/help-doc/TrustFlex-Configurator-TPDS-flow.png" title="Provisioning Journey" /></p>
+<p>Education &amp; theory</p>
+<ul>
+<li>Learning center: tutorial videos to start with embedded security concepts and implementation.</li>
+<li>Interactive Application Notes (Use Cases): understand Cryptographic Asset List, Use Case steps and execute it through the interactive transaction diagram.</li>
+</ul>
+<p>Development</p>
+<ul>
+<li>C code integration: leverage existing MPLAB projects (Microchip microcontroller) or C Code example (non-Microchip Microcontroller) for requested Use Case(s).</li>
+<li>Configurator<ul>
+<li>Secure system configuration: finetune (TrustFlex) the Secure System configuration (Secure data &amp; slot policies) or configure (TrustCustom) your Secure System.</li>
+<li>Secure Data Exchange (TrustFlex / TrustCustom): Generate the provisioning package to start the Secure Data Exchange process with Microchip HSM provisioning system.</li>
+</ul>
+</li>
+</ul>
+<p>(Pre)Production</p>
+<ul>
+<li>Verification Samples: procure Verification samples to validate the Secure System configuration and the Secure Data Exchange process.</li>
+<li>Start of Production: after Verification Samples approval, start procurement of your custom Secure System through Microchip provisioning system.</li>
+</ul>
+<h2 id="home-page-walkthrough">Home Page walkthrough</h2>
+<p>In the Home Page, you can find 3 sections:</p>
+<ul>
+<li>Select your Security Solution</li>
+<li>Part Number Parametric List</li>
+<li>Learning Center</li>
+</ul>
+<h4 id="select-your-security-solution">Select your Security Solution</h4>
+<p>This interactive plugin helps you to identify the best security solution(s) for the Use Cases you will implement in your secure Embedded System. You can filter output by Uses Case(s) (mandatory), Application category (optional) and Product category (optional). When selecting the Use Case(s), it will show below the supported Security Solutions. You will then be able to
+ - Open the relevant Use Case(s) per Security Solution to access the Interactive Application Note and the relevant C Code project - Click on <em>Usecase</em>.
+ - Open the Security Solution configurator to start the provisioning process (Configurator and Secure Exchange process) – click on <em>Configurator</em>.</p>
+<p><img alt="Trust Platform Security Solutions" src="images/help-doc/HomePage-security-solution.jpg" title="Select Security Solutions" /></p>
+<h4 id="part-number-parametric-list">Part Number Parametric List</h4>
+<p>This page list Microchip’s security solutions partially or fully supported by the Trust Platform Design Suite. This list will continue to grow as Microchip release new solutions with integrated hardware security.</p>
+<h4 id="learning-center">Learning Center</h4>
+<p>You will find videos to start onboarding with high-level security concepts as well as dedicated training for specific Use Cases (Cloud Authentication, accessory authentication...). Please reach out to Microchip if you are looking for additional content.</p>
+<h2 id="use-case-walkthrough">Use Case walkthrough</h2>
+<p>Use Cases are formatted as follow:</p>
+<h3 id="introduction">Introduction</h3>
+<p>The introduction will help to understand the intend of the Use Case that will be implemented in the embedded system, at system level.</p>
+<h3 id="cryptographic-asset-list-and-use-case-implementation">Cryptographic asset list and Use Case implementation</h3>
+<ul>
+<li>The cryptographic asse list will show the relevant resources required from the Secure System, whether it is Keys (Private Keys, Public Keys, Symmetric Keys) or Data (Certificates, Immutable data).</li>
+<li>The Use Case implementation will define the different steps to be implemented during development phase (generation of the keys for example) and during the run-time of the product both in the customer backend and inside the embedded system.</li>
+</ul>
+<p><img alt="Trust Platform Crypto Assets" src="images/help-doc/UseCase-crypto-asset-and-implementation.jpg" title="Cryptographic asset list and Use Case implementation" /></p>
+<h3 id="interactive-transaction-diagram">Interactive transaction diagram</h3>
+<ul>
+<li>This part will allow you to visually understand the execution of the Use Case.</li>
+<li>In addition, with the help of the relevant evaluation kit connected to your computer, you will be able to run the steps of the Use Case by clicking on the steps number by chronological order.</li>
+<li>
+<p>Finally, you will be able to open the relevant C code that will have to be implemented in your embedded system. For usage with Microchip Microcontroller, under MPLAB project, you will have access to the MPLAB project (requires the installation of MPLAB and path setting in the TPDS setting menu). For usage with non-Microchip Microcontroller, under C Code, you will have access to the C Source code.</p>
+</li>
+<li>
+<p>Select the supported evaluation kit:</p>
+<p><img alt="Trust Platform Evaluation Kit" src="images/help-doc/Use-Case-select-evaluation-kit.JPG" title="Supported evaluation kit" /></p>
+</li>
+<li>
+<p>Execute the Use Case by clicking on the steps:</p>
+<p><img alt="Trust Platform Usecase Steps" src="images/help-doc/UseCase-steps.jpg" title="Usecase Steps" /></p>
+</li>
+<li>
+<p>Verify each step output in the Terminal:</p>
+<p><img alt="Trust Platform Usecase Terminal" src="images/help-doc/UseCase-terminal.jpg" title="Usecase Terminal" /></p>
+</li>
+<li>
+<p>Access to the MPLAB project or C Source Code:</p>
+<p><img alt="Trust Platform Usecase Code" src="images/help-doc/UseCase-code.jpg" title="Usecase Code" /></p>
+</li>
+<li>
+<p>Conclusion:</p>
+<ul>
+<li>The conclusion will guide you through the next step to start the configuration of your Secure System through the Secure Exchange process and will remind you with the relevant slots (if applicable) to be populated during the Configuration.</li>
+</ul>
+</li>
+</ul>
+<h2 id="trustflex-configurator-walkthrough">TrustFlex Configurator walkthrough</h2>
+<h3 id="atecc608-trustflex-configurator">ATECC608-TrustFlex Configurator</h3>
+<p><img alt="ECC608 TrustFlex Configurator" src="images/help-doc/TPDS-introduction-flow.png" title="ECC608 ECC608 TrustFlex Journey" /></p>
+<p>After validating the correct Use Case(s) to be implemented in your Embedded Design, you can now move to the next steps:</p>
+<ul>
+<li>Secure System configuration</li>
+<li>Secure Data Exchange process</li>
+</ul>
+<p>The process starts with opening a support case on <a href="https://microchipsupport.force.com/s/">Microchip Technical Support Portal</a> for Direct Customer or through your channel partner – Microchip’s Provisioning team will provide:</p>
+<ul>
+<li>a unique Custom Part Number and associated unique HSM encryption key per project.</li>
+<li>for Custom PKI only:<ul>
+<li>a MAN-ID (Manufacturer ID)</li>
+<li>Certificate Signing Request (CSR) to be signed by your Root Certificate Authority (CA)</li>
+</ul>
+</li>
+</ul>
+<p>The Secure System configuration of the ATECC608-TFLXTLS consists of:</p>
+<ul>
+<li>
+<p>Selecting the Use Case(s)</p>
+<p><img alt="TrustFLEX Configurator Usecases" src="images/help-doc/TrustFlex-Configurator-Usecase-selection.JPG" title="TrustFLEX Usecases" /></p>
+</li>
+<li>
+<p>Adding your secrets (symmetric keys) / immutable data (Public keys, data…) inside the highlighted slots and finetune configuration if needed (Disable slot write permissions)</p>
+<p><img alt="TrustFLEX Configurator" src="images/help-doc/TrustFlex-Configurator-configurator.JPG" title="TrustFLEX Configurator" /></p>
+</li>
+<li>
+<p>Detailed example:</p>
+<p><img alt="TrustFLEX Configurator Detailed" src="images/help-doc/TrustFlex-Configurator-configurator-detailed.JPG" title="TrustFLEX Configurator Detailed" /></p>
+</li>
+<li>
+<p>Adding the Part Number and MAN-ID (if Custom PKI Use Case is selected):</p>
+<p><img alt="TrustFLEX Configurator Part Number" src="images/help-doc/part-number.png" title="TrustFLEX Configurator Part Number" /></p>
+</li>
+<li>
+<p>Then you can:</p>
+<ul>
+<li>
+<p>Optional: generate the Provisioning Package for prototyping purpose</p>
+<p><img alt="TrustFLEX Configurator Prototyping" src="images/help-doc/TrustFlex-Configurator-package-prototyping.jpg" title="TrustFLEX Configurator Prototyping" /></p>
+</li>
+<li>
+<p>Optional: provision your ATECC608-TFLXTLS-PROTO samples (through the DM320118 evaluation kit)
+    <img alt="TrustFLEX Configurator Sample Prototyping" src="images/help-doc/TrustFlex-Configurator-Prototyping-samples.jpg" title="TrustFLEX Configurator Sample Prototyping" /></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Mandatory: generate the Encrypted Provisioning Package for Secure Exchange purpose that will allow you to procure the Verification Samples
+    <img alt="TrustFLEX Configurator Production" src="images/help-doc/TrustFlex-Configurator-package-production.jpg" title="TrustFLEX Configurator Production" /></p>
+</li>
+</ul>
+<p>Verification Samples:
+ - You (or your channel partner) will need to upload the encrypted provisioning package in the support case on <a href="https://microchipsupport.force.com/s/">Microchip Technical Support Portal</a>.
+ - You will then be able to procure Verification Samples through the related <a href="https://www.microchipdirect.com/trust-platform">Microchip-Direct</a> account.</p>
+<h2 id="trustcustom-configurator-walkthrough">TrustCustom Configurator walkthrough</h2>
+<h3 id="atecc608-trustcustom-configurator">ATECC608-TrustCustom Configurator</h3>
+<p>The TrustCustom configurator extension for the ATECC608-TCSM is available under NDA.</p>
+<p>Please navigate to <a href="https://www.microchip.com/en-us/support/sde-user-guide">SW-ATECC608-TCSM</a> to request the extension through myMicrochip / Secure File Request.</p>
+<p>The SW-ATECC608-TCSM software package is the extension to the Trust Platform Design Suite V2 enabling full customization of the ATECC608 device and leveraging Microchip TrustCustom provisioning flow starting an MOQ (Minimum Order Quantity) of 4000 units.</p>
+<p>This extension is only available after signing an NDA and with Business Unit marketing approval. After NDA and Marketing hold release, you will be granted access to enable the TrustCustom extension in the Trust Platform Design Suite V2.</p>
+<p>Support Tools:</p>
+<ul>
+<li>
+<p><a href="https://www.microchip.com/en-us/development-tool/DM320118">DM320118</a></p>
+</li>
+<li>
+<p><a href="https://www.microchip.com/en-us/development-tool/DM320118">DM320118</a> + <a href="https://www.microchip.com/en-us/development-tool/DT100104">DT100104</a></p>
+</li>
+<li>
+<p><a href="https://www.microchip.com/en-us/development-tool/DM320118">DM320118</a> + mikroE <a href="https://www.mikroe.com/secure-udfn-click">Secure UDFN</a> or <a href="https://www.mikroe.com/secure-soic-click">Secure SOIC</a> + ATECC608B samples</p>
+</li>
+</ul>
+<h3 id="ta100-trustcustom-configurator">TA100-TrustCustom Configurator</h3>
+<p>The TrustCustom configurator extension for the TA100-TCSM is available under NDA.</p>
+<p>Please navigate to <a href="https://www.microchip.com/en-us/support/sde-user-guide">SW-TA100-TCSM</a> to request the extension through myMicrochip / Secure File Request.</p>
+<p>The SW-TA100-TCSM software package is the extension to the Trust Platform Design Suite V2 enabling full customization of the TA100 device and leveraging Microchip TrustCustom provisioning flow starting an MOQ (Minimum Order Quantity) of 4000 units.</p>
+<p>This extension is only available after signing an NDA and with Business Unit marketing approval. After NDA and Marketing hold release, you will be granted access to enable the TrustCustom extension in the Trust Platform Design Suite V2.</p>
+<p>Support Tools:</p>
+<ul>
+<li>
+<p><a href="https://www.microchip.com/en-us/development-tool/DM320118">DM320118</a> + <a href="https://www.microchip.com/en-us/development-tool/AC164167">TA100 8-pin SOIC CryptoAutomotive™ socket Board </a></p>
+</li>
+<li>
+<p><a href="https://www.microchip.com/en-us/development-tool/DM320118">DM320118</a> + <a href="https://www.microchip.com/en-us/development-tool/AC164166">TA100 14-pin SOIC CryptoAutomotive™ socket Board </a></p>
+</li>
+</ul></div></body>
+</html>

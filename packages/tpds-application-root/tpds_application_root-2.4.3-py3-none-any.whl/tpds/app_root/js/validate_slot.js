@@ -1,0 +1,1 @@
+"use strict";var slotValidateDict={0:"none",1:"none",2:"none",3:"none",4:"none",5:"none",6:"none",7:"none",8:"none",9:"none",10:"none",11:"none",12:"none",13:"none",14:"none",15:"none",16:"none"};function validateSlotOpt(){for(var n=!0,e=0;e<16;e++)"invalid"==slotValidateDict[e]&&(alert("Enter valid data in slot "+e),n=!1);return n}
