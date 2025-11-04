@@ -1,0 +1,61 @@
+Metadata-Version: 2.4
+Name: india_housing_datasets
+Version: 0.1.0
+Summary: A collection of clean Indian city housing datasets (Ahmedabad, Gurugram, Mumbai).
+Home-page: https://github.com/Rvbaghel/india_housing_datasets
+Author: Vishal Baghel
+Author-email: baghelvishal264@gmail.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas>=1.3.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# 🏠 India Housing Datasets
+
+A lightweight Python library that provides clean housing datasets for major Indian cities — **Ahmedabad**, **Gurugram**, and **Mumbai** — in `sklearn` style.
+
+## Installation
+```bash
+pip install india_housing_datasets
+
+🚀 Quick Example
+from india_housing_datasets import fetch_ahmedabad_housing
+
+dataset = fetch_ahmedabad_housing()
+print(dataset["data"].head())
+print(dataset["target"].head())
+print(dataset["DESCR"])
+
+🏙️ Included Datasets
+| City          | Function                    | Description                         |
+| ------------  | --------------------------- | ----------------------------------- |
+| 🏡 Ahmedabad | fetch_ahmedabad_housing()  | Prices, BHK, area, floor, location  |
+| 🏙️ Gurugram  | fetch_gurugram_housing()    | Modern housing and real-estate data |
+| 🌆 Mumbai    | fetch_mumbai_housing()     | Urban apartment data for analysis   |
+
+💡 Author
+
+Vishal Baghel
+📧 baghelvishal264@gmail.com
+
+🌐 GitHub Repository
+
+📜 License
+
+MIT License © 2025 — Vishal Baghel
+----
