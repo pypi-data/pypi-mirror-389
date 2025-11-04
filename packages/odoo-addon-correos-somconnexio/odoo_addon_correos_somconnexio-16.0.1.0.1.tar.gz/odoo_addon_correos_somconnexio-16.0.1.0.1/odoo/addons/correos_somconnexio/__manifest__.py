@@ -1,0 +1,15 @@
+{
+    "name": "Odoo Som Connexió Correos integration",
+    "version": "16.0.1.0.1",
+    "summary": "Integration with Correos for Som Connexió.",
+    "author": "Coopdevs Treball SCCL, Som Connexió SCCL",
+    "website": "https://coopdevs.org",
+    "license": "AGPL-3",
+    "category": "Cooperative management",
+    "depends": ["delivery_somconnexio"],
+    "data": ["data/queue_job_config.xml"],
+    "demo": [],
+    "external_dependencies": {"python": ["correos_preregistro", "correos_seguimiento"]},
+    "application": False,
+    "installable": True,
+}
