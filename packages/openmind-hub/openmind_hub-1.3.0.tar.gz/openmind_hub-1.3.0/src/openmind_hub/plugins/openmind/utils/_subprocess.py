@@ -1,0 +1,63 @@
+# Copyright 2021 The HuggingFace Inc. team. All rights reserved.
+# Copyright (c) 2024 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
+import os
+import subprocess
+from pathlib import Path
+from typing import Union, List, Optional
+
+
+def run_subprocess(
+    command: Union[str, List[str]],
+    folder: Optional[Union[str, Path]] = None,
+    check=True,
+    **kwargs,
+) -> subprocess.CompletedProcess:
+    """
+    Method to run subprocesses. Calling this will capture the `stderr` and `stdout`,
+    please call `subprocess.run` manually in case you would like for them not to
+    be captured.
+
+    Args:
+        command (`str` or `List[str]`):
+            The command to execute as a string or list of strings.
+        folder (`str`, *optional*):
+            The folder in which to run the command. Defaults to current working
+            directory (from `os.getcwd()`).
+        check (`bool`, *optional*, defaults to `True`):
+            Setting `check` to `True` will raise a `subprocess.CalledProcessError`
+            when the subprocess has a non-zero exit code.
+        kwargs (`Dict[str, str]`):
+            Keyword arguments to be passed to the `subprocess.run` underlying command.
+
+    Returns:
+        `subprocess.CompletedProcess`: The completed process.
+    """
+    if isinstance(command, str):
+        command = command.split()
+
+    if isinstance(folder, Path):
+        folder = str(folder)
+
+    return subprocess.run(
+        command,
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        check=check,
+        encoding="utf-8",
+        errors="replace",  # if not utf-8, replace char by �
+        cwd=folder or os.getcwd(),
+        shell=False,
+        **kwargs,
+    )

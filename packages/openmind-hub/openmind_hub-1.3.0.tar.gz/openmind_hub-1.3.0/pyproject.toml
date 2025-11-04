@@ -1,0 +1,105 @@
+[project]
+name = "openmind-hub"
+version = "v1.3.0"
+description = "Hub client SDK for openMind"
+readme = "README.md"
+license = { text = "木兰宽松许可证, 第2版" }
+authors = [
+  { name = "The openMind Team"}, 
+  { email = "dev@public.openmind.cn" },
+]
+dependencies = ["filelock>=3.14.0", "requests==2.32.2", "tqdm>=4.66.4", "pyyaml>=6.0.1", "jinja2>=3.1.4", "fsspec>=2024.2.0", "urllib3>=2.0.0"]
+requires-python = ">=3.8, <3.14"
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "License :: OSI Approved :: Mulan Permissive Software License v2 (MulanPSL-2.0)",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "testtools",
+]
+
+lint = [
+    "black",
+    "ruff",
+]
+
+all = [
+    "openmind-hub[openi]",
+    "openmind-hub[huggingface]"
+]
+
+openi = ["openi>=2.0.2"]
+huggingface = ["huggingface_hub"]
+
+[project.urls]
+Homepage = "https://gitee.com/openmind-ai/openmind-hub"
+Repository = "https://gitee.com/openmind-ai/openmind-hub"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build]
+include = [
+  "src/*"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/openmind_hub"]
+
+# Used to call hatch_build.py
+[tool.hatch.build.targets.wheel.hooks.custom]
+
+# Used to get version information
+[tool.hatch.metadata.hooks.custom]
+
+[tool.black]
+line-length = 120
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 120
+# Enables the isort rules on top of the default rules
+
+# "F401": Ignore import vilations in all `__init__.py` files.
+# "I": Ignore isort in all `__init__.py` files to avoid circle import.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "I"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+# Sort the imports by module, independent for import style (from / import).
+force-sort-within-sections = true
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
