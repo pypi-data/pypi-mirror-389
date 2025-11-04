@@ -1,0 +1,21 @@
+execute:
+  cache: true
+  freeze: auto
+format:
+  html:
+    toc: true
+    theme:
+    - quarto
+    - pyp.scss
+project:
+  type: website
+  title: <title>
+  output-dir: <output_dir>
+website:
+  navbar:
+    left:
+      - file: index.qmd
+        text: Home
+  sidebar:
+    collapse-level: 1
+    contents:
