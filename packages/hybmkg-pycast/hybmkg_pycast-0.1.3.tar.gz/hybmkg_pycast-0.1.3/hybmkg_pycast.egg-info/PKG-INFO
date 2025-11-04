@@ -1,0 +1,115 @@
+Metadata-Version: 2.4
+Name: hybmkg-pycast
+Version: 0.1.3
+Summary: Hybrid climate forecasting framework for BMKG using Python
+Author-email: Nurdeka Hidayanto <nurdeka.bmkg@gmail.com>
+License: MIT
+Project-URL: Source, https://github.com/nurdeka/hybmkg_pycast
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.26.0
+Requires-Dist: pandas>=2.3.0
+Requires-Dist: scipy>=1.15.0
+Requires-Dist: matplotlib>=3.10.0
+Requires-Dist: xarray>=2025.6.0
+Requires-Dist: netCDF4>=1.7.0
+Requires-Dist: cartopy>=0.25.0
+Requires-Dist: pyproj>=3.7.0
+Requires-Dist: shapely>=2.0.0
+Requires-Dist: joblib>=1.3.0
+Requires-Dist: tqdm>=4.67.0
+Requires-Dist: simpful>=2.12.0
+Requires-Dist: scikit-learn>=1.7.0
+Requires-Dist: xgboost>=3.1.0
+Requires-Dist: lightgbm>=4.6.0
+Requires-Dist: tensorflow>=2.15.0
+Requires-Dist: keras>=2.15.0
+Requires-Dist: statsmodels>=0.14.0
+Requires-Dist: pmdarima>=2.0.0
+Requires-Dist: PyWavelets>=1.6.0
+
+# 🌦️ hybmkg-pycast
+
+hybmkg-pycast is a hybrid machine learning and deep learning framework for climate and weather forecasting.
+It is designed to integrate multiple forecasting approaches — from classical statistical models to modern deep learning architectures — and support research and operational applications at BMKG (Meteorological, Climatological, and Geophysical Agency of Indonesia).
+
+# 🚀 Key Features
+
+### Comprehensive Forecasting Models
+
+Statistical: ARIMA, SARIMA, ANFIS, Wavelet-ARIMA, Wavelet-ANFIS, etc.
+
+Machine Learning: Random Forest, XGBoost, LightGBM, SVR, KNN, MLP using multi-stacked approach.
+
+Deep Learning: RNN, LSTM, GRU, CNN, Transformer, and hybrid approaches using multi-stacked approach.
+
+### Flexible Data Input
+
+Supports both NetCDF and CSV formats for climate and environmental datasets.
+
+### Hybrid Framework
+
+Combine traditional time series models with machine learning and deep learning methods for improved forecast accuracy.
+
+### Visualization and Evaluation
+
+Built-in utilities for plotting time series, model diagnostics, and forecast verification (correlation, RMSE, R²).
+
+### Project-Oriented Directory Structure
+
+hybmkg_pycast/
+
+├── config/      # JSON configuration files
+
+├── data/        # Input data (CSV, NetCDF)
+
+├── model/       # Model scripts (statistical, ML, DL)
+
+├── plots/       # Generated plots (PNG)
+
+├── results/     # Output results (CSV, trained models)
+
+├── run_all.ipynb
+
+├── hybmkg_pycast.yaml  # Conda environment specification
+
+# 🧩 Installation
+
+### You can install the package using pip:
+
+_pip install hybmkg-pycast_
+
+
+### Or from source:
+
+_git clone https://github.com/yourusername/hybmkg_pycast.git_
+
+_cd hybmkg_pycast_
+
+_pip install ._
+
+
+### If you prefer Conda, use the provided environment file:
+
+_conda env create -f hybmkg_pycast.yaml_
+
+_conda activate hybmkg_pycast_
+
+
+# 📊 Applications
+
+Seasonal and sub-seasonal climate forecasting
+
+ENSO (El Niño–Southern Oscillation) prediction
+
+Rainfall variability and extreme events analysis
+
+Climate change impact studies
+
+# 👥 Authors and Acknowledgment
+
+Developed by researchers at BMKG to support data-driven climate prediction and research collaboration.
+
+# 📄 License
+
+This project is licensed under the **MIT License.**
