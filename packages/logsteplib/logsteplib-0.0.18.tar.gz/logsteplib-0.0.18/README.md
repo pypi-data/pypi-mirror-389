@@ -1,0 +1,176 @@
+# logsteplib
+
+- [Description](#package-description)
+- [Usage](#usage)
+- [Installation](#installation)
+- [Docstring](#docstring)
+- [License](#license)
+
+## Package Description
+
+Package containing a standard format for the logging module.
+
+## Usage
+
+### Stream Console Logs
+
+From a script:
+
+```python
+# Initialise a logger for the process and log an informational message
+from logsteplib.streamer import StreamLogger
+
+logger = StreamLogger(name="my_process").logger
+
+logger.info(msg="Something to log!")
+# 2025-11-02 00:00:01 - my_process           - INFO     - Something to log!
+```
+
+### Lakehouse DQ Logs
+
+From a SQL script:
+
+```sql
+-- Create the Delta lakehouse table for tracking SharePoint file uploads
+-- Includes metadata such as file details, user info, and processing status
+-- Table (example): workspace.default.sharepoint_uploader_monitoring_logs
+DROP TABLE IF EXISTS workspace.default.sharepoint_uploader_monitoring_logs;
+CREATE TABLE workspace.default.sharepoint_uploader_monitoring_logs (
+  target STRING,
+  key STRING,
+  input_file_name STRING,
+  file_name STRING,
+  user_name STRING,
+  user_email STRING,
+  modify_date STRING,     -- Should be timestamp
+  file_size STRING,       -- Should be INT
+  file_row_count STRING,  -- Should be INT
+  status STRING,
+  rejection_reason STRING,
+  file_web_url STRING
+)
+USING DELTA;
+```
+
+From a Python script:
+
+```python
+from logsteplib.dq import DQStatusCode
+
+print(DQStatusCode.get_description("SchemaMismatch"))  # DQ FAIL: SCHEMA MISMATCH
+print(DQStatusCode.get_description("UnknownCode"))     # UNKNOWN STATUS CODE
+```
+
+Status Code Table
+
+| Code                       | Description                             |
+| -------------------------- | --------------------------------------- |
+| NA                         | NOT APPLICABLE                          |
+| EmptyFile                  | DQ FAIL: EMPTY FILE                     |
+| SchemaMismatch             | DQ FAIL: SCHEMA MISMATCH                |
+| SchemaMismatchAndEmptyFile | DQ FAIL: SCHEMA MISMATCH AND EMPTY FILE |
+| InvalidNumericFormat       | DQ FAIL: INVALID NUMERIC FORMAT         |
+| InvalidDateFormat          | DQ FAIL: INVALID DATE FORMAT            |
+
+```python
+from logsteplib.dq import DQWriter
+from logsteplib.dq import DQMetadata
+
+# Init DQWriter
+monitoring_table = "workspace.default.sharepoint_uploader_monitoring_logs"
+dq_writer = DQWriter(table_name=monitoring_table)
+
+```python
+# Create a DQMetadata instance containing metadata about a processed file
+# This metadata can be used for logging, auditing, or writing to a lakehouse table
+metadata = DQMetadata(
+    target="my_folder/my_system",
+    key="customer_20251031",
+    input_file_name="raw_customers.csv",
+    file_name="clean_customers.csv",
+    user_name="Parker, Peter",
+    user_email="peter.parker@example.com",
+    modify_date="2025-11-02",
+    file_size="204800",
+    file_row_count="15000",
+    status="FAIL",
+    rejection_reason=DQStatusCode.get_description("SchemaMismatch"),
+    file_web_url="https://lakehouse.company.com/files/clean_customers.parquet"
+)
+
+# Write the metadata (DQMetadata) to the lakehouse monitoring table
+dq_writer.write_metadata(metadata=metadata)
+```
+
+### Email Notifications
+
+```python
+from logsteplib.notifier import EmailNotifier
+
+# Init email notifications
+notifier = EmailNotifier(
+    client_id=client_id,
+    client_secret=client_secret,
+    tenant_id=tenant_id,
+    client_email="sender@example.com"
+)
+
+# Send email notification
+response = notifier.send_email(recipients=["peter.parker@example.com"],
+                               subject="Notification X",
+                               message="This is<br>a test...",
+                               attachments=None)
+if response.status_code == 200:
+    print("Email sent")
+```
+
+```python
+# Using pre-defined templates
+from email_templates import EmailTemplates
+
+# Parameters
+recipient_name = "Peter Parker"
+error_message = "The web is crashing."
+
+# Generate an email using the technical template
+message = EmailTemplates.technical_error(recipient_name, error_message)
+
+# Print result
+print(message)  # Dear Peter Parker...
+```
+
+## Installation
+
+Install python and pip if you have not already.
+
+Then run:
+
+```bash
+pip install pip --upgrade
+```
+
+For production:
+
+```bash
+pip install logsteplib
+```
+
+This will install the package and all of it's python dependencies.
+
+If you want to install the project for development:
+
+```bash
+git clone https://github.com/aghuttun/logsteplib.git
+cd logsteplib
+pip install -e ".[dev]"
+```
+
+## Docstring
+
+The script's docstrings follow the numpydoc style.
+
+## License
+
+BSD License (see license file)
+
+[top](#logsteplib)
