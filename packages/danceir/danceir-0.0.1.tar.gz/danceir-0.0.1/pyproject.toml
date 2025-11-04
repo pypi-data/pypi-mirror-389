@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "danceir"
+version = "0.0.1"
+description = "A Python toolbox for Dance Information Retrieval — analyzing rhythm, tempo, and motion features from body movement data."
+readme = "README.md"
+authors = [{ name = "Sagar Dutta", email = "sagar0dutta@gmail.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+keywords = ["dance", "music information retrieval", "tempo", "motion analysis", "rhythm"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis"
+]
