@@ -1,0 +1,32 @@
+---
+################################################################################
+# SYSTEM MANAGERS - EDIT THESE VALUES FOR YOUR ORGANISATIONAL SETUP            #
+################################################################################
+
+################################################################################
+# SDC parameters                                                               #
+################################################################################
+# 1. Default values                                                            #
+################################################################################
+
+# frequency and degrees-of-freedom thresholds (latter for safe analytical stats)
+safe_threshold: 10
+safe_dof_threshold: 10
+
+# params for n, k tes: largest n values account for less than k% of the total
+safe_nk_n: 2
+safe_nk_k: 0.90
+
+# parameter for p-ration test: sum of smallest N-2 values accounts for at least
+# p% of largest
+safe_pratio_p: 0.10
+
+# refuse checking for missing values
+check_missing_values: False
+
+# frequency threshols for survival tables and plots
+survival_safe_threshold: 10
+
+# consider zeros to be disclosive
+zeros_are_disclosive: True
+...
