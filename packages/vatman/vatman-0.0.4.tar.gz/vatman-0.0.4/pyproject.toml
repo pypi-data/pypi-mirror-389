@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "vatman"
+version = "0.0.4"
+description = "A small utility for drawing image boards"
+authors = ["Vadim Fedorov <vadim.ai.lab@gmail.com>"]
+repository = "https://github.com/Coderik/vatman"
+readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Topic :: Utilities",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research"
+]
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pillow = ">=11.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.5.0"
+jupyterlab = "^4.2.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
