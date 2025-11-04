@@ -1,0 +1,61 @@
+{
+  "name": "digital-twin",
+  "version": "1.6.1",
+  "description": "Digital Twin Agent with unified streaming endpoint - Full capabilities: conversation + tool execution + function calling",
+  "author": "Aurica Team",
+  "routes": [
+    {
+      "path": "/api/think",
+      "file": "be/api/think.py",
+      "method": "POST"
+    },
+    {
+      "path": "/api/act",
+      "file": "be/api/act.py",
+      "method": "POST"
+    },
+    {
+      "path": "/api/state",
+      "file": "be/api/state.py",
+      "method": "GET"
+    },
+    {
+      "path": "/api/capabilities",
+      "file": "be/api/capabilities.py",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stream",
+      "file": "be/api/stream.py",
+      "method": "POST"
+    },
+    {
+      "path": "/api/health",
+      "file": "be/api/health.py",
+      "method": "GET"
+    },
+    {
+      "path": "/api/cloud_dt",
+      "file": "be/api/cloud_dt.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/direct_connection",
+      "file": "be/api/direct_connection.py",
+      "method": "ALL"
+    }
+  ],
+  "public_routes": [
+    "/api/health/*",
+    "/api/cloud_dt/*",
+    "/api/direct_connection/*"
+  ],
+  "requires": [
+    "authentication"
+  ],
+  "dt_config": {
+    "type": "digital_twin_agent",
+    "autonomy_enabled": true,
+    "execution_node": true
+  }
+}
