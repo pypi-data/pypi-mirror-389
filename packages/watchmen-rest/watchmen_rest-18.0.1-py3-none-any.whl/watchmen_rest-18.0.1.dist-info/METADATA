@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: watchmen-rest
+Version: 18.0.1
+Summary: 
+License: MIT
+License-File: LICENSE
+Author: botlikes
+Author-email: 75356972+botlikes456@users.noreply.github.com
+Requires-Python: >=3.12,<3.13
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: fastapi (>=0.111.0,<0.112.0)
+Requires-Dist: jsonschema (>=4.22.0,<5.0.0)
+Requires-Dist: python-dotenv (>=1.0.1,<2.0.0)
+Requires-Dist: python-jose (>=3.3.0,<4.0.0)
+Requires-Dist: requests (>=2.32.3,<3.0.0)
+Requires-Dist: uvicorn (>=0.30.1,<0.31.0)
+Requires-Dist: watchmen-auth (==18.0.1)
+Requires-Dist: watchmen-storage (==18.0.1)
