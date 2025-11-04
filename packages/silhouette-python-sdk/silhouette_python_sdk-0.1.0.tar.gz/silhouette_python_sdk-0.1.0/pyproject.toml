@@ -1,0 +1,191 @@
+# Poetry pyproject.toml: https://python-poetry.org/docs/pyproject/
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "silhouette-python-sdk"
+version = "0.1.0"
+description = "Python SDK for trading on Silhouette - the shield exchange on Hyperliquid"
+readme = "README.md"
+authors = [{ name = "Silhouette", email = "aidan@silhouette.exchange" }]
+license = { text = "MIT" }
+requires-python = ">=3.10,<4"
+keywords = [
+  "silhouette",
+  "trading",
+  "privacy",
+  "exchange",
+  "hyperliquid",
+  "defi",
+  "crypto",
+  "sdk",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  # Hyperliquid SDK
+  "hyperliquid-python-sdk>=0.20.0,<1.0.0",
+  # Our own dependencies
+  "requests>=2.32.3,<3.0.0",
+  'typing_extensions>=4.9.0; python_version < "3.11"',
+  "siwe>=4.4.0,<5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/silhouette-exchange/silhouette-python-sdk"
+Repository = "https://github.com/silhouette-exchange/silhouette-python-sdk"
+
+[tool.poetry]
+packages = [{ include = "silhouette" }]
+include = ["silhouette/py.typed"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+mypy = "^1.18.1"
+mypy-extensions = "^1.1.0"
+ruff = "^0.13.0"
+pre-commit = "^4.3.0"
+safety = "^3.6.1"
+coverage = "^7.10.6"
+pytest-cov = "^7.0.0"
+pytest-socket = "^0.7.0"
+types-requests = "^2.31.0"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+exclude = [".git", ".mypy_cache", ".ruff_cache", "__pycache__", "dist", "build"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "C4", "UP", "S"]
+ignore = ["E501", "E203"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S106"] # Allow assert statements and ignore false positive hardcoded password warnings in tests
+"tests/hyperliquid/info_test.py" = ["I001"] # Allow unsorted imports (silhouette must be imported first)
+"tests/hyperliquid/exchange_test.py" = ["I001"] # Allow unsorted imports (silhouette must be imported first)
+"tests/hyperliquid/reexports_test.py" = ["I001"] # Allow unsorted imports (tests require specific import order)
+"examples/*" = ["I001", "F401"] # Allow unsorted imports and unused silhouette import (triggers sys.modules injection)
+# "*/types.py" = ["UP006", "UP035"] # Allow typing style for compatibility
+
+[tool.ruff.lint.isort]
+known-first-party = ["silhouette"]
+known-third-party = ["mypy", "typing_extensions"]
+combine-as-imports = true
+split-on-trailing-comma = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.mypy]
+# https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
+python_version = "3.10"
+pretty = true
+show_traceback = true
+color_output = true
+exclude = ["examples/"]
+
+allow_redefinition = false
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+ignore_missing_imports = true
+implicit_reexport = true
+no_implicit_optional = true
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+# Re-export modules use star imports - mypy can't infer types, but runtime works fine
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.utils.signing"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.utils.constants"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.utils.types"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.utils.error"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.api"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.exchange"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.info"
+disable_error_code = ["attr-defined", "no-redef"]
+
+[[tool.mypy.overrides]]
+module = "silhouette.hyperliquid.websocket_manager"
+disable_error_code = ["attr-defined", "no-redef"]
+
+
+[tool.pytest.ini_options]
+# https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
+# Directories that are not visited by pytest collector:
+norecursedirs = [
+  "hooks",
+  "*.egg",
+  ".eggs",
+  "dist",
+  "build",
+  "docs",
+  ".tox",
+  ".git",
+  "__pycache__",
+]
+doctest_optionflags = [
+  "NUMBER",
+  "NORMALIZE_WHITESPACE",
+  "IGNORE_EXCEPTION_DETAIL",
+]
+
+# Extra options:
+addopts = [
+  "--strict-markers",
+  "--tb=short",
+  "--doctest-modules",
+  "--doctest-continue-on-failure",
+  "--cov-report=term-missing",
+  "--cov-report=html",
+  "--cov=silhouette",
+  "--disable-socket",
+]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
