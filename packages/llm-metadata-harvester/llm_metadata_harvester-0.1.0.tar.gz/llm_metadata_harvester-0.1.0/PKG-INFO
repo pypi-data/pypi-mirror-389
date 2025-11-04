@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: llm_metadata_harvester
+Version: 0.1.0
+Requires-Python: >=3.8
+License-File: LICENSE
+Requires-Dist: openai
+Requires-Dist: google-genai
+Requires-Dist: python-dotenv
+Requires-Dist: tqdm
+Requires-Dist: tiktoken
+Requires-Dist: requests
+Requires-Dist: beautifulsoup4
+Requires-Dist: playwright
+Requires-Dist: nest_asyncio
+Requires-Dist: pyyaml
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-asyncio; extra == "dev"
+Requires-Dist: ipykernel; extra == "dev"
+Dynamic: license-file
