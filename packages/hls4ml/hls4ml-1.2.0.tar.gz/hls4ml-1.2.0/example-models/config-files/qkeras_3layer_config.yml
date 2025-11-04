@@ -1,0 +1,66 @@
+KerasJson: keras/qkeras_3layer.json
+KerasH5:   keras/qkeras_3layer_weights.h5
+Backend: Vivado
+OutputDir: qkeras_3layer
+ProjectName: myproject
+Part: xcvu9p-flga2577-2-e
+ClockPeriod: 5
+
+IOType: io_parallel
+
+HLSConfig:
+  Model:
+    Precision: ap_fixed<16,6>
+    ReuseFactor: 1
+    Strategy: Latency
+  LayerName:
+    fc1:
+      Precision:
+        bias: ap_fixed<6,1>
+        weight: ap_fixed<6,1>
+      ReuseFactor: 1
+      Trace: true
+    fc1_input:
+      Precision:
+        result: ap_fixed<16,6>
+      Trace: true
+    fc2:
+      Precision:
+        bias: ap_fixed<6,1>
+        weight: ap_fixed<6,1>
+      ReuseFactor: 1
+      Trace: true
+    fc3:
+      Precision:
+        bias: ap_fixed<6,1>
+        weight: ap_fixed<6,1>
+      ReuseFactor: 1
+      Trace: true
+    output:
+      Precision:
+        bias: ap_fixed<6,1>
+        weight: ap_fixed<6,1>
+      ReuseFactor: 1
+      Trace: true
+    relu1:
+      Precision:
+        result: ap_fixed<7,1,AP_RND_CONV,AP_SAT>
+      ReuseFactor: 1
+      Trace: true
+    relu2:
+      Precision:
+        result: ap_fixed<7,1,AP_RND_CONV,AP_SAT>
+      ReuseFactor: 1
+      Trace: true
+    relu3:
+      Precision:
+        result: ap_fixed<7,1,AP_RND_CONV,AP_SAT>
+      ReuseFactor: 1
+      Trace: true
+    softmax:
+      Precision: ap_fixed<16,6>
+      ReuseFactor: 1
+      Trace: true
+      exp_table_t: ap_fixed<18,8>
+      inv_table_t: ap_fixed<18,4>
+      table_size: 1024
