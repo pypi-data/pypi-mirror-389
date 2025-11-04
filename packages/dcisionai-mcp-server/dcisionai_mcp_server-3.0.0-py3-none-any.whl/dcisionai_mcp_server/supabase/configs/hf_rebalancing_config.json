@@ -1,0 +1,157 @@
+{
+  "domain_id": "hf_rebalancing",
+  "name": "Hedge Fund Transaction Cost-Optimized Rebalancing",
+  "description": "Optimize hedge fund portfolio rebalancing by minimizing transaction costs (spreads, market impact) while maintaining target factor exposures and risk limits.",
+  "version": "1.0.0",
+  "enabled": true,
+  "category": "hedge_fund",
+  "tags": [
+    "rebalancing",
+    "transaction_costs",
+    "factor_investing",
+    "alpha",
+    "portfolio"
+  ],
+  "objective_config": {
+    "type": "multi_objective",
+    "objectives": [
+      "Minimize tracking error from target factor exposures",
+      "Minimize transaction costs (spreads + market impact + commissions)",
+      "Maximize expected alpha from factor tilts"
+    ],
+    "weights": {
+      "tracking_error": 0.5,
+      "transaction_costs": 0.4,
+      "expected_alpha": 0.1
+    },
+    "formula": "0.50 * tracking_error + 0.40 * transaction_costs - 0.10 * expected_alpha"
+  },
+  "constraints_config": {
+    "constraints": [
+      "Factor exposures must be within \u00b15% of target",
+      "Total portfolio turnover must not exceed 20%",
+      "Portfolio volatility must stay within risk limit",
+      "No single stock position above 5% of portfolio",
+      "Trade size must not exceed 10% of average daily volume (liquidity)",
+      "Short-term capital gains must be below tax threshold"
+    ],
+    "hard_constraints": [
+      "factor_exposure_targets",
+      "max_turnover",
+      "portfolio_risk"
+    ],
+    "soft_constraints": [
+      "single_stock_limit",
+      "liquidity_constraint",
+      "tax_threshold"
+    ]
+  },
+  "data_sources": {
+    "required": [
+      "current_positions",
+      "target_factor_exposures",
+      "risk_limit",
+      "portfolio_aum"
+    ],
+    "optional": [
+      "tax_loss_carryforwards",
+      "restricted_securities",
+      "factor_premia_estimates"
+    ],
+    "external_apis": [
+      {
+        "provider": "polygon",
+        "data_type": "realtime_prices",
+        "required": true,
+        "purpose": "Get current prices for all portfolio holdings"
+      },
+      {
+        "provider": "polygon",
+        "data_type": "bid_ask_spreads",
+        "required": true,
+        "purpose": "Estimate transaction costs from bid-ask spreads"
+      },
+      {
+        "provider": "polygon",
+        "data_type": "trading_volumes",
+        "required": true,
+        "purpose": "Estimate market impact based on daily volumes"
+      },
+      {
+        "provider": "polygon",
+        "data_type": "volatility",
+        "required": true,
+        "purpose": "Calculate portfolio risk and market impact sensitivity"
+      }
+    ]
+  },
+  "parsing_config": {
+    "llm_model": "claude-3-5-haiku-20241022",
+    "max_tokens": 2048,
+    "temperature": 0.0,
+    "use_synthetic_data": true,
+    "synthetic_data_generator": "hf_rebalancing_generator",
+    "prompt_template": "You are a quantitative portfolio manager. Extract:\n\n1. Current Portfolio:\n   - Number of positions\n   - Total AUM ($M)\n   - Top 10 holdings (ticker, weight %)\n   - Current factor exposures (value, momentum, quality, etc.)\n\n2. Target Exposures:\n   - Target value exposure (%)\n   - Target momentum exposure (%)\n   - Target quality exposure (%)\n   - Target size exposure (%)\n\n3. Risk Constraints:\n   - Maximum portfolio volatility (%)\n   - Maximum single stock weight (%)\n   - Maximum turnover (%)\n\n4. Cost Parameters:\n   - Estimated bid-ask spread (bps)\n   - Commission rate (bps)\n\nReturn JSON with numeric values."
+  },
+  "ga_params": {
+    "population_size": 200,
+    "generations": 100,
+    "mutation_rate": 0.2,
+    "crossover_rate": 0.8,
+    "elitism_count": 20,
+    "tournament_size": 7
+  },
+  "output_format": {
+    "sections": [
+      "current_exposure_analysis",
+      "rebalancing_recommendation",
+      "transaction_cost_breakdown",
+      "expected_alpha_impact",
+      "risk_analysis",
+      "trade_list",
+      "execution_strategy"
+    ],
+    "visualizations": [
+      "factor_exposure_spider",
+      "cost_benefit_waterfall",
+      "trade_timeline"
+    ],
+    "export_formats": [
+      "trade_list_csv",
+      "risk_report_pdf",
+      "json_api"
+    ]
+  },
+  "domain_expert": {
+    "title": "Quantitative Portfolio Manager",
+    "profile": "Expert in factor investing, transaction cost analysis, and systematic portfolio rebalancing with 10+ years managing multi-billion dollar hedge fund portfolios",
+    "priorities": [
+      "Factor exposure management (Value, Momentum, Quality)",
+      "Transaction cost minimization (spreads + market impact)",
+      "Alpha generation through optimal rebalancing",
+      "Risk control within volatility targets"
+    ],
+    "speaks_about": [
+      "factor loadings and tilts",
+      "bid-ask spreads and market impact",
+      "tracking error minimization",
+      "alpha decay and implementation shortfall",
+      "turnover optimization",
+      "cost-benefit analysis of rebalancing"
+    ]
+  },
+  "math_expert": {
+    "title": "Transaction Cost Modeling Specialist",
+    "profile": "Expert in market microstructure, non-linear cost functions, and cost-aware portfolio optimization",
+    "formulation": "Multi-objective optimization balancing tracking error (50%), transaction costs (40%), and expected alpha (10%)",
+    "problem_class": "Mixed Integer Programming with Non-Linear Cost Functions",
+    "solution_method": "Genetic Algorithm with transaction cost-aware mutation operators",
+    "defensibility": [
+      "Square-root market impact model validation",
+      "Factor exposure verification (within \u00b15% targets)",
+      "Cost-benefit analysis with confidence intervals",
+      "Turnover constraint satisfaction",
+      "Risk decomposition and attribution"
+    ]
+  }
+}
