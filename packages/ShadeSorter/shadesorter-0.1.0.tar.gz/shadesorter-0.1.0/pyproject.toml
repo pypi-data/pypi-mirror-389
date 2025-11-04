@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling>=1.26.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ShadeSorter"
+version = "0.1.0"
+description = "Deterministic color family classifier across HSL, HSV, Lab, and LCH"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Tintelligence" }
+]
+keywords = ["color", "classification", "hsl", "lab", "lch", "hsv", "hex"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Developers",
+  "Typing :: Typed"
+]
+dependencies = [
+  "tintelligence-color-utils>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Tintelligence-App/shade-sorter"
+Repository = "https://github.com/Tintelligence-App/shade-sorter"
+Issues = "https://github.com/Tintelligence-App/shade-sorter/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "build>=1.2.1",
+]
+
+[tool.hatch.version]
+path = "src/shade_sorter/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src/shade_sorter",
+  "/README.md",
+  "/LICENSE"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "src/shade_sorter",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+
+
