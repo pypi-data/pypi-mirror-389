@@ -1,0 +1,59 @@
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
+
+[project]
+name = "cdma"
+version = "0.0.6"
+dependencies = [
+  "dask[array]>=2025.9.0",
+  "ipython>=9.5.0",
+  "ipywidgets>=8.1.7",
+  "joblib>=1.5.2",
+  "napari>=0.6.4",
+  "notebook>=7.4.5",
+  "numpy>=2.3.3",
+  "pillow>=11.3.0",
+  "scikit-image>=0.25.2",
+  "seaborn>=0.13.2",
+]
+requires-python = ">=3.11"
+authors = [
+  {name = "Malte Bruhn", email = "malte.bruhn@uni-rostock.de"},
+]
+maintainers = [
+  {name = "Malte Bruhn", email = "malte.bruhn@uni-rostock.de"},
+]
+description = "A collection of utilities related to processing 3D volumetric data and the CDMA group of Rostock University."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENCE.txt"]
+keywords = []
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python"
+]
+
+
+
+[project.urls]
+Repository = "https://gitlab.uni-rostock.de/msf-cdma/cdma-utils.git"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+    "notebook>=7.4.5",
+    "tox>=4.30.2",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "build>=1.3.0",
+    "twine>=6.2.0",
+]
+
+[tool.uv.workspace]
+members = [
+    "cdma",
+]
+
+[tool.isort]
+known_first_party = ["cdma"]
