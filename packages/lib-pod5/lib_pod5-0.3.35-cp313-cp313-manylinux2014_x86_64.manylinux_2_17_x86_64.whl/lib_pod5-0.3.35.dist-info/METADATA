@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: lib_pod5
+Version: 0.3.35
+Summary: Python bindings for the POD5 file format
+Author-email: Oxford Nanopore Technologies plc <support@nanoporetech.com>
+Project-URL: Homepage, https://github.com/nanoporetech/pod5-file-format
+Project-URL: Issues, https://github.com/nanoporetech/pod5-file-format/issues
+Project-URL: Documentation, https://pod5-file-format.readthedocs.io/en/latest/
+Keywords: nanopore
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Requires-Python: ~=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.21.0
+Provides-Extra: dev
+Requires-Dist: build; extra == "dev"
+Requires-Dist: pytest~=7.3; extra == "dev"
+
+LIB_POD5 Package
+================
+
+POD5 is a file format for storing nanopore dna data in an easily accessible way.
+
+What does this project contain
+------------------------------
+
+This project contains the low-level core library (extension modules) for reading and
+writing POD5 files. This project forms the basis of the pure-python `pod5` package which
+is probably the project you want.
