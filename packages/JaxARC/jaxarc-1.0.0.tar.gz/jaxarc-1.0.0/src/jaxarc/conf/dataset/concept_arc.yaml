@@ -1,0 +1,23 @@
+# ConceptARC Dataset Configuration
+# Standard configuration for ConceptARC dataset (16 concept groups)
+
+# Dataset Information
+dataset_name: "ConceptARC"
+dataset_path: "data/ConceptARC"
+dataset_repo: "https://github.com/victorvikram/ConceptARC"
+parser_entry_point: "jaxarc.parsers:ConceptArcParser"
+expected_subdirs: ["corpus"]
+task_split: "train"
+shuffle_tasks: true
+
+# Grid Configuration
+max_grid_height: 30
+max_grid_width: 30
+min_grid_height: 1
+min_grid_width: 1
+max_colors: 10
+background_color: -1
+
+# Task Configuration - ConceptARC characteristics
+max_train_pairs: 5
+max_test_pairs: 3

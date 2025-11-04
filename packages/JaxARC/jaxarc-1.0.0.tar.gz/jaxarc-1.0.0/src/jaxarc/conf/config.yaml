@@ -1,0 +1,87 @@
+defaults:
+  - _self_
+  - dataset: arc_agi_2 # Which dataset to use
+  - reward: training # Which reward configuration to use (standard/training/evaluation)
+  - action: standard # Which action configuration to use (standard/full/raw)
+
+environment:
+  max_episode_steps: 150
+  debug_level: "minimal" # off|minimal|verbose
+  auto_reset: true
+
+logging:
+  log_operations: true
+  log_rewards: true
+
+  # Logging frequency and timing
+  log_frequency: 5
+
+  # Batched Training Specifics
+  batched_logging_enabled: true
+
+storage:
+  # Base storage configuration
+  base_output_dir: "outputs/research"
+  run_name: null # Auto-generated with experiment info
+  episodes_dir: "episodes"
+  debug_dir: "debug"
+  visualization_dir: "visualizations"
+  logs_dir: "logs"
+
+  # Research limits (larger for comprehensive studies)
+  max_episodes_per_run: 1000
+  max_storage_gb: 50.0
+  cleanup_policy: "manual" # Manual cleanup for research data
+
+  # File organization
+  create_run_subdirs: true
+  clear_output_on_start: false # Preserve research data
+
+visualization:
+  enabled: true
+  episode_summaries: true
+  step_visualizations: true
+
+wandb:
+  enabled: true
+  project_name: "jaxarc-experiments"
+  entity: null # Use default entity
+  tags: ["jaxarc", "basic"]
+  notes: "Basic JaxARC experiment with wandb logging"
+  group: null
+  job_type: "training"
+  offline_mode: false
+  save_code: true
+
+# Grid initialization (common config; weights select modes)
+grid_initialization:
+  # Probability weights (normalized automatically if needed)
+  demo_weight: 1.0
+  permutation_weight: 0.0
+  empty_weight: 0.0
+  random_weight: 0.0
+
+  # Permutation configuration
+  permutation_types: [rotate, reflect, color_remap]
+
+  # Random configuration
+  random_density: 0.3
+  random_pattern_type: sparse
+
+# Project paths (legacy - kept for backward compatibility)
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  data_interim: "data/interim"
+  data_external: "data/external"
+
+# Global settings
+seed: 42 # Global random seed
+
+# Output directory for demo visualizations (legacy - use storage.base_output_dir instead)
+output_dir: "outputs/arc_demo"
+
+# Hydra configuration
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

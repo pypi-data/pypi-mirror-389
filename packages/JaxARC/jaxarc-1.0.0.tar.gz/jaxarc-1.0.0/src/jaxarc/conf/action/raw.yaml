@@ -1,0 +1,28 @@
+# Raw/Minimal Action Configuration
+# This configuration defines the most basic action space for ARC tasks
+# Only includes: Fill colors (0-9), Resize grid, and Submit actions
+
+# Operation Settings
+max_operations: 35
+allowed_operations: # Only basic operations using ARCOperationType IDs
+  - 0 # FILL_0 (black)
+  - 1 # FILL_1 (blue)
+  - 2 # FILL_2 (red)
+  - 3 # FILL_3 (green)
+  - 4 # FILL_4 (yellow)
+  - 5 # FILL_5 (gray)
+  - 6 # FILL_6 (magenta)
+  - 7 # FILL_7 (orange)
+  - 8 # FILL_8 (light blue)
+  - 9 # FILL_9 (brown)
+  - 33 # RESIZE
+  - 34 # SUBMIT
+
+# Validation Settings
+validate_actions: true # Validate actions before execution
+allow_invalid_actions: false # Allow invalid actions (standardized naming)
+
+# Dynamic Action Space Control
+dynamic_action_filtering: false # Disable runtime operation filtering for minimal setup
+context_dependent_operations: false # Disable context-based operation availability
+invalid_operation_policy: "clip" # How to handle invalid operations: clip, reject, passthrough, penalize
