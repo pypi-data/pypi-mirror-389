@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: passgen3
+Version: 0.1
+Summary: Python модуль для генерации пароля
+Author-email: Timofey <timofey1166@email.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/itz-timoxa/passgen3
+Project-URL: Repository, https://github.com/itz-timoxa/passgen3
+Keywords: generator,password,random
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+Легковесный Python модуль (в нескольких килобайтах) для генерации пароля
+
+Что нового в версии 0.1:
+    🎉Огромное обновление!🎉
+
+    — Инструкция стала еще понятнее
+    — В разделе "Что нового" добавлен в начале знак '—' для визуальности
+    — Добавлен параметр "special_symbols" в методе generate                         Имя     Пароль
+    — Добавлен метод generate_with_name где генерирует например вот такой пароль — TimofeyFD65DK8i
+    — Понизили требования Python. Теперь он требует Python версии 3.6 а не 3.8
+
+Инструкция:
+Passgen3 поддерживает только методы generate и generate_with_name и некоторые исключения
+
+Вот все методы, в котором складываются все функции:
+
+                                            generate
+ —————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+    Параметр            Тип                 Функция
+
+    length              int	    Длина пароля (по умолчанию: 8)
+    only_int	   bool	        Только цифры (0–9)
+    without_int	   bool	        Без цифр (только буквы a–z, A–Z)
+    only_letters	    bool	Только буквы (a–z, A–Z)
+    upper_letters	    bool	Только заглавные буквы (A–Z)
+    lower_letters	    bool	Только строчные буквы (a–z)
+    special_symbols     bool    Включает специальные символы (!@#$%^&*()_+-=[]{}|;:,.<>?)    
+ —————————————————————————————————————————————————————————————————————————————————————————————————————————————
+                                        generate_with_name
+ —————————————————————————————————————————————————————————————————————————————————————————————————————————————
+    Параметр            Тип                 Функция
+    
+    name                str     Стартовое имя пароля (не будет влиять на другие параметры(по умолчанию: NAME))
+    length              int	    Длина пароля (по умолчанию: 8)
+    only_int	   bool	        Только цифры (0–9)
+    without_int	   bool	        Без цифр (только буквы a–z, A–Z)
+    only_letters   	    bool	Только буквы (a–z, A–Z)
+    upper_letters	    bool	Только заглавные буквы (A–Z)
+    lower_letters	    bool	Только строчные буквы (a–z)
+    special_symbols     bool    Включает специальные символы (!@#$%^&*()_+-=[]{}|;:,.<>?)
+
+А вот и некоторые исключения:
+
+            Ошибка                                                          Значение(причина)
+
+
+    ConfigurationConflictError                          Возникает в двух методах при конфликте параметров генерации.
+        InvalidLengthError                  Возникает тоже в двух методах, если длина строки некорректна (≤ 0 или не целое число).
+    InvalidOrEmptyNameError                 Возникает только в методе generate_with_name, если имя пустое или задана другим типом.
