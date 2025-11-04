@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mkite_db"
+version = "25.11.03"
+description = "mkite: distributed computing platform for high-throughput materials simulations"
+authors = [{name = "Daniel Schwalbe-Koda", email = "dskoda@ucla.edu"}]
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["workflow", "materials-science"]
+dependencies = [
+    "Django >= 4.2",
+    "django-taggit",
+    "django-environ",
+    "django-filter",
+    "django-extensions >= 3.2.1",
+    "django-coverage",
+    "djangorestframework >= 3.14.0",
+    "psycopg >= 3.1.8",
+    "model_bakery",
+    "msgspec >= 0.14.1",
+    "click",
+    "pydantic>=2.0",
+    "ase",
+    "pymatgen",
+    "mp_api",
+    "mkite_core",
+    "mkite_engines",
+]
+
+[project.scripts]
+kitedb = "mkite_db.cli.run_manage:main"
+
+[tool.setuptools]
+packages = ["mkite_db"]
