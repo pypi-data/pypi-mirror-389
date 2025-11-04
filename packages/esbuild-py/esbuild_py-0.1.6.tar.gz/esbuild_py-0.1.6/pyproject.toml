@@ -1,0 +1,51 @@
+[build-system]
+requires = ['setuptools>=67.0', 'wheel>=0.38.4']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = "esbuild_py"
+version = "0.1.6"
+authors = [
+  { name="Mark Keller", email="mark_keller@hms.harvard.edu" },
+]
+description = "Python bindings to the esbuild Transform API"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.7"
+keywords = ["widgets", "javascript", "react"]
+classifiers = [
+  'Development Status :: 4 - Beta',
+  'Framework :: IPython',
+  'Intended Audience :: Developers',
+  'Programming Language :: Python :: 3.7',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+]
+
+[project.optional-dependencies]
+dev = [
+  'build==0.1.0',
+  'pytest>=6.2.4',
+  'coverage>=6.3.2',
+  'flake8==3.8.4',
+]
+
+[project.urls]
+repository = "https://github.com/keller-mark/esbuild-py"
+
+# Reference: https://stackoverflow.com/a/74421415
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Reference: https://stackoverflow.com/a/50156706
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+
