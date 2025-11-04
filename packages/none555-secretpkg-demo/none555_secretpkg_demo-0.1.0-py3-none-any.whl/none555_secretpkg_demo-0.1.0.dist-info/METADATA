@@ -1,0 +1,94 @@
+Metadata-Version: 2.1
+Name: none555-secretpkg-demo
+Version: 0.1.0
+Summary: 一个带有二进制保护的Python包
+Author: Your Name
+Author-email: Your Name <your.email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/yourusername/mypackage
+Project-URL: Repository, https://github.com/yourusername/mypackage.git
+Project-URL: Issues, https://github.com/yourusername/mypackage/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: nuitka>=1.8.0
+
+# MyPackage
+
+一个简单的Python包，演示如何使用Nuitka将核心逻辑编译为二进制文件，保护源码不被查看。
+
+## 特性
+
+- 🔒 **源码保护**: 核心逻辑编译为二进制，无法查看源码
+- 📦 **易于使用**: 提供简洁的API接口
+- 🚀 **高性能**: 编译后的代码运行更快
+- ➕ **简单功能**: 实现基本的数学运算（加法）
+
+## 安装
+
+```bash
+pip install mypackage
+```
+
+## 快速开始
+
+```python
+from mypackage import MyPackageAPI
+
+# 创建API实例
+api = MyPackageAPI()
+
+# 处理数据（给数字加1）
+result = api.process_data(5)
+print(result)  # 输出: 6
+
+# 执行计算（简单加法）
+calc_result = api.calculate(10, 20)
+print(calc_result)  # 输出: 30
+
+# 获取包信息
+info = api.get_info()
+print(info)
+```
+
+## API 文档
+
+### MyPackageAPI
+
+主要的API类，提供所有公共接口。
+
+#### 方法
+
+- `process_data(data)`: 给输入的数字加1，非数字类型返回错误信息
+- `calculate(x, y)`: 执行简单的加法运算
+- `get_info()`: 获取包的基本信息
+
+## 开发说明
+
+本包使用Nuitka将核心逻辑编译为二进制文件，确保商业逻辑的安全性。
+
+### 项目结构
+
+```
+mypackage/
+├── __init__.py          # 包初始化
+├── api.py              # 公共API接口
+└── core_logic.py       # 核心逻辑（将被编译为二进制）
+```
+
+## 许可证
+
+MIT License
+
+## 作者
+
+Your Name - your.email@example.com
