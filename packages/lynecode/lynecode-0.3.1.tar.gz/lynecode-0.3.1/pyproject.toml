@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lynecode"
+version = "0.3.1"
+description = "Lyne: AI CODING ASSISTANT"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+  { name = "MD ZAID ANWAR" }
+]
+keywords = ["terminal", "ai agent", "code", "AI Coding tool","coding assistant","ai"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: Software Development :: Version Control",
+  "Environment :: Console",
+]
+
+dependencies = [
+  "rich>=13,<14",
+  "openai>=1.40",
+  "google-genai>=0.5",
+  "requests>=2.31",
+  "regex>=2024.5.15",
+  "aiofiles>=23.2",
+  "beautifulsoup4>=4.12",
+  "curl_cffi>=0.6",
+  "trafilatura>=1.6",
+  "readability-lxml>=0.8",
+  "tqdm>=4.66",
+  "ddgs>=2.6",
+  "json5>=0.9",
+  "rapidfuzz>=3.0",
+  "ast-grep-py==0.39.4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pylint>=3.0",
+  "cpplint>=1.6",
+  "cppcheck>=2.9; platform_system=='Windows'",
+  "pyjslint>=0.3",
+  "sqlfluff>=3.0",
+  "semgrep>=1.90",
+]
+
+
+[project.scripts]
+lynecode = "main:main"
+lyne = "cli:entry"
+
+[tool.setuptools]
+include-package-data = true
+py-modules = ["main", "api_config_menu", "chat_menu", "conversation_history", "cli"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = [
+  "venv*",
+  "log*",
+  "output*",
+  "**/__pycache__",
+]
+

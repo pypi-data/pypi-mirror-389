@@ -1,0 +1,25 @@
+rich<14,>=13
+openai>=1.40
+google-genai>=0.5
+requests>=2.31
+regex>=2024.5.15
+aiofiles>=23.2
+beautifulsoup4>=4.12
+curl_cffi>=0.6
+trafilatura>=1.6
+readability-lxml>=0.8
+tqdm>=4.66
+ddgs>=2.6
+json5>=0.9
+rapidfuzz>=3.0
+ast-grep-py==0.39.4
+
+[dev]
+pylint>=3.0
+cpplint>=1.6
+pyjslint>=0.3
+sqlfluff>=3.0
+semgrep>=1.90
+
+[dev:platform_system == "Windows"]
+cppcheck>=2.9
