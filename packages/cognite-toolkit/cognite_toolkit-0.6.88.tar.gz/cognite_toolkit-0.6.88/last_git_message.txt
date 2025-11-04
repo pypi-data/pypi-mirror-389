@@ -1,0 +1,44 @@
+[CDF-25859] Implement deployment pack tracking (#2035)
+
+# Description
+
+Usage of deployment packs can be tracked like this:
+
+### cdf modules init
+event: commandModules
+- A package bundle is downloaded (user refers to an external library):
+`downloadedPackageIds[]` and **downloadedModuleIds** sent to Mixpanel
+- Package(s) and module(s) are selected and created in the modules
+folder: `installedPackageIds` and **installedModuleIds** sent to
+Mixpanel
+
+### cdf build
+event: commandBuild
+- Package(s) and Modules(s) are built: `PackageIds` and `ModuleIds` are
+sent to Mixpanel
+- If available, `project` and `cluster` are sent to Mixpanel
+
+### cdf deploy
+event: commandDeploy
+- Package(s) and Modules(s) are deployed: `PackageIds` and `ModuleIds`
+are sent to Mixpanel
+
+<img width="2400" height="1486" alt="Screenshot 2025-10-15 at 11 41 44"
+src="https://github.com/user-attachments/assets/a0d47d2a-78b9-4c9e-8015-241220b79aa6"
+/>
+
+
+## Changelog
+
+- [x] Patch
+- [ ] Skip
+
+## cdf
+
+### Added
+
+- Statistics on Deployment Pack usage
+
+## templates
+
+No changes.
