@@ -1,0 +1,30 @@
+[project]
+name = "mcp-knowledge-server"
+version = "0.1.2"
+description = "MCP server exposing internal knowledge retrieval tools."
+authors = [{name = "Generated", email = "generated@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "mcp[cli]>=1.2.0",
+  "httpx>=0.26",
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+  "starlette>=0.37",
+  "uvicorn>=0.29",
+  "pydantic>=2.7"
+]
+
+[project.scripts]
+mcp-knowledge-server = "mcp_knowledge_tools.server:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# 建议显式指定要打进 wheel 的包目录（非 src/ 布局时更稳）
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_knowledge_tools"]
+
+[tool.hatch.build.targets.sdist]
+include = ["mcp_knowledge_tools", "README.md", "LICENSE"]
