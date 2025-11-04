@@ -1,0 +1,37 @@
+[CDF-25834] 🏰 Rework purge dataset Part 4 (#2148)
+
+# Description
+
+This is part 1 of reimplementing the cdf purge dataset command. 
+
+This PR set up the CLI interface and remove the old implementation.
+
+The motivation for this reimplementation is as follows:
+* We have new components such as HTTPClient and WorkerProducer that will
+be very useful for running the purge code.
+* The current implementation lacks proper testing, a reimplementation
+will ensure it is well tested.
+
+<img width="1872" height="383" alt="image"
+src="https://github.com/user-attachments/assets/0a1d4e12-7996-48bb-aca9-ef5c4f9898ce"
+/>
+
+
+## Changelog
+
+- [x] Patch
+- [ ] Skip
+
+## cdf
+
+### Improved
+
+- The `cdf purge dataset` has been reworked. It now gives progress bar
+when deleting. It is also robust against individual items failing to
+delete. [alpha] If you enable the alpha flag `v07=true` you will get
+further options like deleting assets recursively, select whether to
+delete only data or only configurations, or both.
+
+## templates
+
+No changes.
