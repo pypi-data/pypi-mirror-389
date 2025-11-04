@@ -1,0 +1,168 @@
+"""
+Web-related tools
+"""
+from __future__ import annotations
+
+from typing import Dict, List
+import os
+try:
+    from evenage import tool  # type: ignore
+except Exception:
+    def tool(*_a, **_k):
+        def _d(f):
+            return f
+        return _d
+
+
+@tool(
+    name="web_search",
+    description="Search the web for information on a given topic",
+    trace=True,  # Set to False to disable tracing for this tool
+    trace_mask=[],  # Example: ["tool_result"] to skip result traces
+    parameters={
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "The search query"},
+            "max_results": {"type": "integer", "description": "Maximum results", "default": 5}
+        },
+        "required": ["query"]
+    }
+)
+def web_search(query: str, max_results: int = 5) -> Dict:
+    """Search the web using Serper.dev and return top results.
+
+    Requires SERPER_API_KEY in environment. Returns empty results if missing or on error.
+    """
+    api_key = os.getenv("SERPER_API_KEY")
+    if not api_key:
+        return {"query": query, "results": [], "count": 0, "warning": "SERPER_API_KEY not set"}
+
+    try:
+        try:
+            import requests  # type: ignore
+        except Exception:
+            return {"query": query, "results": [], "count": 0, "error": "python-requests not installed"}
+
+        resp = requests.post(
+            "https://google.serper.dev/search",
+            headers={
+                "X-API-KEY": api_key,
+                "Content-Type": "application/json",
+            },
+            json={"q": query, "num": max(1, min(int(max_results or 5), 10)), "hl": "en"},
+            timeout=12,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        items: List[Dict] = []
+        for it in (data.get("organic", []) or [])[:max_results]:
+            items.append({
+                "title": it.get("title"),
+                "link": it.get("link"),
+                "snippet": it.get("snippet") or it.get("title"),
+                "site": it.get("source") or it.get("link"),
+            })
+        if data.get("answerBox"):
+            ab = data["answerBox"]
+            items.insert(0, {
+                "title": ab.get("title") or "Answer",
+                "link": ab.get("link"),
+                "snippet": ab.get("answer") or ab.get("snippet") or "",
+                "site": ab.get("source") or ab.get("link"),
+            })
+        if data.get("knowledgeGraph"):
+            kg = data["knowledgeGraph"]
+            items.insert(0, {
+                "title": kg.get("title") or "Knowledge",
+                "link": kg.get("descriptionUrl"),
+                "snippet": kg.get("description") or "",
+                "site": kg.get("title"),
+            })
+
+        return {"query": query, "results": items, "count": len(items)}
+    except Exception as e:
+        return {"query": query, "results": [], "count": 0, "error": str(e)}
+
+
+@tool(
+    name="scrape_url",
+    description="Extract content from a specific URL",
+    trace=True,
+    trace_mask=[],
+    parameters={
+        "type": "object",
+        "properties": {"url": {"type": "string", "description": "The URL to scrape"}},
+        "required": ["url"]
+    }
+)
+def scrape_url(url: str) -> Dict:
+    """Scrape content from a URL with browser-like headers to avoid blocking."""
+    try:
+        try:
+            import requests  # type: ignore
+            from bs4 import BeautifulSoup  # type: ignore
+        except Exception:
+            return {"url": url, "error": "install requests and bs4", "status": "failed"}
+        
+        # Use browser-like headers to avoid anti-scraping blocks
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Cache-Control': 'max-age=0',
+        }
+        
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Remove script and style elements
+        for script in soup(["script", "style"]):
+            script.decompose()
+        
+        text = soup.get_text(strip=True, separator=' ')
+        return {"url": url, "content": text[:5000], "status": "success"}
+    except Exception as e:
+        return {"url": url, "error": str(e), "status": "failed"}
+
+
+@tool(
+    name="extract_links",
+    description="Extract all links from a webpage",
+    trace=True,
+    trace_mask=[],
+    parameters={
+        "type": "object",
+        "properties": {"url": {"type": "string", "description": "The URL to extract links from"}},
+        "required": ["url"]
+    }
+)
+def extract_links(url: str) -> List[str]:
+    """Extract all links from a webpage with browser-like headers."""
+    try:
+        try:
+            import requests  # type: ignore
+            from bs4 import BeautifulSoup  # type: ignore
+        except Exception:
+            return []
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        return [a.get('href') for a in soup.find_all('a', href=True)]
+    except Exception:
+        return []
