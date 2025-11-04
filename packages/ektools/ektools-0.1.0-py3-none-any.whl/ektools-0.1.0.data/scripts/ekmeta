@@ -1,0 +1,153 @@
+#!python
+
+from ektools import parse, index, warn, error
+
+import datetime
+import hashlib
+import mmap
+import pynmea2 as nm
+
+def genmeta(f):
+    with open(f, "rb") as fh:
+        with mmap.mmap(fh.fileno(), length=0, access=mmap.ACCESS_READ) as mf:
+            sha1 = hashlib.sha1(mf)
+
+    filename = f
+    sha1sum = sha1.hexdigest()
+
+    rcounts = {}
+    nmea = {}
+    survey_name = None
+    startpos = None
+    endpos = None
+    timedeltas = []
+    speeds = []
+    starttime = None
+    endtime = None
+    heaves = []
+    rolls = []
+    pitch = []
+    # EK80 does these differently
+    sound_speed = None
+    temperatures = []
+
+    for pos, typ, ln, bstr in index(f):
+        try:
+            obj = parse(bstr)
+        except:
+            warn(f'Couldn\'t parse datagram of type {typ}, position {pos}.')
+            continue
+        if starttime is None:
+            starttime = obj['timestamp']
+        endtime = obj['timestamp']  # last time standing
+
+        if typ == 'CON0':
+            for tspname in obj['configuration']:
+                tsp = obj['configuration'][tspname]
+                fq = int(tsp['frequency'])
+                rcounts[fq] = {'transducer': tspname, 'pings': 0, 'ranges': []}
+
+                snm = tsp['survey_name'].decode('latin-1')
+                if survey_name is None:
+                    survey_name = snm
+                else:
+                    assert survey_name == snm
+
+        elif typ == 'NME0':
+            try:
+                msg = nm.parse(obj['nmea_string'])
+                msg_t = msg.sentence_type
+            except:
+                warn("Couldn't parse NMEA datagram at ", pos)
+            else:
+                if msg_t == 'GGA':
+                    if startpos is None:
+                        startpos = (msg.latitude, msg.longitude)
+                    endpos = (msg.latitude, msg.longitude)
+                elif msg_t == 'VTG':
+                    speeds.append(float(msg.spd_over_grnd_kts))
+                elif msg_t == 'ZDA':
+                    dt = obj['timestamp']
+                    t = msg.timestamp
+                    gps_t = datetime.datetime(msg.year, msg.month, msg.day,
+                                              t.hour, t.minute, t.second, t.microsecond)
+                    timedeltas.append((dt-gps_t).total_seconds())
+
+        elif typ == 'RAW0':
+            fq = obj['frequency']
+            rc = rcounts[fq]
+            rc['pings'] = rc['pings']+1
+            if obj['power'] is not None:
+                rng = round(len(obj['power'])*obj['sample_interval']*obj['sound_velocity'])
+                if rng not in rc['ranges']:
+                    rc['ranges'].append(rng)
+            heaves.append(obj['heave'])
+            rolls.append(obj['roll'])
+            pitch.append(obj['pitch'])
+
+        # EK80 Configuration
+        elif typ == 'XML0':
+            if obj['subtype'] == 'configuration':
+                for tspname in obj['configuration']:
+                    tsp = obj['configuration'][tspname]
+                    fq = int(tsp['transducer_frequency'])
+                    # count using transducer name, not frequency
+                    rcounts[tspname] = { 'frequency': fq, 'pings': 0, 'ranges': [] }
+
+            elif obj['subtype'] == 'parameter':
+                tspname = obj['parameter']['channel_id']
+                rcounts[tspname]['sample_interval'] = obj['parameter']['sample_interval']
+                # collect more interesting info here?
+
+            elif obj['subtype'] == 'environment':
+                env = obj['environment']
+                sound_speed = env['sound_speed']
+                temperatures.append(env['temperature'])
+
+        elif typ == 'MRU0':
+            heaves.append(obj['heave'])
+            rolls.append(obj['roll'])
+            pitch.append(obj['pitch'])
+
+        elif typ == 'RAW3':
+            tspname = obj['channel_id'].decode('ascii')
+            rc = rcounts[tspname]
+            rc['pings'] += 1
+            # todo: deal with the different kinds of formats
+            if obj['complex'] is not None:
+                rng = round(len(obj['complex'])*rcounts[tspname]['sample_interval']*sound_speed)  # obj['sound_velocity']) <- sigh: environment
+                if rng not in rc['ranges']:
+                    rc['ranges'].append(rng)
+            
+    def minavgmax(ls):
+        if ls == []:
+            return None
+        else:
+            return (min(ls), sum(ls)/len(ls), max(ls))
+
+    return { filename : {
+        'sha1sum': sha1sum,
+        'survey': survey_name,
+        'transponders': rcounts,
+        'start_time': starttime, 'end_time': endtime,
+        'start_position': startpos, 'end_position' : endpos,
+        'vessel_speed': minavgmax(speeds),
+        'heave': minavgmax(heaves), 'roll': minavgmax(rolls),
+        'pitch': minavgmax(pitch),
+        'clock_error' : minavgmax(timedeltas)
+        }
+    }
+
+if __name__ == '__main__':
+
+    import argparse
+    from ektools.actions import showdict
+
+    p = argparse.ArgumentParser(description='Generate metadata from Simrad RAW files.')
+    # p.add_argument()
+    p.add_argument('FILE', nargs='+', help='input files in RAW format.')
+    args = p.parse_args()
+
+    for f in args.FILE:
+        showdict(genmeta(f), indent=0)
+        print()
