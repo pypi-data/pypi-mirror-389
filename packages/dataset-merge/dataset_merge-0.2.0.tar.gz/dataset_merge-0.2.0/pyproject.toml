@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "dataset-merge"
+version = "0.2.0"
+description = "Custom dataset merge, union and CSV utility"
+authors = ["Ananya <anniesrinivas66@gmail.com>"]
+packages = [
+    { include = "my_krml_25763727", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+pandas = ">=1.5.0"
+
+[tool.poetry.urls]
+Homepage = "https://github.com/An-nay/my_krml_25763727"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
