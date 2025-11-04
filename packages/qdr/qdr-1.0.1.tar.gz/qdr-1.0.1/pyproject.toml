@@ -1,0 +1,245 @@
+[project]
+name = "qdr"
+version = "1.0.1"
+description = "Manage your tasks directly from the terminal using markdown"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Willian Morais", email = "williandmorais@gmail.com" }
+]
+keywords = ["cli", "task-manager", "markdown", "terminal"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
+    "Topic :: Software Development :: Bug Tracking",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+dependencies = [
+    "click>=8.1.7",
+    "rich>=13.7.0",
+    "python-frontmatter>=1.1.0",
+    "fastmcp>=2.12.4",
+    "pydantic>=2.12.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/spec-driven/quadro"
+Repository = "https://github.com/spec-driven/quadro"
+Issues = "https://github.com/spec-driven/quadro/issues"
+Changelog = "https://github.com/spec-driven/quadro/releases"
+
+[project.scripts]
+quadro = "quadro.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quadro"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.23.0",
+    "bandit>=1.7.5",
+    "pre-commit>=3.5.0",
+    "freezegun>=1.5.0",
+    "mkdocs-material>=9.6.22",
+    "mkdocstrings[python]>=0.30.1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".git", "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D", "COM812", "ISC001"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "PLR2004", "SLF001"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "frontmatter"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["fastmcp", "pydantic"]
+ignore_missing_imports = true
+
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-after-imports = 2
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+strict_equality = true
+extra_checks = true
+
+[tool.bandit]
+targets = ["quadro"]
+exclude_dirs = ["tests", ".venv"]
+skips = []
+severity = "medium"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+addopts = "-v --strict-markers --cov=quadro --cov-report=term-missing --cov-report=html --cov-fail-under=80"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "asyncio: marks tests as async tests",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+branch = true
+source = ["quadro"]
+omit = ["tests/*", "**/__init__.py"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.0.1"
+tag_format = "v$version"
+
+[tool.git-cliff.changelog]
+header = """
+# Changelog\n
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n
+"""
+body = """
+{%- macro remote_url() -%}
+  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+{% if version -%}
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+    ## [Unreleased]
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | upper_first }}
+    {%- for commit in commits %}
+        - {{ commit.message | split(pat="\n") | first | upper_first | trim }}\
+            {% if commit.remote.username %} by @{{ commit.remote.username }}{%- endif -%}
+            {% if commit.remote.pr_number %} in \
+            [#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}) \
+            {%- endif -%}
+    {% endfor %}
+{% endfor %}
+
+{%- if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
+    ### New Contributors
+{%- endif -%}
+
+{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
+  * @{{ contributor.username }} made their first contribution
+    {%- if contributor.pr_number %} in \
+      [#{{ contributor.pr_number }}]({{ self::remote_url() }}/pull/{{ contributor.pr_number }}) \
+    {%- endif %}
+{%- endfor %}\n
+
+{%- if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}{% raw %}\n{% endraw -%}{% endif %}
+
+"""
+footer = """
+{%- macro remote_url() -%}
+  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+{% for release in releases -%}
+    {% if release.version -%}
+        {% if release.previous -%}
+            [{{ release.version | trim_start_matches(pat="v") }}]: \
+                {{ self::remote_url() }}/compare/{{ release.previous.version }}...{{ release.version }}
+        {% endif -%}
+    {% else -%}
+        {% if release.previous -%}
+            [unreleased]: {{ self::remote_url() }}/compare/{{ release.previous.version }}...HEAD
+        {% endif -%}
+    {% endif -%}
+{% endfor %}
+<!-- generated by git-cliff -->
+"""
+trim = true
+
+[tool.git-cliff.remote.github]
+owner = "spec-driven"
+repo = "quadro"
+
+[tool.git-cliff.bump]
+initial_tag = "1.0.0"
+
+[tool.git-cliff.git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+commit_preprocessors = [
+  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "" },
+]
+commit_parsers = [
+    { message = "^feat", group = "Added" },
+    { message = "^fix", group = "Fixed" },
+    { message = "^doc", group = "Documentation" },
+    { message = "^perf", group = "Changed" },
+    { message = "^refactor", group = "Changed" },
+    { message = "^style", group = "Changed" },
+    { message = "^test", group = "Changed" },
+    { message = "^build", skip = true },
+    { message = "^ci", skip = true },
+    { message = "^chore\\(release\\): release", skip = true },
+    { message = "^chore\\(deps\\)", skip = true },
+    { message = "^chore", group = "Changed" },
+    { body = ".*security", group = "Security" },
+    { message = "^revert", group = "Removed" },
+    { body = ".*BREAKING CHANGE.*", group = "Breaking" },
+]
+protect_breaking_commits = false
+filter_commits = false
+skip_tags = ""
+ignore_tags = ""
+topo_order = false
+sort_commits = "newest"

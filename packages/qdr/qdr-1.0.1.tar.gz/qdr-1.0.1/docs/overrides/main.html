@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <!-- Adaptive favicon based on browser color scheme -->
+  <link rel="icon" href="{{ 'assets/logo_light_transparent.svg' | url }}" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="{{ 'assets/logo_dark_transparent.svg' | url }}" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="{{ 'assets/logo_light_transparent.svg' | url }}">
+  {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="{{ 'javascripts/terminal.js' | url }}"></script>
+{% endblock %}
