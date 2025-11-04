@@ -1,0 +1,26 @@
+# Include essential documentation
+include README.md
+include LICENSE
+include requirements.txt
+
+# Include example data files
+recursive-include examples *.csv *.dat *.txt
+
+# Include config examples
+include plot_config.yaml
+
+# Exclude build artifacts
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *$py.class
+global-exclude *.so
+global-exclude .DS_Store
+
+# Exclude development files
+exclude .gitignore
+exclude structure.txt
+prune pysciplot_backup
+prune Claude
+prune plots
+exclude new_*.png
+exclude new_*.pdf
