@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "morseify-lumen"
+version = "0.1.0"
+description = "A Python package for encoding and decoding Morse code."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Team Lumen" }]
+keywords = ["python", "morse code", "encoder", "decoder"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://github.com/swe-students-fall2025/3-python-package-team_lumen"
+Issues = "https://github.com/swe-students-fall2025/3-python-package-team_lumen/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+morseify = "morseify.cli:cli"
