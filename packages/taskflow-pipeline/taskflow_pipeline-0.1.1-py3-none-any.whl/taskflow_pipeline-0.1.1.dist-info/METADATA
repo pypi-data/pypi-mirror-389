@@ -1,0 +1,906 @@
+Metadata-Version: 2.4
+Name: taskflow-pipeline
+Version: 0.1.1
+Summary: A Python library for orchestrating RPA, data processing, and AI task pipelines from YAML/JSON configurations
+Author-email: Berk Terekli <berk.terekli@example.com>
+Maintainer-email: Berk Terekli <berk.terekli@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/berkterekli/taskflow-pipeline
+Project-URL: Repository, https://github.com/berkterekli/taskflow-pipeline
+Project-URL: Documentation, https://github.com/berkterekli/taskflow-pipeline#readme
+Project-URL: Bug Tracker, https://github.com/berkterekli/taskflow-pipeline/issues
+Project-URL: Changelog, https://github.com/berkterekli/taskflow-pipeline/blob/main/CHANGELOG.md
+Keywords: automation,rpa,pipeline,workflow,orchestration,task-automation,yaml-config,data-processing,ai-tasks,robotic-process-automation
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Office/Business
+Classifier: Topic :: System :: Systems Administration
+Classifier: Typing :: Typed
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Requires-Dist: black>=23.0; extra == "dev"
+Requires-Dist: mypy>=1.0; extra == "dev"
+Dynamic: license-file
+
+# 🚀 TaskFlow Pipeline# TaskFlow
+
+
+
+<div align="center">[![PyPI version](https://badge.fury.io/py/taskflow-pipeline.svg)](https://badge.fury.io/py/taskflow-pipeline)
+
+[![Python Versions](https://img.shields.io/pypi/pyversions/taskflow-pipeline.svg)](https://pypi.org/project/taskflow-pipeline/)
+
+[![PyPI version](https://badge.fury.io/py/taskflow-pipeline.svg)](https://badge.fury.io/py/taskflow-pipeline)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[![Python Versions](https://img.shields.io/pypi/pyversions/taskflow-pipeline.svg)](https://pypi.org/project/taskflow-pipeline/)[![Tests](https://github.com/berkterekli/taskflow-pipeline/workflows/Tests/badge.svg)](https://github.com/berkterekli/taskflow-pipeline/actions)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[![Downloads](https://pepy.tech/badge/taskflow-pipeline)](https://pepy.tech/project/taskflow-pipeline)A Python library for orchestrating automated pipelines including RPA (desktop/web automation), data processing, and AI tasks using YAML or JSON configuration files.
+
+[![Tests](https://github.com/berkterekli/taskflow-pipeline/workflows/Tests/badge.svg)](https://github.com/berkterekli/taskflow-pipeline/actions)
+
+## Features
+
+**A powerful Python library for orchestrating complex automation workflows with simple YAML/JSON configuration files**
+
+- **Configuration-based execution**: Define your task pipelines in YAML or JSON
+
+[Installation](#-installation) •- **Modular task system**: Supports RPA, data processing, and AI tasks
+
+[Quick Start](#-quick-start) •- **Easy extensibility**: Add custom task modules with simple function definitions
+
+[Features](#-features) •- **Type-safe**: Built with type hints for better IDE support
+
+[Documentation](#-documentation) •- **Error handling**: Clear error messages for debugging pipelines
+
+[Examples](#-examples)
+
+## Installation
+
+</div>
+
+```bash
+
+---pip install taskflow-pipeline
+
+```
+
+## 🎯 What is TaskFlow?
+
+For development:
+
+TaskFlow is a declarative automation framework that lets you build complex workflows by writing simple configuration files. Perfect for:
+
+```bash
+
+- **🤖 RPA (Robotic Process Automation)**: Automate repetitive tasks, UI interactions, and document processinggit clone https://github.com/berkterekli/taskflow-pipeline.git
+
+- **📊 Data Processing**: ETL pipelines, data cleaning, transformation, and validationcd taskflow-pipeline
+
+- **🧠 AI/ML Workflows**: Text generation, classification, sentiment analysis, and morepip install -e ".[dev]"
+
+- **🔄 Business Process Automation**: Invoice processing, report generation, email automation```
+
+
+
+**Why TaskFlow?**## Quick Start
+
+
+
+✅ **No-code workflow definition** - Define complex pipelines in YAML/JSON  1. Create a `tasks.yaml` file:
+
+✅ **Type-safe and tested** - Built with type hints and comprehensive test coverage  
+
+✅ **Extensible architecture** - Easily add custom tasks and integrations  ```yaml
+
+✅ **Production-ready** - Detailed logging, error handling, and validation  tasks:
+
+✅ **Framework-agnostic** - Works with Selenium, Playwright, Pandas, OpenAI, and more  - action: "rpa.click"
+
+    params:
+
+---      target: "Submit Button"
+
+  
+
+## 📦 Installation  - action: "data.clean_data"
+
+    params:
+
+### Basic Installation      data: "sample_data.csv"
+
+```
+
+```bash
+
+pip install taskflow-pipeline2. Run your pipeline:
+
+```
+
+```python
+
+### Development Installationfrom taskflow import TaskFlow
+
+
+
+```bash# Initialize and run the pipeline
+
+git clone https://github.com/berkterekli/taskflow-pipeline.gitpipeline = TaskFlow("tasks.yaml")
+
+cd taskflow-pipelinepipeline.run()
+
+pip install -e ".[dev]"```
+
+```
+
+## Task Types
+
+### Requirements
+
+### RPA Tasks
+
+- Python 3.8+- `rpa.click`: Simulate clicking on UI elements
+
+- PyYAML 6.0+- `rpa.extract_table_from_pdf`: Extract tables from PDF files
+
+
+
+---### Data Tasks
+
+- `data.clean_data`: Clean and preprocess data
+
+## 🚀 Quick Start
+
+### AI Tasks
+
+### 1. Create Your First Pipeline- `ai.generate_text`: Generate text using AI models
+
+
+
+Create a file named `my_workflow.yaml`:## Project Structure
+
+
+
+```yaml```
+
+tasks:taskflow/
+
+  # Step 1: Simulate a button click├── __init__.py
+
+  - action: "rpa.click"├── core.py          # Main TaskFlow engine
+
+    params:├── parser.py        # YAML/JSON parser
+
+      target: "Submit Button"└── tasks/
+
+      ├── __init__.py
+
+  # Step 2: Extract data from a PDF    ├── rpa_tasks.py      # RPA automation tasks
+
+  - action: "rpa.extract_table_from_pdf"    ├── data_tasks.py     # Data processing tasks
+
+    params:    └── ai_tasks.py       # AI-related tasks
+
+      file_path: "invoices/invoice_001.pdf"```
+
+  
+
+  # Step 3: Clean the extracted data## Development
+
+  - action: "data.clean_data"
+
+    params:Run tests:
+
+      data: "extracted_table.csv"
+
+  ```bash
+
+  # Step 4: Generate a summary with AIpytest
+
+  - action: "ai.generate_text"```
+
+    params:
+
+      prompt: "Summarize the invoice data"Format code:
+
+      max_tokens: 200
+
+``````bash
+
+black taskflow tests
+
+### 2. Run Your Pipeline```
+
+
+
+```pythonType checking:
+
+from taskflow import TaskFlow
+
+```bash
+
+# Initialize the pipelinemypy taskflow
+
+pipeline = TaskFlow("my_workflow.yaml")```
+
+
+
+# Execute all tasks## License
+
+pipeline.run()
+
+```MIT License - see [LICENSE](LICENSE) file for details.
+
+
+
+### 3. See the Results## Contributing
+
+
+
+```Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+2025-11-03 16:12:08 - INFO - TaskFlow initialized with config: my_workflow.yaml
+
+2025-11-03 16:12:08 - INFO - Starting pipeline execution...## Publishing
+
+2025-11-03 16:12:08 - INFO - Task 1/4: Executing 'rpa.click'
+
+[RPA] Simulating click on: Submit ButtonSee [PUBLISHING_GUIDE.md](PUBLISHING_GUIDE.md) for detailed instructions on publishing to PyPI.
+
+2025-11-03 16:12:08 - INFO - Task 1: Completed successfully
+
+2025-11-03 16:12:08 - INFO - Task 2/4: Executing 'rpa.extract_table_from_pdf'## Changelog
+
+[RPA] Extracting table from PDF: invoices/invoice_001.pdf
+
+2025-11-03 16:12:08 - INFO - Task 2: Completed successfullySee [CHANGELOG.md](CHANGELOG.md) for version history and changes.
+
+...
+
+2025-11-03 16:12:08 - INFO - Pipeline execution completed successfully!## Author
+
+```
+
+**Berk Terekli**
+
+---
+
+## Support
+
+## ✨ Features
+
+- 📖 [Documentation](https://github.com/berkterekli/taskflow-pipeline#readme)
+
+### 🎭 Configuration-Based Workflows- 🐛 [Issue Tracker](https://github.com/berkterekli/taskflow-pipeline/issues)
+
+- 💬 [Discussions](https://github.com/berkterekli/taskflow-pipeline/discussions)
+
+Define your entire automation pipeline in a simple, readable format:
+
+```yaml
+tasks:
+  - action: "rpa.click"
+    params:
+      target: "Login Button"
+  
+  - action: "data.transform_data"
+    params:
+      input_path: "raw_data.csv"
+      output_path: "processed_data.csv"
+      operations: ["dedupe", "normalize", "validate"]
+```
+
+### 🧩 Modular Task System
+
+TaskFlow comes with three built-in task categories:
+
+#### **🤖 RPA Tasks** - Robotic Process Automation
+
+```python
+# Available RPA Tasks:
+rpa.click                    # Click UI elements
+rpa.type_text               # Type into input fields
+rpa.take_screenshot         # Capture screenshots
+rpa.extract_table_from_pdf  # Extract tables from PDFs
+```
+
+**Example Use Case: Invoice Processing**
+
+```yaml
+tasks:
+  - action: "rpa.extract_table_from_pdf"
+    params:
+      file_path: "invoice.pdf"
+  
+  - action: "data.validate_data"
+    params:
+      data: "extracted_invoice.csv"
+      schema:
+        invoice_number: "string"
+        amount: "float"
+        date: "date"
+```
+
+#### **📊 Data Tasks** - Data Processing & ETL
+
+```python
+# Available Data Tasks:
+data.clean_data        # Clean and preprocess data
+data.transform_data    # Apply transformations
+data.merge_datasets    # Merge multiple datasets
+data.validate_data     # Validate against schemas
+```
+
+**Example Use Case: Data Pipeline**
+
+```yaml
+tasks:
+  - action: "data.merge_datasets"
+    params:
+      datasets: 
+        - "sales_q1.csv"
+        - "sales_q2.csv"
+        - "sales_q3.csv"
+      output_path: "annual_sales.csv"
+  
+  - action: "data.clean_data"
+    params:
+      data: "annual_sales.csv"
+  
+  - action: "data.transform_data"
+    params:
+      input_path: "annual_sales.csv"
+      output_path: "sales_report.csv"
+      operations: ["aggregate", "pivot", "format"]
+```
+
+#### **🧠 AI Tasks** - Artificial Intelligence
+
+```python
+# Available AI Tasks:
+ai.generate_text      # Generate text with LLMs
+ai.classify_text      # Classify text into categories
+ai.analyze_sentiment  # Sentiment analysis
+ai.extract_entities   # Named entity recognition
+```
+
+**Example Use Case: Content Analysis**
+
+```yaml
+tasks:
+  - action: "ai.analyze_sentiment"
+    params:
+      text: "Customer feedback text here..."
+  
+  - action: "ai.extract_entities"
+    params:
+      text: "Extract companies, people, and locations from this text."
+  
+  - action: "ai.generate_text"
+    params:
+      prompt: "Write a summary of the customer feedback"
+      max_tokens: 150
+```
+
+### 🔌 Easy Extensibility
+
+Add your own custom tasks in minutes:
+
+```python
+from taskflow import TaskFlow
+
+# Define a custom function
+def send_email(to: str, subject: str, body: str) -> None:
+    """Send an email notification."""
+    print(f"Sending email to {to}: {subject}")
+    # Your email logic here...
+
+# Register it as a custom action
+pipeline = TaskFlow("workflow.yaml")
+pipeline.add_custom_action("email.send", send_email)
+pipeline.run()
+```
+
+Then use it in your YAML:
+
+```yaml
+tasks:
+  - action: "email.send"
+    params:
+      to: "team@company.com"
+      subject: "Pipeline Completed"
+      body: "The data processing pipeline has finished successfully."
+```
+
+### 🛡️ Type-Safe & Production Ready
+
+- **Type Hints**: Full type annotations for IDE support and type checking
+- **Comprehensive Logging**: Detailed logs for every step
+- **Error Handling**: Clear error messages with actionable information
+- **Validation**: Automatic validation of configuration files and parameters
+
+### 🎨 Both YAML and JSON Support
+
+Use whichever format you prefer:
+
+**YAML** (Recommended for readability):
+```yaml
+tasks:
+  - action: "rpa.click"
+    params:
+      target: "Button"
+```
+
+**JSON** (Better for programmatic generation):
+```json
+{
+  "tasks": [
+    {
+      "action": "rpa.click",
+      "params": {"target": "Button"}
+    }
+  ]
+}
+```
+
+---
+
+## 📚 Complete Task Reference
+
+### 🤖 RPA Tasks
+
+| Action | Description | Parameters | Example |
+|--------|-------------|------------|---------|
+| `rpa.click` | Click UI element | `target` (str) | Click login button |
+| `rpa.type_text` | Type into input | `target` (str), `text` (str) | Fill form fields |
+| `rpa.take_screenshot` | Capture screen | `output_path` (str) | Save evidence |
+| `rpa.extract_table_from_pdf` | Extract PDF table | `file_path` (str) | Parse invoices |
+
+### 📊 Data Tasks
+
+| Action | Description | Parameters | Example |
+|--------|-------------|------------|---------|
+| `data.clean_data` | Clean data | `data` (str/list) | Remove duplicates |
+| `data.transform_data` | Transform data | `input_path`, `output_path`, `operations` | ETL pipeline |
+| `data.merge_datasets` | Merge datasets | `datasets` (list), `output_path` | Combine data sources |
+| `data.validate_data` | Validate schema | `data` (str), `schema` (dict) | Ensure data quality |
+
+### 🧠 AI Tasks
+
+| Action | Description | Parameters | Example |
+|--------|-------------|------------|---------|
+| `ai.generate_text` | Generate text | `prompt` (str), `max_tokens` (int) | Create summaries |
+| `ai.classify_text` | Classify text | `text` (str), `categories` (list) | Categorize content |
+| `ai.analyze_sentiment` | Analyze sentiment | `text` (str) | Measure satisfaction |
+| `ai.extract_entities` | Extract entities | `text` (str) | Find names, places |
+
+---
+
+## 💡 Real-World Examples
+
+### Example 1: Invoice Processing Automation
+
+```yaml
+# invoice_workflow.yaml
+tasks:
+  # Step 1: Extract data from invoice PDF
+  - action: "rpa.extract_table_from_pdf"
+    params:
+      file_path: "invoices/invoice_2024_001.pdf"
+  
+  # Step 2: Validate the extracted data
+  - action: "data.validate_data"
+    params:
+      data: "extracted_invoice.csv"
+      schema:
+        invoice_id: "string"
+        vendor: "string"
+        amount: "float"
+        date: "date"
+  
+  # Step 3: Clean and format the data
+  - action: "data.clean_data"
+    params:
+      data: "extracted_invoice.csv"
+  
+  # Step 4: Generate a summary email
+  - action: "ai.generate_text"
+    params:
+      prompt: "Create a professional email summary of this invoice"
+      max_tokens: 200
+```
+
+Run it:
+```python
+from taskflow import TaskFlow
+
+pipeline = TaskFlow("invoice_workflow.yaml")
+pipeline.run()
+```
+
+### Example 2: Customer Feedback Analysis
+
+```yaml
+# feedback_analysis.yaml
+tasks:
+  # Step 1: Analyze sentiment of customer reviews
+  - action: "ai.analyze_sentiment"
+    params:
+      text: "The product quality is excellent but shipping was slow."
+  
+  # Step 2: Extract key entities (products, issues)
+  - action: "ai.extract_entities"
+    params:
+      text: "The product quality is excellent but shipping was slow."
+  
+  # Step 3: Classify feedback type
+  - action: "ai.classify_text"
+    params:
+      text: "The product quality is excellent but shipping was slow."
+      categories: ["product_quality", "shipping", "customer_service", "pricing"]
+  
+  # Step 4: Generate action items
+  - action: "ai.generate_text"
+    params:
+      prompt: "Based on the feedback, suggest 3 action items for improvement"
+      max_tokens: 150
+```
+
+### Example 3: Data ETL Pipeline
+
+```yaml
+# etl_pipeline.yaml
+tasks:
+  # Step 1: Merge quarterly sales data
+  - action: "data.merge_datasets"
+    params:
+      datasets:
+        - "data/q1_sales.csv"
+        - "data/q2_sales.csv"
+        - "data/q3_sales.csv"
+        - "data/q4_sales.csv"
+      output_path: "data/annual_sales.csv"
+  
+  # Step 2: Clean the merged data
+  - action: "data.clean_data"
+    params:
+      data: "data/annual_sales.csv"
+  
+  # Step 3: Transform and aggregate
+  - action: "data.transform_data"
+    params:
+      input_path: "data/annual_sales.csv"
+      output_path: "data/sales_report.csv"
+      operations: ["dedupe", "aggregate", "sort"]
+  
+  # Step 4: Validate final output
+  - action: "data.validate_data"
+    params:
+      data: "data/sales_report.csv"
+      schema:
+        product_id: "string"
+        total_sales: "float"
+        region: "string"
+```
+
+### Example 4: Custom Task Integration
+
+```python
+# custom_workflow.py
+from taskflow import TaskFlow
+import requests
+
+# Define custom tasks
+def send_slack_notification(webhook_url: str, message: str) -> None:
+    """Send a Slack notification."""
+    requests.post(webhook_url, json={"text": message})
+    print(f"Sent Slack message: {message}")
+
+def query_database(connection_string: str, query: str) -> list:
+    """Query a database and return results."""
+    print(f"Executing query: {query}")
+    # Your database logic here...
+    return [{"id": 1, "name": "Result"}]
+
+# Set up pipeline with custom actions
+pipeline = TaskFlow("custom_workflow.yaml")
+pipeline.add_custom_action("slack.send", send_slack_notification)
+pipeline.add_custom_action("db.query", query_database)
+
+# Run the pipeline
+pipeline.run()
+```
+
+**custom_workflow.yaml:**
+```yaml
+tasks:
+  - action: "db.query"
+    params:
+      connection_string: "postgresql://localhost/mydb"
+      query: "SELECT * FROM users WHERE active = true"
+  
+  - action: "data.clean_data"
+    params:
+      data: "query_results.csv"
+  
+  - action: "slack.send"
+    params:
+      webhook_url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+      message: "Daily user report generated successfully!"
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                   TaskFlow                       │
+│                  (Orchestrator)                  │
+└────────────┬────────────────────────┬────────────┘
+             │                        │
+             ▼                        ▼
+    ┌────────────────┐       ┌────────────────┐
+    │  YAML Parser   │       │  JSON Parser   │
+    └────────┬───────┘       └────────┬───────┘
+             │                        │
+             └───────────┬────────────┘
+                         ▼
+             ┌───────────────────────┐
+             │    Action Mapper      │
+             └───────────┬───────────┘
+                         │
+        ┌────────────────┼────────────────┐
+        ▼                ▼                ▼
+┌───────────────┐ ┌─────────────┐ ┌───────────────┐
+│   RPA Tasks   │ │ Data Tasks  │ │   AI Tasks    │
+├───────────────┤ ├─────────────┤ ├───────────────┤
+│ • click       │ │ • clean     │ │ • generate    │
+│ • type        │ │ • transform │ │ • classify    │
+│ • screenshot  │ │ • merge     │ │ • sentiment   │
+│ • extract     │ │ • validate  │ │ • entities    │
+└───────────────┘ └─────────────┘ └───────────────┘
+         │                │                │
+         └────────────────┼────────────────┘
+                          ▼
+                   ┌──────────────┐
+                   │   Logging    │
+                   │ Error Handle │
+                   └──────────────┘
+```
+
+---
+
+## 🔧 Advanced Usage
+
+### Error Handling
+
+```python
+from taskflow import TaskFlow
+
+try:
+    pipeline = TaskFlow("workflow.yaml")
+    pipeline.run()
+except FileNotFoundError:
+    print("❌ Configuration file not found")
+except ValueError as e:
+    print(f"❌ Invalid configuration: {e}")
+except Exception as e:
+    print(f"❌ Pipeline failed: {e}")
+```
+
+### Custom Logging
+
+```python
+import logging
+from taskflow import TaskFlow
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('pipeline.log'),
+        logging.StreamHandler()
+    ]
+)
+
+pipeline = TaskFlow("workflow.yaml")
+pipeline.run()
+```
+
+### Dynamic Task Generation
+
+```python
+from taskflow import TaskFlow
+import yaml
+
+# Generate tasks programmatically
+tasks = {
+    "tasks": [
+        {
+            "action": "rpa.click",
+            "params": {"target": f"Button {i}"}
+        }
+        for i in range(5)
+    ]
+}
+
+# Save to file
+with open("dynamic_workflow.yaml", "w") as f:
+    yaml.dump(tasks, f)
+
+# Run the pipeline
+pipeline = TaskFlow("dynamic_workflow.yaml")
+pipeline.run()
+```
+
+---
+
+## 📖 Documentation
+
+### Project Structure
+
+```
+taskflow/
+├── __init__.py              # Package initialization
+├── core.py                  # Main TaskFlow engine
+├── parser.py                # YAML/JSON configuration parser
+└── tasks/
+    ├── __init__.py
+    ├── rpa_tasks.py         # RPA automation functions
+    ├── data_tasks.py        # Data processing functions
+    └── ai_tasks.py          # AI/ML task functions
+```
+
+### Development
+
+```bash
+# Clone the repository
+git clone https://github.com/berkterekli/taskflow-pipeline.git
+cd taskflow-pipeline
+
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest -v
+
+# Run tests with coverage
+pytest --cov=taskflow --cov-report=html
+
+# Format code
+black taskflow tests examples
+
+# Type checking
+mypy taskflow
+
+# Lint code
+flake8 taskflow
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_pipeline.py
+
+# Run with verbose output
+pytest -v
+
+# Run with coverage report
+pytest --cov=taskflow --cov-report=term-missing
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Run tests**: `pytest`
+5. **Format code**: `black taskflow tests`
+6. **Commit changes**: `git commit -m 'Add amazing feature'`
+7. **Push to branch**: `git push origin feature/amazing-feature`
+8. **Open a Pull Request**
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### Adding New Tasks
+
+To add a new task module:
+
+1. Create `taskflow/tasks/your_tasks.py`
+2. Implement functions with type hints and docstrings
+3. Register actions in `taskflow/core.py`
+4. Add tests in `tests/test_your_tasks.py`
+5. Update documentation
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with ❤️ by [Berk Terekli](https://github.com/berkterekli)
+- Inspired by the need for simple, maintainable automation workflows
+- Thanks to all [contributors](https://github.com/berkterekli/taskflow-pipeline/graphs/contributors)
+
+---
+
+## 📞 Support & Community
+
+- 📖 **Documentation**: [GitHub Wiki](https://github.com/berkterekli/taskflow-pipeline/wiki)
+- 🐛 **Bug Reports**: [Issue Tracker](https://github.com/berkterekli/taskflow-pipeline/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/berkterekli/taskflow-pipeline/discussions)
+- 📧 **Email**: berk.terekli@example.com
+- 🐦 **Twitter**: [@berkterekli](https://twitter.com/berkterekli)
+
+---
+
+## ⭐ Star History
+
+If you find TaskFlow useful, please consider giving it a star on GitHub! It helps others discover the project.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=berkterekli/taskflow-pipeline&type=Date)](https://star-history.com/#berkterekli/taskflow-pipeline&Date)
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] **Web UI Dashboard** - Visual pipeline editor and monitor
+- [ ] **Parallel Execution** - Run tasks in parallel for better performance
+- [ ] **Conditional Logic** - If/else conditions in workflows
+- [ ] **Loop Support** - Iterate over datasets
+- [ ] **Error Retry** - Automatic retry with exponential backoff
+- [ ] **Notifications** - Email, Slack, Teams integrations
+- [ ] **Scheduling** - Cron-like scheduling support
+- [ ] **Docker Support** - Pre-built Docker images
+- [ ] **Cloud Integrations** - AWS, Azure, GCP task modules
+- [ ] **Database Tasks** - Built-in database operations
+- [ ] **API Tasks** - REST API integration tasks
+
+---
+
+## 📊 Stats
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/taskflow-pipeline)
+![GitHub stars](https://img.shields.io/github/stars/berkterekli/taskflow-pipeline?style=social)
+![GitHub forks](https://img.shields.io/github/forks/berkterekli/taskflow-pipeline?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/berkterekli/taskflow-pipeline?style=social)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [Berk Terekli](https://github.com/berkterekli)**
+
+[⬆ Back to Top](#-taskflow-pipeline)
+
+</div>
