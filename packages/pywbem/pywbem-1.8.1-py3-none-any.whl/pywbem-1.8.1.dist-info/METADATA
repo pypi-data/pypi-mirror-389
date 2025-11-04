@@ -1,0 +1,97 @@
+Metadata-Version: 2.4
+Name: pywbem
+Version: 1.8.1
+Summary: pywbem - A WBEM client
+Author-email: Tim Potter <tpot@hp.com>
+Maintainer-email: Andreas Maier <maiera@de.ibm.com>, Karl Schopmeyer <k.schopmeyer@swbell.net>
+License: LGPL version 2.1, or (at your option) any later version
+Project-URL: Homepage, https://pywbem.github.io/pywbem/
+Project-URL: Bug Tracker, https://github.com/pywbem/pywbem/issues
+Project-URL: Documentation, https://pywbem.readthedocs.io/en/latest/
+Project-URL: Source Code, https://github.com/pywbem/pywbem
+Project-URL: Changelog, https://pywbem.readthedocs.io/en/latest/changes.html
+Keywords: cim,wbem,client
+Platform: any
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Systems Administration
+Classifier: Environment :: Console
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+License-File: AUTHORS.md
+Requires-Dist: ply>=3.10
+Requires-Dist: PyYAML>=6.0.2
+Requires-Dist: requests>=2.32.4
+Requires-Dist: yamlloader>=0.5.5
+Requires-Dist: typing-extensions>=4.12.2; python_version <= "3.9"
+Requires-Dist: setuptools!=61.0.0
+Requires-Dist: urllib3>=2.2.3; python_version == "3.8"
+Requires-Dist: urllib3>=2.5.0; python_version >= "3.9"
+Requires-Dist: certifi>=2024.07.04
+Requires-Dist: idna>=3.7
+Provides-Extra: test
+Requires-Dist: six>=1.14.0; python_version <= "3.9" and extra == "test"
+Requires-Dist: six>=1.16.0; python_version >= "3.10" and extra == "test"
+Requires-Dist: packaging>=24.1; extra == "test"
+Requires-Dist: pytest!=6.0,<8.0,>=4.6.0; python_version <= "3.9" and extra == "test"
+Requires-Dist: pytest<8.0,>=6.2.5; python_version >= "3.10" and extra == "test"
+Requires-Dist: testfixtures>=6.9.0; extra == "test"
+Requires-Dist: colorama>=0.4.5; extra == "test"
+Requires-Dist: FormEncode>=2.1.1; extra == "test"
+Requires-Dist: easy-vault>=0.7.0; extra == "test"
+Requires-Dist: easy-server>=0.8.0; extra == "test"
+Requires-Dist: pytest-easy-server>=0.8.0; extra == "test"
+Requires-Dist: cryptography>=43.0.1; extra == "test"
+Requires-Dist: keyring>=18.0.0; extra == "test"
+Requires-Dist: jsonschema>=4.18.0; extra == "test"
+Requires-Dist: requests-mock>=1.6.0; extra == "test"
+Requires-Dist: requests-toolbelt>=0.8.0; extra == "test"
+Requires-Dist: yagot>=0.5.0; extra == "test"
+Requires-Dist: importlib-metadata>=4.8.3; extra == "test"
+Requires-Dist: backports.zoneinfo>=0.2.1; python_version == "3.8" and extra == "test"
+Requires-Dist: tzdata>=2024.1; sys_platform == "win32" and extra == "test"
+Requires-Dist: pluggy>=0.13.0; extra == "test"
+Requires-Dist: decorator>=4.0.11; extra == "test"
+Requires-Dist: lxml<5.0,>=4.6.2; (python_version == "3.8" and sys_platform == "darwin") and extra == "test"
+Requires-Dist: lxml>=4.6.2; (python_version == "3.8" and sys_platform != "darwin") and extra == "test"
+Requires-Dist: lxml>=4.6.2; python_version == "3.9" and extra == "test"
+Requires-Dist: lxml>=4.6.4; python_version == "3.10" and extra == "test"
+Requires-Dist: lxml>=4.9.2; python_version == "3.11" and extra == "test"
+Requires-Dist: lxml>=4.9.3; python_version == "3.12" and extra == "test"
+Requires-Dist: lxml>=5.3.0; python_version >= "3.13" and extra == "test"
+Requires-Dist: virtualenv>=20.26.6; extra == "test"
+Dynamic: license-file
+
+Pywbem is a WBEM client and WBEM indication listener and provides related WBEM
+client-side functionality. It is written in pure Python and runs on Python 3.
+
+WBEM is a standardized approach for systems management defined by the
+[DMTF](https://www.dmtf.org) that is used in the industry for a wide variety of
+systems management tasks. See
+[WBEM Standards](https://www.dmtf.org/standards/wbem) for more information. An
+important use of this approach is the
+[SMI-S](https://www.snia.org/tech_activities/standards/curr_standards/smi)
+standard defined by [SNIA](https://www.snia.org) for managing storage.
+
+A WBEM client allows issuing operations to a WBEM server for the purpose of
+performing systems management tasks. A WBEM indication listener is used to wait
+for and process notifications emitted by a WBEM server for the purpose of
+systems management.
+
+For more information on pywbem version 1.7:
+
+- [Readme file on GitHub](https://github.com/pywbem/pywbem/blob/stable_1.7/README.md)
+- [Documentation on RTD](https://pywbem.readthedocs.io/en/stable_1.7/)
+- [Change log on RTD](https://pywbem.readthedocs.io/en/stable_1.7/changes.html)
