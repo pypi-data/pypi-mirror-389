@@ -1,0 +1,23 @@
+use stdgates::{AND};
+
+component Comp7(A[3]) -> (True) {
+    COMP = 7;  # 0b111
+    
+    >i[3]{
+        and{i}: AND;
+    }
+    and_out1: AND;
+    and_out2: AND;
+    
+    connect {
+        >i[3]{
+            A[{i}] -> and{i}.A;
+            COMP[{i}] -> and{i}.B;
+        }
+        and1.O -> and_out1.A;
+        and2.O -> and_out1.B;
+        and_out1.O -> and_out2.A;
+        and3.O -> and_out2.B;
+        and_out2.O -> True;
+    }
+}
