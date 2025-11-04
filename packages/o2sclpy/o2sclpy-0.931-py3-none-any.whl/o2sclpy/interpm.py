@@ -1,0 +1,2511 @@
+#  ───────────────────────────────────────────────────────────────────
+#  
+#  Copyright (C) 2022-2025, Andrew W. Steiner, Satyajit Roy, and
+#  Mahamudul Hasan Anik
+#  
+#  This file is part of O2sclpy.
+#  
+#  O2sclpy is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  O2sclpy is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with O2sclpy. If not, see <http://www.gnu.org/licenses/>.
+#  
+#  ───────────────────────────────────────────────────────────────────
+
+import numpy
+from o2sclpy.utils import string_to_dict2
+from o2sclpy.hdf import *
+from o2sclpy.doc_data import version
+# for deepcopy
+import copy
+
+class interpm_sklearn_gp:
+    """
+    Interpolate one or many multimensional data sets using a 
+    Gaussian process from scikit-learn
+
+    See https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.GaussianProcessRegressor.html .
+
+    AWS, 3/12/25: I think sklearn uses the log of the
+    marginal likelihood as the optimization function.
+
+    The variables ``verbose`` and ``outformat`` can be changed
+    at any time.
+    
+    .. todo:: * Calculate derivatives
+              * Allow sampling, as done in interpm_krige
+              * Allow different minimizers?
+
+    """
+
+    verbose=0
+    """
+    Verbosity parameter (default 0)
+    """
+    outformat='native'
+    """
+    Output format, either 'native', 'c++', or 'list' (default 'native')
+    """
+    score=0.0
+    """
+    The most recent score value given a non-zero test size
+    returned by set_data()
+    """
+
+    def __init__(self):
+        self.gp=0
+        self.kernel=0
+        self.transform_in=0
+        self.SS1=0
+        self.alpha=0
+        self.random_state=0
+        self.normalize_y=True
+
+        import sklearn.preprocessing as preprocessing
+        self.pp=preprocessing
+        
+    def set_data(self,in_data,out_data,kernel=None,test_size=0.0,
+                 normalize_y=True,transform_in='none',alpha=1.0e-10,
+                 outformat='native',verbose=0,random_state=None):
+                 
+        """Set the input and output data to train the Gaussian
+        process. The variable in_data should be a numpy array with
+        shape ``(n_points,in_dim)`` and out_data should be a numpy
+        array with shape ``(n_points,out_dim)``. (Sklearn calls
+        these shapes ``(n_samples,n_features)`` and
+        ``(n_samples,n_targets)``).
+
+        If kernel is ``None``, then the default kernel,
+        ``1.0*RBF(1.0,(1e-2,1e2))`` is used.
+
+        The value ``alpha`` is added to the diagonal elements of the
+        kernel matrix during fitting.
+
+        """
+        if verbose>0:
+            print('interpm_sklearn_gp::set_data():')
+            print('  kernel:',kernel)
+            print('  normalize_y:',normalize_y)
+            print('  transform_in:',transform_in)
+            print('  outformat:',outformat)
+            print('  alpha:',alpha)
+            print('  random_state:',random_state)
+            print('  in_data shape:',numpy.shape(in_data))
+            print('  out_data shape:',numpy.shape(out_data))
+
+        from sklearn.gaussian_process import GaussianProcessRegressor
+        from sklearn.gaussian_process.kernels import RBF
+
+        if kernel==None:
+            self.kernel=1.0*RBF(1.0,(1e-2,1e2))
+        else:
+            self.kernel=kernel
+        self.outformat=outformat
+        self.alpha=alpha
+        self.random_state=random_state
+        self.verbose=verbose
+        self.transform_in=transform_in
+        self.normalize_y=normalize_y
+
+        # ----------------------------------------------------------
+        # Handle the data transformations
+        
+        if self.transform_in=='moto':
+            self.SS1=self.pp.MinMaxScaler(feature_range=(-1,1))
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='quant':
+            self.SS1=self.pp.QuantileTransformer(n_quantiles=in_data.shape[0])
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='standard':
+            self.SS1=self.pp.StandardScaler()
+            in_data_trans=self.SS1.fit_transform(in_data)
+        else:
+            in_data_trans=in_data
+            
+        if test_size>0.0:
+            try:
+                from sklearn.model_selection import train_test_split
+                in_train,in_test,out_train,out_test=train_test_split(
+                    in_data_trans,out_data,test_size=test_size,
+                    random_state=self.random_state)
+            except Exception as e:
+                print('Exception in interpm_sklearn_gp::set_data()',
+                      'at test_train_split().',e)
+                raise
+        else:
+            in_train=in_data_trans
+            out_train=out_data
+
+        # AWS 3/9/25: This is an alternative to the sklearn
+        # optimizer which allows for some configuration,
+        # but it prevents pickling, so this is commented out
+        # for now until I figure out what to do with it.
+        # 
+        #import scipy
+        #def optimizer(obj_func,x0,bounds):
+        #    res=scipy.optimize.minimize(
+        #        obj_func,x0,bounds=bounds,method="L-BFGS-B",jac=True,
+        #        options={"maxiter": 10000})
+        #    return res.x,res.fun
+        
+        try:
+            func=GaussianProcessRegressor
+            self.gp=func(normalize_y=self.normalize_y,
+                         kernel=self.kernel,alpha=self.alpha,
+                         random_state=self.random_state)
+            self.gp.fit(in_train,out_train)
+        except Exception as e:
+            print('Exception in interpm_sklearn_gp::set_data()',
+                  'at fit().',e)
+            raise
+
+        if test_size>0.0:
+            self.score=self.gp.score(in_test,out_test)
+            return self.score
+
+        return
+    
+    def set_data_str(self,in_data,out_data,options):
+        """Set the input and output data to train the interpolator,
+        using a string to specify the keyword arguments.
+
+        The GP kernel, if specified, should be the last option
+        specified in the string (this enables easier parsing of the
+        option string). The eval() function is used to convert the
+        string to a sklearn kernel.
+
+        """
+        from sklearn.gaussian_process.kernels import RBF, DotProduct
+        from sklearn.gaussian_process.kernels import RationalQuadratic
+        from sklearn.gaussian_process.kernels import Matern, WhiteKernel
+        from sklearn.gaussian_process.kernels import PairwiseKernel
+        from sklearn.gaussian_process.kernels import CompoundKernel
+        from sklearn.gaussian_process.kernels import ConstantKernel
+        from sklearn.gaussian_process.kernels import ExpSineSquared
+        from sklearn.gaussian_process.kernels import Exponentiation
+        from sklearn.gaussian_process.kernels import Product, Sum
+        from sklearn.gaussian_process.kernels import Hyperparameter
+        
+        try:
+            ktemp=''
+            if options.find('kernel=')!=-1:
+                # Extract the kernel from the string to process it
+                # separately
+                ktemp=options[options.find('kernel=')+7:]
+                options=options[:options.find('kernel=')]
+                if options[-1:]==',':
+                    options=options[:-1]
+            dct=string_to_dict2(options,list_of_ints=['verbose',
+                                                      'random_state'],
+                                list_of_floats=['test_size','alpha'],
+                                list_of_bools=['normalize_y'])
+            if ktemp!='':
+                dct["kernel"]=eval(ktemp)
+            if "verbose" in dct and dct["verbose"]>0:
+                print('interpm_sklearn_gp::set_data_str():')
+                print('  string:',options)
+                print('  dictionary:',dct)
+        except Exception as e:
+            print('Exception in interpm_sklearn_gp::set_data_str()',
+                  'at fit().',e)
+            raise
+              
+        return self.set_data(in_data,out_data,**dct)
+    
+    def eval(self,v):
+        """
+        Evaluate the GP at point ``v``.
+
+        The input ``v`` should be a one-dimensional numpy array
+        and the output is a one-dimensional numpy array, unless
+        outformat is ``list``, in which case the output is a
+        Python list.
+        
+        """
+
+        # The sklearn transformers require two-dimensional
+        # arrays as inputs and outputs.
+        
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            else:
+                v_trans=v.reshape(1,-1)
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_sklearn_gp::eval():'),e)
+            raise
+
+        # The sklearn GPR object expects the input to be a
+        # two-dimensional numpy array.
+        
+        try:
+            yp=self.gp.predict(v_trans)
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_sklearn_gp::eval():'),e)
+            raise
+
+        # The output of the sklearn GPR object is either one- or
+        # two-dimensional, depending on the number of outputs.
+        # We don't include a 'transform_out' option since the
+        # GPR class already has a 'normalize_y' option.
+
+        yp_trans=yp
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            if yp_trans.ndim==1:
+                return yp_trans.tolist()
+            return yp_trans[0].tolist()
+        # Return a one-dimensional numpy array in either case
+        if yp_trans.ndim==1:
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval():',
+                      'ndim=1 mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans
+        if self.verbose>1:
+            print('interpm_sklearn_gp::eval():',
+                  'array mode type(yp[0]),v,yp[0]:',
+                  type(yp_trans[0]),v,yp_trans[0])
+        return yp_trans[0]
+
+    def apply(self,v,f):
+        """
+        Apply the kernel-like function ``f`` to the training data
+        and return the result (doesn't work yet).
+        
+        """
+
+        # The sklearn transformers require two-dimensional
+        # arrays as inputs and outputs.
+        
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            else:
+                v_trans=v.reshape(1,-1)
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_sklearn_gp::eval():'),e)
+            raise
+
+        # The sklearn GPR object expects the input to be a
+        # two-dimensional numpy array.
+        
+        try:
+            x_train=self.gp.X_train_
+            # x_train is size (n_samples,n_features)
+            print('here',numpy.shape(x_train),type(x_train))
+            # Alpha is the vector of weights, K^{-1} y
+            alpha=self.gp.alpha_
+            print('here2',numpy.shape(alpha),type(alpha))
+            quit()
+            # The function f should return a matrix (n_features,n_samples),
+            # then the vector has size (n_samples,n_targets) so that
+            # yp is (n_features,n_targets)?
+            yp=f(v_trans,x_train) @ alpha
+            print('here3',yp,type(yp))
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_sklearn_gp::eval():'),e)
+            raise
+
+        # The output of the sklearn GPR object is either one- or
+        # two-dimensional, depending on the number of outputs.
+        # We don't include a 'transform_out' option since the
+        # GPR class already has a 'normalize_y' option.
+
+        yp_trans=yp
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            if yp_trans.ndim==1:
+                return yp_trans.tolist()
+            return yp_trans[0].tolist()
+        # Return a one-dimensional numpy array in either case
+        if yp_trans.ndim==1:
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval():',
+                      'ndim=1 mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans
+        if self.verbose>1:
+            print('interpm_sklearn_gp::eval():',
+                  'array mode type(yp[0]),v,yp[0]:',
+                  type(yp_trans[0]),v,yp_trans[0])
+        return yp_trans[0]
+
+    def eval_list(self,v):
+        """Evaluate the GP at the list of points given in ``v``.
+        The input ``v`` should be a two-dimensional numpy
+        array of size ``(n_points,n_inputs)``.
+
+        If ``outformat`` is ``native``, then the output is a
+        two-dimensional numpy array. If ``outformat`` is ``list``,
+        then the output is a list. If ``outformat`` is ``c++``, then
+        the output is a continuous one-dimensional numpy array.
+        
+        """
+        
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v)
+            else:
+                v_trans=v
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_sklearn_gp::eval_list():'),e)
+            raise
+
+        try:
+            yp=self.gp.predict(v_trans)
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_sklearn_gp::eval_list():'),e)
+            raise
+
+        yp_trans=yp
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval_list():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans.tolist()
+        elif self.outformat=='c++':
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval_list():',
+                      'array mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return numpy.ascontiguousarray(yp_trans)
+        return yp_trans
+
+    def eval_unc(self,v):
+        """
+        Evaluate the GP and its uncertainty at point ``v``.
+
+        # AWS, 3/27/24: Keep in mind that
+        # o2scl::interpm_python.eval_unc() expects the return type to
+        # be a tuple of numpy arrays. 
+        """
+
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            except Exception as e:
+                print(('Exception at input transformation '+
+                       'in interpm_sklearn_gp:'),
+                      e)
+                raise
+        else:
+            v_trans=v.reshape(1,-1)
+            
+        yp,std=self.gp.predict(v_trans,return_std=True)
+        
+        yp_trans=yp
+        std_trans=std
+    
+        if self.outformat=='list':
+            return yp_trans[0].tolist(),std_trans[0].tolist()
+        if yp_trans.ndim==1:
+            if self.verbose>1:
+                print('interpm_sklearn_gp::eval_unc(): type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return (numpy.ascontiguousarray(yp_trans),
+                    numpy.ascontiguousarray(std_trans))
+        if self.verbose>1:
+            print('interpm_sklearn_gp::eval_unc(): type(yp[0]),v,yp[0]:',
+                  type(yp_trans[0]),v,yp_trans[0])
+        return (numpy.ascontiguousarray(yp_trans[0]),
+                numpy.ascontiguousarray(std_trans[0]))
+
+    def save(self,filename,obj_name):
+        """Save the interpolation settings to an HDF5 file.
+
+        This function uses the sklearn get_params() function to obtain
+        the sklearn parameters. A tuple is created using the class
+        parameters and the sklearn parameters and this tuple is
+        pickled to a string. Finally, this function stores that string
+        with name ``obj_name`` to the HDF5 file named ``filename``.
+
+        """
+        import pickle
+
+        # Construct dictionary of class data
+        loc_dct={"o2sclpy_version": version,
+                 "verbose": self.verbose,
+                 "kernel": self.kernel,
+                 "outformat": self.outformat,
+                 "transform_in": self.transform_in,
+                 "SS1": self.SS1,
+                 "alpha": self.alpha,
+                 "random_state": self.random_state,
+                 "normalize_y": self.normalize_y}
+
+        # Create a string from a tuple of the dictionary and the GPR
+        # object
+        byte_string=pickle.dumps((loc_dct,self.gp))
+
+        # Write string to an HDF5 file
+        hf=o2sclpy.hdf_file()
+        hf.open_or_create(filename)
+        hf.sets(obj_name,byte_string)
+        hf.close()
+
+        return
+    
+    def load(self,filename,obj_name):
+        """Load the interpolation settings from a string named
+        ``obj_name`` stored in an HDF5 file named ``filename``.
+
+        """
+        import pickle
+        from sklearn.gaussian_process import GaussianProcessRegressor
+        
+        # Read string from file
+        hf=o2sclpy.hdf_file()
+        hf.open(filename)
+        s=o2sclpy.std_string()
+        hf.gets(obj_name,s)
+        hf.close()
+        # Convert to a Python bytes object
+        sb=s.to_bytes()
+
+        # Extract the tuple
+        tup=pickle.loads(sb)
+
+        # Set the class data
+        loc_dct=tup[0]
+        if loc_dct["o2sclpy_version"]!=version:
+            raise ValueError("In function interpm_sklearn_gp::load() "+
+                             "Cannot read files with version "+
+                             loc_dct["o2sclpy_version"])
+        self.verbose=loc_dct["verbose"]
+        self.kernel=loc_dct["kernel"]
+        self.outformat=loc_dct["outformat"]
+        self.transform_in=loc_dct["transform_in"]
+        self.SS1=loc_dct["SS1"]
+        self.alpha=loc_dct["alpha"]
+        self.random_state=loc_dct["random_state"]
+        self.normalize_y=loc_dct["normalize_y"]
+
+        # Set the GPR object
+        self.gp=tup[1]
+
+        return
+        
+class interpm_sklearn_dtr:
+    """
+    Interpolate one or many multidimensional data sets using
+    scikit-learn's decision tree regression.
+
+    See https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html .
+    """
+
+    verbose=0
+    """
+    Verbosity parameter (default 0)
+    """
+    outformat='numpy'
+    """
+    Output format, either 'native', 'c++', or 'list' (default 'native')
+    """
+    score=0.0
+    """
+    The most recent score value given a non-zero test size
+    returned by set_data()
+    """
+    
+    def __init__(self):
+        self.dtr=0
+        self.transform_in=0
+        self.transform_out=0
+        self.SS1=0
+        self.SS2=0
+        self.nd_in=0
+        self.nd_out=0
+        
+        import sklearn.preprocessing as preprocessing
+        self.pp=preprocessing
+        
+        return
+    
+    def set_data(self,in_data,out_data,outformat='numpy',verbose=0,
+                 test_size=0.0,criterion='squared_error',splitter='best',
+                 transform_in='none',transform_out='none',
+                 max_depth=None,random_state=None):
+        """
+        Set the input and output data to train the interpolator
+        """
+        self.outformat=outformat
+        self.verbose=verbose
+        self.transform_in=transform_in
+        self.transform_out=transform_out
+        self.nd_in=numpy.shape(in_data)[1]
+        self.nd_out=numpy.shape(out_data)[1]
+        
+        if self.verbose>0:
+            print('interpm_sklearn_dtr::set_data():')
+            print('  outformat:',outformat)
+            print('  in_data shape:',numpy.shape(in_data))
+            print('  out_data shape:',numpy.shape(out_data))
+            print('  transform_in:',transform_in)
+            print('  transform_out:',transform_out)
+
+        # ----------------------------------------------------------
+        # Handle the data transformations
+        
+        if self.transform_in=='moto':
+            self.SS1=self.pp.MinMaxScaler(feature_range=(-1,1))
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='quant':
+            self.SS1=self.pp.QuantileTransformer(n_quantiles=in_data.shape[0])
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='standard':
+            self.SS1=self.pp.StandardScaler()
+            in_data_trans=self.SS1.fit_transform(in_data)
+        else:
+            in_data_trans=in_data
+            
+        if self.transform_out=='moto':
+            self.SS2=self.pp.MinMaxScaler(feature_range=(-1,1))
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='quant':
+            self.SS2=self.pp.QuantileTransformer(n_quantiles=out_data.shape[0])
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='standard':
+            self.SS2=self.pp.StandardScaler()
+            out_data_trans=self.SS2.fit_transform(out_data)
+        else:
+            out_data_trans=out_data
+
+        if test_size>0.0:
+            try:
+                from sklearn.model_selection import train_test_split
+                x_train,x_test,y_train,y_test=train_test_split(
+                    in_data_trans,out_data_trans,test_size=test_size)
+            except Exception as e:
+                print('Exception in interpm_sklearn_dtr::set_data()',
+                      'at test_train_split().',e)
+                raise
+        else:
+            x_train=in_data_trans
+            y_train=out_data_trans
+            
+        try:
+            from sklearn.tree import DecisionTreeRegressor
+            self.dtr=DecisionTreeRegressor(criterion=criterion, 
+                                        splitter=splitter,
+                                        max_depth=max_depth,
+                                        random_state=random_state)
+        except Exception as e:
+            print('Exception in interpm_sklearn_dtr::set_data()',
+                  'at model definition.',e)
+            raise
+
+        try:
+            self.dtr.fit(x_train,y_train)      
+
+            if test_size>0.0:
+                self.score=self.dtr.score(x_test,y_test)
+
+        except Exception as e:
+            print('Exception in interpm_sklearn_dtr::set_data()',
+                  'at model fitting.',e)
+            raise
+
+        if test_size>0.0:
+            return self.score
+        return
+    
+    def set_data_str(self,in_data,out_data,options):
+        """
+        Set the input and output data to train the interpolator,
+        using a string to specify the keyword arguments.
+        """
+
+        dct=string_to_dict2(options,list_of_ints=['verbose',
+                                                  'random_state'],
+                            list_of_floats=['test_size'])
+        print('String:',options,'Dictionary:',dct)
+
+        self.set_data(in_data,out_data,**dct)
+
+        return
+    
+    def eval(self,v):
+        """
+        Evaluate the regression at point ``v``.
+        """
+
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            except Exception as e:
+                print(('Exception at input transformation '+
+                       'in interpm_sklearn_dtr:'),
+                      e)
+                raise
+        else:
+            v_trans=v.reshape(1,-1)
+
+        yp=self.dtr.predict(v_trans)
+        
+        if self.transform_out!='none':
+            try:
+                if yp.ndim==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+            except Exception as e:
+                print('Exception 5 in interpm_sklearn_dtr:',e)
+                raise
+        else:
+            yp_trans=yp
+
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_dtr::eval():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans[0].tolist()
+        if yp_trans.ndim==1:
+            if self.verbose>1:
+                print('interpm_sklearn_dtr::eval():',
+                      'ndim=1 mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return numpy.ascontiguousarray(yp_trans)
+            #return numpy.array(yp_trans)
+        if self.verbose>1:
+            print('interpm_sklearn_dtr::eval():',
+                  'array mode type(yp[0]),v,yp[0]:',
+                  type(yp_trans[0]),v,yp_trans[0])
+        return numpy.ascontiguousarray(yp_trans[0])
+
+    def eval_list(self,v):
+        """
+        Evaluate the GP at point ``v``.
+        """
+
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v)
+            else:
+                v_trans=v
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_sklearn_dtr::eval_list():'),e)
+            raise
+
+        try:
+            yp=self.dtr.predict(v_trans)
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_sklearn_dtr::eval_list():'),e)
+            raise
+
+        yp_trans=0
+        try:
+            if self.transform_out!='none':
+                if yp.ndim==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+                if yp_trans.ndim==2 and len(yp_trans[0])==1:
+                    yp_trans=yp_trans.reshape(1,-1)[0]
+            else:
+                yp_trans=yp
+        except Exception as e:
+            print(('Exception at output transformation '+
+                   'in interpm_sklearn_dtr::eval_list():'),e)
+            raise
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_dtr::eval_list():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans.tolist()
+        if self.verbose>1:
+            print('interpm_sklearn_dtr::eval_list():',
+                  'array mode type(yp),v,yp:',
+                  type(yp_trans),v,yp_trans)
+        return numpy.ascontiguousarray(yp_trans)
+
+    def save(self,filename,obj_name):
+        """
+        Save the interpolation settings to an HDF5 file
+        """
+        import pickle
+
+        # Construct string
+        loc_dct={"o2sclpy_version": version,
+                 "verbose": self.verbose,
+                 "transform_in": self.transform_in,
+                 "transform_out": self.transform_out,
+                 "SS1": self.SS1,
+                 "SS2": self.SS2,
+                 "outformat": self.outformat}
+        byte_string=pickle.dumps((loc_dct,self.dtr))
+
+        # Write to a file
+        hf=o2sclpy.hdf_file()
+        hf.open_or_create(filename)
+        hf.sets(obj_name,byte_string)
+        hf.close()
+
+        return
+    
+    def load(self,filename,obj_name):
+        """
+        Load the interpolation settings from a file
+        """
+        import pickle
+        
+        # Read string from file
+        hf=o2sclpy.hdf_file()
+        hf.open(filename)
+        s=o2sclpy.std_string()
+        hf.gets(obj_name,s)
+        hf.close()
+        sb=s.to_bytes()
+
+        tup=pickle.loads(sb)
+
+        loc_dct=tup[0]
+        if loc_dct["o2sclpy_version"]!=version:
+            raise ValueError("In function interpm_sklearn_dtr::load() "+
+                             "Cannot read files with version "+
+                             loc_dct["o2sclpy_version"])
+        self.verbose=loc_dct["verbose"]
+        self.transform_in=loc_dct["transform_in"]
+        self.transform_out=loc_dct["transform_out"]
+        self.outformat=loc_dct["outformat"]
+        self.SS1=loc_dct["SS1"]
+        self.SS2=loc_dct["SS2"]
+
+        self.dtr=tup[1]
+        
+        return
+        
+
+class interpm_sklearn_mlpr:
+    """
+    Interpolate one or many multidimensional data sets using
+    scikit-learn's multi-layer perceptron regressor.
+    """
+
+    verbose=0
+    """
+    Verbosity parameter (default 0)
+    """
+    outformat='numpy'
+    """
+    Output format, either 'native', 'c++', or 'list' (default 'native')
+    """
+    score=0.0
+    """
+    The most recent score value given a non-zero test size
+    returned by set_data()
+    """
+    
+    def __init__(self):
+        self.mlpr=0
+        self.transform_in=0
+        self.transform_out=0
+        self.SS1=0
+        self.SS2=0
+        self.nd_in=0
+        self.nd_out=0
+        
+        import sklearn.preprocessing as preprocessing
+        self.pp=preprocessing
+        
+        return
+    
+    def set_data(self,in_data,out_data,outformat='numpy',test_size=0.0,
+                 hlayers=(100,),activation='relu',transform_in='none',
+                 transform_out='none',solver='adam',alpha=0.0001,
+                 batch_size='auto',learning_rate='adaptive',max_iter=500,
+                 random_state=1,verbose=0,early_stopping=True,tol=1.0e-4,
+                 n_iter_no_change=10):
+        """
+        Set the input and output data to train the interpolator.
+
+        Activation functions are 'identity', 'logistic', 'tanh',
+        or 'relu'.
+        """
+        self.outformat=outformat
+        self.verbose=verbose
+        self.transform_in=transform_in
+        self.transform_out=transform_out
+        self.nd_in=numpy.shape(in_data)[1]
+        self.nd_out=numpy.shape(out_data)[1]
+        
+        if self.verbose>0:
+            print('interpm_sklearn_mlpr::set_data():')
+            print('  outformat:',outformat)
+            print('  verbose:',verbose)
+            print('  in_data shape:',numpy.shape(in_data))
+            print('  out_data shape:',numpy.shape(out_data))
+            print('  solver:',solver)
+
+        # ----------------------------------------------------------
+        # Handle the data transformations
+        
+        if self.transform_in=='moto':
+            self.SS1=self.pp.MinMaxScaler(feature_range=(-1,1))
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='quant':
+            self.SS1=self.pp.QuantileTransformer(n_quantiles=in_data.shape[0])
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='standard':
+            self.SS1=self.pp.StandardScaler()
+            in_data_trans=self.SS1.fit_transform(in_data)
+        else:
+            in_data_trans=in_data
+            
+        if self.transform_out=='moto':
+            self.SS2=self.pp.MinMaxScaler(feature_range=(-1,1))
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='quant':
+            self.SS2=self.pp.QuantileTransformer(n_quantiles=out_data.shape[0])
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='standard':
+            self.SS2=self.pp.StandardScaler()
+            out_data_trans=self.SS2.fit_transform(out_data)
+        else:
+            out_data_trans=out_data
+
+        if test_size>0.0:
+            try:
+                from sklearn.model_selection import train_test_split
+                in_train,in_test,out_train,out_test=train_test_split(
+                    in_data_trans,out_data_trans,test_size=test_size)
+            except Exception as e:
+                print('Exception in interpm_sklearn_mlpr::set_data()',
+                      'at test_train_split().',e)
+                raise
+        else:
+            in_train=in_data_trans
+            out_train=out_data_trans
+            
+        try:
+            from sklearn.neural_network import MLPRegressor
+            self.mlpr=MLPRegressor(hidden_layer_sizes=hlayers, 
+                                   activation=activation,solver=solver, 
+                                   batch_size=batch_size, 
+                                   learning_rate=learning_rate,
+                                   max_iter=max_iter,  
+                                   random_state=random_state,
+                                   verbose=verbose, 
+                                   early_stopping=early_stopping,
+                                   tol=tol,
+                                   n_iter_no_change=n_iter_no_change,
+                                   alpha=alpha)
+            if len(out_train[0])==1:
+                self.mlpr.fit(in_train,out_train.ravel())
+            else:
+                self.mlpr.fit(in_train,out_train)
+                
+            if test_size>0.0:
+                self.score=self.mlpr.score(in_test,out_test)
+
+        except Exception as e:
+            print('Exception in interpm_sklearn_mlpr::set_data()',
+                  'at fit().',e)
+            raise
+
+        if test_size>0.0:
+            if self.verbose>0:
+                print('interpm_sklearn_mlpr::set_data(): score: %7.6e' %
+                      (self.mlpr.score(in_test,out_test)))
+            return self.score
+
+        return
+    
+    def set_data_str(self,in_data,out_data,options):
+        """
+        Set the input and output data to train the interpolator,
+        using a string to specify the keyword arguments.
+        """
+
+        dct=string_to_dict2(options,list_of_ints=['verbose',
+                                                  'random_state',
+                                                  'max_iter',
+                                                  'n_iter_no_change'],
+                            list_of_floats=['test_size','alpha'],
+                            list_of_bools=['early_stopping'])
+
+        if "hlayers" in dct:
+            htemp=dct["hlayers"]
+            htemp=htemp[1:-1]
+            htemp=htemp.split(',')
+            htemp2=[]
+            for i in range(0,len(htemp)):
+                htemp2.append(int(htemp[i]))
+            dct["hlayers"]=numpy.array(htemp2)
+
+        print('String:',options,'Dictionary:',dct)
+        
+        self.set_data(in_data,out_data,**dct)
+
+        return
+    
+    def eval(self,v):
+        """
+        Evaluate the MLP at point ``v``.
+        """
+
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            except Exception as e:
+                print(('Exception at input transformation '+
+                       'in interpm_sklearn_mlpr:'),e)
+                raise
+        else:
+            v_trans=v.reshape(1,-1)
+
+        yp=self.mlpr.predict(v_trans)
+        
+        if self.transform_out!='none':
+            try:
+                if yp.ndim==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+            except Exception as e:
+                print('Exception 5 in interpm_sklearn_mlpr:',e)
+                raise
+        else:
+            yp_trans=yp
+
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_mlpr::eval():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans[0].tolist()
+        if yp_trans.ndim==1:
+            if self.verbose>1:
+                print('interpm_sklearn_mlpr::eval():',
+                      'ndim=1 mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return numpy.ascontiguousarray(yp_trans)
+            #return numpy.array(yp_trans)
+        if self.verbose>1:
+            print('interpm_sklearn_mlpr::eval():',
+                  'array mode type(yp[0]),v,yp[0]:',
+                  type(yp_trans[0]),v,yp_trans[0])
+        return numpy.ascontiguousarray(yp_trans[0])
+    
+    def eval_unc(self,v):
+        """
+        Empty function because this interpolator does not currently
+        provide uncertainties
+        """
+        return self.eval(v)
+        
+    def eval_list(self,v):
+        """
+        Evaluate the GP at point ``v``.
+        """
+
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v)
+            else:
+                v_trans=v
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_sklearn_mlpr::eval_list():'),e)
+            raise
+
+        try:
+            yp=self.mlpr.predict(v_trans)
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_sklearn_mlpr::eval_list():'),e)
+            raise
+
+        yp_trans=0
+        try:
+            if self.transform_out!='none':
+                if yp.ndim==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+                if yp_trans.ndim==2 and len(yp_trans[0])==1:
+                    yp_trans=yp_trans.reshape(1,-1)[0]
+            else:
+                yp_trans=yp
+        except Exception as e:
+            print(('Exception at output transformation '+
+                   'in interpm_sklearn_mlpr::eval_list():'),e)
+            raise
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_mlpr::eval_list():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans.tolist()
+        if self.verbose>1:
+            print('interpm_sklearn_mlpr::eval_list():',
+                  'array mode type(yp),v,yp:',
+                  type(yp_trans),v,yp_trans)
+        return numpy.ascontiguousarray(yp_trans)
+
+    def save(self,filename,obj_name):
+        """
+        Save the interpolation settings to an HDF5 file
+        """
+        import pickle
+
+        # Construct string
+        loc_dct={"o2sclpy_version": version,
+                 "verbose": self.verbose,
+                 "outformat": self.outformat,
+                 "transform_in": self.transform_in,
+                 "transform_out": self.transform_out,
+                 "SS1": self.SS1,
+                 "SS2": self.SS2}
+        byte_string=pickle.dumps((loc_dct,self.mlpr))
+
+        # Write to a file
+        hf=o2sclpy.hdf_file()
+        hf.open_or_create(filename)
+        hf.sets(obj_name,byte_string)
+        hf.close()
+
+        return
+    
+    def load(self,filename,obj_name):
+        """
+        Load the interpolation settings from a file
+        """
+        import pickle
+        
+        # Read string from file
+        hf=o2sclpy.hdf_file()
+        hf.open(filename)
+        s=o2sclpy.std_string()
+        hf.gets(obj_name,s)
+        hf.close()
+        sb=s.to_bytes()
+
+        tup=pickle.loads(sb)
+        
+        loc_dct=tup[0]
+        if loc_dct["o2sclpy_version"]!=version:
+            raise ValueError("In function interpm_sklearn_mlpr::load() "+
+                             "Cannot read files with version "+
+                             loc_dct["o2sclpy_version"])
+        self.verbose=loc_dct["verbose"]
+        self.outformat=loc_dct["outformat"]
+        self.transform_in=loc_dct["transform_in"]
+        self.transform_out=loc_dct["transform_out"]
+        self.SS1=loc_dct["SS1"]
+        self.SS2=loc_dct["SS2"]
+        
+        self.mlpr=tup[1]
+
+        return
+        
+class interpm_sklearn_adaboost:
+    """
+    Interpolate one or many multidimensional data sets using
+    scikit-learn's AdaBoost regressor
+    """
+
+    verbose=0
+    """
+    Verbosity parameter (default 0)
+    """
+    outformat='numpy'
+    """
+    Output format, either 'native', 'c++', or 'list' (default 'native')
+    """
+    score=0.0
+    """
+    The most recent score value given a non-zero test size
+    returned by set_data()
+    """
+    
+    def __init__(self):
+        self.ab=0
+        self.transform_in=0
+        self.transform_out=0
+        self.SS1=0
+        self.SS2=0
+        self.nd_in=0
+        self.nd_out=0
+        
+        import sklearn.preprocessing as preprocessing
+        self.pp=preprocessing
+        
+        return
+    
+    def set_data(self,in_data,out_data,outformat='numpy',test_size=0.0,
+                 transform_in='none',transform_out='none',
+                 n_estimators=50,learning_rate=1.0,loss='linear',
+                 random_state=1,verbose=0):
+        
+        """
+        Set the input and output data to train the interpolator.
+
+        Activation functions are 'identity', 'logistic', 'tanh',
+        or 'relu'.
+        """
+        self.outformat=outformat
+        self.verbose=verbose
+        self.transform_in=transform_in
+        self.transform_out=transform_out
+        self.nd_in=numpy.shape(in_data)[1]
+        self.nd_out=numpy.shape(out_data)[1]
+        
+        if self.verbose>0:
+            print('interpm_sklearn_adaboost::set_data():')
+            print('  outformat:',outformat)
+            print('  verbose:',verbose)
+            print('  in_data shape:',numpy.shape(in_data))
+            print('  out_data shape:',numpy.shape(out_data))
+            print('  solver:',solver)
+
+        # ----------------------------------------------------------
+        # Handle the data transformations
+        
+        if self.transform_in=='moto':
+            self.SS1=self.pp.MinMaxScaler(feature_range=(-1,1))
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='quant':
+            self.SS1=self.pp.QuantileTransformer(n_quantiles=in_data.shape[0])
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='standard':
+            self.SS1=self.pp.StandardScaler()
+            in_data_trans=self.SS1.fit_transform(in_data)
+        else:
+            in_data_trans=in_data
+            
+        if self.transform_out=='moto':
+            self.SS2=self.pp.MinMaxScaler(feature_range=(-1,1))
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='quant':
+            self.SS2=self.pp.QuantileTransformer(n_quantiles=out_data.shape[0])
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='standard':
+            self.SS2=self.pp.StandardScaler()
+            out_data_trans=self.SS2.fit_transform(out_data)
+        else:
+            out_data_trans=out_data
+
+        if test_size>0.0:
+            try:
+                from sklearn.model_selection import train_test_split
+                in_train,in_test,out_train,out_test=train_test_split(
+                    in_data_trans,out_data_trans,test_size=test_size)
+            except Exception as e:
+                print('Exception in interpm_sklearn_adaboost::set_data()',
+                      'at test_train_split().',e)
+                raise
+        else:
+            in_train=in_data_trans
+            out_train=out_data_trans
+            
+        try:
+            from sklearn.ensemble import AdaBoostRegressor
+            self.ab=AdaBoostRegressor(n_estimators=n_estimators,
+                                      learning_rate=learning_rate,
+                                      loss=loss,random_state=random_state)
+                                      
+            if len(out_train[0])==1:
+                self.ab.fit(in_train,out_train.ravel())
+            else:
+                self.ab.fit(in_train,out_train)
+                
+            if test_size>0.0:
+                self.score=self.ab.score(in_test,out_test)
+
+        except Exception as e:
+            print('Exception in interpm_sklearn_adaboost::set_data()',
+                  'at fit().',e)
+            raise
+
+        if test_size>0.0:
+            if self.verbose>0:
+                print('interpm_sklearn_adaboost::set_data(): score: %7.6e' %
+                      (self.ab.score(in_test,out_test)))
+            return self.score
+
+        return
+    
+    def set_data_str(self,in_data,out_data,options):
+        """
+        Set the input and output data to train the interpolator,
+        using a string to specify the keyword arguments.
+        """
+
+        dct=string_to_dict2(options,list_of_ints=['verbose',
+                                                  'random_state',
+                                                  'max_iter',
+                                                  'n_iter_no_change'],
+                            list_of_floats=['test_size','alpha'],
+                            list_of_bools=['early_stopping'])
+
+        if "hlayers" in dct:
+            htemp=dct["hlayers"]
+            htemp=htemp[1:-1]
+            htemp=htemp.split(',')
+            htemp2=[]
+            for i in range(0,len(htemp)):
+                htemp2.append(int(htemp[i]))
+            dct["hlayers"]=numpy.array(htemp2)
+
+        print('String:',options,'Dictionary:',dct)
+        
+        self.set_data(in_data,out_data,**dct)
+
+        return
+    
+    def eval(self,v):
+        """
+        Evaluate the MLP at point ``v``.
+        """
+
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            except Exception as e:
+                print(('Exception at input transformation '+
+                       'in interpm_sklearn_adaboost:'),e)
+                raise
+        else:
+            v_trans=v.reshape(1,-1)
+
+        yp=self.ab.predict(v_trans)
+        
+        if self.transform_out!='none':
+            try:
+                if yp.ndim==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+            except Exception as e:
+                print('Exception 5 in interpm_sklearn_adaboost:',e)
+                raise
+        else:
+            yp_trans=yp
+
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_adaboost::eval():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans[0].tolist()
+        if yp_trans.ndim==1:
+            if self.verbose>1:
+                print('interpm_sklearn_adaboost::eval():',
+                      'ndim=1 mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return numpy.ascontiguousarray(yp_trans)
+            #return numpy.array(yp_trans)
+        if self.verbose>1:
+            print('interpm_sklearn_adaboost::eval():',
+                  'array mode type(yp[0]),v,yp[0]:',
+                  type(yp_trans[0]),v,yp_trans[0])
+        return numpy.ascontiguousarray(yp_trans[0])
+    
+    def eval_unc(self,v):
+        """
+        Empty function because this interpolator does not currently
+        provide uncertainties
+        """
+        return self.eval(v)
+        
+    def eval_list(self,v):
+        """
+        Evaluate the GP at point ``v``.
+        """
+
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v)
+            else:
+                v_trans=v
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_sklearn_adaboost::eval_list():'),e)
+            raise
+
+        try:
+            yp=self.ab.predict(v_trans)
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_sklearn_adaboost::eval_list():'),e)
+            raise
+
+        yp_trans=0
+        try:
+            if self.transform_out!='none':
+                if yp.ndim==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+                if yp_trans.ndim==2 and len(yp_trans[0])==1:
+                    yp_trans=yp_trans.reshape(1,-1)[0]
+            else:
+                yp_trans=yp
+        except Exception as e:
+            print(('Exception at output transformation '+
+                   'in interpm_sklearn_adaboost::eval_list():'),e)
+            raise
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_sklearn_adaboost::eval_list():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans.tolist()
+        if self.verbose>1:
+            print('interpm_sklearn_adaboost::eval_list():',
+                  'array mode type(yp),v,yp:',
+                  type(yp_trans),v,yp_trans)
+        return numpy.ascontiguousarray(yp_trans)
+
+    def save(self,filename,obj_name):
+        """
+        Save the interpolation settings to an HDF5 file
+        """
+        import pickle
+
+        # Construct string
+        loc_dct={"o2sclpy_version": version,
+                 "verbose": self.verbose,
+                 "outformat": self.outformat,
+                 "transform_in": self.transform_in,
+                 "transform_out": self.transform_out,
+                 "SS1": self.SS1,
+                 "SS2": self.SS2}
+        byte_string=pickle.dumps((loc_dct,self.ab))
+
+        # Write to a file
+        hf=o2sclpy.hdf_file()
+        hf.open_or_create(filename)
+        hf.sets(obj_name,byte_string)
+        hf.close()
+
+        return
+    
+    def load(self,filename,obj_name):
+        """
+        Load the interpolation settings from a file
+        """
+        import pickle
+        
+        # Read string from file
+        hf=o2sclpy.hdf_file()
+        hf.open(filename)
+        s=o2sclpy.std_string()
+        hf.gets(obj_name,s)
+        hf.close()
+        sb=s.to_bytes()
+
+        tup=pickle.loads(sb)
+        
+        loc_dct=tup[0]
+        if loc_dct["o2sclpy_version"]!=version:
+            raise ValueError("In function interpm_sklearn_adaboost::load() "+
+                             "Cannot read files with version "+
+                             loc_dct["o2sclpy_version"])
+        self.verbose=loc_dct["verbose"]
+        self.outformat=loc_dct["outformat"]
+        self.transform_in=loc_dct["transform_in"]
+        self.transform_out=loc_dct["transform_out"]
+        self.SS1=loc_dct["SS1"]
+        self.SS2=loc_dct["SS2"]
+        
+        self.ab=tup[1]
+
+        return
+        
+class interpm_torch_dnn:
+    """Interpolate one or many multidimensional data sets using
+    PyTorch.
+
+    .. todo:: * Calculate second derivatives
+              * More activation functions
+              * move function_approx class outside of function
+              * better handling of torch tensors as input and output
+              * 'native' output format
+              * partial derivatives inefficient because always computes
+                gradient
+              * add_data() for successive improvements
+              * Allow user to control CPU vs. GPU
+    """
+
+    verbose=0
+    """
+    Verbosity parameter (default 0)
+    """
+    outformat='numpy'
+    """
+    Output format, either 'native', 'c++', or 'list' (default 'native')
+    """
+    
+    def __init__(self):
+        self.dnn=None
+        self.SS1=None
+        self.SS2=None
+        self.transform_in=None
+        self.transform_out=None
+        self.nd_in=None
+        self.nd_out=None
+        self.device=None
+        self.activation=None
+        self.hlayers=None
+        self.layer_norm=None
+
+        # Import torch only once
+        import torch
+        
+        self.torch=torch
+        self.nn=torch.nn
+        self.optim=torch.optim
+
+        # sklearn imports
+        
+        import sklearn.preprocessing as preprocessing
+        self.pp=preprocessing
+        
+        from sklearn.model_selection import train_test_split
+        self.tts=train_test_split
+        
+        return
+
+    def _string_to_activation(self, name):
+        """
+        Convert a string to an activation function
+        """
+        name = (name or 'relu').lower()
+        if name == 'relu':
+            return self.nn.ReLU()
+        if name == 'tanh':
+            return self.nn.Tanh()
+        if name == 'gelu':
+            return self.nn.GELU()
+        return self.nn.ReLU()
+
+    def set_data(self,in_data,out_data,outformat='numpy',verbose=0,
+                 hlayers=[8,8],epochs=100,transform_in='none',
+                 transform_out='none',test_size=0.0,activation='relu',
+                 patience=20,device=None,seed=None,
+                 layer_norm=True):
+        """Early stopping is set with patience, and if patience is 0
+        then the training never stops early.
+        """
+
+        if verbose>0:
+            print('interpm_torch_dnn::set_data():')
+            print('  outformat:',outformat)
+            print('  in_data shape:',numpy.shape(in_data))
+            print('  out_data shape:',numpy.shape(out_data))
+            print('  transform_in:',transform_in)
+            print('  transform_out:',transform_out)
+            print('  test_size:',test_size)
+            print('  device:',device)
+            print('  activation:',activation)
+            print('  hlayers:',hlayers)
+            print('  layer_norm:',layer_norm)
+
+        self.outformat=outformat
+        self.verbose=verbose
+        self.transform_in=transform_in
+        self.transform_out=transform_out
+        self.device=device
+        self.hlayers=hlayers
+        self.activation=activation
+        self.layer_norm=layer_norm
+
+        # ----------------------------------------------------------
+        
+        if seed is not None:
+            numpy.random.seed(seed)
+            self.torch.manual_seed(seed)
+
+        if device is None:
+            self.device=self.torch.device('cuda'
+                                          if self.torch.cuda.is_available()
+                                          else 'cpu')
+        else:
+            self.device=self.torch.device(device)
+        
+        # ----------------------------------------------------------
+        # Handle the data transformations
+        
+        if self.transform_in=='moto':
+            self.SS1=self.pp.MinMaxScaler(feature_range=(-1,1))
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='quant':
+            self.SS1=self.pp.QuantileTransformer(n_quantiles=
+                                                 in_data.shape[0])
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='standard':
+            self.SS1=self.pp.StandardScaler()
+            in_data_trans=self.SS1.fit_transform(in_data)
+        else:
+            in_data_trans=in_data
+            
+        if self.transform_out=='moto':
+            self.SS2=self.pp.MinMaxScaler(feature_range=(-1,1))
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='quant':
+            self.SS2=self.pp.QuantileTransformer(n_quantiles=
+                                                 out_data.shape[0])
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='standard':
+            self.SS2=self.pp.StandardScaler()
+            out_data_trans=self.SS2.fit_transform(out_data)
+        else:
+            out_data_trans=out_data
+
+        if self.verbose>0:
+            try:
+                minv=out_data_trans[0,0]
+                maxv=out_data_trans[0,0]
+                minv_old=out_data[0,0]
+                maxv_old=out_data[0,0]
+            except Exception as e:
+                print('Exception in interpm_torch_dnn::set_data()',
+                      'at min,max().',e)
+                raise
+            
+            for j in range(0,numpy.shape(out_data)[0]):
+                if out_data[j,0]<minv_old:
+                    minv_old=out_data[j,0]
+                if out_data[j,0]>maxv_old:
+                    maxv_old=out_data[j,0]
+                if out_data_trans[j,0]<minv:
+                    minv=out_data_trans[j,0]
+                if out_data_trans[j,0]>maxv:
+                    maxv=out_data_trans[j,0]
+
+            print('interpm_torch_dnn::set_data():')
+            print('  min,max before transformation: %7.6e %7.6e' %
+                  (minv_old,maxv_old))
+            print('  min,max after transformation : %7.6e %7.6e' %
+                  (minv,maxv))
+            
+        if test_size>0.0:
+            try:
+                x_train,x_test,y_train,y_test=self.tts(
+                    in_data_trans,out_data_trans,test_size=test_size)
+            except Exception as e:
+                print('Exception in interpm_torch_dnn::set_data()',
+                      'at test_train_split().',e)
+                raise
+        else:
+            x_train=in_data_trans
+            y_train=out_data_trans
+
+        n_pts=numpy.shape(x_train)[0]
+        self.nd_in=numpy.shape(x_train)[1]
+        self.nd_out=numpy.shape(y_train)[1]
+
+        act=self._string_to_activation(self.activation)
+        
+        layers2=[]
+        layers2.append(self.nn.Linear(self.nd_in,hlayers[0]))
+        if layer_norm==True:
+            layers2.append(self.nn.LayerNorm(hlayers[0]))
+        layers2.append(act)
+        for k in range(0,len(hlayers)-1):
+            layers2.append(self.nn.Linear(hlayers[k],hlayers[k+1]))
+            if layer_norm==True:
+                layers2.append(self.nn.LayerNorm(hlayers[k+1]))
+            layers2.append(act)
+        layers2.append(self.nn.Linear(hlayers[len(hlayers)-1],
+                                      self.nd_out))
+        self.dnn=self.nn.Sequential(*layers2).to(self.device)
+        
+        # Convert numpy to torch, there's probably a better way...
+        ten_in=self.torch.from_numpy(x_train).float().to(self.device)
+        ten_out=self.torch.from_numpy(y_train).float().to(self.device)
+        test_in=self.torch.from_numpy(x_test).float().to(self.device)
+        test_out=self.torch.from_numpy(y_test).float().to(self.device)
+
+        crit=self.nn.MSELoss()
+        opt=self.optim.Adam(self.dnn.parameters(),lr=0.01)
+        
+        best_loss=0
+        trigger=0
+        best_model=0
+        done=False
+        epoch=0
+
+        print('interpm_torch_dnn::set_data():')
+        
+        while done==False and epoch<epochs:
+            
+            self.dnn.train()
+            opt.zero_grad()
+            pred=self.dnn(ten_in)
+            loss=crit(pred,ten_out)
+            loss.backward()
+            opt.step()
+
+            self.dnn.eval()
+
+            if test_size>0.0:
+                with self.torch.no_grad():
+                    test_pred=self.dnn(test_in)
+                    test_loss=crit(test_pred,test_out)
+            else:
+                test_loss=loss
+                
+            if self.verbose>0:
+                if test_size>0.0:
+                    print('  Epoch:',str(epoch+1)+'/'+str(epochs),
+                          ('loss: %7.6e, best_loss: %7.6e, '+
+                           'test_loss: %7.6e') %
+                          (loss.item(),best_loss,test_loss))
+                           
+                else:
+                    print('  Epoch',str(epoch+1)+'/'+str(epochs),
+                          'loss %7.6e, best_loss: %7.6e' %
+                          (loss.item(),best_loss))
+                    
+            if epoch==0 or test_loss<best_loss:
+                best_loss=test_loss
+                best_model=copy.deepcopy(self.dnn.state_dict())
+                trigger=0
+            elif patience>0:
+                # (Disable early stopping if patience is 0)
+                trigger+=1
+                if trigger>=patience:
+                    if self.verbose>0:
+                        print('  Stopping early.')
+                    done=True
+            
+            epoch+=1
+
+        self.dnn.load_state_dict(best_model)
+            
+        return
+    
+    def eval(self,v):
+        """
+        Evaluate the NN at point ``v``.
+        """
+
+        #print('eval,v',v)
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))[0]
+            except Exception as e:
+                print('Exception at input transformation ',
+                      'in interpm_torch_dnn:',e)
+                raise
+        else:
+            v_trans=v
+        #print('eval,v_trans',v_trans)
+
+        try:
+
+            ten_in=self.torch.from_numpy(v_trans).float()
+            self.dnn.eval()
+            with self.torch.no_grad():
+                pred=self.dnn(ten_in).cpu()
+        except Exception as e:
+            print('Exception 4 in interpm_torch_dnn:',e)
+            raise
+            
+        #print('eval,pred',pred)
+        if self.transform_out!='none':
+            try:
+                predx=pred.detach().numpy()
+                if predx.ndim==1:
+                    predx=predx.reshape(-1,1)
+                pred_trans=self.SS2.inverse_transform(predx)
+            except Exception as e:
+                print('Exception 5 in interpm_torch_dnn:',e)
+                raise
+        else:
+            pred_trans=pred.detach().numpy()
+        #print('eval,pred_trans',pred_trans)
+    
+        if self.outformat=='list':
+            return pred_trans.tolist()
+
+        if pred_trans.ndim==1:
+            
+            if self.verbose>1:
+                print('interpm_torch_dnn::eval():',
+                      'type(pred_trans),pred_trans:',
+                      type(pred_trans),pred_trans,pred_trans.ndim,
+                      numpy.shape(pred_trans))
+                
+            return numpy.ascontiguousarray(pred_trans)
+        
+        if self.verbose>1:
+            print('interpm_torch_dnn::eval():',
+                  'type(pred_trans[0]),pred_trans[0]:',
+                  type(pred_trans[0]),pred_trans[0],pred_trans.ndim,
+                      numpy.shape(pred_trans))
+
+        return numpy.ascontiguousarray(pred_trans[0])
+
+    def eval_list(self,v):
+        """
+        Evaluate the NN at the list of points given in ``v``.
+        """
+
+        v_trans=0
+        #print('el,v',v)
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v)
+            else:
+                v_trans=v
+        except Exception as e:
+            print('Exception at input transformation ',
+                  'in interpm_torch_dnn::eval_list():',e)
+            raise
+        #print('el,v_trans',v_trans)
+
+        try:
+            ten_in=self.torch.from_numpy(v).float()
+            self.dnn.eval()
+            with self.torch.no_grad():
+                pred=self.dnn(ten_in).cpu()
+        except Exception as e:
+            print('Exception at evaluation in '+
+                  'interpm_torch_dnn::eval_list():',e)
+            raise
+        #print('el,pred',pred)
+
+        pred_trans=0
+        try:
+            if self.transform_out!='none':
+                pred_trans=self.SS2.inverse_transform(pred.detach().numpy())
+            else:
+                pred_trans=pred.detach().numpy()
+        except Exception as e:
+            print('Exception at output transformation '+
+                  'in interpm_torch_dnn::eval_list():',e)
+            raise
+        #print('el,pred_trans',pred_trans)
+    
+        if self.outformat=='list':
+            return pred_trans.tolist()
+
+        # For a single output, torch outputs them in a column
+        # vector, so we switch to a row vector.
+        if pred_trans.ndim==2 and len(pred_trans[0])==1:
+            pred_trans2=pred_trans.reshape(1,-1)[0]
+        else:
+            pred_trans2=pred_trans
+        
+        if self.verbose>1:
+            print('interpm_torch_dnn::eval_list():',
+                  'type(pred_trans2),pred_trans2:',
+                  type(pred_trans2),pred_trans2)
+            
+        return numpy.ascontiguousarray(pred_trans2)
+
+    def eval_unc(self,v):
+        """
+        Empty function because this interpolator does not currently
+        provide uncertainties
+        """
+        return self.eval(v)
+        
+    def deriv(self,v,i):
+        """
+        Evaluate the derivative of the NN at point ``v`` with
+        respect to the variable with index ``i``
+        """
+
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))[0]
+            except Exception as e:
+                print('Exception at input transformation in ',
+                      'interpm_torch_dnn::deriv():',e)
+                raise
+        else:
+            v_trans=v
+
+        try:
+            
+            ten_in=self.torch.from_numpy(v_trans).float()
+                
+            ten_in.requires_grad_(True)
+            self.dnn.eval()
+            pred=self.dnn(ten_in)
+            
+            from torch.autograd.functional import jacobian
+            def f(inp):
+                return self.dnn(inp).squeeze(0)
+            jac=jacobian(f,ten_in)  # shape (n_out, n_in)
+            jac=jac.detach().cpu().numpy()
+            
+        except Exception as e:
+            print('Exception at model evalution',
+                  'in interpm_torch_dnn::deriv():',e)
+            raise
+            
+        if self.transform_out=='none':
+            return jac
+        
+        if self.transform_out!='moto' and self.transform_out!='standard':
+            raise ValueError("Cannot get derivative.")
+        
+        try:
+            # sklearn: inverse is y = scale_ * y_scaled + mean_
+            scales=getattr(self.SS2,'scale_',None)
+            if scales is None:
+                raise RuntimeError("transform_out has no scale_ attribute")
+            # multiply each output row by scale
+            jac=(jac.T*scales.reshape(-1)).T
+        except:
+            raise ValueError("Rescale.")
+            
+        return jac
+
+        #if self.outformat=='list':
+        #     return pgrad_trans.tolist()
+
+        #if pgrad_trans.ndim==1:
+        #    
+        #    if self.verbose>1:
+        #        print('interpm_torch_dnn::deriv():',
+        #              'type(pgrad_trans),pgrad_trans:',
+        #              type(pgrad_trans),pgrad_trans)
+        #            
+        #    return numpy.ascontiguousarray(pgrad_trans)
+        
+        #if self.verbose>1:
+        #    print('interpm_torch_dnn::deriv():',
+        #'type(pgrad_trans),pgrad_trans:',
+        #          type(pgrad_trans),pgrad_trans)
+
+        #return numpy.ascontiguousarray(pgrad_trans)
+
+    def save(self,filename):
+        """
+        Save the interpolation settings to a file
+
+        (No custom object support)
+        """
+        if filename[-3:]!='.pt':
+            filename=filename+'.pt'
+            
+        #self.torch.save(self.dnn,filename)
+        self.torch.save({'model_state': self.dnn.state_dict(),
+                         'nd_in': self.nd_in,
+                         'nd_out': self.nd_out,
+                         'activation': self.activation,
+                         'hlayers': self.hlayers},filename)
+        
+        return
+    
+    def load(self,filename,device=None):
+        """Load the interpolation settings from a file
+        """        
+        if filename[-3:]!='.pt':
+            filename=filename+'.pt'
+            
+        if device is None:
+            self.device=self.torch.device('cuda'
+                                          if self.torch.cuda.is_available()
+                                          else 'cpu')
+        else:
+            self.device=self.torch.device(device)
+            
+        data=self.torch.load(filename,map_location=self.device)
+        
+        if (not 'model_state' in data or
+            not 'nd_in' in data or
+            not 'nd_out' in data or
+            not 'activation' in data or
+            not 'hlayers' in data):
+            raise RuntimeError("Missing information in "+
+                               "interpm_torch_dnn::load()")
+        
+        self.nd_in=data['nd_in']
+        self.nd_out=data['nd_out']
+        self.activation=data['activation']
+        self.hlayers=data['hlayers']
+        
+        act=self._string_to_activation(self.activation)
+        
+        layers2=[]
+        layers2.append(self.nn.Linear(self.nd_in,self.hlayers[0]))
+        layers2.append(act)
+        for k in range(0,len(self.hlayers)-1):
+            layers2.append(self.nn.Linear(self.hlayers[k],
+                                          self.hlayers[k+1]))
+            layers2.append(act)
+        layers2.append(self.nn.Linear(self.hlayers[len(self.hlayers)-1],
+                                      self.nd_out))
+        self.dnn=self.nn.Sequential(*layers2).to(self.device)
+        
+        self.dnn.load_state_dict(data['model_state'])
+
+        return
+
+class interpm_tf_dnn:
+    """Interpolate one or many multimensional data sets using a
+    neural network from TensorFlow
+
+    This is a simple implementation of a neural network with
+    early stopping. 
+
+    The variables ``verbose`` and ``outformat`` can be changed
+    at any time.
+
+    .. todo:: * Calculate derivatives
+              * 'native' output format?
+              * add_data() for successive improvements
+              * Allow user to control CPU vs. GPU
+              * Allow user to control early stopping monitor
+    
+    """
+    verbose=0
+    """
+    Verbosity parameter (default 0)
+    """
+    outformat='numpy'
+    """
+    Output format, either 'numpy' or 'list' (default 'numpy')
+    """
+
+    def __init__(self):
+
+        self.dnn=None
+        self.SS1=None
+        self.SS2=None
+        self.transform_in=None
+        self.transform_out=None
+        self.outformat='numpy'
+        self.nd_in=None
+        self.nd_out=None
+        self.loss=[]
+        self.val_loss=[]
+        
+        import tensorflow as tf
+        self.tf=tf
+        
+        import sklearn.preprocessing as preprocessing
+        self.pp=preprocessing
+        
+        return
+
+    def check_gpu(self):
+        """
+        Check if Tensorflow is likely to use the GPU
+        """
+        try:
+            with self.tf.device('/GPU:0'):
+                a=self.tf.constant([[1.0,2.0]])
+                b=self.tf.constant([[3.0],[4.0]])
+                c=self.tf.matmul(a,b)
+        except:
+            return False
+        return True
+    
+    def set_data(self,in_data,out_data,outformat='numpy',verbose=0,
+                 activations=['relu'],batch_size=None,epochs=100,
+                 transform_in='none',transform_out='none',
+                 test_size=0.0,evaluate=False,
+                 hlayers=[8,8],loss='mean_squared_error',
+                 es_min_delta=1.0e-4,es_patience=100,es_start=50,
+                 tf_logs='1',tf_onednn_opts='1'):
+        """Set the input and output data to train the interpolator
+
+        Some activation functions are: 'relu', 'sigmoid', 'tanh'. If
+        the number of activation functions specified in
+        ``activations`` is smaller than the number of layers, then the
+        activation function list is reused using the modulus operator.
+
+        The keyword argument ``tf_logs`` specifies the value of
+        the environment variable ``TF_CPP_MIN_LOG_LEVEL``.
+
+        """
+
+        from sklearn.model_selection import train_test_split
+        import os
+        os.environ['TF_ENABLE_ONEDNN_OPTS']=tf_onednn_opts
+        os.environ['TF_CPP_MIN_LOG_LEVEL']=tf_logs
+        
+        if verbose>0:
+            print('interpm_tf_dnn::set_data():')
+            print('  outformat:',outformat)
+            print('  in_data shape:',numpy.shape(in_data))
+            print('  out_data shape:',numpy.shape(out_data))
+            print('  batch_size:',batch_size)
+            print('  layers:',hlayers)
+            print('  activation functions:',activations)
+            print('  transform_in:',transform_in)
+            print('  transform_out:',transform_out)
+            print('  epochs:',epochs)
+            print('  test_size:',test_size)
+
+        self.outformat=outformat
+        self.verbose=verbose
+        self.transform_in=transform_in
+        self.transform_out=transform_out
+        
+        self.nd_in=numpy.shape(in_data)[1]
+        self.nd_out=numpy.shape(out_data)[1]
+
+        # ----------------------------------------------------------
+        # Handle the data transformations
+        
+        if self.transform_in=='moto':
+            self.SS1=self.pp.MinMaxScaler(feature_range=(-1,1))
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='quant':
+            self.SS1=self.pp.QuantileTransformer(n_quantiles=in_data.shape[0])
+            in_data_trans=self.SS1.fit_transform(in_data)
+        elif self.transform_in=='standard':
+            self.SS1=self.pp.StandardScaler()
+            in_data_trans=self.SS1.fit_transform(in_data)
+        else:
+            in_data_trans=in_data
+            
+        if self.transform_out=='moto':
+            self.SS2=self.pp.MinMaxScaler(feature_range=(-1,1))
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='quant':
+            self.SS2=self.pp.QuantileTransformer(n_quantiles=out_data.shape[0])
+            out_data_trans=self.SS2.fit_transform(out_data)
+        elif self.transform_out=='standard':
+            self.SS2=self.pp.StandardScaler()
+            out_data_trans=self.SS2.fit_transform(out_data)
+        else:
+            out_data_trans=out_data
+
+        if self.verbose>0:
+            try:
+                minv=out_data_trans[0,0]
+                maxv=out_data_trans[0,0]
+                minv_old=out_data[0,0]
+                maxv_old=out_data[0,0]
+            except Exception as e:
+                print('Exception in interpm_tf_dnn::set_data()',
+                      'at min,max().',e)
+                raise
+            
+            for j in range(0,numpy.shape(out_data)[0]):
+                if out_data[j,0]<minv_old:
+                    minv_old=out_data[j,0]
+                if out_data[j,0]>maxv_old:
+                    maxv_old=out_data[j,0]
+                if out_data_trans[j,0]<minv:
+                    minv=out_data_trans[j,0]
+                if out_data_trans[j,0]>maxv:
+                    maxv=out_data_trans[j,0]
+
+            print('min,max before transformation: %7.6e %7.6e' %
+                  (minv_old,maxv_old))
+            print('min,max after transformation : %7.6e %7.6e' %
+                  (minv,maxv))
+            
+        if test_size>0.0:
+            try:
+                x_train,x_test,y_train,y_test=train_test_split(
+                    in_data_trans,out_data_trans,test_size=test_size)
+            except Exception as e:
+                print('Exception in interpm_tf_dnn::set_data()',
+                      'at test_train_split().',e)
+                raise
+        else:
+            x_train=in_data_trans
+            y_train=out_data_trans
+
+        nd_in=numpy.shape(in_data)[1]
+        nd_out=numpy.shape(out_data)[1]
+        
+        if self.verbose>0:
+            print('nd_in,nd_out:',nd_in,nd_out)
+            print('  Training DNN model.')
+            
+        try:
+            nl=len(hlayers)
+            na=len(activations)
+            inp=self.tf.keras.Input(shape=(nd_in,))
+            layers=[inp,self.tf.keras.layers.Dense(hlayers[0],
+                                              activation=activations[0])]
+            if self.verbose>0:
+                print('Layer: dense',hlayers[0],nd_in,activations[0])
+            for i in range(1,nl):
+                act=activations[i%na]
+                layers.append(self.tf.keras.layers.Dense(hlayers[i],
+                                                    activation=act))
+                if self.verbose>0:
+                    print('Layer: dense',hlayers[i],act)
+            layers.append(self.tf.keras.layers.Dense(nd_out,
+                                                activation='linear'))
+            if self.verbose>0:
+                print('Layer: dense',nd_out,'linear')
+            model=self.tf.keras.Sequential(layers)
+        except Exception as e:
+            print('Exception in interpm_tf_dnn::set_data()',
+                  'at model definition.',e)
+            raise
+        
+        if self.verbose>0:
+            print('summary:',model.summary())
+
+        try:
+            from keras.callbacks import EarlyStopping
+            import keras
+
+            #class loss_history(keras.callbacks.Callback):
+            #    def on_train_begin(self,logs={}):
+            #        self.loss=[]
+            #        self.val_loss=[]
+            #    def on_batch_end(self,batch,logs={}):
+            #        self.loss.append(logs.get('loss'))
+            #        self.val_loss.append(logs.get('val_loss'))
+            #        print('here',self.loss,self.val_loss)
+            #        quit()
+            #history=loss_history()
+
+            # Use the validation loss if we have testing data
+            if test_size>0.0:
+                mon_string='val_loss'
+            else:
+                mon_string='loss'
+            
+            early_stopping=EarlyStopping(monitor=mon_string,
+                                         min_delta=es_min_delta,
+                                         patience=es_patience,
+                                         verbose=self.verbose,
+                                         restore_best_weights=True,
+                                         start_from_epoch=es_start,
+                                         mode='min')
+            model.compile(loss=loss,optimizer='adam')
+
+            # Convert numpy array to TensorFlow tensor
+            x_tf=self.tf.convert_to_tensor(x_train)
+            y_tf=self.tf.convert_to_tensor(y_train)
+            
+            if test_size>0.0:
+                # Fit the model to training data
+                hist2=model.fit(x_tf,y_tf,batch_size=batch_size,
+                          epochs=epochs,validation_data=(x_test,y_test),
+                          verbose=self.verbose,
+                          callbacks=[early_stopping])
+                self.loss=hist2.history['loss']
+                self.val_loss=hist2.history['val_loss']
+                          
+            else:
+                # Fit the model to training data
+                hist2=model.fit(x_tf,y_tf,batch_size=batch_size,
+                                epochs=epochs,verbose=self.verbose,
+                                callbacks=[early_stopping])
+                self.loss=hist2.history['loss']
+                self.val_loss=[]
+                
+        except Exception as e:
+            print('Exception in interpm_tf_dnn::set_data()',
+                  'at model fitting.',e)
+            raise
+
+        if evaluate==True:
+            # Return loss value and metrics
+            if self.verbose>0:
+                print('  Training done.')
+            print('  Test Score: [loss, accuracy]:',
+                  model.evaluate(x_test,y_test,verbose=self.verbose))
+            
+        self.dnn=model
+
+        return
+    
+    def set_data_str(self,in_data,out_data,options):
+        """
+        Set the input and output data to train the interpolator,
+        using a string to specify the keyword arguments.
+        """
+
+        try:
+            dct=string_to_dict2(options,list_of_ints=['verbose',
+                                                      'batch_size',
+                                                      'epochs'],
+                                list_of_floats=['test_size'],
+                                list_of_bools=['evaluate'])
+            if "hlayers" in dct:
+                htemp=dct["hlayers"]
+                htemp=htemp[1:-1]
+                htemp=htemp.split(',')
+                htemp2=[]
+                for i in range(0,len(htemp)):
+                    htemp2.append(int(htemp[i]))
+                dct["hlayers"]=htemp2
+            if "activations" in dct:
+                atemp=dct["activations"]
+                atemp=atemp[1:-1]
+                atemp=atemp.split(',')
+                atemp2=[]
+                for i in range(0,len(atemp)):
+                    atemp2.append(atemp[i])
+                dct["activations"]=atemp2
+            print('String:',options,'Dictionary:',dct)
+
+            self.set_data(in_data,out_data,**dct)
+        except Exception as e:
+            print('Calls in interpm_tf_dnn::set_data_str() failed.',e)
+            raise
+
+        return
+    
+    def eval(self,v):
+        """
+        Evaluate the NN at point ``v``.
+
+        The input ``v`` should be a one-dimensional numpy array
+        and the output is a one-dimensional numpy array, unless
+        outformat is ``list``, in which case the output is a
+        Python list.
+        
+        """
+
+        if self.transform_in!='none':
+            v_trans=0
+            try:
+                v_trans=self.SS1.transform(v.reshape(1,-1))
+            except Exception as e:
+                print('Exception at input transformation',
+                      'in interpm_tf_dnn::eval()',
+                      e)
+                raise
+        else:
+            v_trans=v.reshape(1,-1)
+
+        try:
+            # Convert numpy array to TensorFlow tensor
+            v_tf=self.tf.convert_to_tensor(v_trans)
+                
+            # We don't want output at every point, even if verbose is
+            # 1, so we use self.verbose-1 here for the argument to
+            # the predict function.
+            if self.verbose>1:
+                pred=self.dnn.predict(v_tf,verbose=self.verbose-1)
+            else:
+                pred=self.dnn.predict(v_tf,verbose=0)
+        except Exception as e:
+            print('Exception at prediction in',
+                  'interpm_tf_dnn::eval().',e)
+            raise
+            
+        if self.transform_out!='none':
+            try:
+                pred_trans=self.SS2.inverse_transform(pred)
+            except Exception as e:
+                print('Exception in output transformation in',
+                      'interpm_tf_dnn::eval().',e)
+                raise
+        else:
+            pred_trans=pred
+    
+        if self.outformat=='list':
+            return pred_trans.tolist()
+
+        if pred_trans.ndim==1:
+            
+            if self.verbose>1:
+                print('interpm_tf_dnn::eval():',
+                      'type(pred_trans),pred_trans:',
+                      type(pred_trans),pred_trans)
+            # The output from tf.keras is float32, so we have to convert to
+            # float64 
+            n_out=numpy.shape(pred_trans[0])[0]
+            out_double=numpy.zeros((n_out))
+            for i in range(0,n_out):
+                out_double[i]=pred_trans[i]
+                    
+            return numpy.ascontiguousarray(out_double)
+        
+        if self.verbose>1:
+            print('interpm_tf_dnn::eval():',
+                  'type(pred_trans[0]),pred_trans[0]:',
+                  type(pred_trans[0]),pred_trans[0])
+
+        # The output from tf.keras is float32, so we have to convert to
+        # float64 
+        n_out=numpy.shape(pred_trans[0])[0]
+        out_double=numpy.zeros((n_out))
+        for i in range(0,n_out):
+            out_double[i]=pred_trans[0][i]
+            
+        return numpy.ascontiguousarray(out_double)
+
+    def eval_unc(self,v):
+        """
+        Empty function because this interpolator does not currently
+        provide uncertainties
+        """
+        return self.eval(v)
+        
+    def eval_list(self,v):
+        """
+        Evaluate the neural network at the list of points given
+        in ``v``.
+        """
+
+        v_trans=0
+        try:
+            if self.transform_in!='none':
+                v_trans=self.SS1.transform(v)
+            else:
+                v_trans=v
+        except Exception as e:
+            print(('Exception at input transformation '+
+                   'in interpm_tf_dnn::eval_list():'),e)
+            raise
+
+        try:
+            # Convert numpy array to TensorFlow tensor
+            v_tf=self.tf.convert_to_tensor(v_trans)
+            
+            yp=self.dnn.predict(v_tf, verbose=self.verbose)
+        except Exception as e:
+            print(('Exception at prediction '+
+                   'in interpm_tf_dnn::eval_list():'),e)
+            raise
+
+        yp_trans=0
+        try:
+            if self.transform_out!='none':
+                if self.nd_out==1:
+                    yp_trans=self.SS2.inverse_transform(yp.reshape(-1,1))
+                else:
+                    yp_trans=self.SS2.inverse_transform(yp)
+            else:
+                yp_trans=yp
+        except Exception as e:
+            print(('Exception at output transformation '+
+                   'in interpm_tf_dnn::eval_list():'),e)
+            raise
+        if yp_trans.ndim==2 and len(yp_trans[0])==1:
+            yp_trans=yp_trans.reshape(1,-1)[0]
+    
+        if self.outformat=='list':
+            if self.verbose>1:
+                print('interpm_tf_dnn::eval_list():',
+                      'list mode type(yp),v,yp:',
+                      type(yp_trans),v,yp_trans)
+            return yp_trans.tolist()
+        if self.verbose>1:
+            print('interpm_tf_dnn::eval_list():',
+                  'array mode type(yp),v,yp:',
+                  type(yp_trans),v,yp_trans)
+        return numpy.ascontiguousarray(yp_trans)
+    
+    def save(self,filename):
+        """
+        Save the interpolation settings to a pair of files. A
+        ``.keras`` file for the TensorFlow model and a ``.o2``
+        file for additional data.
+        """
+        if filename[-6:]=='.keras':
+            filename=filename[:-6]
+        self.dnn.save(filename+'.keras')
+
+        import pickle
+
+        # Construct dictionary of class data
+        loc_dct={"o2sclpy_version": version,
+                 "verbose": self.verbose,
+                 "outformat": self.outformat,
+                 "transform_in": self.transform_in,
+                 "transform_out": self.transform_out,
+                 "nd_in": self.nd_in,
+                 "nd_out": self.nd_out,
+                 "SS1": self.SS1,
+                 "SS2": self.SS2}
+
+        # Create a string from a tuple of the dictionary and the GPR
+        # object
+        byte_string=pickle.dumps(loc_dct)
+
+        # Write string to an HDF5 file
+        hf=o2sclpy.hdf_file()
+        hf.open_or_create(filename+'.o2')
+        hf.sets('interpm_tf_dnn',byte_string)
+        hf.close()
+        
+        return
+    
+    def load(self,filename):
+        """
+        Load interpolator from a pair of ``.keras`` and ``.o2`` files.
+        """
+        import keras
+        
+        if filename[-6:]=='.keras':
+            filename=filename[:-6]
+        self.dnn=keras.saving.load_model(filename+'.keras')
+
+        import pickle
+        from sklearn.gaussian_process import GaussianProcessRegressor
+        
+        # Read string from file
+        hf=o2sclpy.hdf_file()
+        hf.open(filename+'.o2')
+        s=o2sclpy.std_string()
+        hf.gets('interpm_tf_dnn',s)
+        hf.close()
+        # Convert to a Python bytes object
+        sb=s.to_bytes()
+        
+        # Extract the class data
+        loc_dct=pickle.loads(sb)
+
+        if loc_dct["o2sclpy_version"]!=version:
+            raise ValueError("In function interpm_tf_dnn::load() "+
+                             "Cannot read files with version "+
+                             loc_dct["o2sclpy_version"])
+        self.verbose=loc_dct["verbose"]
+        self.outformat=loc_dct["outformat"]
+        self.transform_in=loc_dct["transform_in"]
+        self.transform_out=loc_dct["transform_out"]
+        self.nd_in=loc_dct["nd_in"]
+        self.nd_out=loc_dct["nd_out"]
+        self.SS1=loc_dct["SS1"]
+        self.SS2=loc_dct["SS2"]
+
+        return
+        
