@@ -1,0 +1,18 @@
+
+[:python_version < "3.11"]
+typing_extensions>=4.0
+async-timeout
+
+[build]
+build
+twine
+
+[dev]
+colorama
+pytest
+pytest-asyncio
+pyfiglet
+uvloop
+
+[zenoh]
+eclipse-zenoh>=1.0.0
