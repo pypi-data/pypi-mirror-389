@@ -1,0 +1,16 @@
+#!/usr/bin/env pip-compile
+
+--requirement=non_existent.txt
+
+# illegal option
+-a
+
+# correct option and existent file
+-r../requirements.txt
+
+# wrong package, correct name should be autopep8
+autopep7 == 1.0.0
+# repeated package, repeated on ../requirements.txt
+platformdirs
+# unsorted package
+docutils

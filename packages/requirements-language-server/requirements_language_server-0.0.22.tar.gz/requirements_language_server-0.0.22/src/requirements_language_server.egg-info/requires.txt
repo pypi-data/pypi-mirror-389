@@ -1,0 +1,14 @@
+aiohttp
+lsp-tree-sitter>=0.1.0
+platformdirs
+pygls>=2.0.0
+tree-sitter-requirements
+
+[:python_version < "3.11"]
+tomli
+
+[colorize]
+lsp-tree-sitter[colorize]
+
+[dev]
+pytest-cov
