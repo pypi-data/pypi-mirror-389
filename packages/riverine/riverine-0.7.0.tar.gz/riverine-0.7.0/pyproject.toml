@@ -1,0 +1,106 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool]
+rye = { dev-dependencies = [
+    "pytest>=8.2.2",
+] }
+
+[tool.hatch]
+version.source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/riverine/_version.py"
+
+[tool.pytest.ini_options]
+# addopts = "--cov alhambra --cov-report term-missing --cov-report html"
+norecursedirs = [
+    "dist",
+    "build",
+    ".tox"]
+testpaths = ["tests"]
+
+[tool.hatch.metadata.hooks.vcs.urls]
+Homepage = "https://github.com/cgevans/mixes"
+Documentation = "https://riverine.readthedocs.io"
+Repository = "https://github.com/cgevans/mixes.git"
+Issues = "https://github.com/cgevans/issues"
+source_archive = "https://github.com/org/repo/archive/{commit_hash}.zip"
+
+[project]
+name = "riverine"
+dynamic = ["version", "urls"]
+description = "Many-component mix library for molecular programming"
+authors = [{name = "Constantine Evans", email="mixes@mb.costi.net"}]
+license = { file = "LICENSE.txt" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed"]
+dependencies = [
+    "attrs >= 22.1",
+    "kithairon >= 0.2.0",
+    "numpy",
+    "pandas",
+    "openpyxl",
+    "pint >= 0.20",
+    "polars[pandas,numpy] ~= 1.4",
+    "tabulate",
+    "toml",
+    "typing_extensions >= 4.2",
+]
+readme = "README.md"
+requires-python = ">= 3.10"
+
+[project.optional-dependencies]
+docs = [
+    "numpydoc",
+    "matplotlib",
+    "sphinx-book-theme",
+    "sphinx-autoapi",
+    "myst-parser"
+    ]
+testing = [
+    "setuptools",
+    "pytest",
+    "pytest-cov",
+]
+all = []
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+target-version = ["py312"]
+
+[tool.mypy]
+python_version = "3.10"
+# warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+#disallow_untyped_defs = true
+#disallow_incomplete_defs = true
+
+[tool.hatch.envs.hatch-test]
+dependencies = [
+"pytest",
+"pytest-cov",
+]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+[tool.ruff]
+ignore = ["TID252", "N816", "F405", "F403", "ARG002"
+    # For now
+    , "EM101", "EM102", "RET505", "RET504", "TRY003", "PLR2004"
+]
