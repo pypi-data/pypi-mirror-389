@@ -1,0 +1,164 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "todowrite"
+version = "0.3.1"
+description = "A Python library for managing complex software projects with Goals, Tasks, Concepts, and Commands"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "D Deryl Downey", email = "dderyldowney@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
+keywords = ["todo", "task", "project", "management", "api", "goals", "tasks", "concepts", "commands"]
+dependencies = [
+    "sqlalchemy>=2.0.0",
+    "jsonschema>=4.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "pyright>=1.1.0",
+    "pre-commit>=3.0.0",
+]
+postgres = [
+    "psycopg2-binary>=2.9.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/dderyldowney/todowrite"
+Repository = "https://github.com/dderyldowney/todowrite.git"
+Documentation = "https://github.com/dderyldowney/todowrite/blob/main/README.md"
+"Bug Tracker" = "https://github.com/dderyldowney/todowrite/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/todowrite"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/todowrite"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+known_first_party = ["todowrite"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+reportMissingImports = "error"
+reportMissingTypeStubs = "error"
+reportUndefinedVariable = "error"
+reportUnboundVariable = "error"
+reportUnusedImport = "error"
+reportUnusedClass = "error"
+reportUnusedFunction = "error"
+reportUnusedVariable = "error"
+reportDuplicateImport = "error"
+reportOptionalSubscript = "error"
+reportOptionalMemberAccess = "error"
+reportOptionalCall = "error"
+reportOptionalIterable = "error"
+reportOptionalContextManager = "error"
+reportUntypedFunctionDecorator = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedBaseClass = "error"
+reportUntypedNamedTuple = "error"
+reportUnnecessaryComparison = "error"
+reportUnnecessaryContains = "error"
+reportUnnecessaryIsInstance = "error"
+reportUnnecessaryCast = "error"
+reportUnnecessaryEllipsis = "error"
+reportInvalidStubStatement = "error"
+reportIncompleteStub = "error"
+reportUnsupportedDunderAll = "error"
+reportPrivateImportUsage = "error"
+reportConstantRedefinition = "error"
+reportDeprecated = "error"
+reportUnreachable = "error"
+reportPossiblyUnboundVariable = "error"
+reportPossiblyUndefinedVariable = "error"
+reportMissingModuleSource = "error"
+reportInvalidTypeForm = "error"
+reportPropertyTypeMismatch = "error"
+reportUnsupportedOperandType = "error"
+reportArgumentType = "error"
+reportAssignmentType = "error"
+reportReturnType = "error"
+reportOperatorIssue = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--cov=src/todowrite",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=80",
+    "-v",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["src/todowrite"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+]
