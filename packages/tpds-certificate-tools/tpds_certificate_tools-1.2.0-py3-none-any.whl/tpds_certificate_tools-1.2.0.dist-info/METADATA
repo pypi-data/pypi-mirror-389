@@ -1,0 +1,80 @@
+Metadata-Version: 2.4
+Name: tpds-certificate-tools
+Version: 1.2.0
+Summary: Microchip(SPG) Trust Platform Certificate Utilities
+Maintainer-email: Microchip Technology <SPG.Tools@microchip.com>
+License: (c) 2018-2023 Microchip Technology Inc. and its subsidiaries.
+        
+        Subject to your compliance with these terms, you may use Microchip software
+        and any derivatives exclusively with Microchip products. It is your
+        responsibility to comply with third party license terms applicable to your
+        use of third party software (including open source software) that may
+        accompany Microchip software.
+        
+        THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+        EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+        WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+        PARTICULAR PURPOSE. IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT,
+        SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE
+        OF ANY KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF
+        MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.
+        TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL
+        CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF
+        FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+        
+        
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: asn1crypto
+Requires-Dist: cryptography~=35.0.0
+Requires-Dist: pyOpenSSL~=22.0.0
+Requires-Dist: bitstring
+Provides-Extra: dev
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest-cov; extra == "test"
+Dynamic: license-file
+
+# TPDS Certificate Tools Package
+
+TPDS Certificate Tools contains certificate support and certificate handling scripts
+
+
+## Instructions to generate the Signer certificates from CSRs
+
+This package contains the required scripts and files to perform sign operation of the CSRs provided by Microchip.
+
+
+1. Installing this package and it's included scripts
+
+```
+    python -m pip install tpds-certificate-tools
+```
+
+2. Extract the CSRs zip file provided by Microchip Provisioning Services. Use this path as --in-path
+
+3. Create a folder to store the generated signer certificates. Use this path as --out-path
+
+4. Provide the signer CA key to sign the CSRs as --cakey.
+
+5. Use the signer.crt available in this package as --cacert.
+
+    Following is the example command for reference
+    ```
+        python sign_csr.py --in-path test_csrs --out-path test_csrs_out --cakey signer_ca.key --cacert signer.crt
+    ```
+
+6. This should generate signers signed by signer_ca in --out-path folder. Zip this folder and share to Microchip Provisioning Services along with Provisioning package generated on TPDS Configurator.
+
+## Release Notes
+
+### 1.2.0
+    - Bug fix on CSR CLI
