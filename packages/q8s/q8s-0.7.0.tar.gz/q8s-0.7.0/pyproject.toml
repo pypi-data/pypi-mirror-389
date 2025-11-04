@@ -1,0 +1,45 @@
+[project]
+name = "q8s"
+version = "0.7.0"
+description = "Kernel extension for executing quantum programs in simulators on q8s clusters"
+authors = [{ name = "Vlad Stirbu", email = "vstirbu@gmail.com" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["jupyter", "quantum", "kernel"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "dacite==1.9.2",
+  "ipykernel==6.26.0",
+  "kubernetes==29.0.0",
+  "matplotlib==3.10.1",
+  "pluggy==1.5.0",
+  "python-dotenv==1.0.1",
+  "pyyaml==6.0.2",
+  "typer>=0.15.4",
+]
+requires-python = ">= 3.10"
+
+[project.urls]
+Homepage = "https://github.com/qubernetes-dev/q8s-kernel"
+Issues = "https://github.com/qubernetes-dev/q8s-kernel/issues"
+
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = ["paper-benchmarks", "benchmark", "playground"]
+
+[project.optional-dependencies]
+benchmark = ["pandas", "testbook", "mlflow"]
+
+development = ["pyre-check"]
+
+[project.scripts]
+q8sctl = "q8s.cli:app"
