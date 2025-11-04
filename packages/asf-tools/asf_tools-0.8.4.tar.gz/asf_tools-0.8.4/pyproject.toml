@@ -1,0 +1,125 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asf_tools"
+requires-python = ">=3.10"
+authors = [
+    {name="ASF APD/Tools Team", email="uaf-asf-apd@alaska.edu"},
+]
+description = "Tools developed by ASF for working with SAR data"
+readme = "src/asf_tools/README.md"
+license = {text = "BSD-3-Clause"}
+classifiers=[
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "astropy",
+    "boto3>=1.36.0",
+    "fiona",
+    "gdal>=3.3",
+    "geopandas",
+    "numpy",
+    # "osmium-tool", # C++ CLI tool available via conda-forge or 'https://osmcode.org/osmium-tool/', used by `asf_tools.watermasking.generate_osm_tiles`.
+    "pyogrio",
+    "pysheds>=0.3",
+    "rasterio",
+    "scikit-fuzzy",
+    "scikit-image",
+    "scipy",
+    "shapely"
+]
+dynamic = ["version"]
+
+[project.scripts]
+make_composite = "asf_tools.composite:main"
+water_map = "asf_tools.hydrosar.water_map:main"
+calculate_hand = "asf_tools.hydrosar.hand.calculate:main"
+flood_map = "asf_tools.hydrosar.flood_map:main"
+generate_osm_dataset = "asf_tools.watermasking.generate_osm_tiles:main"
+generate_worldcover_dataset = "asf_tools.watermasking.generate_worldcover_tiles:main"
+fill_missing_tiles = "asf_tools.watermasking.fill_missing_tiles:main"
+
+[project.entry-points.hyp3]
+water_map = "asf_tools.hydrosar.water_map:hyp3"
+flood_map = "asf_tools.hydrosar.flood_map:hyp3"
+
+[project.optional-dependencies]
+develop = [
+    "gdal-utils",
+    "ruff",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "pytest-console-scripts",
+]
+
+[project.urls]
+Homepage = "https://github.com/ASFHyP3/asf-tools"
+"Bug Tracker" = "https://github.com/ASFHyP3/asf-tools/issues"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: long-running integration tests",
+]
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+exclude = ["prototype"]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+
+[tool.ruff.lint]
+extend-select = [
+    "I",   # isort: https://docs.astral.sh/ruff/rules/#isort-i
+    "UP",  # pyupgrade: https://docs.astral.sh/ruff/rules/#pyupgrade-up
+
+    # TODO: uncomment the following extensions and address their warnings:
+    #"D",   # pydocstyle: https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    #"ANN", # annotations: https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+    #"PTH", # use-pathlib-pth: https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+lines-after-imports = 2
+
+[tool.ruff.lint.flake8-annotations]
+suppress-dummy-args = true
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/*" = ["D1", "ANN"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+strict_equality = true
+check_untyped_defs = true
+install_types = true
+non_interactive = true
+pretty = true
+disable_error_code = ["import-untyped"]

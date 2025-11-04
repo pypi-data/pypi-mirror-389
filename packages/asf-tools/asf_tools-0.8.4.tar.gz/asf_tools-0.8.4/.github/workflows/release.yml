@@ -1,0 +1,66 @@
+name: Write release and finish
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  finish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOOLS_BOT_PAK }}
+
+      - name: Build release asset names
+        id: release_assets
+        run: |
+          echo ::set-output name=version_tag::${GITHUB_REF#refs/tags/}
+          echo ::set-output name=ARC_FILE::ASF_ArcGIS_Toolbox_$(echo ${GITHUB_REF#refs/tags/}).zip
+
+      - name: Zip ArcGIS Toolbox
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -j -r ${{ steps.release_assets.outputs.ARC_FILE }} ArcGIS-toolbox
+
+      - name: Create Release
+        uses: docker://antonyurchenko/git-release:v3.5.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
+          ALLOW_TAG_PREFIX: "true"
+          RELEASE_NAME_PREFIX: "ASF Tools "
+        with:
+          args: |
+            ${{ steps.release_assets.outputs.ARC_FILE }}
+
+      - name: Bump ASF Tools version in HyP3 docs
+        uses: benc-uk/workflow-dispatch@v1.2
+        with:
+          workflow: update_asf_tools_version.yml
+          token: ${{ secrets.TOOLS_BOT_PAK }}
+          repo: ASFHyP3/hyp3-docs
+          ref: main
+          inputs: '{"asf_tools_version": "${{ steps.release_assets.outputs.version_tag }}"}'
+
+      - name: Attempt fast-forward develop from main
+        run: |
+          git fetch --prune
+          git checkout develop && git pull --ff-only
+          git merge --ff-only origin/main
+          git push
+
+      - name: On failure, open PR to bring release back to develop
+        if: ${{ failure() }}
+        env:
+          PR_TITLE: Pulling ${{ github.ref }} into develop
+          PR_BODY: Fast-forward of main to develop failed!
+          GH_TOKEN: ${{ secrets.USER_TOKEN }}
+        run: |
+          gh pr create --title "${PR_TITLE}" \
+                      --body "${PR_BODY}" \
+                      --assignee ${{ github.actor }} \
+                      --label tools-bot \
+                      --head main \
+                      --base develop
