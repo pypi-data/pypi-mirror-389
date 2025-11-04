@@ -1,0 +1,36 @@
+Metadata-Version: 2.4
+Name: phonon-web-tools
+Version: 0.1.5
+Summary: Tools to convert phonon visualization data into a web-friendly format.
+Requires-Python: >=3.10
+Requires-Dist: ase~=3.26
+Requires-Dist: pymatgen
+Requires-Dist: pyyaml
+Requires-Dist: qe-tools~=2.3
+Requires-Dist: seekpath>=1.0
+Description-Content-Type: text/markdown
+
+# Phonon web tools
+
+Python tools to convert raw phonon data (from Quantum ESPRESSO) into a web-friendly JSON file that can be visualized with the corresponding frontend.
+
+Used in this repository, but also outside (e.g. in the MC3D data pipeline).
+
+## Install and usage
+
+Install either from pypi or locally for development:
+
+```bash
+pip install phonon-web-tools
+# or
+pip install -e .
+```
+
+Use the CLI
+
+```bash
+phonon-web-tools --help
+phonon-web-tools ../data/graphene
+```
+
+Run all examples in `../data/` with `run_examples.py`.
