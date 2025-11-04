@@ -1,0 +1,85 @@
+name: Build Windows Installer
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Get version from tag
+      id: get_version
+      shell: bash
+      run: |
+        # Get the tag name from the release
+        VERSION="${GITHUB_REF#refs/tags/}"
+        # Remove 'v' prefix if present
+        VERSION="${VERSION#v}"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+
+    - name: Cache Inno Setup
+      id: cache-innosetup
+      uses: actions/cache@v4
+      with:
+        path: C:\Program Files (x86)\Inno Setup 6
+        key: innosetup-6
+
+    - name: Install dependencies
+      env:
+        SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -e .
+
+    - name: Build with PyInstaller
+      working-directory: pyinstaller
+      run: |
+        pyinstaller Mint.spec
+
+    - name: Verify PyInstaller output
+      shell: bash
+      run: |
+        ls -la pyinstaller/dist/Mint/
+
+    - name: Install Inno Setup
+      if: steps.cache-innosetup.outputs.cache-hit != 'true'
+      run: |
+        choco install innosetup -y
+
+    - name: Build Installer with Inno Setup
+      shell: pwsh
+      run: |
+        $VERSION = "${{ steps.get_version.outputs.version }}"
+        $SOURCE_PATH = "${{ github.workspace }}"
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
+          "/DMyAppVersion=$VERSION" `
+          "/DSourcePath=$SOURCE_PATH" `
+          "$SOURCE_PATH\InnoSetup\InnoSetupScript.iss"
+
+    - name: List output files
+      shell: bash
+      run: |
+        ls -la InnoSetup/Output/
+
+    - name: Upload Installer to Release
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release upload ${{ github.event.release.tag_name }} \
+          ./InnoSetup/Output/MINT-${{ steps.get_version.outputs.version }}-Setup.exe \
+          --clobber
