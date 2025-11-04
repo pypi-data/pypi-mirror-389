@@ -1,0 +1,182 @@
+name: Databricks Notebook Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  PYTHON_VERSION: '3.10'
+
+jobs:
+  test-local:
+    name: Local Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install nutter
+    
+    - name: Discover tests
+      run: |
+        dbx-test discover --tests-dir tests
+    
+    - name: Run tests locally
+      run: |
+        dbx-test run --local --tests-dir tests --output-format junit --output-format console
+      continue-on-error: true
+    
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          .dbx-test-results/**/report.xml
+        check_name: Local Test Results
+    
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: local-test-results
+        path: .dbx-test-results/
+
+  test-remote:
+    name: Remote Tests (Databricks)
+    runs-on: ubuntu-latest
+    needs: test-local
+    if: github.event_name == 'push' || github.event_name == 'schedule'
+    
+    strategy:
+      matrix:
+        environment: [dev, test]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+    
+    - name: Configure Databricks
+      run: |
+        echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST }}" >> $GITHUB_ENV
+        echo "DATABRICKS_TOKEN=${{ secrets.DATABRICKS_TOKEN }}" >> $GITHUB_ENV
+    
+    - name: Upload test notebooks
+      run: |
+        dbx-test upload \
+          --tests-dir tests \
+          --workspace-path "/Workspace/Repos/ci-tests/${{ github.run_id }}" \
+          --config config/test_config.yml
+    
+    - name: Run remote tests
+      run: |
+        dbx-test run \
+          --remote \
+          --env ${{ matrix.environment }} \
+          --tests-dir tests \
+          --config config/test_config.yml \
+          --output-format junit \
+          --output-format console \
+          --output-format html
+      continue-on-error: true
+    
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          .dbx-test-results/**/report.xml
+        check_name: Remote Test Results (${{ matrix.environment }})
+    
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: remote-test-results-${{ matrix.environment }}
+        path: .dbx-test-results/
+    
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const resultsPath = '.dbx-test-results';
+          
+          // Read latest results
+          const dirs = fs.readdirSync(resultsPath);
+          const latestDir = dirs.sort().reverse()[0];
+          const resultsFile = `${resultsPath}/${latestDir}/results.json`;
+          
+          if (fs.existsSync(resultsFile)) {
+            const results = JSON.parse(fs.readFileSync(resultsFile, 'utf8'));
+            const summary = results.summary;
+            
+            const body = `## Test Results (${{ matrix.environment }})
+            
+            | Total | Passed | Failed | Skipped |
+            |-------|--------|--------|---------|
+            | ${summary.total} | ✅ ${summary.passed} | ❌ ${summary.failed} | ⊘ ${summary.skipped} |
+            
+            Duration: ${summary.duration.toFixed(2)}s
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          }
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [test-local, test-remote]
+    if: always()
+    
+    steps:
+    - name: Check test results
+      run: |
+        if [ "${{ needs.test-local.result }}" != "success" ]; then
+          echo "Local tests failed"
+          exit 1
+        fi
+        if [ "${{ needs.test-remote.result }}" != "success" ]; then
+          echo "Remote tests failed"
+          exit 1
+        fi
+        echo "All tests passed!"
+

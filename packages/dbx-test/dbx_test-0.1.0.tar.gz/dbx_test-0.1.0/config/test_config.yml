@@ -1,0 +1,39 @@
+# Configuration for Databricks Notebook Test Framework
+
+workspace:
+  # Profile will be overridden by --profile CLI option if provided
+  # Or set a default profile here
+  profile: "adb"
+
+cluster:
+  # Just specify libraries - they work with serverless using DAB-style inline environments!
+  libraries:
+    - pypi:
+        package: "git+https://github.com/jsparhamii/dbx_test.git"
+  
+  # Alternatively, use a pre-created environment:
+  # environment_key: "dbx_test_env"
+  
+  # Or use cluster compute with libraries:
+  # cluster_id: "your-cluster-id"  # or size: "S"
+
+execution:
+  timeout: 600
+  max_retries: 2
+  parallel: false
+
+paths:
+  # This will be overridden by --tests-dir CLI option
+  workspace_root: "/Workspace/Users/james.parham@databricks.com/dbx_test"
+  
+  # Test pattern is automatic (pytest-style: test_* and *_test)
+  # This setting is deprecated but kept for backwards compatibility
+  test_pattern: "**/*_test.py"
+
+reporting:
+  output_dir: ".dbx-test-results"
+  formats:
+    - "console"
+    - "junit"
+    - "json"
+  verbose: true
