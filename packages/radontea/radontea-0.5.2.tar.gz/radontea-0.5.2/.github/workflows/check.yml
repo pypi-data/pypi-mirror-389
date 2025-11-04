@@ -1,0 +1,40 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.13']
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        # prerequisites
+        python -m pip install --upgrade pip wheel
+        python -m pip install coverage flake8
+        # install dependencies
+        pip install -r tests/requirements.txt
+        pip install -e .
+        # show installed packages
+        pip freeze
+    - name: Test with pytest
+      run: |
+        coverage run --source=radontea -m pytest tests
+    - name: Lint with flake8
+      run: |
+        flake8 --exclude _version.py .
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
