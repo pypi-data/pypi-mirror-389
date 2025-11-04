@@ -1,0 +1,103 @@
+[project]
+name = "molalchemy"
+dynamic = ["version"]
+description = "Extensions for SQLAlchemy to work with chemical cartridges"
+license = {file = "LICENSE"}
+readme = "README.md"
+authors = [
+    { name = "Anton Siomchen", email = "anton.siomchen+molalchemy@gmail.com" }
+]
+
+requires-python = ">=3.10,<3.15"
+dependencies = [
+    "loguru>=0.7.0",
+    "psycopg>=3.0.0",
+    "rdkit>=2024.3.1",
+    "sqlalchemy>=2.0.0",
+]
+keywords = ["chemistry", "cheminformatics", "molecules", "reactions", "databases"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Utilities",
+    "Topic :: Database",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+[project.urls]
+homepage = "https://github.com/asiomchen/molalchemy"
+repository = "https://github.com/asiomchen/molalchemy"
+documentation = "https://molalchemy.readthedocs.io"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "alembic>=1.17.0",
+    "ipykernel>=6.30.1",
+    "mypy>=1.18.2",
+    "pandas>=2.3.3",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pyyaml>=6.0.2",
+    "ruff==0.14.3",
+    "sqlalchemy[mypy]>=2.0.43",
+]
+docs = [
+    "griffe-typingdoc>=0.2.9",
+    "mkdocs>=1.6.1",
+    "mkdocs-jupyter>=0.25.1",
+    "mkdocs-material[imaging]>=9.6.2",
+    "mkdocstrings[python]>=0.28.0",
+    "pymdown-extensions>=10.16.1",
+]
+
+
+[tool.hatch]
+build.hooks.vcs.version-file = "src/molalchemy/_version.py"
+version.source = "vcs"  # Get the version from git, eg: 0.0.6.dev0+g1234567
+# Drop the local version part (eg: +g1234567) or pypi will reject package
+version.raw-options.local_scheme = "no-local-version"
+# A manually triggered GitHub release workflow may generate a new tag
+# with .devN suffix. We need to tell setuptools_scm to ignore past tags with
+# this suffix when calculating the version number else it refuses to
+# bump the version number.
+version.raw-options.git_describe_command = [
+    "git", "describe", "--dirty", "--tags", "--long",
+    "--match", "v*.[0-9]",
+    "--match", "v*.[0-9][0-9]",
+    "--match", "v*.[0-9][0-9][0-9]",
+]
+version.raw-options.version_scheme = "no-guess-dev"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "docs/*",
+    "docker/*",
+    "tests/*",
+    "tests/*",
+    ".github/*",
+    ".devcontainer/*"
+]
+
+[tool.hatch.build.targets.wheel]
+exclude = [
+    "docs/*",
+    "docker/*",
+    "tests/*",
+    "tests/*",
+    ".github/*",
+    ".devcontainer/*"
+]
+
+[tool.mypy]
+plugins = "sqlalchemy.ext.mypy.plugin"
+

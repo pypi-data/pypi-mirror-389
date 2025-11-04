@@ -1,0 +1,37 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: requirements-txt-fixer
+    -   id: mixed-line-ending
+    -   id: check-yaml
+    -   id: check-json
+    -   id: pretty-format-json
+        args: ['--autofix']
+        exclude: .ipynb
+    -   id: check-added-large-files
+        args: ['--maxkb=1000']
+    -   id: check-merge-conflict
+- repo: local
+  hooks:
+    - id: sync-docs
+      name: Sync documentation files
+      entry: make sync-docs
+      language: system
+      files: ^(README\.md|CHANGELOG\.md|ROADMAP\.md|CONTRIBUTING\.md)$
+      pass_filenames: false
+    # - id: update-functions
+    #   name: Update generated function wrappers
+    #   language: system
+    #   entry: make update-func
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.14.3
+  hooks:
+    # Run the linter.
+    - id: ruff-check
+      args: [ --fix ]
+      types_or: [ python, pyi ]
+    # Run the formatter.
+    - id: ruff-format
