@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vutime"
+version = "0.1.0"
+description = "Time Based Utility Tools"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+authors = [
+    {name = "WMI Dev Team"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
