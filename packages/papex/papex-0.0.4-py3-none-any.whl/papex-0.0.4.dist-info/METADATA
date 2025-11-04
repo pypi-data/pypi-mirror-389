@@ -1,0 +1,119 @@
+Metadata-Version: 2.4
+Name: papex
+Version: 0.0.4
+Summary: A library for fetching and normalizing academic papers from various providers (Elsevier, arXiv, PRISM, etc.)
+Home-page: https://github.com/maryamSayagh/PapEx
+Author: maryamSayagh
+Author-email: maryamsayagho@gmail.com
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.25.1
+Requires-Dist: orjson>=3.6.4
+Requires-Dist: lxml>=4.6.3
+Requires-Dist: arxiv>=1.4.8
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+## 1. Project Overview
+
+PapEx is a powerful Python library designed to streamline the process of retrieving and standardizing academic paper metadata from diverse sources. Instead of writing custom logic for each provider (Elsevier, arXiv, IEEE, etc.), PapEx offers a unified, normalized interface for fetching data.
+
+This means you can focus on data analysis, not data cleaning.
+
+## Key Features
+
+* **Unified API:** Use a single, consistent set of commands to query multiple academic providers.
+* **Normalized Output:** All fetched paper metadata (titles, authors, abstracts, DOIs, publication dates) are mapped to a **standard data structure**, eliminating inconsistencies between sources.
+* **Multi-Provider Support:** Currently supports and normalizes data from:
+    * **Elsevier**
+    * **arXiv**
+    * **IEEE**
+    * **PRISM**
+    * *\[Add any other providers you support]*
+* **Flexible Querying:** Search papers by DOI, title, author, or specific metadata fields.
+
+---
+
+## 🛠️ Installation
+
+Use pip to install the library:
+
+```bash
+pip install papex
+```  
+
+**High-level architecture:**
+- Modular extractors for different data providers (Google Scholar, Scopus, Elsevier)
+- Shared abstraction layer for paper data
+- Paper extraction by query, retrieving meta data (author, title, ..)
+TODO extraction of section scraping (by summary, whole document etc..)
+
+---
+
+
+## 2. Getting Started
+### Prerequisites
+- Python 3.10+
+- `pip` package manager
+- API keys for SerpAPI, Scopus (configured for pybliometrics), Elsevier, and IEEE..
+
+### Installation
+**From PyPi**
+```bash
+pip install papex
+```
+
+```bash
+pip install -r review/requirements.txt
+pip install -r review/requirements_dev.txt
+```
+(You may need to manually install proprietary/specialized libraries referenced in the code, such as `serpapi`, `pybliometrics`, or a specific Elsevier client. See code comments for guidance.)
+
+
+### Running Tests
+- tests/`
+---
+
+
+**Important config files:**
+- `review/requirements.txt` — Python dependencies
+- `.env`/local API key config — not directly present but referenced in code
+
+
+---
+## 3. How PaPex works 
+PapEx uses two main components to achieve normalization:
+| Abstraction | Description |
+| :--- | :--- |
+| **`Provider`** | An object dedicated to communicating with a **single source** (e.g., `arXivProvider`). It handles API-specific request formatting and initial data retrieval. |
+| **`Adapter/Normalizer`** | An object that takes the raw data from a `Provider` and transforms it into the **standard `Paper` object**, ensuring consistent field names and formats. |
+
+---
+
+## 4. Key Concepts
+- **Paper extraction:**
+  Modular, provider-driven approach to acquiring structured paper metadata
+- **Abstraction layer:**
+  Interfaces and base classes minimize duplication/spaghetti code
+- **LLM-based filtering:**
+  Large language model inference is used to handle ambiguous/subjective filtering.
+  This one isn't included in the package. However, in the case of **literature review** I suggest filtering only the relevant journals before starting the papers retrieval, to avoid reaching the API calls quota.
+- **Chunked processing:**
+  TODO Batch scraping 
+
+---
+
+
+## 5. References
+- [pandas Documentation](https://pandas.pydata.org/)
+- [pybliometrics](https://pybliometrics.readthedocs.io/en/stable/)
+- [SerpAPI (Google Scholar)](https://serpapi.com/)
+- Elsevier API Docs: See client library documentation
+
+---
