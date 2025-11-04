@@ -1,0 +1,577 @@
+Metadata-Version: 2.4
+Name: apala-api
+Version: 1.1.0
+Summary: Python SDK for Phoenix Message Analysis Services - Loan/Financial AI API Client
+Author: Apala Cap
+Keywords: ai,api,financial,loans,messaging,phoenix
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Office/Business :: Financial
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.9
+Requires-Dist: marimo>=0.16.5
+Requires-Dist: pydantic>=2.12.3
+Requires-Dist: requests>=2.28.0
+Provides-Extra: all
+Requires-Dist: jupyter>=1.0.0; extra == 'all'
+Requires-Dist: marimo>=0.3.0; extra == 'all'
+Requires-Dist: mypy>=1.0.0; extra == 'all'
+Requires-Dist: myst-parser>=3.0.1; extra == 'all'
+Requires-Dist: pytest-cov>=4.0.0; extra == 'all'
+Requires-Dist: pytest-mock>=3.10.0; extra == 'all'
+Requires-Dist: pytest>=7.0.0; extra == 'all'
+Requires-Dist: ruff>=0.1.0; extra == 'all'
+Requires-Dist: sphinx-autodoc-typehints>=2.3.0; extra == 'all'
+Requires-Dist: sphinx-rtd-theme>=3.0.2; extra == 'all'
+Requires-Dist: sphinx>=7.4.7; extra == 'all'
+Requires-Dist: tox>=4.0.0; extra == 'all'
+Requires-Dist: types-requests>=2.28.0; extra == 'all'
+Provides-Extra: dev
+Requires-Dist: mypy>=1.0.0; extra == 'dev'
+Requires-Dist: pytest-cov>=4.0.0; extra == 'dev'
+Requires-Dist: pytest-mock>=3.10.0; extra == 'dev'
+Requires-Dist: pytest>=7.0.0; extra == 'dev'
+Requires-Dist: ruff>=0.1.0; extra == 'dev'
+Requires-Dist: tox>=4.0.0; extra == 'dev'
+Requires-Dist: types-requests>=2.28.0; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: myst-parser>=3.0.1; extra == 'docs'
+Requires-Dist: sphinx-autodoc-typehints>=2.3.0; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme>=3.0.2; extra == 'docs'
+Requires-Dist: sphinx>=7.4.7; extra == 'docs'
+Provides-Extra: notebook
+Requires-Dist: jupyter>=1.0.0; extra == 'notebook'
+Requires-Dist: marimo>=0.3.0; extra == 'notebook'
+Description-Content-Type: text/markdown
+
+# Apala API - Python SDK
+
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Type Hints](https://img.shields.io/badge/type--hints-yes-brightgreen)](https://docs.python.org/3/library/typing.html)
+
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Install from source (package not yet published to PyPI)
+git clone <repository-url>
+cd apala_api
+
+# Basic installation
+uv sync
+
+# Or install with development tools
+uv sync --group dev
+
+# Or install with notebook support
+uv sync --group notebook
+```
+
+### Basic Usage
+
+```python
+from apala_client import ApalaClient, Message
+
+# Initialize client
+client = ApalaClient(
+    api_key="your-api-key",
+    base_url="https://your-server.com"
+)
+
+# Authenticate (automatic JWT token management)
+client.authenticate()
+
+# Create customer message history
+messages = [
+    Message(content="Hi, I need help with my loan application.", channel="EMAIL", reply_or_not=False),
+    Message(content="What are the current interest rates?", channel="SMS", reply_or_not=True),
+    Message(content="When will I hear back about approval?", channel="EMAIL", reply_or_not=True)
+]
+
+# Create your candidate response
+candidate = Message(
+    content="Thank you for your inquiry! Our current rates start at 3.5% APR for qualified borrowers. We'll review your application and respond within 2 business days.",
+    channel="EMAIL",
+    reply_or_not=True
+)
+
+# Optimize message through the AI system
+optimization = client.optimize_message(
+    message_history=messages,
+    candidate_message=candidate,
+    customer_id="550e8400-e29b-41d4-a716-446655440000",
+    zip_code="90210",
+    company_guid="550e8400-e29b-41d4-a716-446655440001"
+)
+
+print(f"Original: {optimization.original_message}")
+print(f"Optimized: {optimization.optimized_message}")
+print(f"Message ID: {optimization.message_id}")
+
+# Submit feedback after customer interaction
+feedback_result = client.submit_single_feedback(
+    message_id=optimization.message_id,
+    customer_responded=True,
+    score="good",  # "good", "bad", or "neutral"
+    actual_sent_message=optimization.optimized_message  # Optional: what you actually sent
+)
+
+print(f"Feedback ID: {feedback_result.id}")
+print(f"Submitted at: {feedback_result.inserted_at}")
+```
+
+## 🎯 Core Features
+
+### ✅ **Type-Safe API**
+- Full **TypedDict** responses with IDE autocomplete
+- **mypy** integration catches errors at development time
+- **No runtime surprises** - all response fields are typed
+
+### ✅ **Complete Functionality**
+- **Message Optimization**: Enhance messages for maximum engagement (primary endpoint)
+- **Message Processing**: Analyze customer conversations and candidate responses
+- **Feedback Tracking**: Monitor message performance with single or bulk submission
+- **Authentication**: Automatic JWT token management with refresh
+
+### ✅ **Production Ready**
+- **Multi-Python Support**: Python 3.9, 3.10, 3.11, 3.12
+- **Comprehensive Testing**: Unit tests, integration tests, type checking
+- **Error Handling**: Uses standard `requests` exceptions (no custom exceptions)
+- **Validation**: Client-side validation of UUIDs, zip codes, channels
+
+### ✅ **Developer Experience**
+- **Interactive Demo**: Marimo notebook with complete workflow
+- **Documentation**: Full Sphinx docs with examples
+- **Code Quality**: Ruff formatting, mypy type checking, tox multi-version testing
+
+## 📖 Documentation
+
+### Authentication
+
+The SDK uses a secure two-tier authentication system:
+
+1. **API Key**: Your long-lived company credentials
+2. **JWT Tokens**: Short-lived session tokens for API calls (auto-managed)
+
+```python
+# Authentication is automatic - just provide your API key
+client = ApalaClient(api_key="your-api-key")
+auth_response = client.authenticate()
+
+# JWT tokens are automatically refreshed when needed
+# No manual token management required!
+```
+
+### Message Processing Workflow
+
+```python
+# 1. Create message objects with validation
+customer_messages = [
+    Message(
+        content="I'm interested in a home loan",
+        channel="EMAIL",
+        reply_or_not=False
+    ),
+    Message(
+        content="What documents do I need?",
+        channel="SMS",
+        reply_or_not=True
+    )
+]
+
+# 2. Define your candidate response
+candidate_response = Message(
+    content="Great! For a home loan, you'll need: income verification, credit report, and bank statements. We offer competitive rates starting at 3.2% APR.",
+    channel="EMAIL",
+    reply_or_not=True
+)
+
+# 3. Optimize through AI system
+result = client.optimize_message(
+    message_history=customer_messages,
+    candidate_message=candidate_response,
+    customer_id="customer-uuid-here",
+    zip_code="12345",
+    company_guid="company-uuid-here"
+)
+
+# 4. Get typed response with IDE completion
+message_id = result.message_id  # Type: str
+optimized_message = result.optimized_message  # Type: str
+recommended_channel = result.recommended_channel  # Type: str
+```
+
+### Message Optimization
+
+Enhance your messages for better customer engagement:
+
+```python
+# Optimize your message for maximum engagement
+optimization = client.optimize_message(
+    message_history=customer_messages,
+    candidate_message=candidate_response,
+    customer_id="customer-uuid",
+    zip_code="12345",
+    company_guid="company-uuid"
+)
+
+print(f"Original: {optimization.original_message}")
+print(f"Optimized: {optimization.optimized_message}")
+print(f"Recommended channel: {optimization.recommended_channel}")
+print(f"Message ID: {optimization.message_id}")
+```
+
+### Feedback Tracking
+
+Monitor message performance and learn from customer interactions:
+
+```python
+# Track how customers respond to your messages
+result = client.submit_single_feedback(
+    message_id="message-id-from-optimization",
+    customer_responded=True,
+    score="good",  # "good", "bad", or "neutral"
+    actual_sent_message="The actual message you sent"  # Optional
+)
+
+print(f"Feedback recorded with ID: {result.id}")
+print(f"Submitted at: {result.inserted_at}")
+
+# Or submit multiple feedback items at once
+feedback_list = [
+    {
+        "message_id": "msg-uuid-1",
+        "customer_responded": True,
+        "score": "good",
+        "actual_sent_message": "Message 1 content"
+    },
+    {
+        "message_id": "msg-uuid-2",
+        "customer_responded": False,
+        "score": "neutral"
+    }
+]
+results = client.submit_feedback_bulk(feedback_list)
+print(f"Submitted {results.count} feedback items")
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Set these for production deployment:
+
+```bash
+# Required
+export APALA_API_KEY="your-production-api-key"
+export APALA_BASE_URL="https://your-phoenix-server.com"
+export APALA_COMPANY_GUID="your-company-uuid"
+
+# Optional
+export APALA_CUSTOMER_ID="default-customer-uuid"  # For testing
+```
+
+### Client Configuration
+
+```python
+# Basic configuration
+client = ApalaClient(
+    api_key="your-key",
+    base_url="https://api.yourcompany.com"
+)
+
+# Advanced usage with custom session
+import requests
+session = requests.Session()
+session.timeout = 30  # Custom timeout
+client = ApalaClient(api_key="your-key")
+client._session = session
+```
+
+## 🧪 Testing & Development
+
+### Setup
+
+```bash
+# Clone and install in development mode with uv
+git clone <repository-url>
+cd apala_api
+uv sync --group dev
+```
+
+### Running Tests
+
+```bash
+# Run unit tests
+uv run pytest tests/test_models.py tests/test_client.py -v
+
+# Run with coverage
+uv run pytest --cov=apala_client --cov-report=html
+
+# Run integration tests (requires running server)
+# In Fish shell:
+env RUN_INTEGRATION_TESTS=1 APALA_API_KEY=test-key APALA_COMPANY_GUID=test-company-uuid uv run pytest tests/test_integration.py
+
+# In Bash/Zsh:
+export RUN_INTEGRATION_TESTS=1 APALA_API_KEY=test-key APALA_COMPANY_GUID=test-company-uuid
+uv run pytest tests/test_integration.py
+```
+
+### Code Quality
+
+```bash
+# Static type checking
+uv run mypy .
+
+# Linting
+uv run ruff check .
+
+# Code formatting
+uv run ruff format .
+```
+
+### Documentation
+
+```bash
+# Build HTML documentation
+uv run sphinx-build -b html docs docs/_build/html
+
+# Build with live reload (auto-refreshes on changes)
+uv run sphinx-autobuild docs docs/_build/html --port 8001
+
+# Clean build directory
+uv run python -c "import shutil; shutil.rmtree('docs/_build', ignore_errors=True)"
+
+# Check for broken links
+uv run sphinx-build -b linkcheck docs docs/_build/linkcheck
+```
+
+### Multi-Python Testing
+
+```bash
+# Test across Python versions
+uv run tox
+
+# Test specific version
+uv run tox -e py311
+```
+
+## 📊 Interactive Demo
+
+Try the complete workflow in an interactive notebook:
+
+```bash
+# Install notebook dependencies
+uv sync --group notebook
+
+# Run the interactive demo
+cd notebooks
+marimo run apala_demo_marimo.py
+```
+
+The demo covers:
+- 🔐 Authentication setup
+- 📝 Creating message history
+- 🎯 Message optimization (with optional metadata)
+- 📊 Feedback submission
+- 🔄 Complete end-to-end workflow example
+
+## 🛡️ Error Handling
+
+The SDK uses standard Python exceptions - no custom error types to learn:
+
+```python
+import requests
+from apala_client import ApalaClient
+
+client = ApalaClient(api_key="your-key")
+
+try:
+    # All SDK methods may raise requests exceptions
+    response = client.optimize_message(...)
+
+except requests.HTTPError as e:
+    # HTTP errors (4xx, 5xx responses)
+    print(f"HTTP {e.response.status_code}: {e}")
+
+except requests.ConnectionError as e:
+    # Network connectivity issues
+    print(f"Connection failed: {e}")
+
+except requests.Timeout as e:
+    # Request timeout
+    print(f"Request timed out: {e}")
+
+except requests.RequestException as e:
+    # Any other requests-related error
+    print(f"Request error: {e}")
+
+except ValueError as e:
+    # Data validation errors (invalid UUIDs, etc.)
+    print(f"Invalid data: {e}")
+```
+
+## 🔍 API Reference
+
+### ApalaClient
+
+Main client class for all API interactions.
+
+#### Constructor
+```python
+ApalaClient(api_key: str, base_url: str = "http://localhost:4000")
+```
+
+#### Methods
+
+| Method | Return Type | Description |
+|--------|-------------|-------------|
+| `authenticate()` | `AuthResponse` | Exchange API key for JWT tokens |
+| `refresh_access_token()` | `RefreshResponse` | Refresh access token |
+| `message_process(...)` | `MessageProcessingResponse` | Process customer messages |
+| `optimize_message(...)` | `MessageOptimizationResponse` | Optimize message content |
+| `submit_single_feedback(...)` | `FeedbackResponse` | Submit single feedback |
+| `submit_feedback_bulk(...)` | `BulkFeedbackResponse` | Submit multiple feedback items |
+| `message_feedback(...)` | `BulkFeedbackResponse` | Alias for submit_feedback_bulk |
+| `close()` | `None` | Close HTTP session |
+
+### Data Models
+
+#### Message
+Customer or candidate message with validation.
+
+```python
+@dataclass
+class Message:
+    content: str  # Message text
+    channel: str  # "SMS", "EMAIL", "OTHER"
+    message_id: Optional[str] = None  # Auto-generated if None
+    send_timestamp: Optional[str] = None  # Auto-generated if None  
+    reply_or_not: bool = False  # Whether this is a reply
+```
+
+#### Feedback Submission
+Submit feedback using the client methods directly (no model class needed):
+
+```python
+# Single feedback submission
+client.submit_single_feedback(
+    message_id: str,              # ID from optimization response
+    customer_responded: bool,     # Did customer respond?
+    score: str,                   # Quality rating: "good", "bad", or "neutral"
+    actual_sent_message: Optional[str] = None  # What you actually sent
+)
+
+# Bulk feedback submission
+client.submit_feedback_bulk([
+    {
+        "message_id": str,
+        "customer_responded": bool,
+        "score": str,  # "good", "bad", or "neutral"
+        "actual_sent_message": str  # Optional
+    },
+    # ... more feedback items
+])
+```
+
+### Response Types
+
+All API responses are fully typed with Pydantic models:
+
+#### AuthResponse
+```python
+class AuthResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str
+    expires_in: int
+    company_id: str
+    company_name: str
+```
+
+#### MessageOptimizationResponse
+```python
+class MessageOptimizationResponse(BaseModel):
+    message_id: str
+    optimized_message: str
+    recommended_channel: str
+    original_message: str
+```
+
+#### FeedbackResponse
+```python
+class FeedbackResponse(BaseModel):
+    id: str
+    message_id: str
+    customer_responded: bool
+    score: Literal["good", "bad", "neutral"]
+    actual_sent_message: Optional[str]
+    inserted_at: str
+```
+
+#### BulkFeedbackResponse
+```python
+class BulkFeedbackResponse(BaseModel):
+    success: bool
+    count: int
+    feedback: List[FeedbackItemResponse]
+```
+
+*See full API documentation for complete type definitions.*
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our contributing guidelines:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Add tests** for new functionality
+4. **Run the test suite** (`pytest` and `mypy apala_client`)
+5. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+6. **Push** to your branch (`git push origin feature/amazing-feature`)
+7. **Create** a Pull Request
+
+### Development Setup
+
+```bash
+git clone <your-fork>
+cd apala_api
+uv sync --group dev
+
+# Run all checks before submitting
+uv run pytest                    # Unit tests
+uv run mypy apala_client        # Type checking
+uv run ruff check apala_client  # Linting
+uv run ruff format apala_client # Formatting
+uv run tox                      # Multi-Python testing
+```
+
+## 📄 License
+
+Copyright (c) 2025 Apala Cap. All rights reserved.
+
+This software is proprietary and confidential. Unauthorized copying, distribution, or use of this software, via any medium, is strictly prohibited.
+
+## 🔗 Links
+
+- **Documentation**: [Full API Documentation](docs/)
+- **Source Code**: [GitHub Repository](#)
+- **Issue Tracker**: [GitHub Issues](#)
+- **PyPI Package**: [apala-api](#)
+
+## 💬 Support
+
+- **GitHub Issues**: For bugs and feature requests
+- **Documentation**: Complete API reference and guides
+- **Type Safety**: Full mypy support for development-time error catching
+
+---
+
+*Apala API - Proprietary Software by Apala Cap*
