@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="helpdesk_ticket_primary_tag_action" model="ir.actions.act_window">
+        <field name="name">Primary Ticket Tags</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">helpdesk.ticket.primary.tag</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id="helpdesk_ticket_secondary_tag_action" model="ir.actions.act_window">
+        <field name="name">Secondary Ticket Tags</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">helpdesk.ticket.secondary.tag</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        id="helpdesk_ticket_additional_tags_menu"
+        name="Additional Ticket Tags"
+        parent="helpdesk_mgmt.helpdesk_ticket_config_main_menu"
+        groups="helpdesk_mgmt.group_helpdesk_manager"
+        sequence="6"
+    />
+    <menuitem
+        id="helpdesk_ticket_additional_tag_1_menu"
+        name="Additional Tags 1"
+        parent="helpdesk_ticket_additional_tags_menu"
+        action="helpdesk_ticket_primary_tag_action"
+        sequence="1"
+    />
+    <menuitem
+        id="helpdesk_ticket_additional_tag_2_menu"
+        name="Additional Tags 2"
+        parent="helpdesk_ticket_additional_tags_menu"
+        action="helpdesk_ticket_secondary_tag_action"
+        sequence="2"
+    />
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="sc_email_compose_message_helpdesk_wizard_form">
+            <field name="name">sc.email.compose.message.helpdesk.wizard.form</field>
+            <field name="model">mail.compose.message</field>
+            <field name="inherit_id" ref="helpdesk_ticket_mail_message.email_compose_message_helpdesk_wizard_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[1]/div/group/field[@name='template_id']" position="replace">
+                    <field
+                        name="template_id"
+                        options="{'no_create': True, 'no_open': True}"
+                        context="{'default_model': model, 'default_body_html': body, 'default_subject': subject, 'lang': lang}"
+                        domain="[('id', 'in', available_mail_template_ids)]"
+                    />
+                </xpath>
+                <xpath expr="//footer/button[@name='action_send_mail']" position="after">
+                    <button
+                        name="save_note"
+                        string="Save as Note"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('model', '!=', 'helpdesk.ticket')]}"
+                    />
+                </xpath>
+                <xpath expr="//footer/button[@name='action_save_as_template']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('model', '=', 'helpdesk.ticket')]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
