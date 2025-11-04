@@ -1,0 +1,119 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["highway_core*"]
+
+[project]
+name = "highway_core"
+version = "0.2.1"
+authors = [
+  { name = "Farseed Ashouri", email = "farseed.ashouri@gmail.com" },
+]
+description = "A powerful and flexible workflow engine that enables you to define, execute, and manage complex workflows with ease"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Distributed Computing",
+]
+
+# add dependencies here
+dependencies = [
+    "psutil>=7.1.2",
+    "pyyaml>=6.0",
+    "requests>=2.28.1",
+    "pydantic>=2.0.1",
+    "docker>=7.1.0",
+    "sqlalchemy>=2.0.15",
+    "click>=8.0.0",
+    "importlib-metadata>=4.0.0; python_version<'3.8'",
+    ]
+# dev dependencies
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "mypy>=1.0.0",
+    "types-PyYAML>=6.0.0",
+    "types-requests>=2.28.1",
+    "pytest-cov>=2.12.1",
+    "pytest-xdist>=3.0.0",
+    "pytest-asyncio>=0.20.0",
+    "black>=23.1.0",
+    "isort>=5.10.1",
+
+]
+
+[project.urls]
+Homepage = "https://github.com/rodmena-limited/highway_core"
+Issues = "https://github.com/rodmena-limited/highway_core/issues"
+
+# mypy, ignore tests/ folder
+[tool.mypy]
+files = "highway_core"
+#  exclude tests and examples
+exclude = 'tests/|examples/'
+ignore_missing_imports = true
+strict = false
+
+# console scripts
+[project.scripts]
+"highway-engine" = "highway_core.cli.engine_cli:cli"
+
+# pytest
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=highway_core --cov-report=term-missing -n auto --dist=loadfile -v"
+testpaths = ["tests/"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+# black configuration
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(\.
+|build
+|dist
+|\.eggs
+|\.git
+|\.hg
+|\.mypy_cache
+|\.tox
+|\.venv
+|_build
+|buck-out
+|build
+|dist
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+line_length = 88
+known_first_party = "highway_core"
+skip = ["build", "dist", ".eggs", ".venv"]
+include_trailing_comma = true
+multi_line_output = 3
+
+# flake8 configuration
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ["E203", "W503"]
+exclude = [".git", "__pycache__", "build", "dist", ".venv", ".eggs", "tests"]
+max-complexity = 10
