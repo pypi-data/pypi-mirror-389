@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>404 · {{ project }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"/>
+  </head>
+  <body>
+    <main class="center">
+      <h1>404</h1>
+      <p>Page not found.</p>
+      <a class="btn" href="/">Go Home</a>
+    </main>
+
+    <footer>
+      &copy; {{ year }}
+      <a href="{{ org_url }}"
+         target="_blank"
+         rel="noreferrer"
+         class="mini footer-link"
+         data-tooltip="Visit Developer">{{ org }}</a>
+      · v{{ version }}
+    </footer>
+  </body>
+</html>

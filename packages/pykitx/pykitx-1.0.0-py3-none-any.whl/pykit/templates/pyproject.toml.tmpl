@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "${project_name}"
+version = "1.0.0"
+description = "${description}"
+readme = "README.md"
+authors = [{ name = "${author}", email = "${email}" }]
+license = { text = "${license}" }
+requires-python = ">=3.8"
+${dependencies}
+
+[project.scripts]
+${project_name} = "${package}.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+${extra_setuptools}
