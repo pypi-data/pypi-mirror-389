@@ -1,0 +1,276 @@
+# Gateway SDK
+
+Python SDK for Gateway - 用于调用预制件
+
+## 概述
+
+Gateway SDK 是一个用于调用预制件的 Python SDK。
+
+### 核心特性
+
+- ✅ 简洁的 API
+- ✅ 支持 JWT Token 和 API Key 认证
+- ✅ 流式响应支持（SSE）
+- ✅ 完整的类型提示
+- ✅ 完善的错误处理
+
+## 安装
+
+```bash
+pip install agent-builder-gateway-sdk
+```
+
+## 快速开始
+
+### 初始化客户端
+
+```python
+from gateway_sdk import GatewayClient
+
+# 使用 JWT Token
+client = GatewayClient(jwt_token="your-jwt-token")
+
+# 或使用 API Key
+client = GatewayClient(api_key="sk-xxx")
+
+# 白名单模式（适用于 OpenHands 等白名单环境）
+client = GatewayClient()  # 无需提供认证信息
+```
+
+**白名单模式说明**：
+- 如果你的环境已配置白名单（如 OpenHands、内部开发环境），可以直接创建客户端而无需提供认证信息
+- SDK 会以无鉴权模式发送请求，由 Gateway 基于 IP 白名单进行验证
+- 这种模式简化了开发流程，无需管理 token
+
+### 调用预制件
+
+```python
+result = client.run(
+    prefab_id="llm-client",
+    version="1.0.0",
+    function_name="chat",
+    parameters={"messages": [{"role": "user", "content": "Hello"}]}
+)
+
+if result.is_success():
+    print(result.get_result())
+else:
+    print(f"Error: {result.error}")
+```
+
+### 链式调用
+
+```python
+llm = client.prefab("llm-client", "1.0.0")
+result = llm.call("chat", messages=[...], model="gpt-4")
+```
+
+### 流式响应
+
+```python
+for event in client.run(..., stream=True):
+    if event.type == "content":
+        print(event.data, end="", flush=True)
+    elif event.type == "done":
+        print("\n完成")
+```
+
+### 批量调用
+
+```python
+from gateway_sdk import PrefabCall
+
+calls = [
+    PrefabCall(
+        prefab_id="translator",
+        version="1.0.0",
+        function_name="translate",
+        parameters={"text": "Hello", "target": "zh"}
+    ),
+    PrefabCall(
+        prefab_id="translator",
+        version="1.0.0",
+        function_name="translate",
+        parameters={"text": "World", "target": "zh"}
+    )
+]
+
+result = client.run_batch(calls)
+for r in result.results:
+    if r.is_success():
+        print(r.get_result())
+```
+
+### 文件处理
+
+**重要**: SDK 只接收 S3 URL，不负责文件上传/下载。
+
+```python
+# 传递 S3 URL 作为文件输入
+result = client.run(
+    prefab_id="video-processor",
+    version="1.0.0",
+    function_name="extract_audio",
+    parameters={"format": "mp3"},
+    files={"video": ["s3://bucket/input.mp4"]}
+)
+
+# 输出文件也是 S3 URL
+output_files = result.get_files()
+# {"audio": ["s3://bucket/output.mp3"]}
+```
+
+**文件处理流程**:
+1. 📤 使用 S3 客户端上传文件，获取 S3 URL
+2. 📝 将 S3 URL 传递给 SDK
+3. 📥 从返回的 S3 URL 下载结果文件
+
+## API 参考
+
+### GatewayClient
+
+#### 初始化
+
+```python
+GatewayClient(
+    base_url: str = "http://nodeport.sensedeal.vip:30566",
+    api_key: Optional[str] = None,
+    jwt_token: Optional[str] = None,
+    timeout: int = 60
+)
+```
+
+**参数**：
+- `api_key`: API Key
+- `jwt_token`: JWT Token
+- `timeout`: 请求超时时间（秒）
+
+**注意**：必须提供 `api_key` 或 `jwt_token` 之一。
+
+#### 方法
+
+**run()** - 执行单个预制件
+
+```python
+run(
+    prefab_id: str,
+    version: str,
+    function_name: str,
+    parameters: Dict[str, Any],
+    files: Optional[Dict[str, List[str]]] = None,  # 仅接受 S3 URL
+    stream: bool = False
+) -> Union[PrefabResult, Iterator[StreamEvent]]
+```
+
+参数:
+- `files`: 文件输入，格式为 `{"参数名": ["s3://url1", "s3://url2"]}`，**仅接受 S3 URL**
+
+**run_batch()** - 批量执行
+
+```python
+run_batch(calls: List[PrefabCall]) -> BatchResult
+```
+
+**prefab()** - 获取预制件对象
+
+```python
+prefab(prefab_id: str, version: str) -> Prefab
+```
+
+**list_prefabs()** - 列出预制件
+
+```python
+list_prefabs(status: Optional[str] = None) -> List[PrefabInfo]
+```
+
+**get_prefab_spec()** - 获取预制件规格
+
+```python
+get_prefab_spec(prefab_id: str, version: Optional[str] = None) -> Dict[str, Any]
+```
+
+### PrefabResult
+
+预制件执行结果。
+
+**属性**：
+- `status`: 调用状态（SUCCESS / FAILED）
+- `output`: 输出数据
+- `error`: 错误信息
+- `job_id`: 任务 ID
+
+**方法**：
+- `is_success()`: 判断是否成功
+- `get(key, default)`: 获取输出字段
+- `get_result()`: 获取业务结果
+- `get_files()`: 获取输出文件
+
+### StreamEvent
+
+流式事件。
+
+**属性**：
+- `type`: 事件类型（start / content / progress / done / error）
+- `data`: 事件数据
+
+## 错误处理
+
+```python
+from gateway_sdk.exceptions import (
+    GatewayError,
+    AuthenticationError,
+    PrefabNotFoundError,
+    ValidationError,
+    QuotaExceededError,
+    ServiceUnavailableError,
+    MissingSecretError,
+)
+
+try:
+    result = client.run(...)
+except AuthenticationError as e:
+    print(f"认证失败: {e}")
+except PrefabNotFoundError as e:
+    print(f"预制件不存在: {e}")
+except MissingSecretError as e:
+    print(f"缺少密钥: {e.secret_name}")
+except QuotaExceededError as e:
+    print(f"配额超限: {e.used}/{e.limit}")
+except GatewayError as e:
+    print(f"错误: {e}")
+```
+
+## 示例代码
+
+- `examples/basic_usage.py` - 基础用法
+- `examples/streaming.py` - 流式响应
+
+## 常见问题
+
+**Q: 如何处理超时？**
+
+A: 设置 `timeout` 参数：
+```python
+client = GatewayClient(jwt_token="...", timeout=120)
+```
+
+**Q: 如何调试？**
+
+A: 启用日志：
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+**Q: 如何停止流式响应？**
+
+A: 使用 `break` 跳出循环：
+```python
+for event in client.run(..., stream=True):
+    if some_condition:
+        break
+```
+
+## 许可证
+
+MIT License
