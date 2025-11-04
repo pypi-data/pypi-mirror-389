@@ -1,0 +1,80 @@
+Jep 4.2 Release Notes
+*********************
+This is a minor version increment that mostly includes bug fixes and
+compatibility improvements. This release has been tested with Python versions
+from 3.6 to 3.12 and Java versions 8, 11, 17, and 21. Thanks to all the
+contributors who have submitted code to improve this release.
+
+Improved support for varargs
+****************************
+Support for varargs has been implemented in several places
+
+* Varargs support has improved for choosing which overloaded Java method to
+  call from Python. *Contributed by @andvazqu.* 
+* Java constructors using varargs can now be called from Python.
+* Proxy Java Objects will unpack varargs to call Python functions.
+
+Custom converters for Java Objects in Python
+********************************************
+Developers can now configure custom converters for creating a Python object
+from a Java object. For more details on how to register a custom converter see
+`the wiki <https://github.com/ninia/jep/wiki/Accessing-Java-Objects-in-Python#custom-conversion-functions>`_
+or exec ``help(jep.setJavaToPythonConverter)`` in a Jep interpreter.
+
+PyJType for java.util.Map now implements keys() and items()
+***********************************************************
+This allows Java Maps to be easily converted to Python dictionaries in
+situations where duck typing is not good enough and a dictionary is required.
+
+Additions of PyBuiltins
+***********************
+The `PyBuiltins <http://ninia.github.io/jep/javadoc/4.2/jep/python/PyBuiltins.html>`_
+class provides makes it easier to call some of the builtin Python functions
+from Java.
+
+Java FunctionalInterfaces are automatically callable in Python 
+**************************************************************
+When a Java object implementing a
+`FunctionalInterface <https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/FunctionalInterface.html>`_
+is used in Python it is automatically 
+`callable <https://docs.python.org/3/glossary.html#term-callable>`_
+and the `__call__` method will be set to the abstract method of the interface.
+Similar to the Java compiler, the type is not required to have the
+FunctionalInterface annotation to be treated as a functional interface.
+For example a Java Function can be called directly without using the accept method:
+::
+    from java.util.function import Predicate
+    isFoo = Predicate.isEqual("foo")
+    result = isFoo("abc") # Same behavior as isFoo.test("abc")
+
+Java Methods can be Annotated to accept Python kwargs
+*****************************************************
+The `@PyMethod <http://ninia.github.io/jep/javadoc/4.2/jep/PyMethod.html>`_ 
+annotation can be used on a constructor or method in a Java class to customize
+the behavior of Jep when the method is called from Python. The most notable 
+customization is the ability to pass kwargs from Python to Java. Jep will
+automatically convert the kwargs to a PyObject or Map. It is still possible
+for a Java method to accept varargs from Python using Java style varargs syntax
+but the ``@PyMethod`` provides an additional way to specify a Java method
+accepts varargs that enables mixing varargs and kwargs. 
+
+For example the following Java method signature shows a method that can be
+called from Python using both varargs and kwargs:
+::
+    @PyMethod(varargs=true, kwargs=true)
+    public void exampleMethod(Object[] varargs, Map<String,Object> kwargs) {
+        // do stuff
+    }
+
+Support for isolated SubInterpreter
+***********************************
+When using Python 3.12 or greater it is now possible to created isolated
+SubInterpreters which have separate GILs to improve concurrency. This feature
+can be enabled by setting the 
+`SubInterpreterOptions <https://ninia.github.io/jep/javadoc/4.2/jep/SubInterpreterOptions.html>`_
+on
+`JepConfig <https://ninia.github.io/jep/javadoc/4.2/jep/JepConfig.html>`_
+to SubInterpreterOptions.isolated(). For more details about how
+isolated sub-interpreters are different from ordinary interpreters refer to
+`PEP-684 <https://peps.python.org/pep-0684/>`_
+

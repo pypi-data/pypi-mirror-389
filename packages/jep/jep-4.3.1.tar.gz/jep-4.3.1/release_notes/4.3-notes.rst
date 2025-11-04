@@ -1,0 +1,33 @@
+Jep 4.3 Release Notes
+*********************
+The maven groupId for Jep has changed from black.ninia to org.ninia. This
+release drops support for versions of Python older than 3.10. It includes
+changes to modernize and simplify the build, improve compatibility with
+isolated sub-interpreters, and remove use of deprecated Python features.
+
+Updates to PyConfig
+*******************
+`PyConfig <https://ninia.github.io/jep/javadoc/4.3/jep/PyConfig.html>`_ has
+been updated so that the API maps directly to the PyConfig structure in the
+Python C API which was introduced with
+`PEP 587 <https://peps.python.org/pep-0587/>`_. Most of the existing methods
+are now deprecated. The deprecated methods will continue to work as they did
+before for now but they will be removed in a future release.
+
+Share Interpreter State between Threads
+***************************************
+It is now possible to attach multiple threads to an existing Interpreter using
+`Interpreter.attach() <https://ninia.github.io/jep/javadoc/4.3/jep/Interpreter.html#attach-boolean->`_.
+Interpreters created this way will share state such as ``sys.modules`` and
+even have the option to share globals which allows multiple threads to have
+identical access to an interpreter.
+
+Modernized build
+****************
+Project configuration is now in pyproject.toml. The actual build is still
+done with the legacy setuptools. For compatibility with the isolated build
+environment used by pip, numpy is now a required build dependency. When jep is
+built with numpy it can be used without numpy as long as NDArrays are not
+passed from Java to Python. It is still possible to build jep without numpy
+if neccesary but it now requires downloading the source and modifying
+pyproject.toml to remove the numpy dependency.
