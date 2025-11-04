@@ -1,0 +1,20 @@
+[project]
+name = "tracebackLib"
+version = "0.1.0"
+description = "Traceback silencer and custom traceback tools"
+authors = [
+    { name = "Avtho", email = "Th3ou1d3x@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "AnsiCoolFORMATING",
+]
+license = { text = "MIT" }
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["customTraceback", "tracebackSilencer"]
