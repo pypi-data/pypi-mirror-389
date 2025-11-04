@@ -1,0 +1,348 @@
+Metadata-Version: 2.4
+Name: bixypay-sdk
+Version: 1.0.0
+Summary: Official Python SDK for the BixyPay Fintech API Platform
+Home-page: https://github.com/bixypay/fintech-sdk-python
+Author: BixyPay
+Author-email: developers@bixypay.com
+Project-URL: Bug Reports, https://github.com/bixypay/fintech-sdk-python/issues
+Project-URL: Documentation, https://docs.bixypay.com
+Project-URL: Source, https://github.com/bixypay/fintech-sdk-python
+Keywords: bixypay fintech payment crypto api sdk
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Office/Business :: Financial
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.28.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# BixyPay Fintech API - Python SDK
+
+Official Python SDK for the BixyPay Fintech API Platform. This SDK provides a simple and intuitive interface for integrating crypto-fiat payment processing into your Python applications.
+
+## Installation
+
+```bash
+pip install bixypay-sdk
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/bixypay/fintech-sdk-python
+cd fintech-sdk-python
+pip install -e .
+```
+
+## Quick Start
+
+```python
+from bixypay import BixyPayClient
+
+# Initialize with API key
+client = BixyPayClient(
+    base_url="https://api.bixypay.com",
+    api_key="sk_live_your_api_key_here"
+)
+
+# Create an invoice
+response = client.invoices.create({
+    "amount": 100.50,
+    "currency": "USD",
+    "description": "Payment for Product XYZ"
+})
+
+if response["error"]:
+    print("Error:", response["error"])
+else:
+    print("Invoice created:", response["data"])
+```
+
+## Authentication
+
+The SDK supports two authentication methods:
+
+### 1. API Key Authentication (Recommended for server-side)
+
+```python
+client = BixyPayClient(
+    base_url="https://api.bixypay.com",
+    api_key="sk_live_your_api_key"
+)
+```
+
+### 2. JWT Token Authentication
+
+```python
+client = BixyPayClient(
+    base_url="https://api.bixypay.com",
+    jwt_token="your_jwt_token"
+)
+```
+
+## Usage Examples
+
+### Authentication & Registration
+
+#### Register a New Merchant
+
+```python
+response = client.auth.register(
+    email="merchant@example.com",
+    password="SecurePassword123!",
+    business_name="My Business LLC",
+    business_address="123 Business Street"
+)
+```
+
+#### Login and Get JWT Token
+
+```python
+response = client.auth.login(
+    email="merchant@example.com",
+    password="SecurePassword123!"
+)
+
+if not response["error"]:
+    # Token is automatically stored in client
+    access_token = response["data"]["access_token"]
+    print(f"Logged in! Token: {access_token}")
+```
+
+#### Create API Key
+
+```python
+client = BixyPayClient(
+    base_url="https://api.bixypay.com",
+    jwt_token=your_jwt_token
+)
+
+response = client.auth.create_api_key(
+    name="Production API Key",
+    scopes=["invoices:read", "invoices:write"]
+)
+
+if not response["error"]:
+    api_key = response["data"]["key"]
+    print(f"API Key created: {api_key}")
+```
+
+### Merchant Operations
+
+#### Get Merchant Profile
+
+```python
+response = client.merchants.get_profile()
+
+if not response["error"]:
+    profile = response["data"]
+    print(f"Business: {profile['businessName']}")
+    print(f"KYC Status: {profile['kycStatus']}")
+```
+
+#### Get Account Balance
+
+```python
+response = client.merchants.get_balance()
+
+if not response["error"]:
+    balance = response["data"]
+    print(f"Balance: {balance['balance']} {balance['currency']}")
+```
+
+#### Update KYC Status
+
+```python
+response = client.merchants.update_kyc_status("approved")
+
+if not response["error"]:
+    print("KYC status updated successfully")
+```
+
+### Invoice Management
+
+#### Create an Invoice
+
+```python
+response = client.invoices.create({
+    "amount": 99.99,
+    "currency": "USD",
+    "description": "Premium Subscription - Monthly",
+    "metadata": {
+        "customer_id": "cust_12345",
+        "plan": "premium"
+    },
+    "callbackUrl": "https://yourapp.com/webhooks/payment"
+})
+
+if not response["error"]:
+    invoice = response["data"]
+    print(f"Invoice ID: {invoice['invoiceId']}")  # Use invoiceId for subsequent API calls
+    print(f"Payment URL: {invoice['paymentUrl']}")
+```
+
+#### Get Invoice by ID
+
+```python
+response = client.invoices.get("invoice-id-here")
+
+if not response["error"]:
+    invoice = response["data"]
+    print(f"Status: {invoice['status']}")
+    print(f"Amount: {invoice['amount']} {invoice['currency']}")
+```
+
+#### List Invoices
+
+```python
+response = client.invoices.list({
+    "page": 1,
+    "limit": 20
+})
+
+if not response["error"]:
+    invoices = response["data"]
+    for invoice in invoices:
+        print(f"{invoice['invoiceId']} - {invoice['status']} - ${invoice['amount']}")
+```
+
+#### Update Invoice Status
+
+```python
+response = client.invoices.update_status(
+    invoice_id="invoice-id-here",
+    status="completed",
+    tx_hash="0x1234567890abcdef"  # Optional: blockchain transaction hash
+)
+
+if not response["error"]:
+    print("Invoice status updated successfully")
+```
+
+### Webhook Management
+
+#### Create a Webhook
+
+```python
+response = client.webhooks.create(
+    url="https://yourapp.com/webhooks/bixypay",
+    events=["invoice.created", "invoice.completed", "invoice.failed"]
+)
+
+if not response["error"]:
+    webhook = response["data"]
+    print(f"Webhook ID: {webhook['id']}")
+```
+
+#### List Webhooks
+
+```python
+response = client.webhooks.list()
+
+if not response["error"]:
+    webhooks = response["data"]
+    for webhook in webhooks:
+        print(f"{webhook['id']} - {webhook['url']}")
+```
+
+#### Delete a Webhook
+
+```python
+response = client.webhooks.delete("webhook-id-here")
+
+if not response["error"]:
+    print("Webhook deleted successfully")
+```
+
+## Error Handling
+
+All SDK methods return a dictionary with `data` and `error` keys:
+
+```python
+response = client.invoices.create({
+    "amount": 100,
+    "currency": "USD"
+})
+
+if response["error"]:
+    error = response["error"]
+    print(f"Error: {error.get('message', 'Unknown error')}")
+    if "statusCode" in error:
+        print(f"HTTP Status: {error['statusCode']}")
+else:
+    # Success
+    invoice = response["data"]
+    print(f"Invoice created: {invoice['invoiceId']}")
+```
+
+## Dynamic Token Management
+
+You can update authentication tokens dynamically:
+
+```python
+client = BixyPayClient(base_url="https://api.bixypay.com")
+
+# Login and get JWT token
+login_response = client.auth.login("user@example.com", "password")
+
+# Create API key using JWT
+api_key_response = client.auth.create_api_key("My API Key")
+
+# Switch to API key authentication
+client.set_api_key(api_key_response["data"]["key"])
+
+# Now use API key for subsequent requests
+balance = client.merchants.get_balance()
+```
+
+## Type Hints
+
+This SDK includes comprehensive type hints for better IDE support and type checking:
+
+```python
+from bixypay import BixyPayClient
+from bixypay.types import CreateInvoiceRequest, ListInvoicesParams
+
+invoice_data: CreateInvoiceRequest = {
+    "amount": 100.0,
+    "currency": "USD",
+    "description": "Test payment"
+}
+
+response = client.invoices.create(invoice_data)
+```
+
+## Requirements
+
+- Python 3.7+
+- requests >= 2.28.0
+
+## Support
+
+- **Documentation**: [https://docs.bixypay.com](https://docs.bixypay.com)
+- **API Reference**: [https://api.bixypay.com/docs](https://api.bixypay.com/docs)
+- **Issues**: [https://github.com/bixypay/fintech-sdk-python/issues](https://github.com/bixypay/fintech-sdk-python/issues)
+
+## License
+
+MIT License - see LICENSE file for details
