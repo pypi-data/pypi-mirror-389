@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "mercurifi_facilitator_sdk"
+version = "1.0.3"
+description = "Python client for X402 Facilitator API"
+authors = ["Mercuri <info@mercuri.finance>"]
+license = "MIT"
+keywords = ["x402", "payments", "facilitator", "web3", "usdc"]
+readme = "README.md"
+homepage = "https://github.com/mercuri-finance/mercuri-facilitator-sdk-py"
+repository = "https://github.com/mercuri-finance/mercuri-facilitator-sdk-py"
+documentation = "https://github.com/mercuri-finance/mercuri-facilitator-sdk-py"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.32.3"
+web3 = "6.19.0"
+eth-account = "0.12.3"
+solana = "^0.31.0"
+pynacl = "^1.5.0"
+base58 = "^2.1.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.3.3"
+flake8 = "^7.1.1"
+black = "^24.8.0"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
