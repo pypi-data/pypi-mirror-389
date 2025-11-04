@@ -1,0 +1,255 @@
+# Genlang
+
+Genlang is a compact experimental programming language implemented as a small Python library. It is designed for teaching language implementation techniques, rapid prototyping of domain specific languages, and for fun. The implementation provides a lexer, parser, AST interpreter and a tiny runtime with dynamic variable dependencies.
+
+This README documents language syntax, examples, and the Python API you can import into other projects.
+
+---
+
+## Key ideas
+
+- Simple, concise syntax designed to be easy to parse and reason about.
+- Declarations and assignments use a `$`-based variable syntax.
+- Dynamic expressions, declared once, automatically update when their dependencies change.
+- Lightweight function definitions and calls, with expression-based return values.
+- Minimal, explicit control flow: conditionals, loops, and input/print primitives.
+
+---
+
+## Installation
+
+Genlang is delivered as a single Python module. To experiment with it install via pip:
+
+`pip install genlang`
+
+Then run:
+
+`genlang run <file.gen>`
+
+That's it!
+
+No external dependencies are required beyond the Python standard library. Notice that Genlang files has a file format of <.GEN>.
+
+---
+
+## Quick start
+
+Save your Genlang source into a string and run it from Python:
+
+```python
+from genlang import run_genlang
+
+source = """
+:$a = 10;
+:$b = $.a + 5;
+! $.b;
+$a = 20;
+! $.b;
+"""
+
+interp = run_genlang(source)
+
+# `run_genlang` returns the interpreter instance. You can inspect `interp.vars` after execution.
+print(interp.vars)
+```
+
+This prints the value of `b` twice, demonstrating dynamic declarations. The declaration `:$b = $.a + 5;` makes `b` depend on the dynamic reference `$.a` so when `$a` changes, `$b` is updated automatically.
+
+---
+
+## Language overview
+
+### Tokens and punctuation
+
+- Numbers: `123` or `12.34`
+- Strings: single or double quoted with backslash escapes
+- Identifiers: e.g. `foo`, `bar_2`
+
+### Basic statements
+
+- Declare a variable, without initializing: `:$name;`
+- Declare and assign: `:$name = <expr>;`
+- Assign to an already-declared variable: `$name = <expr>;`
+- Evaluate an expression for side effects: `<expr>;`
+- Print: `! <expr>;` (prints to stdout)
+- Read input into a variable: `?$<name>;` (reads from provided input or `input()` when real_input=True)
+
+Notes:
+
+- Every statement must end with a semicolon `;`.
+- Variable names used in assignment are always prefixed with `$` when referenced on the left side. Plain identifiers (without `$`) are used for local function parameter names and ordinary identifiers in expressions.
+
+### Dynamic references
+
+- Use `$.name` to mark a dynamic dependency to variable `name` inside a declaration expression. If a declaration expression contains any dynamic references, the declared variable becomes "dynamic", and will be kept up to date whenever its dependencies change.
+
+Example:
+
+```
+:$x = 2;
+:$y = $.x * 3;   // y is dynamic, depends on x
+! $.y;           // prints 6
+$x = 5;
+! $.y;           // now prints 15, because y was dynamic
+```
+
+### Conditionals
+
+- If with optional else block uses `??` followed by `(condition)` and blocks in braces `{}`. An optional else block follows a comma and another brace enclosed block.
+
+```
+?? ($a > 10) { ! 'big'; } , { ! 'small'; };
+```
+
+### Loops
+
+- Loop uses `*` followed by `(condition)` and a `{}`-block body. The loop repeats while the condition is true.
+
+```
+* ($n > 0) { ! $n; $n = $n - 1; };
+```
+
+### Functions
+
+- Declared with `@name(params) { ... };`. Parameters can be either plain identifiers or `$`-prefixed names when you want to accept variables by name.
+- A function body may contain declarations and statements. A function returns the last expression statement evaluated in its body (if any).
+
+Example:
+
+```
+@add($a, $b) {
+    :$s = $a + $b;
+    s;   // expression evaluates to the value returned by the function
+};
+
+! @add(3, 4);
+```
+
+### Expressions and operators
+
+- Arithmetic: `+ - * / %`
+- Comparison: `== != < > <= >=`
+- Logical: `&` (and), `|` (or), `~` (not)
+- Unary minus supported
+- String concatenation supported via `+` when either operand is a string
+
+Precedence follows a standard ordering from logical OR down to multiplication and unary operators.
+
+---
+
+## Examples
+
+### Hello world
+
+```
+! 'Hello, world!';
+```
+
+### Arithmetic and assignment
+
+```
+:$x = 10;
+:$y = $.x * 2;
+! $.y;
+$x = 7;
+! $.y;
+```
+
+### Input and condition
+
+```
+?$name;
+?? ($name == 'Alice') { ! 'Hi Alice'; } , { ! 'Who are you?'; };
+```
+
+### Looping countdown
+
+```
+:$n = 5;
+* ($n > 0) { ! $n; $n = $n - 1; };
+```
+
+### Function example
+
+```
+@sum($a, $b) {
+    :$r = $a + $b;
+    r;
+};
+
+! @sum(10, 20);
+```
+
+---
+
+## Python API reference
+
+You can import the module into Python and run Genlang programs with a few helper functions and classes.
+
+### `lex(source: str) -> List[Token]`
+
+Tokenizes source into `Token` objects. Useful for debugging or tooling.
+
+### `Parser(tokens, source)`
+
+Parses tokens into an AST you can inspect for tooling or transformations. Raises `ParseError` for syntax problems.
+
+### `Interpreter(source, input_values=None, real_input=False)`
+
+Creates an interpreter instance. Important fields and behavior:
+
+- `interp.vars` stores runtime variables by name
+- `interp.dynamic_exprs` stores any declared dynamic expressions
+- `interp.funcs` stores declared functions
+- Call `interp.eval_program(ast)` to run a parsed AST from the parser
+
+Runtime exceptions raised are `RuntimeErrorWithPos` which include a line and column when available.
+
+### `run_genlang(source: str, input_values: Optional[List[str]] = None, real_input: bool = False)`
+
+Convenience runner that lexes, parses, and executes source. Returns the interpreter instance after execution. Example:
+
+```python
+from genlang import run_genlang
+
+source = """
+?$name;
+! 'You entered: ' + $name;
+"""
+
+interp = run_genlang(source, input_values=['42'])
+```
+
+---
+
+## Error handling
+
+- Syntax errors during parsing raise `ParseError` with a descriptive message and a line/column position.
+- Runtime problems raise `RuntimeErrorWithPos`, which attempts to include a line/column for easier debugging, e.g. division by zero, undeclared variable, or cycle in dynamic dependencies.
+
+---
+
+## Implementation notes
+
+- Dynamic declarations: when a declaration expression contains `$.name` references, the declared variable is stored as a dynamic expression. When a dependency variable changes, dependent dynamic values are recomputed and changes propagate. A cycle in dependencies will raise a runtime error.
+- Functions are simple. When a function executes, a snapshot of the caller environment is saved and restored after the call. Functions return the value of the last expression statement if present.
+- The interpreter performs minimal type coercion. Numeric operations require numeric operands, except `+` supports string concatenation when either operand is a string.
+
+---
+
+## Contributing
+
+Contributions are welcome. A few ideas:
+
+- Add more builtin functions and types
+- Extend the standard library with collections or I/O primitives
+- Add static analysis tooling or an LSP server for editor support
+- Implement a bytecode compiler or REPL
+
+If you make a change, please add tests and keep the module self-contained.
+
+---
+
+## License
+
+This project is released under the MIT license. You may copy and adapt the code freely.
