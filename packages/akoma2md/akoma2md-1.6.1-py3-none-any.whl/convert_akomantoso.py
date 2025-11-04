@@ -1,0 +1,1260 @@
+import xml.etree.ElementTree as ET
+import re
+import sys
+import argparse
+import os
+import requests
+import tempfile
+from datetime import datetime
+from urllib.parse import urlparse
+
+AKN_NAMESPACE = {'akn': 'http://docs.oasis-open.org/legaldocml/ns/akn/3.0'}
+GU_NAMESPACE = {'gu': 'http://www.gazzettaufficiale.it/eli/'}
+ELI_NAMESPACE = {'eli': 'http://data.europa.eu/eli/ontology#'}
+
+# Security constants
+ALLOWED_DOMAINS = ['www.normattiva.it', 'normattiva.it']
+MAX_FILE_SIZE_MB = 50
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+DEFAULT_TIMEOUT = 30
+VERSION = '1.6.1'
+
+def extract_metadata_from_xml(root):
+    """
+    Extract metadata from Akoma Ntoso XML meta section.
+
+    Returns dict with keys: dataGU, codiceRedaz, dataVigenza, url, url_xml
+    Returns None for missing fields.
+    """
+    metadata = {}
+
+    # Extract from meta section
+    meta = root.find('.//akn:meta', AKN_NAMESPACE)
+    if meta is None:
+        return metadata
+
+    # Extract codiceRedaz (eli:id_local) - try both eli and gu namespaces
+    id_local = meta.find('.//eli:id_local', ELI_NAMESPACE)
+    if id_local is None:
+        id_local = meta.find('.//gu:id_local', GU_NAMESPACE)
+    if id_local is not None and id_local.text:
+        metadata['codiceRedaz'] = id_local.text.strip()
+
+    # Extract dataGU (eli:date_document) - try both eli and gu namespaces
+    date_doc = meta.find('.//eli:date_document', ELI_NAMESPACE)
+    if date_doc is None:
+        date_doc = meta.find('.//gu:date_document', GU_NAMESPACE)
+    if date_doc is not None and date_doc.text:
+        # Convert from YYYY-MM-DD to YYYYMMDD format
+        try:
+            date_obj = datetime.strptime(date_doc.text.strip(), '%Y-%m-%d')
+            metadata['dataGU'] = date_obj.strftime('%Y%m%d')
+        except ValueError:
+            metadata['dataGU'] = date_doc.text.strip()
+
+    # Extract dataVigenza from FRBRExpression date
+    frbr_expr = meta.find('.//akn:FRBRExpression', AKN_NAMESPACE)
+    if frbr_expr is not None:
+        date_expr = frbr_expr.find('./akn:FRBRdate', AKN_NAMESPACE)
+        if date_expr is not None and date_expr.get('date'):
+            # Convert from YYYY-MM-DD to YYYYMMDD format
+            try:
+                date_obj = datetime.strptime(date_expr.get('date'), '%Y-%m-%d')
+                metadata['dataVigenza'] = date_obj.strftime('%Y%m%d')
+            except ValueError:
+                metadata['dataVigenza'] = date_expr.get('date')
+
+    # Construct URLs if we have the required metadata
+    if metadata.get('dataGU') and metadata.get('codiceRedaz') and metadata.get('dataVigenza'):
+        base_url = "https://www.normattiva.it/uri-res/N2Ls"
+        urn = f"urn:nir:stato:legge:{metadata['dataGU'][:4]}-{metadata['dataGU'][4:6]}-{metadata['dataGU'][6:]};{metadata['codiceRedaz']}"
+        metadata['url'] = f"{base_url}?{urn}"
+
+        metadata['url_xml'] = f"https://www.normattiva.it/do/atto/caricaAKN?dataGU={metadata['dataGU']}&codiceRedaz={metadata['codiceRedaz']}&dataVigenza={metadata['dataVigenza']}"
+
+    return metadata
+
+def validate_normattiva_url(url):
+    """
+    Validates that a URL is from the allowed normattiva.it domain and uses HTTPS.
+
+    Args:
+        url: URL string to validate
+
+    Returns:
+        bool: True if URL is valid and safe to fetch
+
+    Raises:
+        ValueError: If URL is invalid or not from allowed domain
+    """
+    try:
+        parsed = urlparse(url)
+
+        # Check scheme is HTTPS
+        if parsed.scheme != 'https':
+            raise ValueError(f"Solo HTTPS è consentito. URL fornito usa: {parsed.scheme}")
+
+        # Check domain is in whitelist
+        if parsed.netloc.lower() not in ALLOWED_DOMAINS:
+            raise ValueError(f"Dominio non consentito: {parsed.netloc}. Domini permessi: {', '.join(ALLOWED_DOMAINS)}")
+
+        return True
+
+    except Exception as e:
+        raise ValueError(f"URL non valido: {e}")
+
+def sanitize_output_path(path, allow_absolute=True):
+    """
+    Sanitizes an output file path to prevent path traversal attacks.
+
+    Args:
+        path: File path to sanitize
+        allow_absolute: Whether to allow absolute paths
+
+    Returns:
+        str: Sanitized absolute path
+
+    Raises:
+        ValueError: If path attempts traversal outside working directory
+    """
+    if not path:
+        raise ValueError("Path non può essere vuoto")
+
+    # Convert to absolute path
+    abs_path = os.path.abspath(path)
+
+    # Get working directory
+    cwd = os.path.abspath(os.getcwd())
+
+    # If not allowing absolute paths or path is outside cwd, reject
+    if not allow_absolute and not abs_path.startswith(cwd):
+        raise ValueError(f"Path fuori dalla directory di lavoro: {path}")
+
+    # Check for common path traversal patterns
+    if '..' in path or path.startswith('/etc') or path.startswith('/sys'):
+        raise ValueError(f"Path non sicuro rilevato: {path}")
+
+    return abs_path
+
+def generate_front_matter(metadata):
+    """
+    Generate YAML front matter from metadata dictionary.
+
+    Returns front matter string or empty string if no metadata available.
+    """
+    if not metadata:
+        return ""
+
+    # Collect non-None values
+    front_matter_data = {}
+    for key in ['url', 'url_xml', 'dataGU', 'codiceRedaz', 'dataVigenza', 'article']:
+        if metadata.get(key):
+            front_matter_data[key] = metadata[key]
+
+    if not front_matter_data:
+        return ""
+
+    # Generate YAML front matter
+    lines = ["---"]
+    for key, value in front_matter_data.items():
+        lines.append(f"{key}: {value}")
+    lines.append("---")
+    lines.append("")  # Empty line after front matter
+    lines.append("")  # Additional empty line before content
+
+    return "\n".join(lines)
+
+def parse_chapter_heading(heading_text):
+    """
+    Separa heading che contengono sia Capo che Sezione.
+    Pattern: "Capo [N] [TITOLO] Sezione [N] [Titolo]"
+    Gestisce anche il caso in cui Sezione sia dentro modifiche legislative (( ))
+    Returns: {'type': 'capo'|'sezione'|'both', 'capo': ..., 'sezione': ...}
+    """
+    # Cerca pattern "Capo" e "Sezione"
+    has_capo = re.search(r'\bCapo\s+[IVX]+', heading_text, re.IGNORECASE)
+    has_sezione = re.search(r'\bSezione\s+[IVX]+', heading_text, re.IGNORECASE)
+    
+    result = {'type': None, 'capo': None, 'sezione': None}
+    
+    # Caso 1: Contiene sia Capo che Sezione
+    if has_capo and has_sezione:
+        result['type'] = 'both'
+        split_pos = has_sezione.start()
+        capo_text = heading_text[:split_pos].strip()
+        sezione_text = heading_text[split_pos:].strip()
+        
+        result['capo'] = format_heading_with_separator(capo_text)
+        result['sezione'] = format_heading_with_separator(sezione_text)
+    
+    # Caso 2: Solo Capo
+    elif has_capo:
+        result['type'] = 'capo'
+        result['capo'] = format_heading_with_separator(heading_text)
+    
+    # Caso 3: Solo Sezione
+    elif has_sezione:
+        result['type'] = 'sezione'
+        result['sezione'] = format_heading_with_separator(heading_text)
+    
+    # Caso 4: Nessuno dei due (fallback)
+    else:
+        result['type'] = 'unknown'
+        result['capo'] = format_heading_with_separator(heading_text)
+    
+    return result
+
+def format_heading_with_separator(heading_text):
+    """
+    Formatta heading aggiungendo " - " dopo il numero romano.
+    Es: "Capo I PRINCIPI GENERALI" -> "Capo I - PRINCIPI GENERALI"
+    Gestisce anche modifiche legislative (( ))
+    """
+    # Estrai modifiche legislative se presenti
+    legislative_prefix = ""
+    legislative_suffix = ""
+    text_to_format = heading_text
+
+    # Se inizia con ((, estrai e processa il contenuto
+    if text_to_format.startswith('((') and text_to_format.endswith('))'):
+        text_to_format = text_to_format[2:-2].strip()
+        legislative_prefix = "(("
+        legislative_suffix = "))"
+
+    # Pattern per Capo o Sezione
+    pattern = r'^((?:Capo|Sezione)\s+[IVX]+)\s+(.+)$'
+    match = re.match(pattern, text_to_format, re.IGNORECASE)
+
+    if match:
+        prefix = match.group(1)  # "Capo I" o "Sezione I"
+        title = match.group(2)   # "PRINCIPI GENERALI"
+        formatted = f"{prefix} - {title}"
+        return f"{legislative_prefix}{formatted}{legislative_suffix}"
+
+    return heading_text
+
+def clean_text_content(element):
+    """
+    Extracts text from an element, handling inline formatting and removing specific tags.
+    Also cleans up excessive whitespace and indentation.
+    """
+    text_parts = []
+    if element is None:
+        return ""
+
+    # Process element's own text
+    if element.text:
+        text_parts.append(element.text)
+
+    for child in element:
+        # Handle inline formatting
+        if child.tag.endswith('strong'):
+            text_parts.append(f"**{clean_text_content(child)}**")
+        elif child.tag.endswith('emphasis'): # Akoma Ntoso often uses 'emphasis' for italics
+            text_parts.append(f"*{clean_text_content(child)}*")
+        elif child.tag.endswith('ref'):
+            # Extract text content of <ref> tags instead of ignoring them
+            text_parts.append(clean_text_content(child))
+        elif child.tag.endswith(('ins', 'del')):
+            # For modifications, add double parentheses only if not already present
+            inner_text = clean_text_content(child)
+            # Check if the text already has double parentheses
+            if inner_text.strip().startswith('((') and inner_text.strip().endswith('))'):
+                text_parts.append(inner_text)
+            else:
+                text_parts.append(f"(({inner_text}))")
+        elif child.tag.endswith('footnote'):
+            # Handle footnotes - extract footnote content and create markdown footnote reference
+            footnote_content = clean_text_content(child)
+            if footnote_content:
+                # Generate a simple footnote reference (simplified - in practice would need global counter)
+                footnote_ref = f"[^{footnote_content[:10].replace(' ', '')}]"  # Simple hash-like ref
+                text_parts.append(footnote_ref)
+
+        else:
+            text_parts.append(clean_text_content(child)) # Recursively get text from other children
+
+        # Process tail text
+        if child.tail:
+            text_parts.append(child.tail)
+
+    # Join all parts
+    full_text = ''.join(text_parts)
+
+    # Replace multiple spaces with a single space, and strip leading/trailing whitespace
+    cleaned_text = re.sub(r'\s+', ' ', full_text).strip()
+
+    return cleaned_text
+
+def is_normattiva_url(input_str):
+    """
+    Verifica se l'input è un URL di normattiva.it
+
+    Args:
+        input_str: stringa da verificare
+
+    Returns:
+        bool: True se è un URL normattiva.it valido e sicuro
+    """
+    if not isinstance(input_str, str):
+        return False
+
+    # Check if it looks like a URL
+    if not re.match(r'https?://(www\.)?normattiva\.it/', input_str, re.IGNORECASE):
+        return False
+
+    # Validate URL for security
+    try:
+        validate_normattiva_url(input_str)
+        return True
+    except ValueError:
+        return False
+
+def is_normattiva_export_url(url):
+    """
+    Verifica se l'URL è un URL di esportazione atto intero di normattiva.it
+
+    Questi URL non sono supportati perché richiedono autenticazione per il download XML.
+    Si consiglia di usare gli URL permalink (URN) invece.
+
+    Args:
+        url: URL da verificare
+
+    Returns:
+        bool: True se è un URL di esportazione atto intero
+    """
+    if not isinstance(url, str):
+        return False
+
+    # Check if it's an export URL
+    return '/esporta/attoCompleto' in url and is_normattiva_url(url)
+
+def parse_article_reference(url):
+    """
+    Estrae il riferimento all'articolo dall'URL se presente
+
+    Args:
+        url: URL da analizzare
+
+    Returns:
+        str or None: identificatore articolo (es. "art_3", "art_16bis") o None se non presente
+    """
+    if not isinstance(url, str):
+        return None
+
+    # Cerca pattern ~artN o ~artNbis etc.
+    import re
+    match = re.search(r'~art(\d+(?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies|vices|tricies|quadragies)?)', url, re.IGNORECASE)
+    if match:
+        article_num = match.group(1)
+        # Converti in formato eId: art_3, art_16bis, etc.
+        return f"art_{article_num}"
+
+    return None
+
+
+
+
+
+def filter_xml_to_article(root, article_eid, ns):
+    """
+    Filtra il documento XML per estrarre solo l'articolo specificato
+
+    Args:
+        root: elemento root del documento XML
+        article_eid: eId dell'articolo da estrarre (es. "art_3")
+        ns: namespace Akoma Ntoso
+
+    Returns:
+        ET.Element or None: nuovo root con solo l'articolo, o None se articolo non trovato
+    """
+    # Trova l'articolo specifico
+    article = root.find(f'.//akn:article[@eId="{article_eid}"]', ns)
+    if article is None:
+        return None
+
+    # Crea un nuovo documento con solo l'articolo
+    # Copia meta e altri elementi di livello superiore
+    new_root = ET.Element(root.tag, root.attrib)
+
+    # Copia namespace declarations
+    for prefix, uri in ns.items():
+        if prefix:
+            new_root.set(f'xmlns:{prefix}', uri)
+        else:
+            new_root.set('xmlns', uri)
+
+    # Copia meta section
+    meta = root.find('.//akn:meta', ns)
+    if meta is not None:
+        new_root.append(meta)
+
+    # Crea un nuovo body con solo l'articolo
+    # Copy namespace from the original body
+    original_body = root.find('.//akn:body', ns)
+    if original_body is not None:
+        body = ET.SubElement(new_root, original_body.tag, original_body.attrib)
+    else:
+        body = ET.SubElement(new_root, 'body')
+    body.append(article)
+
+    return new_root
+
+def extract_params_from_normattiva_url(url, session=None, quiet=False):
+    """
+    Scarica la pagina normattiva e estrae i parametri necessari per il download
+
+    Supporta URL permalink (URN) di normattiva.it visitando la pagina HTML
+    e estraendo i parametri dagli input hidden.
+
+    Gli URL di esportazione atto intero (/esporta/attoCompleto) non sono supportati
+    perché richiedono autenticazione per il download XML. Usa gli URL permalink invece.
+
+    Args:
+        url: URL della norma su normattiva.it
+        session: sessione requests da usare (opzionale)
+        quiet: se True, stampa solo errori
+
+    Returns:
+        tuple: (params dict, session)
+    """
+    # Reject export URLs as they require authentication
+    if is_normattiva_export_url(url):
+        print("❌ ERRORE: Gli URL di esportazione atto intero (/esporta/attoCompleto) non sono supportati", file=sys.stderr)
+        print("   perché richiedono autenticazione per il download XML.", file=sys.stderr)
+        print("   Usa invece gli URL permalink (URN) come:", file=sys.stderr)
+        print("   https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:legge:AAAA-MM-GG;N", file=sys.stderr)
+        return None, session
+
+    # For permalink URLs, visit the page and extract parameters from HTML
+    if not quiet:
+        print(f"Caricamento pagina {url}...", file=sys.stderr)
+
+    if session is None:
+        session = requests.Session()
+
+    headers = {
+        'User-Agent': f'Akoma2MD/{VERSION} (https://github.com/ondata/akoma2md)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8'
+    }
+
+    try:
+        response = session.get(url, headers=headers, timeout=DEFAULT_TIMEOUT, verify=True)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Errore nel caricamento della pagina: {e}", file=sys.stderr)
+        return None, session
+
+    html = response.text
+
+    # Estrai parametri dagli input hidden usando regex
+    params = {}
+
+    # Cerca atto.dataPubblicazioneGazzetta
+    match_gu = re.search(r'name="atto\.dataPubblicazioneGazzetta"[^>]*value="([^"]+)"', html)
+    if match_gu:
+        # Converti da formato YYYY-MM-DD a YYYYMMDD
+        date_str = match_gu.group(1).replace('-', '')
+        params['dataGU'] = date_str
+
+    # Cerca atto.codiceRedazionale
+    match_codice = re.search(r'name="atto\.codiceRedazionale"[^>]*value="([^"]+)"', html)
+    if match_codice:
+        params['codiceRedaz'] = match_codice.group(1)
+
+    # Cerca la data di vigenza dall'input visibile
+    match_vigenza = re.search(r'<input[^>]*value="(\d{2}/\d{2}/\d{4})"[^>]*>', html)
+    if match_vigenza:
+        # Converti da formato DD/MM/YYYY a YYYYMMDD
+        date_parts = match_vigenza.group(1).split('/')
+        params['dataVigenza'] = f"{date_parts[2]}{date_parts[1]}{date_parts[0]}"
+    else:
+        # Usa data odierna se non trovata
+        params['dataVigenza'] = datetime.now().strftime('%Y%m%d')
+
+    if not all(k in params for k in ['dataGU', 'codiceRedaz', 'dataVigenza']):
+        print("Errore: impossibile estrarre tutti i parametri necessari", file=sys.stderr)
+        print(f"Parametri trovati: {params}", file=sys.stderr)
+        return None, session
+
+    return params, session
+
+def download_akoma_ntoso(params, output_path, session=None, quiet=False):
+    """
+    Scarica il documento Akoma Ntoso usando i parametri estratti
+
+    Args:
+        params: dizionario con dataGU, codiceRedaz, dataVigenza
+        output_path: percorso dove salvare il file XML
+        session: sessione requests da usare (opzionale)
+        quiet: se True, stampa solo errori
+
+    Returns:
+        bool: True se il download è riuscito
+    """
+    url = f"https://www.normattiva.it/do/atto/caricaAKN?dataGU={params['dataGU']}&codiceRedaz={params['codiceRedaz']}&dataVigenza={params['dataVigenza']}"
+
+    if not quiet:
+        print(f"Download Akoma Ntoso da: {url}", file=sys.stderr)
+
+    if session is None:
+        session = requests.Session()
+
+    headers = {
+        'User-Agent': f'Akoma2MD/{VERSION} (https://github.com/ondata/akoma2md)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
+        'Referer': 'https://www.normattiva.it/'
+    }
+
+    try:
+        response = session.get(url, headers=headers, timeout=DEFAULT_TIMEOUT, allow_redirects=True, verify=True)
+        response.raise_for_status()
+
+        # Check file size before processing
+        content_length = response.headers.get('content-length')
+        if content_length and int(content_length) > MAX_FILE_SIZE_BYTES:
+            print(f"❌ Errore: file troppo grande ({int(content_length) / 1024 / 1024:.1f}MB). Massimo consentito: {MAX_FILE_SIZE_MB}MB", file=sys.stderr)
+            return False
+
+        # Verifica che sia XML
+        if response.content[:5] == b'<?xml' or b'<akomaNtoso' in response.content[:500]:
+            with open(output_path, 'wb') as f:
+                f.write(response.content)
+            if not quiet:
+                print(f"✅ File XML salvato in: {output_path}", file=sys.stderr)
+            return True
+        else:
+            print(f"❌ Errore: la risposta non è un file XML valido", file=sys.stderr)
+            # Salva comunque per debug
+            debug_path = output_path + '.debug.html'
+            with open(debug_path, 'wb') as f:
+                f.write(response.content)
+            print(f"   Risposta salvata in: {debug_path}", file=sys.stderr)
+            return False
+
+    except requests.RequestException as e:
+        print(f"❌ Errore durante il download: {e}", file=sys.stderr)
+        return False
+
+def convert_akomantoso_to_markdown_improved(xml_file_path, markdown_file_path=None, metadata=None, article_ref=None):
+    try:
+        # Check file size before parsing (XML bomb protection)
+        file_size = os.path.getsize(xml_file_path)
+        if file_size > MAX_FILE_SIZE_BYTES:
+            print(f"Errore: file XML troppo grande ({file_size / 1024 / 1024:.1f}MB). Massimo consentito: {MAX_FILE_SIZE_MB}MB", file=sys.stderr)
+            return False
+
+        # Parse XML with defusedxml would be better, but using size limit for now
+        tree = ET.parse(xml_file_path)
+        root = tree.getroot()
+
+        # Filter XML to specific article if requested
+        if article_ref:
+            filtered_root = filter_xml_to_article(root, article_ref, AKN_NAMESPACE)
+            if filtered_root is None:
+                print(f"❌ Articolo '{article_ref}' non trovato nel documento", file=sys.stderr)
+                return False
+            root = filtered_root
+
+        # Extract metadata from XML if not provided (for local files)
+        if metadata is None:
+            metadata = extract_metadata_from_xml(root)
+
+        markdown_fragments = generate_markdown_fragments(root, AKN_NAMESPACE, metadata)
+    except ET.ParseError as e:
+        print(f"Errore durante il parsing del file XML: {e}", file=sys.stderr)
+        return False
+    except FileNotFoundError:
+        print(f"Errore: Il file XML '{xml_file_path}' non trovato.", file=sys.stderr)
+        return False
+    except Exception as e:
+        print(f"Si è verificato un errore inatteso: {e}", file=sys.stderr)
+        return False
+
+    markdown_text = ''.join(markdown_fragments)
+
+    if markdown_file_path is None:
+        sys.stdout.write(markdown_text)
+        return True
+
+    try:
+        with open(markdown_file_path, 'w', encoding='utf-8') as f:
+            f.write(markdown_text)
+        print(
+            f"Conversione completata. Il file Markdown è stato salvato in '{markdown_file_path}'",
+            file=sys.stderr,
+        )
+        return True
+    except IOError as e:
+        print(f"Errore durante la scrittura del file Markdown: {e}", file=sys.stderr)
+        return False
+
+
+def generate_markdown_fragments(root, ns, metadata=None):
+    """Build the markdown fragments for a parsed Akoma Ntoso document."""
+
+    fragments = []
+
+    # Extract document title for later use
+    doc_title_fragments = extract_document_title(root, ns)
+
+    # Generate body content
+    preamble_fragments = extract_preamble_fragments(root, ns)
+    body_elements_fragments = extract_body_fragments(root, ns)
+
+    body_fragments = []
+    body_fragments.extend(preamble_fragments)
+    body_fragments.extend(body_elements_fragments)
+
+    # Join body content (NO downgrade - proper hierarchy from parsing)
+    body_text = ''.join(body_fragments)
+
+    # Add front matter if metadata is available
+    if metadata:
+        front_matter = generate_front_matter(metadata)
+        if front_matter:
+            fragments.append(front_matter)
+
+    # Add document title as H1
+    fragments.extend(doc_title_fragments)
+
+    # Add downgraded body content
+    fragments.append(body_text)
+
+    return fragments
+
+
+def generate_markdown_text(root, ns=AKN_NAMESPACE, metadata=None):
+    """Return the Markdown rendering for the provided Akoma Ntoso root."""
+
+    return ''.join(generate_markdown_fragments(root, ns, metadata))
+
+
+def extract_document_title(root, ns):
+    """Convert the `<docTitle>` element to a Markdown H1 if present."""
+
+    doc_title_element = root.find('.//akn:docTitle', ns)
+    if doc_title_element is not None and doc_title_element.text:
+        return [f"# {doc_title_element.text.strip()}\n\n"]
+    return []
+
+
+def extract_preamble_fragments(root, ns):
+    """Collect Markdown fragments representing the document preamble."""
+
+    fragments = []
+    preamble = root.find('.//akn:preamble', ns)
+    if preamble is None:
+        return fragments
+
+    for element in preamble:
+        if element.tag.endswith('formula') or element.tag.endswith('p'):
+            text = clean_text_content(element)
+            if text:
+                fragments.append(f"{text}\n\n")
+        elif element.tag.endswith('citations'):
+            for citation in element.findall('./akn:citation', ns):
+                text = clean_text_content(citation)
+                if text:
+                    fragments.append(f"{text}\n\n")
+    return fragments
+
+
+def extract_body_fragments(root, ns):
+    """Traverse body nodes and delegate conversion to specialised handlers."""
+
+    fragments = []
+    body = root.find('.//akn:body', ns)
+    if body is None:
+        return fragments
+
+    for element in body:
+        fragments.extend(process_body_element(element, ns))
+    return fragments
+
+
+def process_body_element(element, ns):
+    """Process a direct child of `<body>` producing Markdown fragments."""
+
+    if element.tag.endswith('title'):
+        return process_title(element, ns)
+    if element.tag.endswith('part'):
+        return process_part(element, ns)
+    if element.tag.endswith('chapter'):
+        return process_chapter(element, ns)
+    if element.tag.endswith('article'):
+        article_fragments = []
+        process_article(element, article_fragments, ns, level=2)
+        return article_fragments
+    if element.tag.endswith('attachment'):
+        return process_attachment(element, ns)
+    return []
+
+
+def process_chapter(chapter_element, ns):
+    """
+    Convert a chapter element to Markdown fragments with proper hierarchy.
+    
+    Handles XML structure where both Capo and Sezione are marked as <chapter>,
+    with hierarchy information encoded in the heading text.
+    
+    Hierarchy:
+    - Capo only: H2
+    - Capo + Sezione: H2 (Capo), H3 (Sezione), H4 (Articles)
+    - Sezione only: H3, H4 (Articles)
+    """
+    chapter_fragments = []
+    article_level = 3  # Default level
+    heading_element = chapter_element.find('./akn:heading', ns)
+    
+    if heading_element is not None and heading_element.text:
+        clean_heading = clean_text_content(heading_element)
+        parsed = parse_chapter_heading(clean_heading)
+        
+        # Determine heading levels based on parsed structure
+        if parsed['type'] == 'both':
+            # Capo + Sezione: Capo is H2, Sezione is H3
+            chapter_fragments.append(f"## {parsed['capo']}\n\n")
+            chapter_fragments.append(f"### {parsed['sezione']}\n\n")
+            article_level = 4  # Articles under sezione are H4
+        
+        elif parsed['type'] == 'capo':
+            # Only Capo: H2
+            chapter_fragments.append(f"## {parsed['capo']}\n\n")
+            article_level = 3  # Articles directly under capo are H3
+        
+        elif parsed['type'] == 'sezione':
+            # Only Sezione: H3 (assumes it's under a previous Capo)
+            chapter_fragments.append(f"### {parsed['sezione']}\n\n")
+            article_level = 4  # Articles under sezione are H4
+        
+        else:
+            # Unknown/fallback
+            chapter_fragments.append(f"## {parsed['capo']}\n\n")
+            article_level = 3
+
+    # Process child elements
+    for child in chapter_element:
+        if child.tag.endswith('section'):
+            chapter_fragments.extend(process_section(child, ns))
+        elif child.tag.endswith('article'):
+            process_article(child, chapter_fragments, ns, level=article_level)
+    
+    return chapter_fragments
+
+
+def process_section(section_element, ns):
+    """Convert a section element and its articles to Markdown fragments."""
+
+    section_fragments = []
+    heading_element = section_element.find('./akn:heading', ns)
+    if heading_element is not None and heading_element.text:
+        clean_heading = clean_text_content(heading_element)
+        section_fragments.append(f"#### {clean_heading}\n\n")
+
+    for article in section_element.findall('./akn:article', ns):
+        process_article(article, section_fragments, ns, level=4)
+    return section_fragments
+
+
+def process_title(title_element, ns):
+    """
+    Convert a title element to Markdown H2 heading.
+    Titles are top-level structural elements.
+    """
+    title_fragments = []
+    heading_element = title_element.find('./akn:heading', ns)
+    if heading_element is not None and heading_element.text:
+        clean_heading = clean_text_content(heading_element)
+        title_fragments.append(f"## {clean_heading}\n\n")
+
+    # Process any nested content (chapters, articles, etc.)
+    for child in title_element:
+        if child.tag.endswith('chapter'):
+            title_fragments.extend(process_chapter(child, ns))
+        elif child.tag.endswith('article'):
+            process_article(child, title_fragments, ns, level=3)
+
+    return title_fragments
+
+
+def process_part(part_element, ns):
+    """
+    Convert a part element to Markdown fragments.
+    Parts are major structural divisions, rendered as H3.
+    """
+    part_fragments = []
+    heading_element = part_element.find('./akn:heading', ns)
+    if heading_element is not None and heading_element.text:
+        clean_heading = clean_text_content(heading_element)
+        part_fragments.append(f"### {clean_heading}\n\n")
+
+    # Process nested content (chapters, articles, etc.)
+    for child in part_element:
+        if child.tag.endswith('chapter'):
+            part_fragments.extend(process_chapter(child, ns))
+        elif child.tag.endswith('article'):
+            process_article(child, part_fragments, ns, level=3)
+
+    return part_fragments
+
+
+def process_attachment(attachment_element, ns):
+    """
+    Convert an attachment element to Markdown fragments.
+    Attachments are rendered as a separate section.
+    """
+    attachment_fragments = []
+    heading_element = attachment_element.find('./akn:heading', ns)
+    if heading_element is not None and heading_element.text:
+        clean_heading = clean_text_content(heading_element)
+        attachment_fragments.append(f"### Allegato: {clean_heading}\n\n")
+    else:
+        attachment_fragments.append("### Allegato\n\n")
+
+    # Process attachment content (similar to body processing)
+    for child in attachment_element:
+        if child.tag.endswith('chapter'):
+            attachment_fragments.extend(process_chapter(child, ns))
+        elif child.tag.endswith('article'):
+            process_article(child, attachment_fragments, ns, level=3)
+
+    return attachment_fragments
+
+
+def process_table(table_element, ns):
+    """
+    Convert an Akoma Ntoso table element to basic Markdown table format.
+    This is a simplified implementation that extracts text content.
+    """
+    table_rows = []
+
+    # Find all rows in the table
+    rows = table_element.findall('.//akn:tr', ns)
+    if not rows:
+        return ""
+
+    for row in rows:
+        row_cells = []
+        # Find all cells in this row (td or th)
+        cells = row.findall('./akn:td', ns) + row.findall('./akn:th', ns)
+        if not cells:
+            continue
+
+        for cell in cells:
+            cell_text = clean_text_content(cell)
+            # Escape pipe characters in cell content
+            cell_text = cell_text.replace('|', '\\|')
+            row_cells.append(cell_text)
+
+        if row_cells:
+            table_rows.append('| ' + ' | '.join(row_cells) + ' |')
+
+    if not table_rows:
+        return ""
+
+    # Create markdown table with header separator
+    markdown_table = '\n'.join(table_rows[:1])  # First row as header
+    if len(table_rows) > 1:
+        # Add separator row
+        num_cols = table_rows[0].count('|') - 1
+        separator = '| ' + ' | '.join(['---'] * num_cols) + ' |'
+        markdown_table += '\n' + separator
+        # Add remaining rows
+        markdown_table += '\n' + '\n'.join(table_rows[1:])
+
+    return markdown_table
+
+
+def process_article(article_element, markdown_content_list, ns, level=2):
+    article_num_element = article_element.find('./akn:num', ns)
+    article_heading_element = article_element.find('./akn:heading', ns)
+
+    if article_num_element is not None:
+        article_num = article_num_element.text.strip()
+        if article_heading_element is not None and article_heading_element.text:
+            clean_article_heading = clean_text_content(article_heading_element)
+            # Improved formatting: "Art. X - Title" format
+            heading_prefix = "#" * level
+            markdown_content_list.append(f"{heading_prefix} {article_num} - {clean_article_heading}\n\n")
+        else:
+            heading_prefix = "#" * level
+            markdown_content_list.append(f"{heading_prefix} {article_num}\n\n")
+
+    # Process paragraphs and lists within articles
+    for child_of_article in article_element:
+        if child_of_article.tag.endswith('paragraph'):
+            para_num_element = child_of_article.find('./akn:num', ns)
+            para_content_element = child_of_article.find('./akn:content', ns)
+            para_list_element = child_of_article.find('./akn:list', ns)
+
+            # Check if paragraph contains a list
+            if para_list_element is not None:
+                # Handle intro element in lists (like in Article 1)
+                intro_element = para_list_element.find('./akn:intro', ns)
+                if intro_element is not None:
+                    intro_text = clean_text_content(intro_element)
+                    if intro_text:
+                        # Remove double dots from paragraph numbering
+                        para_num = para_num_element.text.strip().rstrip('.')
+                        markdown_content_list.append(f"{para_num}. {intro_text}\n\n")
+                    elif intro_text:
+                        markdown_content_list.append(f"{intro_text}\n\n")
+
+                for list_item in para_list_element.findall('./akn:point', ns):
+                    list_num_element = list_item.find('./akn:num', ns)
+                    list_content_element = list_item.find('./akn:content', ns)
+
+                    list_item_text = clean_text_content(list_content_element) if list_content_element is not None else ""
+
+                    if list_num_element is not None:
+                        markdown_content_list.append(f"- {list_num_element.text.strip()} {list_item_text}\n")
+                    elif list_item_text:
+                        markdown_content_list.append(f"- {list_item_text}\n")
+                markdown_content_list.append("\n") # Add a newline after a list
+            else:
+                # Handle regular paragraph content
+                paragraph_text = clean_text_content(para_content_element) if para_content_element is not None else ""
+
+                # Remove the "------------" lines from the paragraph content
+                lines = paragraph_text.split('\n')
+                filtered_lines = [line for line in lines if not re.match(r'^-+$', line.strip())]
+                paragraph_text = '\n'.join(filtered_lines).strip()
+
+                # Remove duplicate number if present at the beginning of the paragraph text
+                if para_num_element is not None:
+                    num_to_remove = para_num_element.text.strip().rstrip('.')
+                    # Regex to match the number followed by a period and optional space at the beginning of the string
+                    pattern = r"^" + re.escape(num_to_remove) + r"\.?\s*"
+                    paragraph_text = re.sub(pattern, "", paragraph_text, 1).strip()
+
+                if para_num_element is not None and paragraph_text:
+                    # Remove double dots from paragraph numbering and ensure single dot
+                    para_num = para_num_element.text.strip().rstrip('.')
+                    markdown_content_list.append(f"{para_num}. {paragraph_text}\n\n")
+                elif paragraph_text:
+                    # If no number but there's text, just append the text
+                    markdown_content_list.append(f"{paragraph_text}\n\n")
+
+        elif child_of_article.tag.endswith('list'):
+            # Handle intro element in lists (like in Article 1)
+            intro_element = child_of_article.find('./akn:intro', ns)
+            if intro_element is not None:
+                intro_text = clean_text_content(intro_element)
+                if intro_text:
+                    markdown_content_list.append(f"{intro_text}\n\n")
+
+            for list_item in child_of_article.findall('./akn:point', ns):
+                list_num_element = list_item.find('./akn:num', ns)
+                list_content_element = list_item.find('./akn:content', ns)
+
+                list_item_text = clean_text_content(list_content_element) if list_content_element is not None else ""
+
+                if list_num_element is not None:
+                    markdown_content_list.append(f"- {list_num_element.text.strip()} {list_item_text}\n")
+                elif list_item_text:
+                    markdown_content_list.append(f"- {list_item_text}\n")
+            markdown_content_list.append("\n") # Add a newline after a list
+
+        elif child_of_article.tag.endswith('table'):
+            # Handle tables - convert to basic markdown table format
+            table_markdown = process_table(child_of_article, ns)
+            if table_markdown:
+                markdown_content_list.append(table_markdown)
+                markdown_content_list.append("\n")
+
+        elif child_of_article.tag.endswith('quotedStructure'):
+            # Handle quoted structures - wrap in markdown blockquote
+            quoted_content = clean_text_content(child_of_article)
+            if quoted_content:
+                # Split into lines and add > prefix to each line
+                lines = quoted_content.split('\n')
+                quoted_lines = [f"> {line}" for line in lines if line.strip()]
+                markdown_content_list.append('\n'.join(quoted_lines))
+                markdown_content_list.append("\n")
+
+def lookup_normattiva_url(search_query):
+    """
+    Usa Gemini CLI per cercare l'URL normattiva.it corrispondente alla query di ricerca.
+
+    Args:
+        search_query (str): La stringa di ricerca naturale (es. "legge stanca")
+
+    Returns:
+        str or None: L'URL trovato, oppure None se non trovato o errore
+    """
+    import subprocess
+    import re
+    import json
+
+    # Prompt semplificato per Gemini CLI
+    prompt = f"""Cerca su normattiva.it l'URL della "{search_query}" e restituisci solo l'URL completo che inizia con https://www.normattiva.it/"""
+
+    try:
+        # Verifica che gemini sia disponibile
+        import shutil
+        gemini_path = shutil.which('gemini')
+        if not gemini_path:
+            print("❌ Gemini CLI non trovato nel PATH. Installalo con: npm install -g @google/gemini-cli", file=sys.stderr)
+            print("   Per istruzioni: https://github.com/google/gemini-cli", file=sys.stderr)
+            return None
+
+        # Chiama Gemini CLI con il prompt via stdin e output JSON
+        result = subprocess.run(
+            [gemini_path, '--output-format', 'json'],
+            input=prompt,
+            capture_output=True,
+            text=True,
+            timeout=60  # Aumentato il timeout per ricerche più complesse
+        )
+
+        if result.returncode != 0:
+            print(f"❌ Errore Gemini CLI: {result.stderr}", file=sys.stderr)
+            return None
+
+        # Parse JSON response
+        try:
+            json_response = json.loads(result.stdout.strip())
+            response_text = json_response.get('response', '').strip()
+        except json.JSONDecodeError as e:
+            print(f"❌ Errore nel parsing JSON da Gemini CLI: {e}", file=sys.stderr)
+            return None
+
+        # Cerca URL normattiva.it nella risposta
+        url_pattern = r'https://www\.normattiva\.it/[^\s]+'
+        match = re.search(url_pattern, response_text)
+
+        if match:
+            url = match.group(0)
+            # Valida che sia un URL normattiva valido
+            if is_normattiva_url(url):
+                return url
+            else:
+                print(f"❌ URL trovato non è valido per normattiva.it: {url}", file=sys.stderr)
+                return None
+        else:
+            print(f"❌ Nessun URL normattiva.it trovato nella risposta di Gemini", file=sys.stderr)
+            return None
+
+    except subprocess.TimeoutExpired:
+        print("❌ Timeout nella chiamata a Gemini CLI", file=sys.stderr)
+        return None
+    except Exception as e:
+        print(f"❌ Errore nella ricerca URL: {e}", file=sys.stderr)
+        return None
+
+def main():
+    """
+    Funzione principale che gestisce gli argomenti della riga di comando
+    Supporta sia file XML locali che URL normattiva.it
+    """
+    parser = argparse.ArgumentParser(
+        description='Converte documenti Akoma Ntoso in formato Markdown da file XML o URL normattiva.it',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+  Esempi d'uso:
+
+    # Output a file
+    python convert_akomantoso.py input.xml output.md
+    python convert_akomantoso.py -i input.xml -o output.md
+
+    # Output a stdout (default se -o omesso)
+    python convert_akomantoso.py input.xml
+    python convert_akomantoso.py input.xml > output.md
+    python convert_akomantoso.py -i input.xml
+
+    # Da URL normattiva.it (auto-detect)
+    python convert_akomantoso.py "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:legge:2022;53" output.md
+    python convert_akomantoso.py "https://www.normattiva.it/esporta/attoCompleto?atto.dataPubblicazioneGazzetta=2018-07-13&atto.codiceRedazionale=18G00112" output.md
+    python convert_akomantoso.py "URL" > output.md
+    python convert_akomantoso.py -i "URL" -o output.md
+
+    # Da URL normattiva.it con articolo specifico
+    python convert_akomantoso.py "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto-legge:2018-07-12;87~art3" output.md
+    python convert_akomantoso.py "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:legge:2022;53~art16bis" output.md
+
+    # Forza conversione completa anche con URL articolo-specifico
+    python convert_akomantoso.py "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto-legge:2018-07-12;87~art3" --completo output.md
+    python convert_akomantoso.py -c "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:legge:2022;53~art16bis" output.md
+
+    # Ricerca per nome naturale (richiede Gemini CLI)
+    python convert_akomantoso.py -s "legge stanca" output.md
+    python convert_akomantoso.py --search "decreto dignità" > output.md
+
+    # Mantenere XML scaricato da URL
+    python convert_akomantoso.py "URL" output.md --keep-xml
+    python convert_akomantoso.py "URL" --keep-xml > output.md
+          """
+    )
+
+    # Version flag
+    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {VERSION}')
+
+    # Argomenti posizionali (compatibilità con uso semplice)
+    parser.add_argument('input', nargs='?',
+                       help='File XML locale o URL normattiva.it (inclusi URL atto intero)')
+    parser.add_argument('output', nargs='?',
+                       help='File Markdown di output (default: stdout)')
+
+    # Argomenti opzionali (per maggiore flessibilità)
+    parser.add_argument('-i', '--input', dest='input_named',
+                         help='File XML locale o URL normattiva.it (inclusi URL atto intero)')
+    parser.add_argument('-o', '--output', dest='output_named',
+                        help='File Markdown di output (default: stdout)')
+    parser.add_argument('-s', '--search', dest='search_query',
+                        help='Cerca documento legale per nome naturale (es. "legge stanca")')
+    parser.add_argument('--keep-xml', action='store_true',
+                        help='Mantieni file XML temporaneo dopo conversione da URL')
+    parser.add_argument('-q', '--quiet', action='store_true',
+                        help='Modalità silenziosa: mostra solo errori')
+    parser.add_argument('-c', '--completo', action='store_true',
+                        help='Scarica e converti la legge completa anche se l\'URL specifica un singolo articolo')
+
+    args = parser.parse_args()
+
+    # Determina input e output
+    input_source = args.input or args.input_named
+    search_query = args.search_query
+    output_file = args.output or args.output_named
+
+    # Valida che almeno input o search sia specificato
+    if not input_source and not search_query:
+        parser.error("Input richiesto.\n"
+                    "Uso: python convert_akomantoso.py <input> [output.md]\n"
+                    "oppure: python convert_akomantoso.py -i <input> [-o output.md]\n"
+                    "oppure: python convert_akomantoso.py -s <query> [-o output.md]\n"
+                    "Se output omesso, markdown va a stdout")
+
+    # Sanitize output path if provided
+    if output_file:
+        try:
+            output_file = sanitize_output_path(output_file)
+        except ValueError as e:
+            print(f"❌ Errore nel path di output: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    # Gestisci ricerca naturale se specificata
+    if search_query:
+        if not args.quiet:
+            print(f"🔍 Ricerca documento: {search_query}", file=sys.stderr)
+
+        input_source = lookup_normattiva_url(search_query)
+        if not input_source:
+            print("❌ Impossibile trovare URL per la ricerca specificata", file=sys.stderr)
+            sys.exit(1)
+
+        if not args.quiet:
+            print(f"✅ URL trovato: {input_source}", file=sys.stderr)
+
+    # Auto-detect: URL o file locale?
+    if is_normattiva_url(input_source):
+        # Gestione URL
+        quiet_mode = args.quiet or output_file is None  # Quiet when output to stdout
+        if not quiet_mode:
+            print(f"Rilevato URL normattiva.it: {input_source}", file=sys.stderr)
+
+        # Validate URL for security
+        try:
+            validate_normattiva_url(input_source)
+        except ValueError as e:
+            print(f"❌ Errore validazione URL: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        # Check for article reference in URL
+        article_ref = parse_article_reference(input_source)
+        if article_ref and not quiet_mode:
+            print(f"Rilevato riferimento articolo: {article_ref}", file=sys.stderr)
+
+        # Determine if we should filter to article or convert complete document
+        force_complete = args.completo
+        if force_complete and article_ref and not quiet_mode:
+            print(f"Forzando conversione completa della legge (--completo)", file=sys.stderr)
+            article_ref = None  # Override article filtering
+
+        # Estrai parametri dalla pagina
+        params, session = extract_params_from_normattiva_url(input_source, quiet=quiet_mode)
+        if not params:
+            print("❌ Impossibile estrarre parametri dall'URL", file=sys.stderr)
+            sys.exit(1)
+
+        if not quiet_mode:
+            print(f"\nParametri estratti:", file=sys.stderr)
+            print(f"  dataGU: {params['dataGU']}", file=sys.stderr)
+            print(f"  codiceRedaz: {params['codiceRedaz']}", file=sys.stderr)
+            print(f"  dataVigenza: {params['dataVigenza']}\n", file=sys.stderr)
+
+        # Crea file XML temporaneo con tempfile module (più sicuro)
+        temp_fd, xml_temp_path = tempfile.mkstemp(suffix=f"_{params['codiceRedaz']}.xml", prefix="akoma2md_")
+        os.close(temp_fd)  # Close file descriptor, we'll write with requests
+
+        # Scarica XML
+        if not download_akoma_ntoso(params, xml_temp_path, session, quiet=quiet_mode):
+            print("❌ Errore durante il download del file XML", file=sys.stderr)
+            sys.exit(1)
+
+        # Converti a Markdown
+        if not quiet_mode:
+            print(f"\nConversione in Markdown...", file=sys.stderr)
+
+        # Prepare metadata dict for front matter
+        metadata = {
+            'dataGU': params['dataGU'],
+            'codiceRedaz': params['codiceRedaz'],
+            'dataVigenza': params['dataVigenza'],
+            'url': input_source,  # The original URL
+            'url_xml': f"https://www.normattiva.it/do/atto/caricaAKN?dataGU={params['dataGU']}&codiceRedaz={params['codiceRedaz']}&dataVigenza={params['dataVigenza']}"
+        }
+
+        # Add article reference to metadata if present (or if overridden by --completo)
+        if article_ref:
+            metadata['article'] = article_ref
+        elif force_complete and parse_article_reference(input_source):
+            # Note that complete conversion was forced
+            metadata['article'] = parse_article_reference(input_source)  # Include original article ref for reference
+
+        success = convert_akomantoso_to_markdown_improved(xml_temp_path, output_file, metadata, article_ref)
+
+        if success:
+            if not quiet_mode:
+                if output_file:
+                    print(f"✅ Conversione completata: {output_file}", file=sys.stderr)
+                else:
+                    print(f"✅ Conversione completata (output a stdout)", file=sys.stderr)
+
+            # Rimuovi XML temporaneo se non richiesto diversamente
+            if not args.keep_xml:
+                try:
+                    os.remove(xml_temp_path)
+                    if not quiet_mode:
+                        print(f"File XML temporaneo rimosso", file=sys.stderr)
+                except OSError as e:
+                    print(f"Attenzione: impossibile rimuovere file temporaneo: {e}", file=sys.stderr)
+            else:
+                if not quiet_mode:
+                    print(f"File XML mantenuto: {xml_temp_path}", file=sys.stderr)
+
+            sys.exit(0)
+        else:
+            print("❌ Errore durante la conversione", file=sys.stderr)
+            sys.exit(1)
+
+    else:
+        # Gestione file XML locale
+        quiet_mode = args.quiet or output_file is None  # Quiet when output to stdout
+        if not quiet_mode:
+            if output_file:
+                print(f"Conversione da file XML locale: '{input_source}' a '{output_file}'...", file=sys.stderr)
+            else:
+                print(f"Conversione da file XML locale: '{input_source}' (output a stdout)...", file=sys.stderr)
+        success = convert_akomantoso_to_markdown_improved(input_source, output_file)
+
+        if success and not quiet_mode:
+            print("✅ Conversione completata con successo!", file=sys.stderr)
+        elif not success:
+            print("❌ Errore durante la conversione.", file=sys.stderr)
+            sys.exit(1)
+
+if __name__ == "__main__":
+    main()
