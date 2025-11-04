@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: cx-apikey
+Version: 2025.11.3.post2
+Summary: That is API key generator and manager.
+Author-email: Cixo <cixo@cixoelectronic.pl>
+Maintainer-email: Cixo <cixo@cixoelectronic.pl>
+License-Expression: MIT
+Project-URL: Homepage, https://git.cixoelectronic.pl/cixo-electronic/cx-apikey
+Project-URL: Repository, https://git.cixoelectronic.pl/cixo-electronic/cx-apikey
+Project-URL: Documentation, https://git.cixoelectronic.pl/cixo-electronic/cx-apikey/wiki/Quickstart
+Project-URL: Issues, https://git.cixoelectronic.pl/cixo-electronic/cx-apikey/issues
+Keywords: API,APIkey,apikey,key,secrets,random,generator
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+## cx-apikey is easy to use and small API keys system.
+It could be used to generating API keys, validating them and also works with
+them in the system. API keys generator use operating system random number 
+generator, tokens have also selected prefixes, size of them could be changed,
+default its 256 letters.
+
+### How simple is it?
+First, install it from PyPi.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install cx-apikey
+```
+
+Then, You can use it in app. Let's generate first API key.
+
+```python
+import cx_apikey as apikey
+
+test = apikey.apikey_factory("test").set_size(128).generate()
+print(repr(test))
+```
+
+You would see something like that:
+
+```bash
+API key: "test_1bf6b4320bc893435934ebe634f447f4e2d5076edda950357b95f2
+01e98640268cb1d23e571d3a6f9883300eac0605d553dfa662920390a322023441c05"
+```
+
+### For more complex usage see project wiki
+[All pages](https://git.cixoelectronic.pl/cixo-electronic/cx-apikey/wiki/_pages)

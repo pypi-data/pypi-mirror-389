@@ -1,0 +1,42 @@
+[build-system]
+requires = [ "setuptools >= 77.0.3" ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = [ "source" ]
+
+[project]
+name = "cx-apikey"
+version = "2025.11.03-2"
+requires-python = ">= 3.7"
+
+readme = "README.md"
+description = "That is API key generator and manager."
+
+license = "MIT"
+license-files = [ "LICENSE" ]
+
+keywords = [ 
+    "API", "APIkey", "apikey", "key", "secrets", "random", "generator",
+]
+
+authors = [
+    { name = "Cixo", email = "cixo@cixoelectronic.pl" }
+]
+
+maintainers = [
+    { name = "Cixo", email = "cixo@cixoelectronic.pl" }
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://git.cixoelectronic.pl/cixo-electronic/cx-apikey"
+Repository = "https://git.cixoelectronic.pl/cixo-electronic/cx-apikey"
+Documentation = "https://git.cixoelectronic.pl/cixo-electronic/cx-apikey/wiki/Quickstart"
+Issues = "https://git.cixoelectronic.pl/cixo-electronic/cx-apikey/issues"
