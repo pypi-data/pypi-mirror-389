@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.21.1"]
+build-backend = "hatchling.build"
+
+[project]
+name = "charlietest"
+version = "0.1.0"
+description = "A simple example package using src layout (brainTest)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Charlie Chen", email = "1605193034@qq.com" }
+]
+keywords = ["example", "demo", "packaging"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "requests>=2.28"
+]
+
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/charlietest"]
+
