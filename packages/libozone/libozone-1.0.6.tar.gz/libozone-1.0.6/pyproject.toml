@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "libozone"
+version = "1.0.6"
+description = "A collection of data structures written in Python"
+homepage = "https://libozone.readthedocs.io"
+authors = ["Abhijit Sinha <grey.shell@gmail.com>"]
+readme = "README.md"
+license = "GPL-3.0 License"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[tool.poetry.group.dev.dependencies]
+bumpversion = "^0.6.0"
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.5.49"
+mkdocs-dracula-theme = "^1.0.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
