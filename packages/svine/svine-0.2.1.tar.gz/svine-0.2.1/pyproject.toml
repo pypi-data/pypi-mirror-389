@@ -1,0 +1,31 @@
+[project]
+name = "svine"
+version = "0.2.1"
+description = "A simple Python wrapper for a limited number of svn commands for mining Subversion repositories."
+authors = [{ name = "Stephan Druskat", email = "stephan.druskat@dlr.de" }]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT AND CC0-1.0 AND CC-BY-4.0"
+license-files = ["LICENSES/*.txt"]
+maintainers = [{ name = "Stephan Druskat", email = "stephan.druskat@dlr.de" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = ["python-dateutil>=2.9.0.post0,<3"]
+
+[dependency-groups]
+dev = ["pytest>=8.3.5,<9"]
+
+[build-system]
+requires = ["uv_build>=0.9.6,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+source-include = [
+    "REUSE.toml",
+    "CITATION.cff",
+]

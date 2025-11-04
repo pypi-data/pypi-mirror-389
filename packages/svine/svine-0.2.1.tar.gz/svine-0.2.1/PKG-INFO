@@ -1,0 +1,105 @@
+Metadata-Version: 2.4
+Name: svine
+Version: 0.2.1
+Summary: A simple Python wrapper for a limited number of svn commands for mining Subversion repositories.
+Author: Stephan Druskat
+Author-email: Stephan Druskat <stephan.druskat@dlr.de>
+License-Expression: MIT AND CC0-1.0 AND CC-BY-4.0
+License-File: LICENSES/CC-BY-4.0.txt
+License-File: LICENSES/CC0-1.0.txt
+License-File: LICENSES/MIT.txt
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Requires-Dist: python-dateutil>=2.9.0.post0,<3
+Maintainer: Stephan Druskat
+Maintainer-email: Stephan Druskat <stephan.druskat@dlr.de>
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+
+# svine
+
+Lightweight Python wrapper for a highly limited number of `svn` subcommands.
+Meant for use in mining Subversion repositories.
+
+## Installation
+
+`pip install svine`
+
+## Usage
+
+Setup for all use cases is the same:
+
+```python
+from svine import SvnClient, SvnException
+
+remote = SvnClient("https://svn.repository.url/whoever/still/uses/svn/")
+```
+
+### `svn log`
+
+Returns log entries in named tuples with fields for message (`msg`), author, revision and date.
+
+```python
+try:
+    for log_entry in remote.log():
+        print(log_entry.msg)
+except SvnException:
+    # Handle
+    pass
+
+# Get latest log entry only
+try:
+    for log_entry in remote.log(limit=1):
+        print(log_entry.author)
+except SvnException:
+    # Handle
+    pass
+```
+
+### `svn info`
+
+Provides a named tuple with the info returned by the `svn info` subcommand. Fields are:
+"url", "relative_url", "entry_kind", "entry_path", "entry_revision", "repository_root", "repository_uuid", 
+"wcinfo_wcroot_abspath", "wcinfo_schedule", "wcinfo_depth", "commit_author", "commit_date", "commit_revision".
+
+```python
+try:
+    info = remote.info()
+    print(info.repository_root)
+except SvnException:
+    # Handle
+    pass
+```
+
+### `svn list`
+
+Yields the contents only of the remote repository root directory.
+
+```python
+try:
+    for root_content in remote.list():
+        print(root_content)
+except SvnException:
+    # Handle
+    pass
+
+# Prints, e.g.:
+# 
+# trunk/
+# branches/
+# tags/
+```
+
+## Contributing
+
+Contributions are generally welcome. Please open an issue to start the contribution process.
+
+Please note that there are currently no plans or dedicated resources to do development or maintenance of this project.
+
+## Licenses
+
+This project is compliant with the [REUSE Specifications version 3.2](https://reuse.software/).
+Applicable licenses are defined in [`REUSE.toml`](REUSE.toml) and the respective license texts
+are available in [`LICENSES/`](LICENSES/).
