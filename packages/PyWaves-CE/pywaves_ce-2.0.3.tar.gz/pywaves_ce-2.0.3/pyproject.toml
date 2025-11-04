@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "PyWaves-CE"
+version = "2.0.3"
+description = "Python library for interacting with the Waves blockchain"
+authors = ["PyWaves Contributors"]
+readme = "README.md"
+packages = [{include = "pywaves"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.32.3"
+pywaves-curve25519 = "^1.0.4"
+pywaves-protobuf = "^1.5.2"
+base58 = "^2.1.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
