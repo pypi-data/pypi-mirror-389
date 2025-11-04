@@ -1,0 +1,381 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /\[(skip ci|ci skip)\]/i
+      when: never
+    - when: always
+
+stages:
+  - Build
+  - Test
+  - Docs
+  - Release
+
+variables:
+  CI_IMAGE: "$CI_REGISTRY_IMAGE:ci-$CI_COMMIT_REF_SLUG"
+  PIP_CACHE_DIR: ".cache/pip"
+  PIP_ROOT_USER_ACTION: "ignore"
+
+default:
+  image: $CI_IMAGE
+  interruptible: true
+
+.pip_cache_template:
+  cache:
+    key:
+      files:
+        - pyproject.toml
+    paths:
+      - .cache/pip/
+    policy: pull-push
+
+build-ci-image:
+  stage: Build
+  image: docker:24.0.2
+  services:
+    - name: docker:24.0.2-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: "tcp://docker:2376"
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_VERIFY: "1"
+  cache: []
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker pull "$CI_IMAGE" || true   # cache source
+  script: |
+    #!/usr/bin/env bash
+    set -Eeuo pipefail
+
+    TS() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
+    log() { echo "[$(TS)] $*"; }
+
+    export DOCKER_BUILDKIT=1   # ensure BuildKit (needed for inline cache)
+    : "${CI_IMAGE:?CI_IMAGE must be set}"
+
+    log "Docker version:"
+    docker version || { log "docker not available"; exit 1; }
+
+    log "Attempting to pull previous image for cache (if exists): $CI_IMAGE"
+    if docker pull "$CI_IMAGE" >/dev/null 2>&1; then
+      PRE_DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$CI_IMAGE" || true)"
+      log "Previous image digest: ${PRE_DIGEST:-<none>}"
+      CACHE_FROM="--cache-from $CI_IMAGE"
+    else
+      log "No previous image found; building cold."
+      CACHE_FROM=""
+    fi
+
+    # Capture the built image ID to an iidfile; useful for debugging & tagging.
+    IIDFILE="$(mktemp)"
+    cleanup() { rm -f "$IIDFILE"; }
+    trap cleanup EXIT
+
+    log "Building CI image: $CI_IMAGE"
+    docker build \
+      --pull \
+      ${CACHE_FROM} \
+      --build-arg BUILDKIT_INLINE_CACHE=1 \
+      --iidfile "$IIDFILE" \
+      --progress=plain \
+      -f .ci/Dockerfile.runner \
+      -t "$CI_IMAGE" \
+      .
+
+    NEW_IID="$(cat "$IIDFILE" || true)"
+    log "Build completed. Image ID: ${NEW_IID:-<unknown>}"
+
+    log "Pushing image: $CI_IMAGE"
+    docker push "$CI_IMAGE" > /tmp/push.log
+    tail -n 20 /tmp/push.log || true
+
+    # After push, show canonical digest as a verification line.
+    if docker pull "$CI_IMAGE" >/dev/null 2>&1; then
+      POST_DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$CI_IMAGE" || true)"
+      log "Pushed image digest: ${POST_DIGEST:-<unknown>}"
+    else
+      log "Warn: could not re-pull $CI_IMAGE to verify digest."
+    fi
+
+    log "Done."
+
+
+build-package:
+  extends: .pip_cache_template
+  stage: Build
+  image: $CI_IMAGE
+  needs: ["build-ci-image"]
+  before_script:
+    - git config --add --global safe.directory "$CI_PROJECT_DIR"
+    - |
+      if [ -f .git/shallow ]; then
+        git fetch --unshallow --tags
+      else
+        git fetch --tags
+      fi
+    - mkdir -p .cache/pip
+    - python -m pip install --upgrade pip build
+  script:
+    - python -m build
+    - ls -la dist/
+  artifacts:
+    paths:
+      - dist
+      - quantify.egg-info/
+    expire_in: 1 week
+
+pre-commit:
+  extends: .pip_cache_template
+  stage: Test
+  needs: ["build-ci-image", "build-package"]
+  before_script:
+    - mkdir -p .cache/pip
+    - python -m pip install --upgrade pip setuptools wheel
+    - python -m pip install dist/*.whl
+    - python -m pip install pre-commit
+  script:
+    - pre-commit run --all-files --show-diff-on-failure
+
+pyright:
+  extends: .pip_cache_template
+  stage: Test
+  needs: ["build-ci-image", "build-package"]
+  variables:
+    PYRIGHT_PYTHON_FORCE_NODEENV: "0"
+  before_script:
+    - mkdir -p .cache/pip
+    - python -m pip install --upgrade pip setuptools wheel
+    - python -m pip install dist/*.whl
+    - python -m pip install ".[dev]"
+  script:
+    - pyright quantify
+
+
+pytest-linux:
+  stage: Test
+  needs: ["build-ci-image", "build-package"]
+  variables:
+    DISPLAY: ":99.0"
+    DEBIAN_FRONTEND: "noninteractive"
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.10", "3.11", "3.12"]
+  image: python:${PYTHON_VERSION}-slim
+  cache:
+    key:
+      files:
+        - pyproject.toml
+      prefix: ${PYTHON_VERSION}
+    paths:
+      - .cache/pip/
+      - .cache/apt/
+    policy: pull-push
+  before_script:
+    - mkdir -p .cache/apt .cache/apt/archives/partial .cache/apt/lists/partial
+    - mkdir -p .cache/pip
+    - python -m pip install --upgrade pip setuptools wheel
+    - python -m pip install dist/*.whl
+    - |  # Install X11/Qt dependencies needed for GUI testing
+      apt-get -o Dir::Cache="$CI_PROJECT_DIR/.cache/apt" \
+        -o Dir::Cache::archives="$CI_PROJECT_DIR/.cache/apt/archives" \
+        -o Dir::State::lists="$CI_PROJECT_DIR/.cache/apt/lists" \
+        update -qq
+      apt-get -y -qq --no-install-recommends \
+        -o Dir::Cache="$CI_PROJECT_DIR/.cache/apt" \
+        -o Dir::Cache::archives="$CI_PROJECT_DIR/.cache/apt/archives" \
+        -o Dir::State::lists="$CI_PROJECT_DIR/.cache/apt/lists" \
+        install xvfb xauth x11-utils \
+        libx11-xcb1 libxkbcommon-x11-0 \
+        libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+        libxcb-randr0 libxcb-render-util0 libxcb-xfixes0 \
+        libxcb-cursor0 libgl1 libegl1 libdbus-1-3 libglib2.0-0
+    - pip install diff-cover pytest pytest-cov pytest-mock pytest-mpl pytest-xdist pytest-qt
+    #- pip install ".[test]"
+  script:
+    - xvfb-run -a -s "-screen 0 1280x1024x24" pytest --disable-warnings
+
+pytest-windows:
+  stage: Test
+  needs: ["build-package"]
+  tags: ["saas-windows-medium-amd64"]
+  parallel:
+    matrix:
+      - PY_MM: "310"
+      - PY_MM: "311"
+      - PY_MM: "312"
+  variables:
+    PY_INSTALL_BASE: "C:\\tools\\python"
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR\\.cache\\pip"
+  cache:
+    key: "win-${CI_JOB_NAME_SLUG}-${PY_MM}"
+    policy: pull-push
+    paths:
+      - .cache/pip
+  before_script:
+    - if (-not (Get-Command choco -ErrorAction SilentlyContinue)) { Write-Host 'Installing Chocolatey...'; Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) } else { Write-Host 'Chocolatey is already installed' }
+    - $ErrorActionPreference = 'Stop'
+    - $env:PY_INSTALL_DIR = Join-Path $env:PY_INSTALL_BASE $env:PY_MM
+    - if (-not $env:PIP_CACHE_DIR) { $env:PIP_CACHE_DIR = (Join-Path $env:CI_PROJECT_DIR '.cache/pip') }
+    - New-Item -ItemType Directory -Force -Path $env:PIP_CACHE_DIR | Out-Null
+    - $pkg = "python$env:PY_MM"
+    - $params = "/InstallDir:$env:PY_INSTALL_DIR /PrependPath"
+    - choco install $pkg -y --no-progress --allow-downgrade --params $params
+    - $env:Path = $env:PY_INSTALL_DIR + ';' + (Join-Path $env:PY_INSTALL_DIR 'Scripts') + ';' + $env:Path
+    - Write-Host 'Using Python at:' $env:PY_INSTALL_DIR
+    - python --version
+    - where.exe python
+  script:
+    - python -m pip install -U pip setuptools wheel
+    - python -m pip install pytest pytest-cov pytest-mock pytest-mpl pytest-qt pytest-xdist
+    - $wheels = Get-ChildItem -Path dist -Filter *.whl
+    - if (-not $wheels) { Write-Error 'No wheels found in dist from build-package artifacts'; exit 1 }
+    - foreach ($w in $wheels) { python -m pip install $w.FullName }
+    - python -m pytest --disable-warnings
+
+pytest-macos:
+  stage: Test
+  needs: ["build-package"]
+  tags: ["saas-macos-medium-m1"]
+  image: macos-15-xcode-16
+  parallel:
+    matrix:
+      - PY_VERSION: ["3.10", "3.11", "3.12"]
+  variables:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    HOMEBREW_NO_ENV_HINTS: "1"
+    QT_QPA_PLATFORM: "offscreen"
+    MPLBACKEND: "Agg"
+  before_script:
+    - |
+      set -e
+      echo "Target Python ${PY_VERSION}"
+      if [[ "${PY_VERSION}" == "3.12" ]]; then
+        export PYBIN="python3"
+      else
+        brew install python@${PY_VERSION} || true
+        # Prefer Homebrew's versioned binary symlink in /opt/homebrew/bin
+        if [ -x "/opt/homebrew/bin/python${PY_VERSION}" ]; then
+          export PYBIN="/opt/homebrew/bin/python${PY_VERSION}"
+        # Fallback to the Cellar path (exact version directory varies)
+        elif ls /opt/homebrew/Cellar/python@${PY_VERSION}/*/bin/python${PY_VERSION} >/dev/null 2>&1; then
+          export PYBIN="$(echo /opt/homebrew/Cellar/python@${PY_VERSION}/*/bin/python${PY_VERSION})"
+        # Fallback to libexec unversioned shim installed by Homebrew
+        elif [ -x "/opt/homebrew/opt/python@${PY_VERSION}/libexec/bin/python" ]; then
+          export PYBIN="/opt/homebrew/opt/python@${PY_VERSION}/libexec/bin/python"
+        else
+          echo "Python ${PY_VERSION} binary not found after brew install";
+          echo "Available python* in /opt/homebrew/bin:";
+          ls -l /opt/homebrew/bin/python* 2>/dev/null || true;
+          exit 1;
+        fi
+      fi
+      echo "Using ${PYBIN}"; ${PYBIN} --version
+    - ${PYBIN} -m pip install --upgrade pip setuptools wheel
+    - ${PYBIN} -m pip install dist/*.whl
+    - ${PYBIN} -m pip install pytest pytest-cov pytest-mock pytest-mpl pytest-qt pytest-xdist
+  script:
+    - ${PYBIN} -m pytest --disable-warnings
+
+.docs-base:
+  stage: Docs
+  needs: ["build-ci-image", "build-package"]
+  before_script:
+    - git config --add --global safe.directory "$CI_PROJECT_DIR"
+    - git fetch --tags
+    - python -m pip install --upgrade pip setuptools wheel
+    - python -m pip install dist/*.whl
+    - python -m pip install ".[docs]"
+
+pages:
+  extends: .docs-base
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+((rc|a|b)[0-9]+)?$/'
+  script:
+    # Fetch switcher.json from docs-metadata branch
+    - git fetch origin docs-metadata 2>/dev/null || true
+    - git show origin/docs-metadata:switcher.json > docs/source/_static/switcher.json 2>/dev/null || echo '[{"name":"dev","version":"dev","url":"'${CI_PAGES_URL}'"}]' > docs/source/_static/switcher.json
+    # Build documentation
+    - sphinx-build -b html --keep-going docs/source public
+    # Update switcher.json for tagged versions
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        python3 -c "
+      import json, os
+      tag, base = os.environ['CI_COMMIT_TAG'], os.environ['CI_PAGES_URL'].rstrip('/') + '/'
+      with open('docs/source/_static/switcher.json') as f: versions = json.load(f)
+      if not any(v['version'] == tag for v in versions):
+          idx = next((i for i, v in enumerate(versions) if v['version'] == 'dev'), 0)
+          versions.insert(idx + 1, {'name': tag, 'version': tag, 'url': f'{base}{tag}/'})
+          with open('switcher.json', 'w') as f: json.dump(versions, f, indent=2)
+          print(f'Added {tag}')
+        "
+        if [ -f switcher.json ]; then
+          git config --global user.email "gitlab-ci@noreply.gitlab.com"
+          git config --global user.name "GitLab CI"
+          git fetch origin docs-metadata && git checkout docs-metadata
+          mv switcher.json switcher.json.new && mv switcher.json.new switcher.json
+          git add switcher.json
+          git commit -m "Add version ${CI_COMMIT_TAG}" || true
+          git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" docs-metadata || true
+        fi
+      fi
+  artifacts:
+    paths:
+      - public
+  environment:
+    name: production
+    url: $CI_PAGES_URL
+
+
+release_testpypi:
+  stage: Release
+  needs: ["build-package", "pages"]
+  before_script:
+    - python -m pip install --upgrade pip twine
+  script:
+    - |
+      if [ -z "$PYPI_API_TOKEN_TEST" ]; then
+        echo "Error: PYPI_API_TOKEN_TEST is not set."
+        exit 1
+      fi
+    - |
+      twine upload --verbose --repository testpypi dist/* -p "$PYPI_API_TOKEN_TEST" || {
+        echo "Twine upload failed. Check credentials or permissions.";
+        exit 1;
+      }
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+((rc|a|b)[0-9]+)?$/'
+      variables:
+        CFLAGS: "-O2 -s"
+      when: on_success
+    - when: never
+
+release_pypi:
+  stage: Release
+  needs:
+    - job: release_testpypi
+    - job: build-package
+      artifacts: true
+  before_script:
+    - python -m pip install --upgrade pip twine
+  script:
+    - |
+      if [ -z "$PYPI_API_TOKEN_PROD" ]; then
+        echo "Error: PYPI_API_TOKEN_PROD is not set."
+        exit 1
+      fi
+    - |
+      ls -la dist/  # optional for debugging
+      twine upload --verbose dist/* -p "$PYPI_API_TOKEN_PROD" || {
+        echo "Twine upload failed. Check credentials or permissions.";
+        exit 1;
+      }
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+((rc|a|b)[0-9]+)?$/'
+      variables:
+        CFLAGS: "-O2 -s"
+      when: manual
+    - when: never
+  interruptible: false
