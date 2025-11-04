@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.2", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rw-workspace-utils"
+readme = "README.md"
+license = { text = "Apache License 2.0" }
+description = "RunWhen workspace utilities"
+authors = [
+    { name = "RunWhen", email = "info@runwhen.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License"
+]
+version = "2025.11.03.1"  # Placeholder - actual version set at build time via SETUPTOOLS_SCM_PRETEND_VERSION
+dynamic = ["dependencies"]
+
+[tool.setuptools.packages.find]
+where = ["libraries"] 
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
+
+[project.urls]
+homepage = "https://github.com/runwhen-contrib/rw-workspace-utils"
