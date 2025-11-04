@@ -1,0 +1,49 @@
+# mseq2latex
+
+A simple tool for converting Microsoft Equation Fields (`EQ`) to LaTex formats.
+
+## Usage
+
+Using `uv` as python packet manager:
+
+```bash
+uv add mseq2latex
+```
+
+Import the converter and run:
+
+```Python
+converter = MSEQToLatexConverter()
+
+test_case = "{ EQ \\f(2,RateChange) }"
+
+result = converter.convert(test_case)
+# \\frac{2}{RateChange}
+```
+
+## Standards
+
+This tool follows the syntax and grammar of Microsoft Equation Fields from [Field codes Support](https://support.microsoft.com/en-us/office/field-codes-eq-equation-field-27300091-3780-4b88-836f-ae49ecde4692). However, for compatitability with LaTex formats, some commands are simplified for further extension.
+
+## Supported commands
+
+| Field Code | Description | LaTex | Render |
+|------------|-------------|-------|--------|
+| `\a \al \co2 \vs3 \hs3(Axy,Bxy,A,B)` | Array | `$$\begin{matrix} Axy & Bxy \\ A & B \end{matrix}$$` | $$\begin{matrix} Axy & Bxy \\ A & B \end{matrix}$$ |
+| `\b \bc\{ (a)` | Bracket | `$\left\{ a \right\}$` | $\left\{ a \right\}$ |
+| `\d \fo10 \ba5 (world)` | Displace | `$\text{world}$` | $\text{world}$ |
+| `\f(1,2)` | Fraction | `$\frac{1}{2}$` | $\frac{1}{2}$ |
+| `\i \su(1,5,3)` | Integral | `$\sum_{1}^{5} {3}$` | $\sum_{1}^{5} {3}$ |
+| `\l(A,B,C,D,E)` | List | `$A,B,C,D,E$` | $A,B,C,D,E$ |
+| `\o(A,B,C)` | Overstrike | `$A,B,C$` | $A,B,C$ |
+| `\r(2,3)` | Radical | `$\sqrt[2]{3}$` | $\sqrt[2]{3}$ |
+| `\s\up4(a)` | Super/Subscript | `$^{a}$` | $^{a}$ |
+| `\x \to \bo(element)` | Box | `$element$` | $element$ |
+
+## AIGC Statement
+
+This project is co-editted with Github Coplilot.
+
+## Contribution
+
+Please feel free to submit PRs or fork!
