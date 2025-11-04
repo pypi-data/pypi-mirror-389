@@ -1,0 +1,337 @@
+Metadata-Version: 2.4
+Name: python-extension-toolkit
+Version: 1.0.0
+Summary: A Python CLI tool for extension development (Python equivalent of Zoho Extension Toolkit)
+Author-email: Python Extension Toolkit Team <pet@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/Aqary-Org/python-extension-toolkit
+Project-URL: Documentation, https://github.com/Aqary-Org/python-extension-toolkit#readme
+Project-URL: Repository, https://github.com/Aqary-Org/python-extension-toolkit.git
+Project-URL: Bug Tracker, https://github.com/Aqary-Org/python-extension-toolkit/issues
+Keywords: cli,extension,development,toolkit,pet,zoho
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Build Tools
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.0.0
+Requires-Dist: flask>=2.0.0
+Requires-Dist: flask-cors>=4.0.0
+Requires-Dist: requests>=2.25.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Dynamic: license-file
+
+# Python Extension Toolkit (PET)
+
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Aqary-Org/python-extension-toolkit)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-stable-green.svg)](https://github.com/Aqary-Org/python-extension-toolkit)
+
+A production-ready Python CLI tool for extension development, providing a complete Python equivalent of the Zoho Extension Toolkit (zet).
+
+## Overview
+
+Python Extension Toolkit (PET) is a comprehensive command-line interface designed to streamline extension development workflows. It provides tools for creating, running, validating, packaging, and deploying extensions with built-in development server capabilities.
+
+## Features
+
+- 🚀 **Project Initialization**: Create new extension projects with templates
+- 🔧 **Development Server**: Built-in Flask server for local development
+- 🔐 **Authentication**: Secure login and session management
+- ✅ **Validation**: Comprehensive project validation
+- 📦 **Packaging**: Create distributable extension packages
+- ☁️ **Deployment**: Push and pull extensions from servers
+- 📋 **Workspace Management**: List and manage local and remote workspaces
+
+## Installation
+
+### Stable Release (Recommended)
+
+```bash
+pip install python-extension-toolkit
+```
+
+### From Source
+
+```bash
+git clone https://github.com/Aqary-Org/python-extension-toolkit.git
+cd python-extension-toolkit
+pip install -e .
+```
+
+### Requirements
+
+- Python 3.8 or higher
+- pip package manager
+
+## Quick Start
+
+PET provides an interactive experience - just run the commands and follow the prompts!
+
+1. **Create a new extension:**
+   ```bash
+   pet init
+   # You'll be prompted for:
+   # - Extension name
+   # - Project type (web/python)
+   # - Framework (for web projects)
+   ```
+
+2. **Start the development server:**
+   ```bash
+   cd your-extension
+   pet run
+   # You'll be prompted for:
+   # - Server port (default: 5000)
+   # - Server host (default: 127.0.0.1)
+   # - Open browser automatically
+   ```
+
+3. **Validate your project:**
+   ```bash
+   pet validate
+   ```
+
+4. **Package your extension:**
+   ```bash
+   pet pack
+   # You'll be prompted for:
+   # - Output filename confirmation
+   # - Custom filename if needed
+   ```
+
+## Commands
+
+### `pet init`
+Create a new extension project with interactive prompts.
+
+**Interactive Prompts:**
+- 📦 Extension name
+- 📋 Project type (web/python)
+- 🎨 Frontend framework (vanilla/react/vue - for web projects)
+
+**Example:**
+```bash
+pet init
+# Follow the interactive prompts, or use options:
+pet init --name my-extension --type web --framework vanilla
+```
+
+### `pet run`
+Start the development server for your extension.
+
+**Interactive Prompts:**
+- 🌐 Server port (default: 5000)
+- 🖥️ Server host (default: 127.0.0.1)
+- 🌍 Open browser automatically (default: yes)
+
+**Example:**
+```bash
+pet run
+# Follow the interactive prompts, or use options:
+pet run --port 8080 --no-browser
+```
+
+### `pet login`
+Authenticate with the extension server.
+
+**Interactive Prompts:**
+- 🌐 Server URL (default: https://crm.aqaryint.com)
+- 👤 Username
+- 🔑 Password (hidden input)
+
+**Example:**
+```bash
+pet login
+# Follow the interactive prompts, or use options:
+pet login --server https://crm.aqaryint.com --username myuser
+```
+
+### `pet validate`
+Validate the current extension project.
+
+**Options:**
+- `--strict`: Enable strict validation mode
+
+**Example:**
+```bash
+pet validate --strict
+```
+
+### `pet pack`
+Package the extension into a distributable format.
+
+**Options:**
+- `--output`, `-o`: Output file path
+- `--exclude`: Additional files/patterns to exclude
+
+**Example:**
+```bash
+pet pack --output my-extension.zip --exclude "*.log"
+```
+
+### `pet push`
+Push extension package to the server.
+
+**Options:**
+- `--file`, `-f`: Extension package file
+- `--force`: Force push even if version exists
+
+**Example:**
+```bash
+pet push --file my-extension.zip --force
+```
+
+### `pet pull`
+Pull an extension from the server.
+
+**Interactive Prompts:**
+- 📦 Extension name to pull
+- 🏷️ Version specification (optional)
+- 📁 Output directory (default: extension name)
+
+**Example:**
+```bash
+pet pull
+# Follow the interactive prompts, or use options:
+pet pull --extension sample-app --version 1.2.0
+```
+
+### `pet list-workspace`
+List all workspaces and extensions.
+
+**Example:**
+```bash
+pet list-workspace
+```
+
+## Project Structure
+
+### Web Extension
+```
+my-extension/
+├── manifest.json
+├── app/
+│   └── index.html
+└── assets/
+    ├── css/
+    │   └── style.css
+    └── js/
+        └── main.js
+```
+
+### Python Extension
+```
+my-extension/
+├── manifest.json
+├── requirements.txt
+├── src/
+│   └── main.py
+├── templates/
+│   └── index.html
+└── static/
+```
+
+## Configuration
+
+### manifest.json
+Every extension project requires a `manifest.json` file:
+
+```json
+{
+  "name": "my-extension",
+  "version": "1.0.0",
+  "description": "My awesome extension",
+  "type": "web",
+  "entry_point": "app/index.html",
+  "permissions": [],
+  "icon": "assets/icon.png"
+}
+```
+
+### Session Management
+PET stores authentication sessions in `~/.pet/session.json`. This file contains:
+- Server URL
+- Username
+- Authentication token
+- Session status
+
+## Development
+
+### Setting up for Development
+
+1. Clone the repository
+2. Install in development mode: `pip install -e .`
+3. Install development dependencies: `pip install -e .[dev]`
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black pet/
+```
+
+### Type Checking
+
+```bash
+mypy pet/
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Comparison with Zoho Extension Toolkit (zet)
+
+PET provides equivalent functionality to zet with Python-native implementation:
+
+| Feature | zet | PET |
+|---------|-----|-----|
+| Project Init | ✓ | ✓ |
+| Development Server | ✓ | ✓ (Flask-based) |
+| Validation | ✓ | ✓ |
+| Packaging | ✓ | ✓ |
+| Deployment | ✓ | ✓ |
+| Authentication | ✓ | ✓ |
+| Workspace Management | ✓ | ✓ |
+
+## Support
+
+-  **Issues**: [GitHub Issues](https://github.com/Aqary-Org/python-extension-toolkit/issues)
+- 📖 **Documentation**: [GitHub README](https://github.com/Aqary-Org/python-extension-toolkit#readme)
+- 📋 **Changelog**: [CHANGELOG.md](https://github.com/Aqary-Org/python-extension-toolkit/blob/main/CHANGELOG.md)
+- 📦 **PyPI Package**: [python-extension-toolkit](https://pypi.org/project/python-extension-toolkit/)
+
+## Version
+
+**Current Version: 1.0.0** - Production Ready Release
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history and updates.
