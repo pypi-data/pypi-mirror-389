@@ -1,0 +1,92 @@
+[project]
+name = "multiconn_archicad"
+version = "0.5.1"
+description = "A powerful Python toolkit for multi-instance Archicad automation, supporting the official JSON API and the Tapir Add-On."
+readme = "README.md"
+authors = [
+    { name = "SzamosiMate", email = "szamimate@yahoo.com" }
+]
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+requires-python = ">=3.12, <3.15"
+dependencies = [
+    "aiohttp>=3.11.11, <4.0",
+    "archicad>=28.3000",
+    "psutil>=6.1.1, <8.0",
+    "pydantic>=2.11.7, <3.0",
+    "typing-extensions>=4.12.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/SzamosiMate/multiconn_archicad"
+Repository = "https://github.com/SzamosiMate/multiconn_archicad"
+"Bug Tracker" = "https://github.com/SzamosiMate/multiconn_archicad/issues"
+
+[project.optional-dependencies]
+dialog-handlers = [
+    "pywinauto>=0.6.9; platform_system=='Windows'",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+]
+
+[dependency-groups]
+dev = [
+    "twine>=6.1.0",
+    "datamodel-code-generator>=0.31.2",
+    "hypothesis>=6.135.27",
+    "hypothesis-jsonschema>=0.23.1",
+    "mypy>=1.14.0",
+    "pytest>=8.3.4",
+    "ruff>=0.8.4",
+    "typeguard>=4.4.2",
+    "pytest-aiohttp>=1.1.0",
+]
+
+[[tool.mypy.overrides]]
+module = ["archicad.versioning",
+          "archicad.connection",
+          "archicad.releases",
+          "pywinauto",
+          "pywinauto.controls.uiawrapper",
+          "psutil"]
+follow_untyped_imports = true
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+line-ending = "lf"
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = [
+    "--import-mode=importlib",
+]
+
+markers = [
+    "unit: Marks tests as unit tests.",
+    "integration: Marks tests as integration tests. (uses a mock server)",
+    "generated: Marks tests for auto-generated classes.",
+    "generated_methods: Marks tests for auto-generated methods of the UnifiedApi."
+]
