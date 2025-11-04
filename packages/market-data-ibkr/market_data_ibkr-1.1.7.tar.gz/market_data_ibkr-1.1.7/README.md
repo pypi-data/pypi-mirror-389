@@ -1,0 +1,775 @@
+# market-data-ibkr
+
+<div align="center">
+
+[![PyPI version](https://badge.fury.io/py/market-data-ibkr.svg)](https://pypi.org/project/market-data-ibkr/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](http://mypy-lang.org/)
+
+**Production-ready Interactive Brokers provider for [`market-data-core`](https://github.com/mjdevaccount/market-data-core)**
+
+Real-time quotes • Historical bars • Rate limiting • Auto-reconnect • Protocol conformance
+
+[Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Examples](#-examples)
+
+</div>
+
+---
+
+## 📖 Overview
+
+`market-data-ibkr` is a robust, async-native Python adapter that implements the `MarketDataProvider` protocol from [`market-data-core`](https://github.com/mjdevaccount/market-data-core). It provides seamless access to Interactive Brokers market data through IBKR Gateway or TWS, with built-in rate limiting, automatic reconnection, and comprehensive error handling.
+
+### Why Use This Provider?
+
+- ✅ **Protocol Conformance** - Fully implements `market-data-core` contracts
+- ✅ **Production Ready** - Battle-tested rate limiting and pacing controls
+- ✅ **Zero Hassle** - Automatic reconnection with exponential backoff
+- ✅ **Type Safe** - Full type hints and strict mypy compliance
+- ✅ **Observable** - Prometheus metrics and structured logging
+- ✅ **Docker Ready** - Containerized deployment with health checks
+- ✅ **Well Tested** - Comprehensive test suite with 90%+ coverage
+
+---
+
+## 🎯 Features
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Real-time Quotes** | ✅ Production | Live bid/ask/last prices via `stream_quotes()` |
+| **Real-time Bars** | ✅ Production | 5-second OHLCV bars via `stream_bars()` |
+| **Historical Data** | ✅ Production | Historical bars with automatic pacing |
+| **Rate Limiting** | ✅ Production | TokenBucket algorithm prevents violations |
+| **Auto-Reconnect** | ✅ Production | Exponential backoff on disconnection |
+| **Error Mapping** | ✅ Production | IBKR errors → Core canonical exceptions |
+| **Contract Caching** | ✅ Production | Minimize redundant API calls |
+| **Tick-by-Tick** | 🚧 Planned | Tick-by-tick trade streaming |
+| **Options Chain** | 🚧 Planned | Real-time options data |
+| **Futures Support** | 🚧 Planned | Futures contracts |
+| **Forex Support** | 🚧 Planned | Currency pairs |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+1. **IBKR Gateway or TWS** - [Download here](https://www.interactivebrokers.com/en/trading/tws.php)
+2. **Market Data Subscriptions** - Required for live data
+3. **Python 3.11+** - Modern async/await support
+
+### Installation
+
+```bash
+# From PyPI (recommended)
+pip install market-data-ibkr
+
+# With development tools
+pip install market-data-ibkr[dev]
+
+# From source
+git clone https://github.com/mjdevaccount/market-data-ibkr.git
+cd market-data-ibkr
+pip install -e .
+```
+
+### Your First Stream
+
+```python
+import asyncio
+from market_data_core import Instrument
+from market_data_ibkr import IBKRProvider, IBKRSettings
+
+async def main():
+    # Configure connection
+    settings = IBKRSettings(
+        host="127.0.0.1",
+        port=4002,  # Paper trading (4001 for live)
+        client_id=17,
+    )
+    
+    # Stream real-time quotes
+    async with IBKRProvider(settings) as provider:
+        instruments = [Instrument(symbol="AAPL")]
+        
+        async for quote in provider.stream_quotes(instruments):
+            print(f"{quote.symbol}: ${quote.last} (volume: {quote.volume})")
+
+asyncio.run(main())
+```
+
+---
+
+## 📦 Installation
+
+### Option 1: PyPI (Recommended)
+
+```bash
+# Latest stable release
+pip install market-data-ibkr
+
+# Specific version
+pip install market-data-ibkr==1.1.2
+
+# With optional dependencies
+pip install market-data-ibkr[dev]  # Development tools
+```
+
+### Option 2: Docker
+
+```bash
+# Build image
+docker build -t market-data-ibkr:latest .
+
+# Run as service
+docker run -d \
+  --name ibkr \
+  -p 8084:8084 \
+  -e IBKR_HOST=host.docker.internal \
+  -e IBKR_GATEWAY_PORT=4002 \
+  -e IBKR_CLIENT_ID=17 \
+  market-data-ibkr:latest
+```
+
+### Option 3: From Source
+
+```bash
+# Clone repository
+git clone https://github.com/mjdevaccount/market-data-ibkr.git
+cd market-data-ibkr
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Run tests
+pytest tests/ -v
+```
+
+---
+
+## 💡 Usage Examples
+
+### Real-Time Quote Streaming
+
+```python
+from market_data_core import Instrument
+from market_data_ibkr import IBKRProvider, IBKRSettings
+
+async def stream_quotes():
+    settings = IBKRSettings(host="127.0.0.1", port=4002)
+    
+    instruments = [
+        Instrument(symbol="AAPL", exchange="SMART", currency="USD"),
+        Instrument(symbol="MSFT", exchange="SMART", currency="USD"),
+    ]
+    
+    async with IBKRProvider(settings) as provider:
+        async for quote in provider.stream_quotes(instruments):
+            print(f"{quote.symbol}: Bid ${quote.bid} | Ask ${quote.ask}")
+```
+
+### Historical Data Fetching
+
+```python
+from datetime import datetime, timedelta
+
+async def fetch_history():
+    settings = IBKRSettings(host="127.0.0.1", port=4002)
+    
+    async with IBKRProvider(settings) as provider:
+        instrument = Instrument(symbol="AAPL")
+        end = datetime.now()
+        start = end - timedelta(days=30)
+        
+        async for bar in provider.request_historical_bars(
+            instrument=instrument,
+            start=start,
+            end=end,
+            resolution="1d",  # Daily bars
+        ):
+            print(f"{bar.ts}: O={bar.open} H={bar.high} L={bar.low} C={bar.close}")
+```
+
+### Real-Time Bar Streaming (5-second)
+
+```python
+async def stream_bars():
+    settings = IBKRSettings(host="127.0.0.1", port=4002)
+    
+    async with IBKRProvider(settings) as provider:
+        instruments = [Instrument(symbol="AAPL")]
+        
+        async for bar in provider.stream_bars(
+            resolution="5s",  # IBKR real-time bars are 5-second
+            instruments=instruments,
+        ):
+            print(f"{bar.symbol} [{bar.ts}]: Close ${bar.close} | Vol {bar.volume}")
+```
+
+### Error Handling
+
+```python
+from market_data_core import (
+    ConnectionFailed,
+    PacingViolation,
+    PermissionsMissing,
+    InvalidInstrument,
+)
+
+async def robust_streaming():
+    settings = IBKRSettings(
+        host="127.0.0.1",
+        port=4002,
+        reconnect_enabled=True,
+        max_reconnect_attempts=10,
+    )
+    
+    try:
+        async with IBKRProvider(settings) as provider:
+            instruments = [Instrument(symbol="AAPL")]
+            
+            async for quote in provider.stream_quotes(instruments):
+                print(quote)
+                
+    except ConnectionFailed as e:
+        print(f"Cannot connect to IBKR: {e}")
+    except PacingViolation as e:
+        print(f"Rate limit exceeded: {e}")
+    except PermissionsMissing as e:
+        print(f"Missing market data subscription: {e}")
+    except InvalidInstrument as e:
+        print(f"Invalid symbol: {e}")
+```
+
+### Environment-Based Configuration
+
+```python
+# .env file
+IBKR_HOST=127.0.0.1
+IBKR_PORT=4002
+IBKR_CLIENT_ID=17
+```
+
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+settings = IBKRSettings(
+    host=os.getenv("IBKR_HOST", "127.0.0.1"),
+    port=int(os.getenv("IBKR_PORT", 4002)),
+    client_id=int(os.getenv("IBKR_CLIENT_ID", 17)),
+)
+```
+
+---
+
+## ⚙️ Configuration
+
+### IBKRSettings Reference
+
+```python
+from market_data_ibkr import IBKRSettings
+
+settings = IBKRSettings(
+    # Connection
+    host="127.0.0.1",              # IBKR Gateway/TWS host
+    port=4002,                     # 4002=Paper, 4001=Live, 7497=TWS
+    client_id=17,                  # Unique client ID (0-32767)
+    read_timeout_sec=30.0,         # Socket read timeout
+    
+    # Market Data
+    market_data_type=1,            # 1=Live, 2=Frozen, 3=Delayed, 4=Delayed frozen
+    snapshot_mode=False,           # True for snapshots vs. streaming
+    
+    # Reconnection
+    reconnect_enabled=True,        # Enable automatic reconnection
+    reconnect_backoff_ms=250,      # Initial backoff delay
+    reconnect_backoff_max_ms=5000, # Maximum backoff delay
+    max_reconnect_attempts=10,     # 0 = infinite retries
+    
+    # Historical Data Pacing
+    hist_pacing_window_sec=600,    # 10-minute cooldown window
+    hist_max_bars_per_request=2000,# Max bars per request
+    
+    # Options (future use)
+    options_semaphore_size=5,      # Concurrent options requests
+    options_base_delay=0.1,        # Base delay between requests
+)
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `IBKR_HOST` | `127.0.0.1` | IBKR Gateway/TWS hostname |
+| `IBKR_PORT` | `4002` | Connection port (4002=Paper, 4001=Live) |
+| `IBKR_CLIENT_ID` | `17` | Unique client identifier |
+| `IBKR_MARKET_DATA_TYPE` | `1` | 1=Live, 3=Delayed |
+| `PORT` | `8084` | HTTP service port (Docker mode) |
+
+---
+
+## 🏗️ Architecture
+
+### Protocol Implementation
+
+`market-data-ibkr` implements the `MarketDataProvider` protocol:
+
+```python
+class MarketDataProvider(Protocol):
+    async def stream_quotes(self, instruments: Iterable[Instrument]) -> AsyncIterable[Quote]
+    async def stream_bars(self, resolution: str, instruments: Iterable[Instrument]) -> AsyncIterable[Bar]
+    async def request_historical_bars(self, instrument: Instrument, start: datetime, end: datetime, resolution: str) -> AsyncIterable[Bar]
+    async def stream_trades(self, instruments: Iterable[Instrument]) -> AsyncIterable[Trade]  # Coming soon
+    async def stream_options(self, instrument: Instrument, ...) -> AsyncIterable[OptionSnapshot]  # Coming soon
+```
+
+### Module Structure
+
+```
+src/market_data_ibkr/
+├── __init__.py         # Public API exports
+├── provider.py         # IBKRProvider (main implementation)
+├── session.py          # IBKRSessionManager (connection lifecycle)
+├── settings.py         # IBKRSettings (Pydantic config)
+├── errors.py           # Error code mapping (IBKR → Core)
+├── pacing.py           # TokenBucket + PacingManager
+├── mapping.py          # DTO conversions (Ticker→Quote, BarData→Bar)
+└── server.py           # FastAPI HTTP service (Docker mode)
+```
+
+### Error Mapping
+
+All IBKR error codes are mapped to `market-data-core` canonical exceptions:
+
+| IBKR Code | Core Exception | Description |
+|-----------|----------------|-------------|
+| `420` | `PacingViolation` | Rate limit exceeded |
+| `162` | (varies) | Ambiguous error - context dependent |
+| `200` | `InvalidInstrument` | Security not found |
+| `354` | `PermissionsMissing` | No market data permissions |
+| `504` | `ConnectionFailed` | Not connected to TWS |
+| `1100` | `ConnectionFailed` | Connection lost |
+| `2110` | `FarmTransient` | IBKR server connectivity issue |
+
+### Rate Limiting Strategy
+
+IBKR enforces strict rate limits:
+- **Historical data**: 60 requests per 10 minutes
+- **Pacing violations**: 10-minute cooldown per symbol
+
+This provider implements:
+1. **TokenBucket** - Smooth rate limiting (6 req/min)
+2. **PacingManager** - Per-symbol cooldown tracking
+3. **Exponential Backoff** - Automatic retry with delays
+
+---
+
+## 🧪 Testing
+
+### Run Test Suite
+
+```bash
+# Install dev dependencies
+pip install -e ".[dev]"
+
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=market_data_ibkr --cov-report=html
+
+# Run specific test file
+pytest tests/test_provider.py -v
+
+# Run with markers
+pytest tests/ -m "not slow" -v
+```
+
+### Test Structure
+
+```
+tests/
+├── conftest.py         # Shared fixtures (mock_ib, settings)
+├── test_settings.py    # Settings validation
+├── test_session.py     # Connection management
+├── test_errors.py      # Error code mapping
+├── test_pacing.py      # Rate limiting
+├── test_mapping.py     # DTO conversions
+└── test_provider.py    # Provider implementation
+```
+
+### Linting & Type Checking
+
+```bash
+# Run ruff linter
+ruff check src/
+
+# Run mypy type checker
+mypy src/
+
+# Auto-format code
+ruff format src/
+```
+
+---
+
+## 🐳 Docker Deployment
+
+### Running as HTTP Service
+
+The provider can run as a containerized HTTP/REST service:
+
+```bash
+# Build image
+docker build -t market-data-ibkr:latest .
+
+# Run standalone
+docker run -d \
+  --name ibkr \
+  -p 8084:8084 \
+  -e IBKR_HOST=host.docker.internal \
+  -e IBKR_GATEWAY_PORT=4002 \
+  market-data-ibkr:latest
+
+# Check health
+curl http://localhost:8084/health
+```
+
+### Docker Compose Integration
+
+```yaml
+# docker-compose.yml
+services:
+  ibkr:
+    build: .
+    container_name: ibkr
+    ports:
+      - "8084:8084"
+    environment:
+      IBKR_HOST: host.docker.internal
+      IBKR_GATEWAY_PORT: 4002
+      IBKR_CLIENT_ID: 17
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8084/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+```
+
+### HTTP API Endpoints
+
+Once running, the service exposes:
+
+**Health Check**
+```bash
+GET http://localhost:8084/health
+# Response: {"status": "healthy", "version": "1.1.2", "connected": true}
+```
+
+**Prometheus Metrics**
+```bash
+GET http://localhost:8084/metrics
+```
+
+**Stream Quotes (SSE)**
+```bash
+POST http://localhost:8084/api/v1/stream/quotes
+Content-Type: application/json
+
+{"symbols": ["AAPL", "MSFT"]}
+```
+
+**Historical Bars**
+```bash
+POST http://localhost:8084/api/v1/historical/bars
+Content-Type: application/json
+
+{
+  "symbol": "AAPL",
+  "start": "2024-01-01T00:00:00Z",
+  "end": "2024-01-31T00:00:00Z",
+  "resolution": "1d"
+}
+```
+
+---
+
+## 📚 Examples
+
+Complete working examples in the [`examples/`](examples/) directory:
+
+### Basic Streaming ([`examples/basic_streaming.py`](examples/basic_streaming.py))
+
+Real-time quote streaming with formatted output:
+
+```bash
+python examples/basic_streaming.py
+```
+
+Output:
+```
+[0001] AAPL   | Bid:  $150.50 (   100) | Ask:  $150.51 (   200) | Last:  $150.50 | Volume:     45,234
+[0002] MSFT   | Bid:  $380.25 (   300) | Ask:  $380.26 (   150) | Last:  $380.25 | Volume:     32,156
+```
+
+### Historical Data ([`examples/historical_data.py`](examples/historical_data.py))
+
+Fetch historical bars with pacing control:
+
+```bash
+python examples/historical_data.py
+```
+
+Output:
+```
+Date         Open       High        Low      Close       Volume
+----------------------------------------------------------------------
+2024-01-15  $150.20    $152.80    $149.90    $152.50      52,345,678
+2024-01-16  $152.60    $153.40    $151.20    $151.80      48,234,567
+```
+
+---
+
+## 🔧 IBKR Gateway Setup
+
+### Installation
+
+1. **Download IBKR Gateway** from [Interactive Brokers](https://www.interactivebrokers.com/en/trading/tws.php)
+2. **Install** and launch the application
+3. **Login** with your IBKR credentials (paper or live account)
+
+### API Configuration
+
+1. Navigate to **Settings** → **API** → **Settings**
+2. Enable the following:
+   - ☑️ Enable ActiveX and Socket Clients
+   - ☑️ Allow connections from localhost
+   - ☑️ Read-Only API (recommended for data access)
+3. Set **Socket Port**:
+   - `4002` for Paper Trading
+   - `4001` for Live Trading
+   - `7497` for TWS (not Gateway)
+4. Add **Trusted IPs**: `127.0.0.1` (or your Docker host IP)
+5. Click **OK** and restart Gateway
+
+### Verify Connection
+
+```python
+# test_connection.py
+import asyncio
+from market_data_ibkr import IBKRProvider, IBKRSettings
+
+async def test():
+    settings = IBKRSettings(host="127.0.0.1", port=4002, client_id=17)
+    
+    async with IBKRProvider(settings) as provider:
+        print("✓ Connected to IBKR successfully!")
+
+asyncio.run(test())
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Connection Issues
+
+**Error**: `ConnectionFailed: Cannot connect to 127.0.0.1:4002`
+
+**Solutions**:
+- ✅ Verify IBKR Gateway/TWS is running
+- ✅ Check correct port (4002 for paper, 4001 for live)
+- ✅ Ensure API connections are enabled in Gateway settings
+- ✅ Check firewall allows localhost connections
+- ✅ Try different `client_id` (0-32767)
+
+### Permission Errors
+
+**Error**: `PermissionsMissing: No market data permissions for AAPL`
+
+**Solutions**:
+- ✅ Verify market data subscriptions in [Account Management](https://www.interactivebrokers.com/portal)
+- ✅ Try `market_data_type=3` for delayed data (free)
+- ✅ Check symbol is valid and trading on specified exchange
+- ✅ Ensure account has appropriate data subscriptions
+
+### Pacing Violations
+
+**Error**: `PacingViolation: Historical data for AAPL is in cooldown`
+
+**Solutions**:
+- ✅ Wait for cooldown to expire (10 minutes for historical data)
+- ✅ Reduce request frequency
+- ✅ Use the built-in rate limiter (already enabled)
+- ✅ Spread requests across multiple `client_id` values
+
+### Empty Historical Data
+
+**Issue**: Historical bars return 0 results
+
+**Solutions**:
+- ✅ Check date range is valid (not in the future)
+- ✅ Verify market hours (`useRTH=True` by default)
+- ✅ Ensure instrument has data for requested period
+- ✅ Try different resolution (e.g., `"1d"` instead of `"1m"`)
+- ✅ Check IBKR Gateway logs for error messages
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+### Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/mjdevaccount/market-data-ibkr.git
+cd market-data-ibkr
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest tests/ -v
+```
+
+### Contribution Workflow
+
+1. **Fork** the repository
+2. **Create a feature branch**: `git checkout -b feature/your-feature`
+3. **Add tests** for new functionality
+4. **Ensure all tests pass**: `pytest tests/ -v`
+5. **Run linter**: `ruff check src/`
+6. **Run type checker**: `mypy src/`
+7. **Commit changes**: `git commit -m "feat: add your feature"`
+8. **Push to branch**: `git push origin feature/your-feature`
+9. **Open a Pull Request** with clear description
+
+### Code Standards
+
+- **Type Hints**: All functions must have type annotations
+- **Docstrings**: Google-style docstrings for public APIs
+- **Tests**: Maintain >80% code coverage
+- **Linting**: Pass `ruff` checks
+- **Type Safety**: Pass `mypy` strict mode
+
+### Commit Message Convention
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add tick-by-tick streaming
+fix: resolve reconnection race condition
+docs: update configuration examples
+test: add pacing manager tests
+chore: bump dependencies
+```
+
+---
+
+## 🗺️ Roadmap
+
+### v1.1.x (Current)
+
+- ✅ Real-time quote streaming
+- ✅ Real-time bar streaming
+- ✅ Historical data with pacing
+- ✅ Automatic reconnection
+- ✅ Rate limiting
+- ✅ Docker support
+- ✅ HTTP/REST API
+- ✅ CI/CD automation
+
+### v1.2.0 (Planned Q1 2025)
+
+- 🚧 Tick-by-tick trade streaming
+- 🚧 Options chain streaming
+- 🚧 Futures contract support
+- 🚧 WebSocket API alternative
+- 🚧 Enhanced metrics and observability
+
+### v2.0.0 (Future)
+
+- 🔮 Multi-threaded contract resolution
+- 🔮 Advanced pacing strategies
+- 🔮 Forex and crypto support
+- 🔮 Order execution integration
+- 🔮 Portfolio monitoring
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2025 mjdevaccount
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+```
+
+---
+
+## 🔗 Links
+
+- **PyPI Package**: https://pypi.org/project/market-data-ibkr/
+- **Source Code**: https://github.com/mjdevaccount/market-data-ibkr
+- **Issues**: https://github.com/mjdevaccount/market-data-ibkr/issues
+- **Releases**: https://github.com/mjdevaccount/market-data-ibkr/releases
+- **market-data-core**: https://github.com/mjdevaccount/market-data-core
+- **ib_insync Docs**: https://ib-insync.readthedocs.io/
+- **IBKR API Docs**: https://interactivebrokers.github.io/tws-api/
+
+---
+
+## 💬 Support
+
+Need help? Here's how to get support:
+
+1. **Check Documentation**: Review this README and the [examples/](examples/) directory
+2. **Search Issues**: Look for [existing issues](https://github.com/mjdevaccount/market-data-ibkr/issues)
+3. **Ask Questions**: Open a [new issue](https://github.com/mjdevaccount/market-data-ibkr/issues/new) with:
+   - Python version (`python --version`)
+   - IBKR Gateway/TWS version
+   - Minimal reproduction code
+   - Full error traceback
+
+---
+
+## 🙏 Acknowledgments
+
+- **Interactive Brokers** - For providing robust API access
+- **ib_insync** - Excellent Python wrapper for IBKR API
+- **market-data-core** - Protocol definitions and contracts
+- **FastAPI** - Modern HTTP framework
+- **Pydantic** - Data validation and settings management
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the trading community**
+
+[⭐ Star this repo](https://github.com/mjdevaccount/market-data-ibkr) • [🐛 Report Bug](https://github.com/mjdevaccount/market-data-ibkr/issues) • [💡 Request Feature](https://github.com/mjdevaccount/market-data-ibkr/issues)
+
+</div>
