@@ -1,0 +1,29 @@
+
+---
+
+## ✅ `setup.cfg` (אופציונלי להשלמה עם `pyproject.toml`)
+
+```ini
+[metadata]
+name = memscope
+version = 0.2.0
+description = Analyze and simulate dynamic memory usage in C/C++
+long_description = file: README.md
+long_description_content_type = text/markdown
+author = Your Name
+license = MIT
+classifiers =
+    Programming Language :: Python :: 3
+    License :: OSI Approved :: MIT License
+    Operating System :: OS Independent
+keywords = memory, c, c++, analysis, heap, debug
+
+[options]
+packages = find:
+python_requires = >=3.7
+install_requires =
+    matplotlib
+
+[options.entry_points]
+console_scripts =
+    memscope = memscope.cli:main
