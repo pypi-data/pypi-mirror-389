@@ -1,0 +1,11 @@
+[flask.commands]
+queues = invenio_queues.cli:queues
+
+[invenio_base.api_apps]
+invenio_queues = invenio_queues:InvenioQueues
+
+[invenio_base.apps]
+invenio_queues = invenio_queues:InvenioQueues
+
+[invenio_i18n.translations]
+messages = invenio_queues
