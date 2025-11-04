@@ -1,0 +1,124 @@
+# FH2 DRC MCP Server
+
+远程控制 MCP 服务器
+
+## 功能特性
+
+### 🤖 智能飞行控制（推荐使用）
+- `fly_to_point_smart` - **智能飞向目标点**（自动判断状态：起飞/创建/更新）
+- `get_flight_status` - 查询飞行状态
+
+### 设备管理
+- `cloud_controls_create` - 申请云控权限
+
+### 飞行控制
+- `drone_return_home` - 返航
+
+### 相机控制
+- `camera_photo_take` - 拍照（自动切换到拍照模式）
+- `camera_aim` - 调整相机角度（支持x/y坐标控制）
+- `camera_look_at` - 相机朝向指定地理坐标位置
+- `gimbal_reset_horizontal` - 云台水平复位
+- `gimbal_reset_downward` - 云台向下复位（90度垂直向下）
+- `camera_tilt_down` - 镜头俯视45度
+- `camera_mode_switch` - 切换相机模式（拍照/录像/智能低光/全景拍照）
+- `camera_lens_switch` - 切换镜头类型（红外/广角/变焦）
+
+### 录像功能
+- `camera_recording_task` - 完整录像任务流程（自动开始→录像→停止→切换回拍照模式）
+
+### POI任务
+- `poi_enter` - 开始POI环绕
+- `poi_exit` - 停止POI环绕
+
+### 环拍功能
+- `panoramic_shooting` - 全景拍摄（10个位置环拍 + 向下拍照，共11张照片）
+
+### 状态监控
+- `get_flight_status` - 查询飞行状态
+
+### 地图Pin点
+- `get_pin_points` - 查询所有Pin点
+- `create_pin_point` - 创建Pin点标记
+- `get_default_group_id` - 获取默认分组ID
+
+### AI告警
+- `get_alert_config` - 查询告警配置
+- `enable_llm_alert` - 快速开启LLM告警
+- `disable_alert` - 关闭告警
+
+## 安装运行
+
+### 1. 激活虚拟环境并安装依赖
+
+```bash
+cd /Users/leslie.zhang/PycharmProjects/es-mcp-service/fh2-drc-mcp-server
+source .venv/bin/activate
+pip install -e .
+```
+
+### 2. 运行服务器
+
+```bash
+fh2-drc-mcp-server
+```
+
+或者直接使用 Python 运行：
+
+```bash
+python -m fh2_drc_mcp_server
+```
+
+## 在 Cursor 中配置
+
+### 生产模式（真实飞行）
+
+编辑 `~/.cursor/mcp.json` 文件，添加以下配置：
+
+```json
+{
+  "mcpServers": {
+    "fh2-drc-mcp-server": {
+      "command": "/Users/leslie.zhang/PycharmProjects/es-mcp-service/fh2-drc-mcp-server/.venv/bin/python",
+      "args": [
+        "-m",
+        "fh2_drc_mcp_server"
+      ],
+      "env": {
+        "DRC_USER_TOKEN": "your-user-token-here"
+      }
+    }
+  }
+}
+```
+
+### Mock模式（开发测试，不真实飞行）
+
+如果你需要在开发环境测试Agent调用，但不想真实控制无人机，可以启用Mock模式：
+
+```json
+{
+  "mcpServers": {
+    "fh2-drc-mcp-server": {
+      "command": "/Users/leslie.zhang/PycharmProjects/es-mcp-service/fh2-drc-mcp-server/.venv/bin/python",
+      "args": [
+        "-m",
+        "fh2_drc_mcp_server"
+      ],
+      "env": {
+        "DRC_MOCK_MODE": "true"
+      }
+    }
+  }
+}
+```
+
+**Mock模式特性：**
+- 🎭 所有API调用返回模拟数据
+- ⚡ 飞行操作立即完成，无延迟
+- 🚫 不会真实控制无人机
+- ✅ 适合Agent逻辑测试和调试
+
+详细说明请参考 [MOCK_MODE.md](./MOCK_MODE.md)
+
+重启 Cursor 后即可使用。
