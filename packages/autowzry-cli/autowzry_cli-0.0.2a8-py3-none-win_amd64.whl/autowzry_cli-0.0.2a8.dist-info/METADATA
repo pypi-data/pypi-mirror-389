@@ -1,0 +1,44 @@
+Metadata-Version: 2.4
+Name: autowzry-cli
+Version: 0.0.2a8
+Summary: A CLI launcher for autowzry.
+License: Copyright (c) 2025 autowzry-cli
+        
+        todo.
+Project-URL: Homepage, https://github.com/cndaqiang/autowzry
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Utilities
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+## autowzry-cli
+A CLI launcher for [autowzry](https://github.com/cndaqiang/autowzry).
+
+**Download:** [PyPI autowzry-cli Files](https://pypi.org/project/autowzry-cli/#files)
+
+## Quick Start
+
+```bash
+# Install the latest release from PyPI
+python -m pip install autowzry-cli --upgrade --pre
+
+# Run to generate the default config file
+autowzry-cli
+
+# If the above command fails, modify the config file and run again
+autowzry-cli config.example.yaml
+
+# Run only the Update task
+autotiyanfu-cli config.example.yaml
+
+# Run only the Camp Gift task
+autowzyd-cli config.example.yaml
+
+# Uninstall the package
+python -m pip uninstall autowzry-cli
+```
