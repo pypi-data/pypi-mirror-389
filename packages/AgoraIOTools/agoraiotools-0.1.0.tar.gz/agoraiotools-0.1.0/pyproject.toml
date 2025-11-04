@@ -1,0 +1,25 @@
+[project]
+name = "AgoraIOTools"
+version = "0.1.0"
+description = "Agora token generation utilities"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Agora", email = "developer@agora.io"}
+]
+dependencies = []
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/AgoraIO/Tools"
+Source = "https://github.com/AgoraIO/Tools"
+
+# uv doesn't need explicit include; relying on package-dir configuration.
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["AgoraIOTools"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
