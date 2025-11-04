@@ -1,0 +1,50 @@
+---
+title: SHA104 Device Information
+devices:
+  SHA104-TFLXAUTH:
+    basePart: SHA104
+    partLink: https://www.microchip.com/en-us/product/SHA104
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    partInterface:
+      - i2c
+      - swi
+    annualVolume: 100000
+  SHA104-RBVCZ:
+    basePart: SHA104
+    partLink: https://www.microchip.com/en-us/product/SHA104
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    annualVolume: 100000
+parts:
+  - partNumber: SHA104-TFLXAUTHU
+    deviceName: SHA104-TFLXAUTH
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 40000
+    status: Introduction
+  - partNumber: SHA104-TFLXAUTHS
+    deviceName: SHA104-TFLXAUTH
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 39600
+    status: Introduction
+  - partNumber: SHA104-RBVCZ
+    deviceName: SHA104-RBVCZ
+    packagePin: RBH 3-pin contact
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 45000
+    status: Introduction

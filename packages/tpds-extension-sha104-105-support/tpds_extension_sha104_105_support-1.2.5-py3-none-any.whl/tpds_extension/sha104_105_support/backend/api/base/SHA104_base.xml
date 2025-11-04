@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SHA104_Config xmlns="https://www.microchip.com/schema/SHA104_Config_1.0">
+  <Config_Name>SHA104 BASE XML</Config_Name>
+  <Additional_Data/>
+  <Configuration_Subzone_0>
+    <SN_0_1 encoding="Hex">0123</SN_0_1>
+    <SN_8 encoding="Hex">EE</SN_8>
+    <IO_Options>
+      <Interface>I2C</Interface>
+      <Reserved>0b0000000</Reserved>
+    </IO_Options>
+    <Reserved_11 encoding="Hex">00 00</Reserved_11>
+    <Primary_Deleted>Normal</Primary_Deleted>
+    <Reserved_14 encoding="Hex">00 00</Reserved_14>
+  </Configuration_Subzone_0>
+  <Configuration_Subzone_1>
+    <Chip_Mode>
+      <CMOS_En>Fixed_Reference</CMOS_En>
+      <Clock_Divider>0b11</Clock_Divider>
+      <RNG_NRBG_Health_Test_Auto_Clear>False</RNG_NRBG_Health_Test_Auto_Clear>
+      <Reserved>0b0000</Reserved>
+    </Chip_Mode>
+    <Reserved_1 encoding="Hex">00</Reserved_1>
+    <Reserved_2 encoding="Hex">00</Reserved_2>
+    <Reserved_3 encoding="Hex">00</Reserved_3>
+    <Slot_Config3>
+      <Write_Mode>Clear</Write_Mode>
+      <Limited_Use>False</Limited_Use>
+      <Reserved>0b000000</Reserved>
+    </Slot_Config3>
+    <Reserved_5 encoding="Hex">00 00 00 00 00 00 00 00 00 00 00</Reserved_5>
+    <Lock>False</Lock>
+  </Configuration_Subzone_1>
+  <Configuration_Subzone_2>
+    <Counts_Remaining>10000</Counts_Remaining>
+    <Lock>False</Lock>
+  </Configuration_Subzone_2>
+  <Configuration_Subzone_3>
+    <Device_Address>0x31</Device_Address>
+    <Self_Test>False</Self_Test>
+    <Reserved_1>0b0000000</Reserved_1>
+    <Reserved_2 encoding="Hex">00 00 00 00 00 00 00 00 00 00 00 00 00 00</Reserved_2>
+    <Lock>False</Lock>
+  </Configuration_Subzone_3>
+  <Slot_Locks>
+    <Slot_0>False</Slot_0>
+    <Slot_1>False</Slot_1>
+    <Slot_2>False</Slot_2>
+    <Slot_3>False</Slot_3>
+  </Slot_Locks>
+  <Data_Sources>
+    <Data_Source>
+      <Name>Slot2</Name>
+      <Description>Slot 2 Data Source</Description>
+      <Static_Bytes>
+        <Public encoding="Hex">some</Public>
+      </Static_Bytes>
+    </Data_Source>
+    <Data_Source>
+      <Name>Slot3</Name>
+      <Description>Slot 3 Data Source</Description>
+      <Static_Bytes>
+        <Secret encoding="Hex" encrypted="False" algorithm="AES256_GCM" key_name="HMAC_Secret_key">
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        </Secret>
+      </Static_Bytes>
+    </Data_Source>
+    <Writer>
+      <Source_Name>Slot0</Source_Name>
+      <Description>Slot 0 writer</Description>
+      <Target>Slot 0</Target>
+    </Writer>
+    <Writer>
+      <Source_Name>Slot1</Source_Name>
+      <Description>Slot 1 writer</Description>
+      <Target>Slot 1</Target>
+    </Writer>
+    <Writer>
+      <Source_Name>Slot2</Source_Name>
+      <Description>Slot 2 writer</Description>
+      <Target>Slot 2</Target>
+    </Writer>
+    <Writer>
+      <Source_Name>Slot3</Source_Name>
+      <Description>Slot 3 writer</Description>
+      <Target>Slot 3</Target>
+    </Writer>
+  </Data_Sources>
+</SHA104_Config>

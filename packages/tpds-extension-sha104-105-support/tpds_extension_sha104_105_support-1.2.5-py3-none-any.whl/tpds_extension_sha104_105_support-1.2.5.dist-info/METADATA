@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: tpds-extension-sha104-105-support
+Version: 1.2.5
+Summary: Microchip(SPG) Trust Platform - SHA104, SHA105 and SHA106 Devices Support
+Home-page: https://www.microchip.com/TrustPlatform
+Author: Microchip Technology
+Author-email: SPG.Tools@microchip.com
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: tpds-core>=2.3.4
+Requires-Dist: tpds-helper>=2.3.6
+
+# Trust Platform Design Suite - SHA104, SHA105 and SHA106 Connect Extension
+
+This module contains the frontend and backend services and resources required for the extension.
+
+## Release Notes
+
+### 1.2.5
+    - Bug fix for SHA106 XML, SHA105 reserved bytes and Slot3 writer
+
+### 1.2.4
+    - Bug fix for Diversified Key selection on the configurator
+    - Bug fix for broken link on the configurators
+
+### 1.2.x
+    - Updated MoQ and Certificate details for Secure Exchange Process
+    - Bug fix for slot3 encrypted write and firmware projects update
+    - Added Provisioning XML generation support
+    - Various other incremental updates since 1.0.0 release
+
+### 1.0.0
+    - Initial version with options to generate provisioning files and Proto Provisioning Device.

@@ -1,0 +1,41 @@
+---
+title: SHA105 Device Information
+devices:
+  SHA105-TFLXAUTH:
+    basePart: SHA105
+    partLink: https://www.microchip.com/en-us/product/SHA105
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    partInterface:
+      - i2c
+    annualVolume: 100000
+parts:
+  - partNumber: SHA105-TFLXAUTHU
+    deviceName: SHA105-TFLXAUTH
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 40000
+    status: Introduction
+  - partNumber: SHA105-TFLXAUTHS
+    deviceName: SHA105-TFLXAUTH
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 39600
+    status: Introduction
+  - partNumber: SHA105-RBVCZ
+    deviceName: SHA105-TFLXAUTH
+    packagePin: RBH 3-pin contact
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 45000
+    status: Introduction

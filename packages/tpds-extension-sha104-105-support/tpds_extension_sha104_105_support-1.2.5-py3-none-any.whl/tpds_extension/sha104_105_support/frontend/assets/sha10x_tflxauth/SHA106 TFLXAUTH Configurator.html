@@ -1,0 +1,636 @@
+<!doctype html>
+<!-- Copyright (c) 2018-2023 Microchip Technology Inc. and its subsidiaries
+
+    Subject to your compliance with these terms, you may use Microchip software
+    and any derivatives exclusively with Microchip products. It is your
+    responsibility to comply with third party license terms applicable to your
+    use of third party software (including open source software) that may
+    accompany Microchip software.
+
+    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+    WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+    PARTICULAR PURPOSE. IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT,
+    SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE
+    OF ANY KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF
+    MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE
+    FORESEEABLE. TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL
+    LIABILITY ON ALL CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED
+    THE AMOUNT OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR
+    THIS SOFTWARE.
+-->
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<!--Designerd by: http://bootstrapthemes.co-->
+
+<head>
+  <meta charset="utf-8">
+  <title>SHA106 TFLXAUTH Configurator</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.ico">
+
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/slick.css">
+  <link rel="stylesheet" href="../css/slick-theme.css">
+  <link rel="stylesheet" href="../css/animate.css">
+  <link rel="stylesheet" href="../css/fonticons.css">
+  <link rel="stylesheet" href="../css/font-awesome.min.css">
+  <link rel="stylesheet" href="../css/bootstrap.css">
+  <link rel="stylesheet" href="../css/magnific-popup.css">
+  <link rel="stylesheet" href="../css/bootsnav.css">
+  <link rel="stylesheet" href="../css/configuration_styles.css">
+  <link rel="stylesheet" href="../css/style_usecasetool.css">
+  <link rel="stylesheet" href="../css/hexagons.css">
+  <link rel="stylesheet" href="../css/responsive.css" />
+
+  <script src="../js/jquery-2.1.1.min.js"></script>
+</head>
+
+<body onload="invokeRadioListners('sha_106')" data-spy="scroll" data-target=".navbar-collapse">
+  <div id="templates" style="display:none">
+    <div id="note-msg-template" class="config-note">
+      <svg viewBox="0 0 75 75" width="0.2in" height="0.2in">
+        <use xlink:href="#note-icon" />
+      </svg>
+      <span class="msg-text"></span>
+    </div>
+
+    <div id="warning-msg-template" class="config-warning">
+      <svg viewBox="0 0 75 75" width="0.2in" height="0.2in">
+        <use xlink:href="#warning-icon" />
+      </svg>
+      WARNING: <span class="msg-text"></span>
+    </div>
+
+    <div id="error-msg-template" class="config-error">
+      <svg viewBox="0 0 75 75" width="0.2in" height="0.2in">
+        <use xlink:href="#error-icon" />
+      </svg>
+      ERROR: <span class="msg-text"></span>
+    </div>
+  </div>
+
+  <!-- Preloader -->
+  <div id="loading">
+    <div id="loading-center">
+      <div id="loading-center-absolute">
+        <div class="object" id="object_one"></div>
+        <div class="object" id="object_two"></div>
+        <div class="object" id="object_three"></div>
+        <div class="object" id="object_four"></div>
+      </div>
+    </div>
+  </div>
+  <!--End off Preloader -->
+
+
+  <div class="culmn">
+    <!--methodology Sections-->
+    <section id="method" class="method darkbg roomy-50 p-bottom-10">
+
+      <div class="container">
+        <div class="row">
+          <div class="main_method">
+            <div class="col-md-10">
+              <div class="method_content">
+                <h3>SHA106 TFLXAUTH SECURE PROVISIONING PROCESS</h3>
+                <div class="separator_left"></div>
+                <img src="../images/trustFLEX_secure_provisioning_top.png" style="margin:30px; width:100%;" />
+                Microchip offers Secure Provisioning Services for its security solutions before
+                shipment. To leverage this service, secure exchange process is required between
+                customers and Microchip Hardware Secure Modules (HSM). The process starts with
+                requesting a unique custom Part Number, a manufacturing ID (MAN-ID), and the HSM
+                encryption keys (unique per project) through the <a href="https://microchipsupport.force.com/s/"
+                  target="_blank">Microchip Technical
+                  Support Portal</a>. Refer to the <a class="secure_provisioning_guide"
+                  id="trustflex-configurator-walkthrough" target="_blank"
+                  style="font-weight:bold; cursor:pointer;">Secure
+                  Provisioning Guide</a> for detailed
+                steps of the secure sub-system configuration and secure exchange process.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> <!-- End off methodology section -->
+
+
+    <!--TrustFLEX Use Case selection Section-->
+    <section id="use_case_library" class="darkbg m-bottom-70">
+      <div class="container">
+        <div class="row">
+          <div class="use_cases roomy-50">
+            <h4 class="p-bottom-20">Select Use Cases :</h4>
+            <div id="UseCaseContainer">
+              <ul id="hexGrid">
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+    <!--Enf of TrustFLEX Use Case selection Section -->
+
+    <!--TrustFLEX SECURE PROVISIONING PROCESS Section-->
+    <section id="trustflex_config" class="trustflex_config">
+      <div class="container">
+        <div class="row">
+          <div class="main_trustflex_config text-center">
+            <div class="col-sm-12">
+              <div class="head_title text-left">
+                <h2>SHA106 TFLXAUTH XML Generator</h2>
+                <div class="separator_left"></div>
+
+                <div style="overflow-x:auto">
+                  <form id="slotdataform">
+                    <table>
+                      <tr>
+                        <td>
+                          <h3>Device Configuration</h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Device Address: (7 Bit Hex Value)</td>
+                        <td>
+                          <input class="advancedSearchTextboxReduced placeholder slotTextEnabled" type="text"
+                            name="deviceAddress" id="deviceAddress" maxlength="2"
+                            placeholder="Valid range: 01-7F, Default: 31" style="width:150%"
+                            oninput="this.value = this.value.toUpperCase().replace(/[^0-9A-Fa-f]/g, '').replace(/(\..*)\./g, '$1')">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Device interface:</td>
+                        <td>
+                          <input id="devSwiIfaceId" type="radio" name="devIface"
+                            title="Select for device with SWI interface" value="swi" checked="checked">
+                          <label class="radiotext" for="devSwiIfaceId"> SWI</label>
+                          <input id="devI2cIfaceId" type="radio" name="devIface"
+                            title="Select for device with I2C interface" value="i2c" style="visibility: hidden;">
+                          <label class="radiotext" for="devI2cIfaceId" style="visibility: hidden;"> I2C</label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Enable IO Levels to fixed reference:</td>
+                        <td>
+                          <input type="checkbox" name="fancy-checkbox-default" id="fixedReference"
+                            title="Selecting this enables fixed reference for input levels, Otherwise input levels are Vcc referenced."
+                            disabled />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Enable RNG Health Test Auto Clear:</td>
+                        <td><input type="checkbox" name="fancy-checkbox-default" id="health_test"
+                            title="Health Test failure clearing is done automatically or requires explicit clearing" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Enable Enhanced SelfTest:</td>
+                        <td>
+                          <input type="checkbox" name="fancy-checkbox-default" id="compliance"
+                            title="Enables more extensive firmware integrity test is performed on every boot of the device" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h3>Serial Number</h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>SN[0:1]</td>
+                        <td>
+                          <input class="advancedSearchTextboxReduced placeholder slotTextEnabled" type="text"
+                            name="First two bytes of Serial Number" id="sn01" maxlength="4" value="0123" disabled
+                            style="width:150%"
+                            oninput="this.value = this.value.toUpperCase().replace(/[^0-9A-Fa-f]/g, '').replace(/(\..*)\./g, '$1')">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>SN[8]</td>
+                        <td>
+                          <input class="advancedSearchTextboxReduced placeholder slotTextEnabled" type="text"
+                            name="Enter Last bytes of Serial Number" id="sn8" maxlength="2"
+                            placeholder="Enter Last bytes of SN, Default: EE" style="width:150%"
+                            oninput="this.value = this.value.toUpperCase().replace(/[^0-9A-Fa-f]/g, '').replace(/(\..*)\./g, '$1')">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h3>Monotonic Counter Configuration</h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Allowed counts:</td>
+                        <td>
+                          <input class="advancedSearchTextboxReduced placeholder slotTextEnabled" type="number"
+                            name="counterVal" style="width: 150%;" id="counterVal"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
+                            title="Enter monotonic counts to allow" min="1" max="10000"
+                            placeholder="Valid range: 1-10000, Default:10000"><br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Limited Key Use:</td>
+                        <td>
+                          <input id="limitedUseSecret" type="radio" name="limitedUse" value="secret"
+                            title="Connect Symmetric Key to Monotonic Counter for 10000 counts">
+                          <label class="radiotext" for="limitedUseSecret"> HMAC Key </label>
+                          <input id="limitedUseDisable" type="radio" name="limitedUse" value="disabled"
+                            title="Disable Limited Key Use function">
+                          <label class="radiotext" for="limitedUseDisable"> Disabled </label>
+                        </td>
+                      </tr>
+                    </table>
+                    <h5>
+                      <b style="color:#ff0000">IMPORTANT NOTE:</b> The above User settings cannot
+                      be changed once its written and locked by this configurator.<br />
+                      So, it is recommended to set higher counts for Monotonic Counter and correct
+                      Limited Key Use setting.
+                    </h5>
+
+                    <br />
+                    <h3>Data Slots</h3>
+                    Click on individual slots for more info.<br /><br />
+                    <table class="table table-hover table-responsive slotdata" id="tflexdata">
+                      <tr class="TrPresets">
+                        <th width="10%">Slot Number</th>
+                        <th width="20%">Slot Use-case</th>
+                        <th width="40%">Description</th>
+                        <th width="25%" style="padding-left:10px;">Slot Property</th>
+                      </tr>
+                      <tr>
+                        <td colspan="5" class="hiddenRow">
+                          <div id="slotnext" class="accordian-body collapse">
+                          </div>
+                        </td>
+                      </tr>
+                      <tr data-toggle="collapse" data-target="#slot0ext" class="accordion-toggle TrPresets" id="Slot0"
+                        style="display:none;">
+                        <td class="alignleft">Slot 0</td>
+                        <td>IO protection key</td>
+                        <td>Key used to protect the I2C bus communication (IO) of certain commands. Requires setup
+                          before use.</td>
+                        <td style="padding-left:10px;">No read, Always write, Lockable, Symmetric Key</td>
+                      </tr>
+
+                      <tr style="display:none;">
+                        <td colspan="5" class="hiddenRow">
+                          <div id="slot0ext" class="accordian-body collapse">
+                            <strong>Slot Description:</strong><br />
+                            Using the IO protection features is optional, but the IO protection key is saved here. The
+                            idea is that
+                            on first boot, a random key will be generated and saved to this slot and the MCU's NVM, then
+                            the slot
+                            locked. Locking may not be necessary, if key rotation is needed for this key, but it does
+                            open up the device
+                            to a DOS attack where the key is changed unexpectedly. It is required to load and lock this
+                            slot for Checkmac-MAC response to work.
+                            Otherwise, only Checkmac-boolean response is allowed.
+                            <br /><br />
+                            <strong>Provisioning:</strong><br />
+                            The data entered in the below step will be stored in the device slot during
+                            provisioning.<br /><br />
+
+                            <strong>Provisioning data input method:</strong>
+                            <br />
+                            <input id="0001" type="radio" name="slot0dataopt" value="unused" checked="checked">
+                            <label class="radiotext" for="0001"> Slot Unused</label>
+                            <br>
+                            <input id="0002" type="radio" name="slot0dataopt" value="hexdata">
+                            <label class="radiotext" for="0002"> Enter HEX data</label>
+                            <br>
+                            <input id="0003" type="radio" name="slot0dataopt" value="pemdata">
+                            <label class="radiotext" for="0003">Upload data through .pem
+                              file</label>
+
+                            <div id="slot0dataoptspan"></div>
+                            <div id="slot0dataoptverify"></div>
+
+                            <div class="slotLockVisibility">
+                              <br />
+                              <table class="slotlock" cellspacing="10" cellpadding="10">
+                                <td><strong>Disable slot write:</strong></td>
+                                <td><input type="checkbox" name="fancy-checkbox-default" id="slotlock0" /></td>
+                                <td>
+                                  <label for="slotlock0">
+                                    If checked, the contents of the slot cannot be modified under
+                                    any circumstances.
+                                  </label>
+                                </td>
+                      </tr>
+                    </table>
+                    <br />
+                </div>
+              </div>
+              </td>
+              </tr>
+
+              <tr data-toggle="collapse" data-target="#slot1ext" class="accordion-toggle TrPresets" id="Slot1">
+                <td class="alignleft">Slot 1</td>
+                <td>User Data</td>
+                <td>General public data storage (320 bytes)</td>
+                <td style="padding-left:10px;">Clear read, Always write, Lockable</td>
+              </tr>
+              <tr>
+                <td colspan="5" class="hiddenRow">
+                  <div id="slot1ext" class="accordian-body collapse">
+                    <strong>Slot Description:</strong><br>
+                    This slot is used for public data storage, data can be
+                    written/read in clear text(Not encrypted). This slot should
+                    not be used for storing secrets.
+                    <br><br>
+                    <strong>Provisioning:</strong><br>
+                    The data entered in the below step will be stored into the
+                    device slot during provisioning.
+                    <br><br>
+                    <strong>Provisioning data input method:</strong>
+                    <br />
+                    <input id="0101" type="radio" name="slot1dataopt" value="unused" checked="checked">
+                    <label class="radiotext" for="0101"> Slot Unused</label>
+                    <br>
+                    <input id="0102" type="radio" name="slot1dataopt" value="hexdata">
+                    <label class="radiotext" for="0102"> Enter HEX data</label>
+                    <br>
+
+                    <div id="slot1dataoptspan"></div>
+                    <div id="slot1dataoptverify"></div>
+
+                    <div class="slotLockVisibility">
+                      <br>
+                      <table class="slotlock" cellspacing="10" cellpadding="10">
+                        <tr>
+                          <td><strong>Disable slot write:</strong></td>
+                          <td><input type="checkbox" name="fancy-checkbox-default" id="slotlock1" autocomplete="off" />
+                          </td>
+                          <td>If the checkbox is checked, the contents of
+                            the slot cannot be modified under any
+                            circumstances.</td>
+                        </tr>
+                      </table>
+                      <br>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-toggle="collapse" data-target="#slot2ext" class="accordion-toggle TrPresets" id="Slot2">
+                <td class="alignleft">Slot 2</td>
+                <td>User Data</td>
+                <td>General public data storage (64 bytes)</td>
+                <td style="padding-left:10px;">Clear read, Always write, Lockable</td>
+              </tr>
+              <tr>
+                <td colspan="5" class="hiddenRow">
+                  <div id="slot2ext" class="accordian-body collapse">
+                    <strong>Slot Description:</strong><br>
+                    This slot is used for public data storage, data can be
+                    written/read in clear text(Not encrypted). This slot should
+                    not be used for storing secrets.
+                    <br><br>
+                    <strong>Provisioning:</strong><br>
+                    The data entered in the below step will be stored into the
+                    device slot during provisioning.
+                    <br><br>
+                    <strong>Provisioning data input method:</strong>
+                    <br />
+                    <input id="0201" type="radio" name="slot2dataopt" value="unused" checked="checked">
+                    <label class="radiotext" for="0201"> Slot Unused</label>
+                    <br>
+                    <input id="0202" type="radio" name="slot2dataopt" value="hexdata">
+                    <label class="radiotext" for="0202"> Enter HEX data</label>
+                    <br>
+
+                    <div id="slot2dataoptspan"></div>
+                    <div id="slot2dataoptverify"></div>
+
+                    <div class="slotLockVisibility">
+                      <br>
+                      <table class="slotlock" cellspacing="10" cellpadding="10">
+                        <tr>
+                          <td><strong>Disable slot write:</strong></td>
+                          <td><input type="checkbox" name="fancy-checkbox-default" id="slotlock2" autocomplete="off" />
+                          </td>
+                          <td>If the checkbox is checked, the contents of
+                            the slot cannot be modified under any
+                            circumstances.</td>
+                        </tr>
+                      </table>
+                      <br>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr data-toggle="collapse" data-target="#slot3ext" class="accordion-toggle TrPresets" id="Slot3">
+                <td class="alignleft">Slot 3</td>
+                <td>Secret key</td>
+                <td>Storage for a secret key (32 bytes)</td>
+                <td style="padding-left:10px;">No read, Always write, Lockable, Symmetric Key</td>
+              </tr>
+
+              <tr>
+                <td colspan="5" class="hiddenRow">
+                  <div id="slot3ext" class="accordian-body collapse">
+                    <strong>Slot Description:</strong><br />
+                    This slot provides a storage location for a symmetric key to
+                    use with the SHA106-TFLXAUTH's symmetric key commands. The primary
+                    use case is to support symmetric authentication for Accessory /
+                    Disposable authentication.
+                    If the Configuration Zone is set as locked at provisioning, Slot cannot
+                    be updated. If the slot in the Data Zone is set as unlocked,
+                    then Slot can be updated. If the slot in the DataZone is set as locked,
+                    you will need to encrypt the updated key and execute a NONCE command
+                    <br /><br />
+                    <strong>Provisioning:</strong><br />
+                    The data entered in the below step will be stored in the
+                    device slot during provisioning.<br /><br />
+
+                    <strong>Provisioning data input method:</strong>
+                    <br />
+                    <input id="0301" type="radio" name="slot3dataopt" value="unused" checked="checked">
+                    <label class="radiotext" for="0301"> Slot Unused</label>
+                    <br>
+                    <input id="0302" type="radio" name="slot3dataopt" value="hexdata">
+                    <label class="radiotext" for="0302"> Enter HEX data</label>
+                    <br>
+                    <input id="0303" type="radio" name="slot3dataopt" value="pemdata">
+                    <label class="radiotext" for="0303">Upload data through .pem
+                      file</label>
+
+                    <div id="slot3dataoptspan"></div>
+                    <div id="slot3dataoptverify"></div>
+
+                    <div class="slotLockVisibility">
+                      <br />
+                      <table class="slotlock" cellspacing="10" cellpadding="10">
+                        <tr>
+                          <td><strong>Key Diversification Function:</strong></td>
+                          <td>
+                            <input id="0300" type="radio" name="slot3KDFValue" value="no_kdf" checked="checked">
+                            <label class="radiotext" for="0300">Disable, Use Master Key</label> <br/>
+                            <input id="0301" type="radio" name="slot3KDFValue" value="HKDF_Extract" hidden>
+                            <label class="radiotext" for="0301" hidden>HKDF Extract</label>
+                            <input id="0302" type="radio" name="slot3KDFValue" value="HKDF_Expand" hidden>
+                            <label class="radiotext" for="0302" hidden>HKDF Expand</label>
+                            <input id="0303" type="radio" name="slot3KDFValue" value="Crypto_Auth_Derive_Key">
+                            <label class="radiotext" for="0303">Enable, CryptoAuth Derive Key.
+                              SHA256(MasterKey, Serial Number and other data). Refer to datasheet for details.</lable>
+                          </td>
+                        </tr>
+                        <tr hidden>
+                          <td><strong>Enable Encrypted Write for HMAC Key:</strong></td>
+                          <td>
+                            <input type="checkbox" name="fancy-checkbox-default" id="encrypt_write" checked
+                              title="Determines if the HMAC key is written in the clear or encrypted and requires an authorizing MAC" />
+                          </td>
+                          <td>
+                            <label for="encrypt_write">
+                              If checked, the contents of the slot is written in the encrypted
+                              format.
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Disable slot write:</strong></td>
+                          <td>
+                            <input type="checkbox" name="fancy-checkbox-default" id="slotlock3" />
+                            <label for="slotlock3">
+                              If the checkbox is checked, the contents of the slot cannot be modified under
+                              any circumstances.
+                            </label>
+                          </td>
+                        </tr>
+                      </table>
+                      <br />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              </table>
+
+              <br /><strong>Part Number details</strong><br />
+              Provide the Part Number received from MCHP in the support system. For
+              prototyping, one can leave these blank.<br></br>
+              <input class="advancedSearchTextboxReduced placeholder slotTextEnabled" type="text"
+                name="partNumberHex" id="partNumberId" placeholder="Part number, ex: SHA106-MAHAA-T"
+                style="text-transform: uppercase"><br><br>
+
+
+              <div class="provision_package_section">
+                <div class="horizontal_line left_div">
+                  <h1>Prototyping</h1>
+                  <div class="prov_buttons">
+                    <div class="colm1">
+                      <input class="optbutton_proto" type="button" name="submit" id="proto_xml"
+                        value="Generate Provisioning Package">
+                      PROTOTYPE package is meant only for understanding and
+                      prototyping. It should <font color='red'><b>NOT</b></font> be
+                      shared as secrets are available in plain text. Alternatively,
+                      you may use dummy secrets.
+                    </div>
+                    <div class="colm1">
+                      <input class="optbutton_proto" type="button" name="submit" id="prov_proto"
+                        value="Provision Prototype Samples">
+                      Click here to provision the SHA106-TFLXAUTH-PROTO with the data/information provided in the
+                      above slots.
+                    </div>
+                  </div>
+                </div>
+                <div class="right_div">
+                  <h1>Production</h1>
+                  <div class="prov_buttons_right">
+                    <div class="colm2">
+                      <input class="optbutton_prod" type="button" name="submit" id="prod_xml"
+                        value="Generate Encrypted Provisioning Package">
+                    </div>
+                    <div class="colm2">
+                      Production package must be used to generate the Secure
+                      Provisioning Package to be sent to Microchip Provisioning
+                      Service (through <a href="https://microchipsupport.force.com/s/" target="_blank">Microchip
+                        Technical Support Portal</a>). You
+                      will be prompted to add the HSM encryption keys when starting
+                      the generation process.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              Both "Generate Provisioning Package" buttons compile all the data provided in
+              the above slots into a zip package containing files that holds device configuration and user data
+              to be loaded into the SHA106-TFLXAUTH slots. In the prototyping package, all user data are in
+              unencrypted plain text whereas in the production package, user data are encrypted.
+              <br />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+  </section>
+
+  <!--Contact Us Section-->
+  <section id="contact" class="contact bg-white fix">
+    <div class="container">
+      <div class="row">
+        <div class="main_contact roomy-100 text-black">
+          <div class="col-md-10">
+            <div class="rage_widget">
+              <div class="widget_head">
+                <h3 class="text-black">MICROCHIP</h3>
+                <div class="separator_left"></div>
+              </div>
+              <p id="id_version_license">This text will be replaced</p>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!--End off row -->
+    </div>
+    <!--End off container -->
+  </section>
+  <!--End off Contact Section-->
+
+
+  <!-- scroll up-->
+  <div class="scrollup">
+    <a href="#"><i class="fa fa-chevron-up"></i></a>
+  </div><!-- End off scroll up -->
+
+  <footer id="footer" class="footer bgblack">
+    <div class="container">
+      <div class="row">
+        <div class="main_footer text-center p-top-40 p-bottom-30">
+          <p class="wow fadeInRight" data-wow-duration="1s">
+            Made with
+            <i class="fa fa-heart"></i>
+            by
+            <a target="_blank" href="https://bootstrapthemes.co">Bootstrap Themes</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS includes -->
+  <script src="../js/vendor/bootstrap.min.js"></script>
+  <script src="../js/jquery.magnific-popup.js"></script>
+  <script src="../js/slick.min.js"></script>
+  <script src="js/testjs.js"></script>
+  <script src="../js/version.js"></script>
+  <script src="js/client.js" type="text/javascript"></script>
+  <script src="js/flexParser.js" type="text/javascript"></script>
+  <script src="js/usecase_library.js"></script>
+  <script src="../js/plugins.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
+</html>

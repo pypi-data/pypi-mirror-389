@@ -1,0 +1,23 @@
+---
+title: SHA106 Device Information
+devices:
+  SHA106-TFLXAUTH:
+    basePart: SHA106
+    partLink: https://www.microchip.com/en-us/product/SHA106
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    partInterface:
+      - swi
+    annualVolume: 100000
+parts:
+  - partNumber: SHA106-TFLXAUTHV
+    deviceName: SHA106-TFLXAUTH
+    packagePin: VSFN
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 40000
+    status: Introduction
