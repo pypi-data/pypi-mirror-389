@@ -1,0 +1,85 @@
+# Continuous Delivery (CD)
+# This workflow automates the release process for the project.
+# It is triggered when a new version tag (e.g., v1.2.3) is pushed to the repository.
+# It builds the package, creates a GitHub Release, and (if neccesarry) publishes to PyPI.
+
+name: CD
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+  
+  cd:
+    needs: [ci]
+    runs-on: ubuntu-latest
+    name: "Publish Release"
+
+    permissions:
+      contents: write
+      id-token: write
+    
+    steps:
+    - name: Checkout repository with full history
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+    
+    - name: Install uv with Python 3.10
+      uses: astral-sh/setup-uv@v7
+      with:
+        python-version: "3.10" 
+
+    - name: Set up the environment
+      run: make setup-ci
+
+    - name: Extract release notes from CHANGELOG.md
+      id: changelog
+      run: |
+        # This script extracts the content for the latest version from CHANGELOG.md.
+        # It looks for the first markdown heading starting with '## v' and captures
+        # all content until it hits the next heading or the end of the file.
+        CHANGELOG_CONTENT=$(awk '
+          /^## v/ {
+            if (p) { exit };
+            p=1;
+            next
+          }
+          p { print }
+        ' CHANGELOG.md)
+
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "content<<$EOF" >> "$GITHUB_OUTPUT"
+        echo "$CHANGELOG_CONTENT" >> "$GITHUB_OUTPUT"
+        echo "$EOF" >> "$GITHUB_OUTPUT"
+    
+    - name: Build package artifacts
+      run: uv build
+
+    - name: Verify distribution artifacts with Twine
+      run: uv run twine check dist/*
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        body: ${{ steps.changelog.outputs.content }}
+        draft: false
+        prerelease: ${{ contains(github.ref_name, '-') }}
+        files: dist/*
+        fail_on_unmatched_files: true
+        overwrite_files: true
+    
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true

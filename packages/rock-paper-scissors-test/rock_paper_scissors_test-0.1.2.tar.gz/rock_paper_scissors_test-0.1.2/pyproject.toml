@@ -1,0 +1,115 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rock-paper-scissors-test"
+version = "0.1.2"
+description = "A game of RPS"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "platformdirs>=4.4.0",
+    "pydantic-settings>=2.11.0",
+]
+license = {file = "LICENSE"}
+authors = [
+    {name = "Filming"}
+]
+keywords = ["python", "python3"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+]
+
+[project.urls]
+Homepage = "https://github.com/filmingstudio/rock_paper_scissors"
+Repository = "https://github.com/filmingstudio/rock_paper_scissors"
+Issues = "https://github.com/filmingstudio/rock_paper_scissors/issues"
+Changelog = "https://github.com/filmingstudio/rock_paper_scissors/blob/master/CHANGELOG.md"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Select rule categories to check
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "UP",   # pyupgrade
+    "PL",   # pylint
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "C90",  # mccabe complexity
+    "D",    # pydocstring
+]
+
+# Ignore specific rules
+ignore = [
+    "D100",    # Missing docstring in public module
+    "D104",    # Missing docstring in public package
+    "D203",    # 1 blank line required before class docstring
+    "D213",    # Multi-line docstring summary should start at the second line
+    "D413",    # Missing blank line after last section
+    "PLR0913", # Too many arguments in function definition (>5)
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+known-first-party = ["rock_paper_scissors"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
+python_version = "3.10"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rock_paper_scissors"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "uv"
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+major_version_zero = true
+change_type_rules = [
+    { type = "feat", section = "Features" },
+    { type = "fix", section = "Bug Fixes" },
+    { type = "perf", section = "Performance Improvements" },
+]
+
+version_files = [
+    "pyproject.toml:version",
+    "src/rock_paper_scissors/__init__.py:__version__"
+]
+
+[project.optional-dependencies]
+dev = [
+    "commitizen>=4.8.3",
+    "mypy>=1.16.1",
+    "pre-commit>=4.2.0",
+    "ruff>=0.12.1",
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "twine>=5.0.0",
+]
