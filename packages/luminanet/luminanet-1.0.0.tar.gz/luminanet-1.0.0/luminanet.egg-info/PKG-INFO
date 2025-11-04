@@ -1,0 +1,121 @@
+Metadata-Version: 2.4
+Name: luminanet
+Version: 1.0.0
+Summary: LuminaNet: Pure Python Deep Learning Framework - Illuminate AI with Minimal Dependencies
+Author: Your Name
+Author-email: your.email@example.com
+Project-URL: Source, https://github.com/iyazkasep/luminanet
+Project-URL: Bug Reports, https://github.com/iyazkasep/luminanet/issues
+Keywords: deep learning,neural networks,machine learning,pure python,termux,numpy,educational,luminanet
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Education
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: scipy>=1.7.0
+Requires-Dist: nltk>=3.6.0
+Requires-Dist: sastrawi>=1.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+
+# LuminaNet 🌟
+
+**Illuminate Your AI Journey with Pure Python Deep Learning**
+
+[![PyPI version](https://img.shields.io/pypi/v/luminanet.svg)](https://pypi.org/project/luminanet/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/luminanet.svg)](https://pypi.org/project/luminanet/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Termux Compatible](https://img.shields.io/badge/Termux-Compatible-brightgreen.svg)](https://termux.com/)
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/luminanet.svg)](https://github.com/yourusername/luminanet/stargazers)
+
+**LuminaNet** adalah framework deep learning pure Python yang dirancang untuk edukasi dan production dengan dependencies minimal. Hanya menggunakan **NumPy, SciPy, NLTK, dan Sastrawi**.
+
+## 🎯 **Why LuminaNet?**
+
+| Feature | LuminaNet | Others |
+|---------|-----------|--------|
+| **Dependencies** | 🟢 4 libraries | 🔴 10+ libraries |
+| **Termux Support** | 🟢 Perfect | 🔴 Limited |
+| **Pure Python** | 🟢 100% | 🟡 Mixed |
+| **Educational** | 🟢 Excellent | 🟡 Good |
+| **Indonesian NLP** | 🟢 Built-in | 🔴 None |
+
+## 🚀 **Quick Installation**
+
+### From PyPI
+```bash
+pip install luminanet
+```
+
+### From Source
+```bash
+git clone https://github.com/yourusername/luminanet.git
+cd luminanet
+pip install -e .
+```
+
+### For Termux (Android)
+```bash
+pkg install python python-pip
+pip install numpy scipy nltk sastrawi
+pip install luminanet
+```
+
+## 💡 **Quick Start**
+
+```python
+from luminanet import NeuralNetwork, Dense
+import numpy as np
+
+# XOR Example
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
+
+model = NeuralNetwork("XORSolver")
+model.add(Dense(4, activation='relu'))
+model.add(Dense(2, activation='softmax'))
+model.compile(optimizer='adam', loss='categorical_crossentropy')
+model.train(X, y, epochs=1000)
+
+print(model.predict(X))
+```
+
+
+## 🤝 **Contributing**
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 **Author**
+
+Your Name - [GitHub](https://github.com/yourusername) - your.email@example.com
+
+## 🙏 **Acknowledgments**
+
+- NumPy team untuk komputasi numerik
+- NLTK team untuk NLP capabilities  
+- Sastrawi team untuk Indonesian language support
+- Python community untuk ecosystem yang luar biasa
