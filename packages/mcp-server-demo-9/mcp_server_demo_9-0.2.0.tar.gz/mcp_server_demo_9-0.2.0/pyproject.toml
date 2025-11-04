@@ -1,0 +1,20 @@
+[project]
+name = "mcp-server-demo-9"
+version = "0.2.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "tylnn68", email = "11301536+tylnn68@user.noreply.gitee.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=0.1.0",
+    "mcp>=1.0.0",
+]
+
+[project.scripts]
+mcp-server-demo-9 = "mcp_server_demo_9:main"
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
