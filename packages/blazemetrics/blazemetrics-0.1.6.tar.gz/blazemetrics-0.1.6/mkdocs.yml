@@ -1,0 +1,321 @@
+# mkdocs.yml - BlazeMetrics Optimized Configuration
+
+site_name: BlazeMetrics
+site_description: Ultra-fast NLP evaluation metrics powered by Rust
+site_author: Gaurav Chauhan
+site_url: https://2796gaurav.github.io/blazemetrics/
+
+repo_name: 2796gaurav/blazemetrics
+repo_url: https://github.com/2796gaurav/blazemetrics
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2025 Gaurav Chauhan
+
+theme:
+  name: material
+  language: en
+  
+  # Color palette - completely override default colors
+  palette:
+    - media: "(prefers-color-scheme)"
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+      scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - content.tooltips
+    - header.autohide
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    - toc.integrate
+  
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    
+  font:
+    text: Roboto
+    code: Roboto Mono
+  
+  # Single optimized CSS file
+  extra_css:
+    - customization/stylesheets/theme.css
+
+# Extra metadata for SEO and search optimization
+extra:
+  generator: false
+  
+  # Social media and SEO tags
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/2796gaurav/blazemetrics
+      name: GitHub Repository
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/blazemetrics/
+      name: PyPI Package
+  
+  # Search analytics
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve by
+            <a href="https://github.com/2796gaurav/blazemetrics/issues/new/?title=[Docs]+{title}+-+{url}" target="_blank" rel="noopener">telling us what we can do better</a>.
+
+# Enhanced plugins for search optimization
+plugins:
+  # Advanced search with multilingual support
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+      lang: 
+        - en
+        - ja
+
+  
+  # Minification for performance
+  - minify:
+      minify_html: true
+      minify_css: true
+      minify_js: true
+      htmlmin_opts:
+        remove_comments: true
+        remove_empty_space: true
+      css_files:
+        - customization/stylesheets/theme.css
+      js_files: []
+  
+  # Git information
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+      locale: en
+      fallback_to_build_date: true
+      enable_git_follow: false
+      strict: false
+  
+  # Tags for better organization
+  - tags
+  
+  # Blog functionality
+  - blog:
+      blog_dir: blog
+      blog_toc: true
+      post_date_format: full
+      post_url_date_format: yyyy/MM/dd
+      post_slugify_separator: "-"
+      pagination_per_page: 10
+      draft_if_future_date: true
+      archive_toc: true
+      categories_toc: true
+
+# Comprehensive Markdown extensions for rich content
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: ""
+      permalink_title: Anchor link to this section
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+      separator: "-"
+  
+  # PyMdown extensions for enhanced functionality
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      auto_title: true
+      linenums: true
+      linenums_style: pymdownx-inline
+      extend_pygments_lang:
+        - name: pycon3
+          lang: pycon
+          options:
+            python3: true
+  - pymdownx.inlinehilite:
+      custom_inline:
+        - name: math
+          class: arithmatex
+          format: !!python/name:pymdownx.arithmatex.inline_mathjax_format
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: 2796gaurav
+      repo: blazemetrics
+      provider: github
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: math
+          class: arithmatex
+          format: !!python/name:pymdownx.arithmatex.fence_mathjax_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+
+# Optimized navigation structure
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+  - Core Features:
+    - Core Metrics: user-guide/core-metrics.md
+    - Guardrails & Safety: user-guide/guardrails-safety.md
+    - Fuzzy Matching: user-guide/fuzzy-matching.md
+    - Embedding Operations: user-guide/embedding-operations.md
+    - Streaming Analytics: user-guide/streaming-analytics.md
+    - LLM Integrations: user-guide/llm-integrations.md
+    - Monitoring & Exporters: user-guide/monitoring-exporters.md
+  - API Reference:
+    - Core Functions: api/core-functions.md
+    - Guardrails API: api/guardrails-api.md
+    - Client APIs: api/client-apis.md
+    - Configuration: api/configuration.md
+    - Streaming API: api/streaming-api.md
+  - Advanced Usage:
+    - Performance Tuning: advanced/performance-tuning.md
+    - Custom Metrics: advanced/custom-metrics.md
+    - Batch Processing: advanced/batch-processing.md
+    - Parallel Processing: advanced/parallel-processing.md
+    - Production Deployment: advanced/production-deployment.md
+  - Examples:
+    - Basic Examples: examples/basic-examples.md
+    - Advanced Examples: examples/advanced-examples.md
+    - Production Workflows: examples/production-workflows.md
+    - Real-world Workflows: examples/real-world-workflows.md
+  - Use Cases:
+    - NLP Evaluation: use-cases/nlp-evaluation.md
+    - Content Moderation: use-cases/content-moderation.md
+    - RAG Applications: use-cases/rag-applications.md
+    - Production Monitoring: use-cases/production-monitoring.md
+  - Benchmarks:
+    - Performance Comparison: benchmarks/performance-comparison.md
+    - Competitor Analysis: benchmarks/competitor-analysis.md
+    - Scalability Analysis: benchmarks/scalability-analysis.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Architecture: development/architecture.md
+    - Testing: development/testing.md
+    - Development Setup: development/development-setup.md
+    - Building from Source: development/building-from-source.md
+  - About:
+    - Changelog: about/changelog.md
+    - License: about/license.md
+  - Blog: blog/index.md
+  - Misc:
+      - Examples: examples.md
+      - FAQ: faq.md
+      - Philosophy: philosophy.md
+      - Production Checklist: production_checklist.md
+      - Quickstart (Flat): quickstart.md
+      - API Reference (Full): advanced/api-reference.md
+      - Custom Guardrails: advanced/custom-guardrails.md
+      - Dev Guide: advanced/developer-guide.md
+      - Use Cases Index: use-cases/index.md
+      - Analytics & Monitoring: user-guide/analytics-monitoring.md
+      - Client Workflows: user-guide/client-workflows.md
+      - Core Concepts: user-guide/core-concepts.md
+      - Dashboards User Guide: user-guide/dashboards.md
+      - Guardrails Full Guide: user-guide/guardrails.md
+      - LLM-LLMs Integration: user-guide/llm-llms-integration.md
+      - User Reporting: user-guide/reporting.md
+
+
+# Strict validation for production
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: ignore
+    unrecognized_links: ignore
+
+# Watch for development
+watch:
+  - docs
+  - mkdocs.yml
+  - README.md

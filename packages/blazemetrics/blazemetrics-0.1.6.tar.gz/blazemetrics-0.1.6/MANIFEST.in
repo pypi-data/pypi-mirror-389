@@ -1,0 +1,18 @@
+# Only include core package code, Rust .so, and type hints
+graft blazemetrics
+include blazemetrics/py.typed
+prune blazemetrics/__pycache__
+prune examples
+prune benchmarking
+exclude *.md
+exclude *.sh
+exclude .*  # dotfiles
+exclude target/
+exclude hf_models/
+exclude docs/
+exclude showcase/
+exclude *.ipynb
+exclude *.rs
+exclude Cargo.*
+exclude model_download.sh
+
