@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: caki
+Version: 0.8.0
+Summary: Auto-installer CLI wrapper for pip packages
+Author: Mufaddal Jawadwala
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-python
+Dynamic: summary
+
+Caki is a Python tool that automatically installs pip packages if you try to run them and they are missing.  
+
+## Example
+
+```bash
+caki black --version
+caki python main.py
+
+## This should either log black's version, or install then log
+## The second command will scan main's dependencies and then run
