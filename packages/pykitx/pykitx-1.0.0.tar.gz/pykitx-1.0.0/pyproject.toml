@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pykitx"
+version = "1.0.0"
+description = "PyKit is a modern Python project initializer — scaffold clean, ready-to-publish packages, tests, CI, in one command."
+readme = "README.md"
+authors = [{ name = "AetherStudio", email = "rahmataditya2817@gmail.com" }]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+
+[project.scripts]
+pykit = "pykit.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"] 
+
+[tool.setuptools.package-data]
+pykit = ["templates/**/*.tmpl", "templates/*.json", "templates/**/*.yml", "templates/**/*.yaml"]
+
+[project.urls]
+Homepage = "https://pykit.vercel.app"
+Repository = "https://github.com/rillToMe/pykit"
+
+

@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: pykitx
+Version: 1.0.0
+Summary: PyKit is a modern Python project initializer — scaffold clean, ready-to-publish packages, tests, CI, in one command.
+Author-email: AetherStudio <rahmataditya2817@gmail.com>
+License: MIT
+Project-URL: Homepage, https://pykit.vercel.app
+Project-URL: Repository, https://github.com/rillToMe/pykit
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+pip install -e .
+pykit new name-project -T cli-stdlib / cli-typer / web-fastapi / web-flask / cli-click / tui-rich
+cd name-project
+pip install -e .
+name-project

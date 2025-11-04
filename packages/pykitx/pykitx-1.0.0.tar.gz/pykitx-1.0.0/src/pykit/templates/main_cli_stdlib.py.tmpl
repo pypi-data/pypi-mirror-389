@@ -1,0 +1,28 @@
+"""${project_name}: simple CLI (stdlib argparse)."""
+import argparse
+import sys
+import logging
+
+__version__ = "1.0.0"
+
+def run(name: str):
+    logging.info("running task with name=%s", name)
+    print(f"Hello from ${project_name}, {name}!")
+
+def parse_args(argv=None):
+    p = argparse.ArgumentParser(prog="${project_name}", description="${project_name} CLI")
+    p.add_argument("-n", "--name", default="world", help="Your name")
+    p.add_argument("--version", action="store_true", help="Show version")
+    return p.parse_args(argv)
+
+def main(argv=None):
+    args = parse_args(argv)
+    if args.version:
+        print(__version__)
+        return 0
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    run(args.name)
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())

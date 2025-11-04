@@ -1,0 +1,42 @@
+"""astro: minimal FastAPI web template."""
+from datetime import datetime
+from pathlib import Path
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+__version__ = "1.0.0"
+
+BASE_DIR = Path(__file__).parent
+app = FastAPI(title="astro", version=__version__)
+
+# Static 
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
+
+CONTEXT = {
+    "project": "astro",
+    "org": "DitDev",
+    "year": datetime.now().year,
+    "version": __version__,
+}
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("base.html", {"request": request, **CONTEXT})
+
+@app.exception_handler(404)
+async def not_found(request: Request, exc):
+    return templates.TemplateResponse("404.html", {"request": request, **CONTEXT}, status_code=404)
+
+def main():
+    try:
+        import uvicorn
+    except ImportError:
+        print("Uvicorn required. Install via: pip install uvicorn[standard]")
+        return
+    uvicorn.run("astro.main:app", host="127.0.0.1", port=8000, reload=True)
+
+if __name__ == "__main__":
+    main()
