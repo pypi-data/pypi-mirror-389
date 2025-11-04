@@ -1,0 +1,1148 @@
+name: Test Homebrew Installation
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_version:
+        description: 'Specific version to test (optional)'
+        required: false
+        type: string
+      skip_cleanup:
+        description: 'Skip cleanup for debugging'
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    # Run daily at 2 AM UTC to catch installation issues
+    - cron: '0 2 * * *'
+  pull_request:
+    paths:
+      - 'homebrew-riveter/**'
+      - '.github/workflows/test-homebrew-installation.yml'
+      - 'scripts/sync_versions.py'
+  push:
+    branches: [main]
+    paths:
+      - 'homebrew-riveter/**'
+      - '.github/workflows/test-homebrew-installation.yml'
+
+jobs:
+  test-tap-installation-comprehensive:
+    name: Comprehensive Tap Installation Tests
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        test_scenario: [fresh_install, reinstall, upgrade]
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Homebrew (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          echo "🍺 Installing Homebrew on Linux..."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+          # Add Homebrew to PATH for current session
+          echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+          # Source the shell environment
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Verify Homebrew installation
+          /home/linuxbrew/.linuxbrew/bin/brew --version
+          echo "✅ Homebrew installed successfully"
+
+      - name: Clean environment for fresh install test
+        if: matrix.test_scenario == 'fresh_install'
+        run: |
+          echo "🧹 Ensuring clean environment for fresh install test..."
+
+          # Remove any existing riveter installation
+          brew uninstall scottryanhoward/homebrew-riveter/riveter 2>/dev/null || true
+          brew uninstall riveter 2>/dev/null || true
+
+          # Remove tap if it exists
+          brew untap scottryanhoward/homebrew-riveter 2>/dev/null || true
+
+          # Verify clean state
+          ! which riveter || (echo "❌ riveter still found after cleanup" && exit 1)
+          ! brew tap | grep scottryanhoward/homebrew-riveter || (echo "❌ tap still present after cleanup" && exit 1)
+
+          echo "✅ Environment cleaned successfully"
+
+      - name: Test tap installation with error handling
+        id: tap-install
+        run: |
+          echo "🔧 Testing tap installation with comprehensive error handling..."
+
+          max_attempts=3
+          attempt=1
+
+          while [ $attempt -le $max_attempts ]; do
+            echo "📥 Tap installation attempt $attempt of $max_attempts"
+
+            if brew tap scottryanhoward/homebrew-riveter; then
+              echo "✅ Tap installation successful on attempt $attempt"
+              echo "tap_success=true" >> $GITHUB_OUTPUT
+              break
+            else
+              exit_code=$?
+              echo "❌ Tap installation failed on attempt $attempt (exit code: $exit_code)"
+
+              if [ $attempt -eq $max_attempts ]; then
+                echo "::error::Tap installation failed after $max_attempts attempts"
+                echo "tap_success=false" >> $GITHUB_OUTPUT
+
+                # Collect diagnostic information
+                echo "🔍 Diagnostic information:"
+                echo "Homebrew version: $(brew --version)"
+                echo "Homebrew config: $(brew config)"
+                echo "Available taps: $(brew tap)"
+                echo "Network connectivity test:"
+                curl -I https://github.com/ScottRyanHoward/homebrew-riveter || true
+
+                exit 1
+              fi
+
+              echo "⏳ Waiting 10 seconds before retry..."
+              sleep 10
+              attempt=$((attempt + 1))
+            fi
+          done
+
+      - name: Verify tap installation
+        if: steps.tap-install.outputs.tap_success == 'true'
+        run: |
+          echo "🔍 Verifying tap installation..."
+
+          # Check that tap is listed
+          if brew tap | grep -q scottryanhoward/homebrew-riveter; then
+            echo "✅ Tap found in brew tap list"
+          else
+            echo "❌ Tap not found in brew tap list"
+            echo "Available taps:"
+            brew tap
+            exit 1
+          fi
+
+          # Check that formula is available
+          if brew search riveter | grep -q scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ Formula found in tap"
+          else
+            echo "❌ Formula not found in tap"
+            echo "Available formulas in tap:"
+            brew search scottryanhoward/homebrew-riveter/ || true
+            exit 1
+          fi
+
+          echo "✅ Tap installation verification completed"
+
+      - name: Test formula installation with retry logic
+        id: formula-install
+        if: steps.tap-install.outputs.tap_success == 'true'
+        run: |
+          echo "📦 Testing formula installation with retry logic..."
+
+          max_attempts=3
+          attempt=1
+
+          while [ $attempt -le $max_attempts ]; do
+            echo "📥 Formula installation attempt $attempt of $max_attempts"
+
+            if brew install scottryanhoward/homebrew-riveter/riveter; then
+              echo "✅ Formula installation successful on attempt $attempt"
+              echo "install_success=true" >> $GITHUB_OUTPUT
+              break
+            else
+              exit_code=$?
+              echo "❌ Formula installation failed on attempt $attempt (exit code: $exit_code)"
+
+              if [ $attempt -eq $max_attempts ]; then
+                echo "::error::Formula installation failed after $max_attempts attempts"
+                echo "install_success=false" >> $GITHUB_OUTPUT
+
+                # Collect diagnostic information
+                echo "🔍 Diagnostic information:"
+                echo "Formula info:"
+                brew info scottryanhoward/homebrew-riveter/riveter || true
+                echo "Formula audit:"
+                brew audit scottryanhoward/homebrew-riveter/riveter || true
+                echo "Homebrew doctor:"
+                brew doctor || true
+
+                exit 1
+              fi
+
+              echo "⏳ Waiting 15 seconds before retry..."
+              sleep 15
+              attempt=$((attempt + 1))
+            fi
+          done
+
+      - name: Verify binary installation and functionality
+        if: steps.formula-install.outputs.install_success == 'true'
+        run: |
+          echo "🧪 Verifying binary installation and functionality..."
+
+          # Check that binary is installed and in PATH
+          if which riveter; then
+            echo "✅ riveter binary found in PATH: $(which riveter)"
+          else
+            echo "❌ riveter binary not found in PATH"
+            echo "PATH: $PATH"
+            echo "Homebrew bin directories:"
+            ls -la /usr/local/bin/riveter 2>/dev/null || true
+            ls -la /opt/homebrew/bin/riveter 2>/dev/null || true
+            ls -la /home/linuxbrew/.linuxbrew/bin/riveter 2>/dev/null || true
+            exit 1
+          fi
+
+          # Test version command
+          if riveter --version; then
+            version_output=$(riveter --version)
+            echo "✅ Version command successful: $version_output"
+
+            # Extract version number
+            version_number=$(echo "$version_output" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+            if [ -n "$version_number" ]; then
+              echo "✅ Version number extracted: $version_number"
+              echo "binary_version=$version_number" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ Could not extract version number from output"
+            fi
+          else
+            echo "❌ Version command failed"
+            exit 1
+          fi
+
+          # Test help command
+          if riveter --help > /dev/null; then
+            echo "✅ Help command successful"
+          else
+            echo "❌ Help command failed"
+            exit 1
+          fi
+
+          # Test list-rule-packs command
+          if riveter list-rule-packs > /dev/null; then
+            echo "✅ List rule packs command successful"
+          else
+            echo "❌ List rule packs command failed"
+            exit 1
+          fi
+
+          echo "✅ Binary functionality verification completed"
+
+      - name: Test upgrade scenario
+        if: matrix.test_scenario == 'upgrade' && steps.formula-install.outputs.install_success == 'true'
+        run: |
+          echo "⬆️ Testing upgrade scenario..."
+
+          # Record current version
+          current_version=$(riveter --version | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+          echo "Current version before upgrade: $current_version"
+
+          # Attempt upgrade (may be no-op if already latest)
+          if brew upgrade scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ Upgrade command completed successfully"
+          else
+            # Upgrade may fail if already at latest version
+            echo "ℹ️ Upgrade command completed (may be no-op if already latest)"
+          fi
+
+          # Verify binary still works after upgrade
+          if riveter --version; then
+            new_version=$(riveter --version | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+            echo "✅ Version after upgrade: $new_version"
+          else
+            echo "❌ Binary not functional after upgrade"
+            exit 1
+          fi
+
+      - name: Test reinstall scenario
+        if: matrix.test_scenario == 'reinstall' && steps.formula-install.outputs.install_success == 'true'
+        run: |
+          echo "🔄 Testing reinstall scenario..."
+
+          # Uninstall
+          echo "📤 Uninstalling riveter..."
+          if brew uninstall scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ Uninstall successful"
+          else
+            echo "❌ Uninstall failed"
+            exit 1
+          fi
+
+          # Verify binary is removed
+          if ! which riveter; then
+            echo "✅ Binary removed from PATH after uninstall"
+          else
+            echo "❌ Binary still found in PATH after uninstall"
+            exit 1
+          fi
+
+          # Reinstall
+          echo "📥 Reinstalling riveter..."
+          if brew install scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ Reinstall successful"
+          else
+            echo "❌ Reinstall failed"
+            exit 1
+          fi
+
+          # Verify binary works after reinstall
+          if riveter --version; then
+            echo "✅ Binary functional after reinstall"
+          else
+            echo "❌ Binary not functional after reinstall"
+            exit 1
+          fi
+
+      - name: Cleanup (unless debugging)
+        if: always() && inputs.skip_cleanup != true
+        run: |
+          echo "🧹 Cleaning up test environment..."
+
+          # Remove installation
+          brew uninstall scottryanhoward/homebrew-riveter/riveter 2>/dev/null || true
+
+          # Remove tap
+          brew untap scottryanhoward/homebrew-riveter 2>/dev/null || true
+
+          echo "✅ Cleanup completed"
+
+  test-homebrew-installation:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Homebrew (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          echo "🍺 Installing Homebrew on Linux..."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+          # Add Homebrew to PATH for current session
+          echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+          # Source the shell environment
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Verify Homebrew installation
+          /home/linuxbrew/.linuxbrew/bin/brew --version
+          echo "✅ Homebrew installed successfully"
+
+      - name: Test tap installation
+        run: |
+          # Add the tap
+          brew tap scottryanhoward/homebrew-riveter
+
+          # Verify tap was added
+          brew tap | grep scottryanhoward/homebrew-riveter
+
+      - name: Test riveter installation
+        run: |
+          # Install riveter from tap
+          brew install scottryanhoward/homebrew-riveter/riveter
+
+          # Verify installation
+          which riveter
+          riveter --version
+
+      - name: Test riveter functionality
+        run: |
+          # Test basic commands
+          riveter --help
+          riveter list-rule-packs
+
+          # Create a simple Terraform file for testing
+          cat > test.tf << 'EOF'
+          resource "aws_instance" "example" {
+            ami           = "ami-12345678"
+            instance_type = "t3.micro"
+
+            tags = {
+              Name = "test-instance"
+            }
+          }
+          EOF
+
+          # Test scanning
+          riveter scan --rule-pack aws-security --terraform test.tf --output-format json
+
+      - name: Test upgrade scenario
+        run: |
+          # Test upgrade (should be no-op if already latest)
+          brew upgrade scottryanhoward/homebrew-riveter/riveter || true
+
+          # Verify still works after upgrade
+          riveter --version
+
+      - name: Test uninstall
+        run: |
+          # Test uninstall
+          brew uninstall scottryanhoward/homebrew-riveter/riveter
+
+          # Verify binary is removed
+          ! which riveter || (echo "riveter still found after uninstall" && exit 1)
+
+      - name: Test reinstall
+        run: |
+          # Test reinstall
+          brew install scottryanhoward/homebrew-riveter/riveter
+
+          # Verify works after reinstall
+          riveter --version
+
+  test-formula-validation-comprehensive:
+    name: Comprehensive Formula Validation
+    runs-on: ubuntu-latest
+    outputs:
+      formula_version: ${{ steps.extract-version.outputs.version }}
+      validation_passed: ${{ steps.validation-summary.outputs.passed }}
+
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+
+      - name: Checkout homebrew-riveter repository
+        uses: actions/checkout@v4
+        with:
+          repository: ScottRyanHoward/homebrew-riveter
+          path: homebrew-riveter
+
+      - name: Install Homebrew
+        run: |
+          echo "🍺 Installing Homebrew..."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+          # Add Homebrew to PATH for current session
+          echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+          # Source the shell environment
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Verify Homebrew installation
+          /home/linuxbrew/.linuxbrew/bin/brew --version
+          echo "✅ Homebrew installed successfully"
+
+      - name: Install Ruby for syntax validation
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby-full
+          ruby --version
+
+      - name: Validate formula file existence and structure
+        id: file-validation
+        run: |
+          echo "📁 Validating formula file existence and basic structure..."
+
+          # Check that formula file exists
+          if [ ! -f "homebrew-riveter/Formula/riveter.rb" ]; then
+            echo "❌ Formula file not found at homebrew-riveter/Formula/riveter.rb"
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "✅ Formula file found"
+          echo "file_exists=true" >> $GITHUB_OUTPUT
+
+          # Check file is not empty
+          if [ ! -s "homebrew-riveter/Formula/riveter.rb" ]; then
+            echo "❌ Formula file is empty"
+            exit 1
+          fi
+
+          echo "✅ Formula file is not empty"
+
+          # Show file size and basic info
+          echo "📊 Formula file info:"
+          ls -la homebrew-riveter/Formula/riveter.rb
+          echo "Line count: $(wc -l < homebrew-riveter/Formula/riveter.rb)"
+
+      - name: Validate Ruby syntax
+        if: steps.file-validation.outputs.file_exists == 'true'
+        run: |
+          echo "🔍 Validating Ruby syntax..."
+
+          if ruby -c homebrew-riveter/Formula/riveter.rb; then
+            echo "✅ Ruby syntax validation passed"
+          else
+            echo "❌ Ruby syntax validation failed"
+            echo "Formula content:"
+            cat homebrew-riveter/Formula/riveter.rb
+            exit 1
+          fi
+
+      - name: Validate formula structure and conventions
+        if: steps.file-validation.outputs.file_exists == 'true'
+        id: structure-validation
+        run: |
+          echo "🏗️ Validating formula structure and Homebrew conventions..."
+          cd homebrew-riveter
+
+          validation_errors=0
+
+          # Check that formula class name matches filename
+          if grep -q 'class Riveter < Formula' Formula/riveter.rb; then
+            echo "✅ Formula class name is correct"
+          else
+            echo "❌ Formula class name should be 'Riveter'"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          # Check required metadata fields
+          if grep -q 'desc ".*"' Formula/riveter.rb; then
+            echo "✅ Description field present"
+          else
+            echo "❌ Missing or malformed description"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'homepage "https://.*"' Formula/riveter.rb; then
+            echo "✅ Homepage URL present and uses HTTPS"
+          else
+            echo "❌ Missing or malformed homepage URL (should use HTTPS)"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'version ".*"' Formula/riveter.rb; then
+            echo "✅ Version field present"
+          else
+            echo "❌ Missing or malformed version"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'license ".*"' Formula/riveter.rb; then
+            echo "✅ License field present"
+          else
+            echo "❌ Missing or malformed license"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          # Validate URLs are properly formatted and use HTTPS
+          if grep -E 'url "https://github\.com/[^"]+\.tar\.gz"' Formula/riveter.rb; then
+            echo "✅ URLs are properly formatted HTTPS GitHub release URLs"
+          else
+            echo "❌ URLs should be HTTPS GitHub release URLs ending in .tar.gz"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          # Check checksums format
+          if grep -E 'sha256 "[a-fA-F0-9]{64}|PLACEHOLDER_CHECKSUM_[A-Z_]+"' Formula/riveter.rb; then
+            echo "✅ Checksums are properly formatted"
+          else
+            echo "❌ Checksums should be 64-character hex strings or valid placeholders"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          # Validate platform-specific conditionals
+          if grep -q 'if OS.mac? && Hardware::CPU.intel?' Formula/riveter.rb; then
+            echo "✅ macOS Intel conditional present"
+          else
+            echo "❌ Missing macOS Intel conditional"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'elsif OS.mac? && Hardware::CPU.arm?' Formula/riveter.rb; then
+            echo "✅ macOS ARM conditional present"
+          else
+            echo "❌ Missing macOS ARM conditional"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'elsif OS.linux?' Formula/riveter.rb; then
+            echo "✅ Linux conditional present"
+          else
+            echo "❌ Missing Linux conditional"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          # Validate install method
+          if grep -q 'def install' Formula/riveter.rb; then
+            echo "✅ Install method present"
+          else
+            echo "❌ Missing install method"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'bin.install "riveter"' Formula/riveter.rb; then
+            echo "✅ Install method uses bin.install correctly"
+          else
+            echo "❌ Install method should use bin.install"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          # Validate test method
+          if grep -q 'def test' Formula/riveter.rb; then
+            echo "✅ Test method present"
+          else
+            echo "❌ Missing test method"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          if grep -q 'assert_match.*--version' Formula/riveter.rb; then
+            echo "✅ Test method verifies --version command"
+          else
+            echo "❌ Test method should verify --version command"
+            validation_errors=$((validation_errors + 1))
+          fi
+
+          echo "structure_errors=$validation_errors" >> $GITHUB_OUTPUT
+
+          if [ $validation_errors -eq 0 ]; then
+            echo "✅ All structure validation checks passed"
+          else
+            echo "❌ Found $validation_errors structure validation errors"
+            exit 1
+          fi
+
+      - name: Extract and validate version information
+        id: extract-version
+        if: steps.file-validation.outputs.file_exists == 'true'
+        run: |
+          echo "🔢 Extracting and validating version information..."
+
+          # Extract version from formula
+          formula_version=$(grep 'version "' homebrew-riveter/Formula/riveter.rb | sed 's/.*version "\([^"]*\)".*/\1/')
+
+          if [ -n "$formula_version" ]; then
+            echo "✅ Formula version extracted: $formula_version"
+            echo "version=$formula_version" >> $GITHUB_OUTPUT
+
+            # Validate version format (semantic versioning)
+            if [[ "$formula_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "✅ Version follows semantic versioning format"
+            else
+              echo "❌ Version should follow semantic versioning (x.y.z)"
+              exit 1
+            fi
+          else
+            echo "❌ Could not extract version from formula"
+            exit 1
+          fi
+
+          # Compare with pyproject.toml version if available
+          if [ -f "pyproject.toml" ]; then
+            echo "🔍 Comparing with pyproject.toml version..."
+
+            # Install Python dependencies for version comparison
+            sudo apt-get install -y python3-pip
+            pip3 install tomli
+
+            pyproject_version=$(python3 -c "
+            import tomllib
+            with open('pyproject.toml', 'rb') as f:
+                data = tomllib.load(f)
+            print(data['project']['version'])
+            " 2>/dev/null || echo "unknown")
+
+            if [ "$pyproject_version" != "unknown" ]; then
+              echo "📊 Version comparison:"
+              echo "  pyproject.toml: $pyproject_version"
+              echo "  Formula: $formula_version"
+
+              if [ "$pyproject_version" = "$formula_version" ]; then
+                echo "✅ Versions match between pyproject.toml and formula"
+              else
+                echo "⚠️ Version mismatch detected (this may be expected during development)"
+              fi
+            fi
+          fi
+
+      - name: Add tap for formula validation
+        if: steps.file-validation.outputs.file_exists == 'true'
+        id: add-tap
+        run: |
+          echo "🔧 Adding tap for formula validation..."
+
+          # Add the tap using local path to make formula available by name
+          if brew tap scottryanhoward/homebrew-riveter ./homebrew-riveter; then
+            echo "✅ Tap added successfully"
+            echo "tap_added=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Failed to add tap"
+            echo "tap_added=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Verify tap was added
+          if brew tap | grep -q scottryanhoward/homebrew-riveter; then
+            echo "✅ Tap verified in brew tap list"
+          else
+            echo "❌ Tap not found in brew tap list"
+            exit 1
+          fi
+
+      - name: Validate formula with Homebrew audit
+        if: steps.add-tap.outputs.tap_added == 'true'
+        id: homebrew-audit
+        run: |
+          echo "🔍 Running Homebrew audit validation..."
+
+          # Use formula name instead of file path to avoid deprecated syntax
+          if brew audit --strict riveter; then
+            echo "✅ Homebrew audit passed"
+            echo "audit_passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Homebrew audit failed"
+            echo "audit_passed=false" >> $GITHUB_OUTPUT
+
+            # Show additional diagnostic information
+            echo "🔍 Additional diagnostic information:"
+            echo "Formula info:"
+            brew info riveter || true
+            echo "Formula dependencies:"
+            brew deps riveter || true
+
+            exit 1
+          fi
+
+      - name: Test formula installation from local (dry run)
+        if: steps.homebrew-audit.outputs.audit_passed == 'true'
+        run: |
+          echo "🧪 Testing formula installation (dry run)..."
+
+          # Test installation without actually installing
+          if brew install --dry-run scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ Formula installation dry run passed"
+          else
+            echo "❌ Formula installation dry run failed"
+            exit 1
+          fi
+
+      - name: Validation summary
+        id: validation-summary
+        if: always()
+        run: |
+          echo "📊 Formula Validation Summary"
+          echo "============================"
+
+          file_exists="${{ steps.file-validation.outputs.file_exists }}"
+          structure_errors="${{ steps.structure-validation.outputs.structure_errors }}"
+          tap_added="${{ steps.add-tap.outputs.tap_added }}"
+          audit_passed="${{ steps.homebrew-audit.outputs.audit_passed }}"
+
+          echo "File exists: $file_exists"
+          echo "Structure errors: ${structure_errors:-0}"
+          echo "Tap added: $tap_added"
+          echo "Audit passed: $audit_passed"
+
+          if [ "$file_exists" = "true" ] && [ "${structure_errors:-0}" = "0" ] && [ "$tap_added" = "true" ] && [ "$audit_passed" = "true" ]; then
+            echo "✅ All formula validation checks passed"
+            echo "passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Some formula validation checks failed"
+            echo "passed=false" >> $GITHUB_OUTPUT
+          fi
+
+  test-complete-installation-flow:
+    name: Complete Installation Flow Test
+    needs: [test-formula-validation-comprehensive]
+    if: needs.test-formula-validation-comprehensive.outputs.validation_passed == 'true'
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        installation_method: [one_step, two_step]
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Homebrew (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          echo "🍺 Installing Homebrew on Linux..."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+          # Add Homebrew to PATH for current session
+          echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
+          # Source the shell environment
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Verify Homebrew installation
+          /home/linuxbrew/.linuxbrew/bin/brew --version
+          echo "✅ Homebrew installed successfully"
+
+      - name: Ensure clean environment
+        run: |
+          echo "🧹 Ensuring clean environment..."
+
+          # Remove any existing riveter installation
+          brew uninstall scottryanhoward/homebrew-riveter/riveter 2>/dev/null || true
+          brew uninstall riveter 2>/dev/null || true
+
+          # Remove tap if it exists
+          brew untap scottryanhoward/homebrew-riveter 2>/dev/null || true
+
+          # Verify clean state
+          if which riveter; then
+            echo "❌ riveter still found after cleanup: $(which riveter)"
+            exit 1
+          fi
+
+          if brew tap | grep -q scottryanhoward/homebrew-riveter; then
+            echo "❌ tap still present after cleanup"
+            exit 1
+          fi
+
+          echo "✅ Environment is clean"
+
+      - name: Test one-step installation
+        if: matrix.installation_method == 'one_step'
+        id: one-step-install
+        run: |
+          echo "🚀 Testing one-step installation method..."
+
+          # Test the one-step install command
+          if brew install scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ One-step installation successful"
+            echo "install_success=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ One-step installation failed"
+            echo "install_success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Test two-step installation
+        if: matrix.installation_method == 'two_step'
+        id: two-step-install
+        run: |
+          echo "🚀 Testing two-step installation method..."
+
+          # Step 1: Add tap
+          if brew tap scottryanhoward/homebrew-riveter; then
+            echo "✅ Tap added successfully"
+          else
+            echo "❌ Failed to add tap"
+            exit 1
+          fi
+
+          # Step 2: Install formula
+          if brew install riveter; then
+            echo "✅ Two-step installation successful"
+            echo "install_success=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Two-step installation failed"
+            echo "install_success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Verify installation
+        if: (matrix.installation_method == 'one_step' && steps.one-step-install.outputs.install_success == 'true') || (matrix.installation_method == 'two_step' && steps.two-step-install.outputs.install_success == 'true')
+        id: verify-install
+        run: |
+          echo "🔍 Verifying installation..."
+
+          # Check that binary is installed and in PATH
+          if which riveter; then
+            binary_path=$(which riveter)
+            echo "✅ riveter binary found in PATH: $binary_path"
+          else
+            echo "❌ riveter binary not found in PATH"
+            echo "PATH: $PATH"
+            echo "Checking common Homebrew locations:"
+            ls -la /usr/local/bin/riveter 2>/dev/null || echo "Not found in /usr/local/bin/"
+            ls -la /opt/homebrew/bin/riveter 2>/dev/null || echo "Not found in /opt/homebrew/bin/"
+            ls -la /home/linuxbrew/.linuxbrew/bin/riveter 2>/dev/null || echo "Not found in /home/linuxbrew/.linuxbrew/bin/"
+            exit 1
+          fi
+
+          # Test version command
+          if version_output=$(riveter --version); then
+            echo "✅ Version command successful: $version_output"
+
+            # Extract and validate version number
+            version_number=$(echo "$version_output" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+            if [ -n "$version_number" ]; then
+              echo "✅ Version number extracted: $version_number"
+              echo "binary_version=$version_number" >> $GITHUB_OUTPUT
+
+              # Compare with expected version from formula validation
+              expected_version="${{ needs.test-formula-validation-comprehensive.outputs.formula_version }}"
+              if [ -n "$expected_version" ] && [ "$version_number" = "$expected_version" ]; then
+                echo "✅ Binary version matches formula version"
+              elif [ -n "$expected_version" ]; then
+                echo "⚠️ Version mismatch: binary=$version_number, formula=$expected_version"
+              fi
+            else
+              echo "❌ Could not extract version number from output"
+              exit 1
+            fi
+          else
+            echo "❌ Version command failed"
+            exit 1
+          fi
+
+      - name: Test binary functionality
+        if: steps.verify-install.outcome == 'success'
+        run: |
+          echo "🧪 Testing binary functionality..."
+
+          # Test help command
+          if riveter --help > /dev/null; then
+            echo "✅ Help command successful"
+          else
+            echo "❌ Help command failed"
+            exit 1
+          fi
+
+          # Test list-rule-packs command
+          if rule_packs=$(riveter list-rule-packs); then
+            echo "✅ List rule packs command successful"
+            echo "Available rule packs:"
+            echo "$rule_packs" | head -10
+          else
+            echo "❌ List rule packs command failed"
+            exit 1
+          fi
+
+          # Test with a simple Terraform file
+          echo "🧪 Testing with sample Terraform file..."
+          cat > test.tf << 'EOF'
+          resource "aws_instance" "example" {
+            ami           = "ami-12345678"
+            instance_type = "t3.micro"
+
+            tags = {
+              Name = "test-instance"
+            }
+          }
+          EOF
+
+          # Test scanning functionality
+          if riveter scan --rule-pack aws-security --terraform test.tf --output-format json > scan_output.json; then
+            echo "✅ Scan command successful"
+            echo "Scan output size: $(wc -c < scan_output.json) bytes"
+          else
+            echo "❌ Scan command failed"
+            exit 1
+          fi
+
+          # Clean up test files
+          rm -f test.tf scan_output.json
+
+      - name: Test PATH integration
+        if: steps.verify-install.outcome == 'success'
+        run: |
+          echo "🛤️ Testing PATH integration..."
+
+          # Test that riveter can be called from different directories
+          cd /tmp
+          if riveter --version > /dev/null; then
+            echo "✅ Binary works from /tmp directory"
+          else
+            echo "❌ Binary doesn't work from /tmp directory"
+            exit 1
+          fi
+
+          # Test with full path
+          binary_path=$(which riveter)
+          if "$binary_path" --version > /dev/null; then
+            echo "✅ Binary works with full path"
+          else
+            echo "❌ Binary doesn't work with full path"
+            exit 1
+          fi
+
+          # Test in different shells (if available)
+          if command -v bash > /dev/null; then
+            if bash -c "riveter --version" > /dev/null; then
+              echo "✅ Binary works in bash shell"
+            else
+              echo "❌ Binary doesn't work in bash shell"
+              exit 1
+            fi
+          fi
+
+          if command -v zsh > /dev/null; then
+            if zsh -c "riveter --version" > /dev/null; then
+              echo "✅ Binary works in zsh shell"
+            else
+              echo "❌ Binary doesn't work in zsh shell"
+              exit 1
+            fi
+          fi
+
+      - name: Test uninstall and cleanup
+        if: always() && steps.verify-install.outcome == 'success'
+        run: |
+          echo "🗑️ Testing uninstall and cleanup..."
+
+          # Test uninstall
+          if brew uninstall scottryanhoward/homebrew-riveter/riveter; then
+            echo "✅ Uninstall successful"
+          else
+            echo "❌ Uninstall failed"
+            exit 1
+          fi
+
+          # Verify binary is removed
+          if ! which riveter; then
+            echo "✅ Binary removed from PATH after uninstall"
+          else
+            echo "❌ Binary still found in PATH after uninstall: $(which riveter)"
+            exit 1
+          fi
+
+          # Remove tap
+          if brew untap scottryanhoward/homebrew-riveter; then
+            echo "✅ Tap removed successfully"
+          else
+            echo "❌ Failed to remove tap"
+            exit 1
+          fi
+
+          # Verify tap is removed
+          if ! brew tap | grep -q scottryanhoward/homebrew-riveter; then
+            echo "✅ Tap removed from brew tap list"
+          else
+            echo "❌ Tap still present in brew tap list"
+            exit 1
+          fi
+
+  test-multiple-versions:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install specific version (if available)
+        run: |
+          # Add the tap
+          brew tap scottryanhoward/homebrew-riveter
+
+          # Install current version
+          brew install scottryanhoward/homebrew-riveter/riveter
+
+          # Record current version
+          CURRENT_VERSION=$(riveter --version | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+          echo "Current version: $CURRENT_VERSION"
+
+          # Test that version matches expected format
+          echo "$CURRENT_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'
+
+      - name: Test version consistency
+        run: |
+          # Get version from binary
+          BINARY_VERSION=$(riveter --version | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+
+          # Get version from formula
+          FORMULA_VERSION=$(brew info scottryanhoward/homebrew-riveter/riveter | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+
+          echo "Binary version: $BINARY_VERSION"
+          echo "Formula version: $FORMULA_VERSION"
+
+          # Versions should match
+          [ "$BINARY_VERSION" = "$FORMULA_VERSION" ]
+
+  test-clean-environment:
+    runs-on: macos-latest
+
+    steps:
+      - name: Verify clean environment
+        run: |
+          # Ensure riveter is not already installed
+          ! which riveter || (echo "riveter already installed" && exit 1)
+
+          # Ensure tap is not already added
+          ! brew tap | grep scottryanhoward/homebrew-riveter || (echo "tap already added" && exit 1)
+
+      - name: Test one-step installation
+        run: |
+          # Test the one-step install command
+          brew install scottryanhoward/homebrew-riveter/riveter
+
+          # Verify installation
+          which riveter
+          riveter --version
+
+      - name: Clean up and test two-step installation
+        run: |
+          # Clean up
+          brew uninstall scottryanhoward/homebrew-riveter/riveter
+          brew untap scottryanhoward/homebrew-riveter
+
+          # Test two-step installation
+          brew tap scottryanhoward/homebrew-riveter
+          brew install riveter
+
+          # Verify installation
+          which riveter
+          riveter --version
+
+  test-path-integration:
+    runs-on: macos-latest
+
+    steps:
+      - name: Install riveter
+        run: |
+          brew tap scottryanhoward/homebrew-riveter
+          brew install riveter
+
+      - name: Test PATH integration
+        run: |
+          # Test that riveter is in PATH
+          which riveter
+
+          # Test that it can be called from any directory
+          cd /tmp
+          riveter --version
+
+          # Test that it works with full path
+          /usr/local/bin/riveter --version || /opt/homebrew/bin/riveter --version
+
+      - name: Test shell integration
+        run: |
+          # Test in different shells
+          bash -c "riveter --version"
+          zsh -c "riveter --version"
+
+  test-dependencies:
+    runs-on: macos-latest
+
+    steps:
+      - name: Install riveter
+        run: |
+          brew tap scottryanhoward/homebrew-riveter
+          brew install riveter
+
+      - name: Test that no Python is required
+        run: |
+          # Temporarily rename python to test independence
+          sudo mv /usr/bin/python3 /usr/bin/python3.bak 2>/dev/null || true
+
+          # riveter should still work
+          riveter --version
+
+          # Restore python
+          sudo mv /usr/bin/python3.bak /usr/bin/python3 2>/dev/null || true
+
+      - name: Test binary is self-contained
+        run: |
+          # Check that binary doesn't depend on system Python libraries
+          otool -L $(which riveter) | grep -v "/usr/lib" | grep -v "/System/Library" || true
+
+          # Test that it works without PYTHONPATH
+          unset PYTHONPATH
+          riveter --version
