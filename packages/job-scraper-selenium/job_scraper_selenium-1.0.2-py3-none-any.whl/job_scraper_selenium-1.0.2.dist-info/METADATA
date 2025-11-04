@@ -1,0 +1,323 @@
+Metadata-Version: 2.4
+Name: job-scraper-selenium
+Version: 1.0.2
+Summary: A Python package for scraping job postings from Indeed and LinkedIn
+Home-page: https://github.com/adilc0070/job-scraper
+Author: Adil C
+Author-email: adilc0070@gmail.com
+Project-URL: Bug Reports, https://github.com/adilc0070/job-scraper/issues
+Project-URL: Source, https://github.com/adilc0070/job-scraper
+Keywords: job scraper indeed linkedin selenium web-scraping
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: selenium>=4.0.0
+Requires-Dist: beautifulsoup4>=4.9.0
+Requires-Dist: webdriver-manager>=4.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Job Scraper 🚀
+
+A powerful and easy-to-use Python package for scraping job postings from **Indeed** and **LinkedIn** using Selenium browser automation.
+
+## Features ✨
+
+- 🔍 Scrape job details from Indeed and LinkedIn
+- 🤖 Automatic platform detection
+- 📊 Extract title, company, location, and full job description
+- 🎯 Simple and intuitive API
+- 🛡️ Bypasses anti-bot protection using Selenium
+- ⚙️ Configurable options (headless mode, verbose output)
+
+## Installation 📦
+
+### Install from source
+
+```bash
+# Clone or download the repository
+git clone https://github.com/adilc0070/job-scraper.git
+cd job-scraper
+
+# Install the package
+pip install .
+```
+
+### Install in development mode
+
+```bash
+pip install -e .
+```
+
+## Quick Start 🚀
+
+### Basic Usage
+
+```python
+from job_scraper import scrape_job
+
+# Scrape any supported job posting (auto-detects platform)
+job = scrape_job('https://in.indeed.com/viewjob?jk=...')
+
+if job:
+    print(f"Title: {job['title']}")
+    print(f"Company: {job['company']}")
+    print(f"Location: {job['location']}")
+    print(f"Description: {job['description'][:200]}...")
+```
+
+### Platform-Specific Scraping
+
+```python
+from job_scraper import scrape_indeed_job, scrape_linkedin_job
+
+# Scrape from Indeed
+indeed_job = scrape_indeed_job('https://in.indeed.com/viewjob?jk=...')
+
+# Scrape from LinkedIn
+linkedin_job = scrape_linkedin_job('https://www.linkedin.com/jobs/view/...')
+```
+
+### Advanced Options
+
+```python
+from job_scraper import scrape_job
+
+# Run in non-headless mode (show browser window)
+job = scrape_job(url, headless=False)
+
+# Disable verbose output (silent mode)
+job = scrape_job(url, verbose=False)
+
+# Combine options
+job = scrape_job(url, headless=False, verbose=False)
+```
+
+## API Reference 📚
+
+### `scrape_job(url, headless=True, verbose=True)`
+
+Automatically detect and scrape jobs from Indeed or LinkedIn.
+
+**Parameters:**
+- `url` (str): The job posting URL (Indeed or LinkedIn)
+- `headless` (bool): Run browser in headless mode (default: True)
+- `verbose` (bool): Print progress messages (default: True)
+
+**Returns:**
+- `dict`: Job details or `None` if scraping fails
+
+**Example:**
+```python
+job = scrape_job('https://in.indeed.com/viewjob?jk=123456')
+```
+
+### `scrape_indeed_job(url, headless=True, verbose=True)`
+
+Scrape a single Indeed job posting.
+
+**Parameters:**
+- Same as `scrape_job()`
+
+**Returns:**
+- `dict`: Job details with keys: `title`, `company`, `location`, `description`, `source`, `url`
+
+### `scrape_linkedin_job(url, headless=True, verbose=True)`
+
+Scrape a single LinkedIn job posting.
+
+**Parameters:**
+- Same as `scrape_job()`
+
+**Returns:**
+- `dict`: Job details with keys: `title`, `company`, `location`, `description`, `source`, `url`
+
+## Response Format 📋
+
+All scraping functions return a dictionary with the following structure:
+
+```python
+{
+    'title': 'Senior Python Developer',
+    'company': 'Tech Company Inc.',
+    'location': 'San Francisco, CA',
+    'description': 'Full job description text...',
+    'source': 'Indeed',  # or 'LinkedIn'
+    'url': 'https://...'
+}
+```
+
+## Examples 💡
+
+### Scrape Multiple Jobs
+
+```python
+from job_scraper import scrape_job
+
+urls = [
+    'https://in.indeed.com/viewjob?jk=123',
+    'https://www.linkedin.com/jobs/view/456',
+    'https://in.indeed.com/viewjob?jk=789'
+]
+
+jobs = []
+for url in urls:
+    job = scrape_job(url, verbose=False)
+    if job:
+        jobs.append(job)
+        print(f"✓ Scraped: {job['title']}")
+
+print(f"\nTotal jobs scraped: {len(jobs)}")
+```
+
+### Save to JSON
+
+```python
+import json
+from job_scraper import scrape_job
+
+job = scrape_job('https://in.indeed.com/viewjob?jk=...')
+
+if job:
+    with open('job_data.json', 'w', encoding='utf-8') as f:
+        json.dump(job, f, indent=2, ensure_ascii=False)
+    print("Job saved to job_data.json")
+```
+
+### Filter by Keywords
+
+```python
+from job_scraper import scrape_job
+
+keywords = ['python', 'django', 'flask']
+
+job = scrape_job('https://in.indeed.com/viewjob?jk=...')
+
+if job and any(keyword.lower() in job['description'].lower() for keyword in keywords):
+    print(f"✓ Job matches keywords: {job['title']}")
+else:
+    print("✗ Job doesn't match keywords")
+```
+
+## Requirements 🛠️
+
+- Python 3.7+
+- selenium >= 4.0.0
+- beautifulsoup4 >= 4.9.0
+- webdriver-manager >= 4.0.0
+- Google Chrome (installed automatically by webdriver-manager)
+
+## Limitations ⚠️
+
+- Some job sites may block automated scraping
+- LinkedIn may require authentication for certain jobs
+- Rate limiting may apply - avoid scraping too many jobs rapidly
+- Always respect the website's Terms of Service and robots.txt
+
+## Troubleshooting 🔧
+
+### Browser not found
+The package automatically downloads ChromeDriver. Ensure you have Google Chrome installed.
+
+### 403 Forbidden Error
+Some sites may block requests. Try:
+- Using `headless=False` to run in visible browser mode
+- Adding delays between requests
+- Using a VPN or proxy
+
+### Encoding errors
+The package handles most encoding issues automatically. If problems persist, the scraped data is returned as UTF-8.
+
+## Contributing 🤝
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Ways to Contribute
+
+1. **Report bugs** - Open an issue on GitHub
+2. **Add features** - Submit a pull request
+3. **Improve documentation** - Fix typos or add examples
+4. **Support more platforms** - Add scrapers for other job sites
+
+## Publishing to PyPI 📤
+
+To publish this package to PyPI so others can install it with `pip install job-scraper-selenium`:
+
+### 1. Create PyPI account
+- Sign up at [https://pypi.org/account/register/](https://pypi.org/account/register/)
+
+### 2. Install publishing tools
+```bash
+pip install build twine
+```
+
+### 3. Build the package
+```bash
+python -m build
+```
+
+### 4. Upload to PyPI
+```bash
+# Test on TestPyPI first (optional)
+twine upload --repository testpypi dist/*
+
+# Upload to real PyPI
+twine upload dist/*
+```
+
+### 5. Install your package
+```bash
+pip install job-scraper-selenium
+```
+
+## License 📄
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+## Author ✍️
+
+**Your Name**
+- GitHub: [@adilc0070](https://github.com/adilc0070)
+- Email: adilc0070@gmail.com
+
+## Acknowledgments 🙏
+
+- Selenium for browser automation
+- BeautifulSoup for HTML parsing
+- webdriver-manager for automatic driver management
+
+## Support 💬
+
+If you found this package helpful, please:
+- ⭐ Star the repository
+- 🐛 Report issues
+- 🔀 Submit pull requests
+- 📢 Share with others
+
+---
+
+**Disclaimer:** This package is for educational purposes. Always respect website Terms of Service and use responsibly.
+
