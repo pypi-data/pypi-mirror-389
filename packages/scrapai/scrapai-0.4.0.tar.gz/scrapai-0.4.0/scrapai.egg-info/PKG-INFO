@@ -1,0 +1,330 @@
+Metadata-Version: 2.4
+Name: scrapai
+Version: 0.4.0
+Summary: AI-powered web scraping SDK with intelligent configuration generation
+Home-page: https://github.com/zohaib3249/scrapai
+Author: Zohaib Yousaf
+Author-email: chzohaib136@gmail.com
+License: MIT
+Project-URL: Bug Reports, https://github.com/zohaib3249/scrapai/issues
+Project-URL: Source, https://github.com/zohaib3249/scrapai
+Project-URL: Documentation, https://github.com/zohaib3249/scrapai#readme
+Keywords: web-scraping,ai,scraping,automation,data-extraction,scraping-sdk,ai-agent,web-crawler
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Internet :: WWW/HTTP :: Indexing/Search
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.32.5
+Requires-Dist: urllib3>=2.5.0
+Requires-Dist: beautifulsoup4>=4.14.2
+Requires-Dist: lxml>=6.0.2
+Requires-Dist: fake-useragent>=2.2.0
+Requires-Dist: openai>=2.6.1
+Requires-Dist: playwright>=1.55.0
+Requires-Dist: playwright-stealth>=2.0.0
+Provides-Extra: playwright
+Requires-Dist: playwright>=1.55.0; extra == "playwright"
+Requires-Dist: playwright-stealth>=2.0.0; extra == "playwright"
+Provides-Extra: all
+Requires-Dist: playwright>=1.55.0; extra == "all"
+Requires-Dist: playwright-stealth>=2.0.0; extra == "all"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# ScrapAI - AI-Powered Web Scraping Made Simple
+
+**Extract data from any website or API using natural language - no coding required!**
+
+ScrapAI uses artificial intelligence to understand what data you need and automatically extracts it from websites and APIs. Just describe what you want, and ScrapAI handles the rest.
+
+---
+
+## ✨ What Can You Achieve?
+
+- **Extract structured data** from websites and APIs using simple descriptions
+- **Create reusable scraping configurations** for repeated data collection
+- **Get instant results** with one-off data extraction (SmartScraper)
+- **Automate data pipelines** with scheduled scraping configurations
+- **Support multiple AI services** including OpenAI, Ollama, Anthropic, Grok, and more
+- **No manual configuration** - AI discovers APIs, tests paths, and creates optimal configs automatically
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+pip install scrapai
+```
+
+### Option 1: Direct Data Extraction (SmartScraper)
+
+Get structured data immediately without creating configuration files:
+
+```python
+import asyncio
+from scrapai import ScrapAIClient
+
+async def main():
+    client = ScrapAIClient(
+        service_name="ollama",  # or "openai", "grok", "anthropic", etc.
+        service_key="your-api-key",  # not needed for local Ollama
+    )
+    
+    result = await client.smartscraper(
+        url="https://example.com/data",
+        description="Get product name, price, and rating"
+    )
+    
+    if result["success"]:
+        print(result["data"])  # Structured JSON output
+    
+    await client.close()
+
+asyncio.run(main())
+```
+
+**Output:**
+```json
+{
+  "product_name": "Example Product",
+  "price": 29.99,
+  "rating": 4.5
+}
+```
+
+### Option 2: Create Reusable Configuration
+
+Generate a reusable scraping configuration for repeated data collection:
+
+```python
+import asyncio
+from scrapai import ScrapAIClient
+
+async def main():
+    client = ScrapAIClient(
+        service_name="ollama",
+        service_key="your-api-key",
+    )
+    
+    # AI creates the configuration automatically
+    result = client.add_config(
+        url="https://api.example.com/metrics",
+        description="Get transaction count and total volume"
+    )
+    
+    config_name = result["config_name"]
+    
+    # Execute the configuration
+    data = await client.execute_config(config_name)
+    
+    # Results are in structured format
+    for item in data:
+        print(f"{item['name']}: {item['metric']} = {item['value']}")
+    
+    await client.close()
+
+asyncio.run(main())
+```
+
+**Once created, you can run configurations anytime - perfect for scheduled jobs!**
+
+```python
+# Run existing configuration (no AI needed - already configured)
+async def scheduled_data_collection():
+    client = ScrapAIClient(service_name="ollama", service_key="your-key")
+    
+    # Execute any existing configuration
+    data = await client.execute_config("my_config_name")
+    
+    # Process the data (save to database, send alerts, etc.)
+    if data.get("success"):
+        for item in data["data"]:
+            print(f"Collected: {item['name']} - {item['metric']} = {item['value']}")
+    
+    await client.close()
+
+# Use with cron jobs, task schedulers, or automation tools
+# This runs without AI - just executes the saved configuration
+```
+
+---
+
+## 📋 Use Cases
+
+### For Data Engineers
+- Rapidly create scraping configs for data pipelines
+- Automate data collection from multiple sources
+- **Schedule recurring extractions** - Run saved configurations anytime (cron jobs, task schedulers, etc.)
+- No AI calls needed for execution - configs run independently
+
+### For Analysts
+- Extract metrics from APIs and websites without coding
+- Get structured data ready for analysis
+- No need to learn XPath, CSS selectors, or API endpoints
+
+### For Developers
+- Integrate intelligent scraping into applications
+- Support multiple AI services with unified API
+- Handle complex pages with automatic fallback strategies
+
+---
+
+## 🔧 Supported AI Services
+
+ScrapAI works with any OpenAI-compatible API:
+
+- **OpenAI** - GPT-4, GPT-3.5
+- **Ollama** - Local models (llama3, qwen, mistral, etc.)
+- **Anthropic** - Claude models
+- **Grok** - xAI's Grok
+- **Google** - Gemini models
+- **Mistral AI** - Mistral models
+- **Custom Services** - Any OpenAI-compatible endpoint
+
+```python
+# Using OpenAI
+client = ScrapAIClient(
+    service_name="openai",
+    service_key="sk-...",
+    service_model="gpt-4"
+)
+
+# Using Ollama (local)
+client = ScrapAIClient(
+    service_name="ollama",
+    service_key="not-needed",  # Local Ollama doesn't need key
+    service_model="llama3:latest"
+)
+
+# Using custom service
+client = ScrapAIClient(
+    service_name="custom",
+    service_key="your-key",
+    service_base_url="https://your-api.com/v1",
+    service_model="your-model"
+)
+```
+
+---
+
+## 💡 Key Features
+
+### Intelligent Resource Selection
+- **API-first approach** - Automatically discovers and uses APIs when available
+- **HTML fallback** - Falls back to HTML scraping if API fails
+- **Multiple resources** - Configures automatic fallback strategies
+
+### Automatic Configuration Generation
+- AI analyzes URLs and discovers APIs
+- Tests extraction paths before creating configs
+- Iteratively refines until config works correctly
+- Creates reusable configuration files
+
+### Production-Ready
+- Error handling and automatic retries
+- Proxy rotation support
+- Browser rendering for JavaScript-heavy pages
+- Structured data output with metadata
+
+---
+
+## 📖 Basic Usage
+
+### List Available Configurations
+
+```python
+configs = client.list_configs()
+print(configs)  # ['config1', 'config2', ...]
+```
+
+### Execute a Configuration
+
+```python
+result = await client.execute_config("config_name")
+if result["success"]:
+    for item in result["data"]:
+        print(f"{item['name']}: {item['metric']} = {item['value']}")
+```
+
+### Remove a Configuration
+
+```python
+client.remove_config("config_name")
+```
+
+---
+
+## 📊 Output Format
+
+All extractions return structured data:
+
+```python
+[
+    {
+        "name": "entity_name",
+        "metric": "metric_name",
+        "value": 12345,
+        "date": "2024-01-15T10:30:00Z",
+        "config_name": "my_config"
+    },
+    ...
+]
+```
+
+---
+
+## 🔗 Additional Resources
+
+- **GitHub Repository**: [https://github.com/zohaib3249/scrapai](https://github.com/zohaib3249/scrapai)
+- **Issue Tracker**: [https://github.com/zohaib3249/scrapai/issues](https://github.com/zohaib3249/scrapai/issues)
+- **Documentation**: See GitHub README for detailed architecture and examples
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see the GitHub repository for contribution guidelines.
+
+---
+
+## 👨‍💻 About the Author
+
+**Zohaib Yousaf** - Full Stack Developer & Data Engineer
+
+Passionate about building intelligent systems that automate complex workflows. ScrapAI combines my expertise in web scraping, AI integration, and data engineering to make data extraction accessible to everyone.
+
+- **GitHub**: [@zohaib3249](https://github.com/zohaib3249)
+- **Email**: chzohaib136@gmail.com
+
+---
+
+**Last Updated**: December 2024
+
