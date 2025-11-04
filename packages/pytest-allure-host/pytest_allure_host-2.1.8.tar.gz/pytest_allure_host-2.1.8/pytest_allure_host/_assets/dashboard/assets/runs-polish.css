@@ -1,0 +1,939 @@
+/* ========================================================================== */
+/* Source of truth for dashboard polish CSS.
+  Build step publishes to: dist/assets/runs-polish.css
+
+  Quick‑tweak guide:
+  - Increase KPI label size:   set --kpi-title-size (e.g., 13px)
+  - Increase KPI number size:  set --kpi-value-size (e.g., 20px)
+  - Increase KPI delta size:   set --kpi-delta-size (e.g., 13px)
+  - Increase KPI card height:  set --kpi-card-height (e.g., 180px)
+  Example: body { --kpi-value-size: 20px; --kpi-card-height: 180px; }
+*/
+/* Runs dashboard UI polish (polish-v1) */
+:root {
+  --card-radius: 6px;
+  --card-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --line-height: 1.35;
+  /* semantic colors (fall back if not defined elsewhere) */
+  --pass: var(--ok, #2e7d32);
+  --fail: var(--fail, #e53935);
+  --broken: var(--broken, #fb8c00);
+  /* Prefer project accent if present */
+  --focus-ring: var(--accent, #2563eb);
+
+  /* --- KPI quick‑tweak variables ---------------------------------------- */
+  --kpi-title-size: 12px; /* label (e.g., FAILURES) */
+  --kpi-value-size: 18px; /* big number */
+  --kpi-delta-size: 12px; /* ▲ ▼ delta */
+  --kpi-card-height: 160px; /* v2 overview card height */
+  --kpi-card-min-height-v1: 64px; /* v1 minimum height */
+
+  /* Section title tokens (v1 panels) */
+  --section-title-size: 1rem; /* standardized section title size */
+  --section-title-color: var(--text); /* standardized section title color */
+}
+
+/* Gate all styles under this flag */
+.ui-polish-v1 #kpis .card {
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+.ui-polish-v1 body,
+.ui-polish-v1 .panel {
+  line-height: var(--line-height);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+.ui-polish-v1 body {
+  /* Slightly larger outer margin for breathing room */
+  margin: 20px;
+}
+.ui-polish-v1 h1,
+.ui-polish-v1 h2,
+.ui-polish-v1 h3 {
+  line-height: 1.2;
+}
+
+/* Standardize section titles across dashboard panels (v1 only) */
+.ui-polish-v1 .panel h3 {
+  font-size: var(--section-title-size);
+  color: var(--section-title-color);
+  font-weight: 600;
+  line-height: 1.25;
+}
+/* Ensure Top failing tests title matches other panels */
+.ui-polish-v1 #top-tests-section > h3 {
+  font-size: var(--section-title-size);
+  color: var(--section-title-color);
+}
+/* Cards grid: modular 2x3 layout on desktop */
+.ui-polish-v1 .cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+@media (max-width: 1100px) {
+  .ui-polish-v1 .cards-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .ui-polish-v1 .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Consistent card styling */
+.ui-polish-v1 .panel,
+.ui-polish-v1 #kpis .card,
+.ui-polish-v1 #selected-summary,
+.ui-polish-v1 #top-failures-compact {
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  padding: 10px 12px;
+}
+/* Hover/focus animations for cards */
+.ui-polish-v1 .panel:hover,
+.ui-polish-v1 #kpis .card:hover,
+.ui-polish-v1 #selected-summary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.ui-polish-v1 .panel:focus-within,
+.ui-polish-v1 #kpis .card:focus-within,
+.ui-polish-v1 #selected-summary:focus-within {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+}
+/* Compact selected summary and top failures hybrid card */
+.ui-polish-v1 #selected-summary-content {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(80px, 1fr));
+  gap: 8px 12px;
+}
+.ui-polish-v1 #selected-summary-content .k {
+  color: var(--text-dim);
+}
+.ui-polish-v1 #selected-summary-content .v {
+  font-weight: 600;
+}
+.ui-polish-v1 #top-failures-compact ul {
+  list-style: disc;
+}
+.ui-polish-v1 #top-failures-compact li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Header polish */
+.ui-polish-v1 #header-row {
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.ui-polish-v1 #header-row h1 {
+  font-weight: 650;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+/* ========================================================================== */
+/* Section: KPI cards (v1)                                                    */
+/* KPI cards grid wraps nicely */
+.ui-polish-v1 #kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 16px; /* balanced gutters */
+}
+.ui-polish-v1 #kpis .card {
+  padding: 10px 12px;
+  min-height: var(--kpi-card-min-height-v1, 64px); /* equal KPI heights */
+}
+/* v1 KPI font sizes (override tokens above to tweak) */
+.ui-polish-v1 #kpis .card .t {
+  font-size: var(--kpi-title-size, 12px);
+}
+.ui-polish-v1 #kpis .card .v {
+  font-size: var(--kpi-value-size, 18px);
+}
+.ui-polish-v1 #kpis .card .delta {
+  font-size: var(--kpi-delta-size, 12px);
+}
+/* Improve legibility of the delta symbol across platforms */
+.ui-polish-v1 #kpis .card .delta .sym,
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta .sym {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+  font-weight: 600; /* strengthen the vertical bar in ± */
+  letter-spacing: 0.1px;
+}
+/* Allow tweaking via CSS var if needed */
+.ui-polish-v1 #kpis .card .delta,
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta {
+  --kpi-delta-size: var(--kpi-delta-size, 12px);
+}
+/* KPI delta colors: green for improvements, red for regressions, dim for neutral */
+.ui-polish-v1 #kpis .card .delta.up,
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta.up {
+  color: var(--pass, #2e7d32);
+}
+.ui-polish-v1 #kpis .card .delta.down,
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta.down {
+  color: var(--fail, #e53935);
+}
+.ui-polish-v1 #kpis .card .delta.neutral,
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta.neutral {
+  color: var(--text-dim, #6b7280);
+}
+@media (max-width: 1100px) {
+  .ui-polish-v1 #kpis {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .ui-polish-v1 #kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Table container scrolls horizontally on small screens */
+.ui-polish-v1 .runs-container {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+/* Sticky header and alternating rows */
+.ui-polish-v1 table.runs thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg, #fff);
+  padding: 8px 10px;
+  cursor: pointer; /* sortable header affordance */
+  user-select: none;
+}
+.ui-polish-v1 table.runs tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+@media (prefers-color-scheme: dark) {
+  .ui-polish-v1 table.runs tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+.ui-polish-v1 table.runs tbody tr:hover {
+  background: rgba(37, 99, 235, 0.08); /* stronger blue tint */
+}
+/* Make it obvious rows are interactive */
+.ui-polish-v1 #runs-table tbody tr {
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out, box-shadow 120ms ease-in-out;
+}
+/* Selected row state */
+.ui-polish-v1 #runs-table tbody tr.is-active {
+  background: rgba(37, 99, 235, 0.14);
+  box-shadow: inset 3px 0 0 var(--accent, #2563eb);
+}
+.ui-polish-v1 #runs-table tbody tr.is-active:focus-visible {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+}
+/* Larger cell padding and comfortable line-height for rows */
+.ui-polish-v1 table.runs tbody td {
+  padding: 8px 10px;
+  line-height: 1.45;
+}
+
+/* Right-align numeric columns for visual alignment */
+.ui-polish-v1 #runs-table th:nth-child(6),
+.ui-polish-v1 #runs-table td:nth-child(6), /* Pass% */
+.ui-polish-v1 #runs-table th:nth-child(7),
+.ui-polish-v1 #runs-table td:nth-child(7), /* Failed */
+.ui-polish-v1 #runs-table th:nth-child(8),
+.ui-polish-v1 #runs-table td:nth-child(8), /* Broken */
+.ui-polish-v1 #runs-table th:nth-child(9),
+.ui-polish-v1 #runs-table td:nth-child(9)  /* Duration */ {
+  text-align: right;
+}
+
+/* Set comfortable min-widths to reduce column jumpiness */
+.ui-polish-v1 #runs-table th:nth-child(6),
+.ui-polish-v1 #runs-table td:nth-child(6) {
+  min-width: 72px;
+}
+.ui-polish-v1 #runs-table th:nth-child(7),
+.ui-polish-v1 #runs-table td:nth-child(7) {
+  min-width: 60px;
+}
+.ui-polish-v1 #runs-table th:nth-child(8),
+.ui-polish-v1 #runs-table td:nth-child(8) {
+  min-width: 68px;
+}
+.ui-polish-v1 #runs-table th:nth-child(9),
+.ui-polish-v1 #runs-table td:nth-child(9) {
+  min-width: 88px;
+}
+
+/* Encourage consistent layout without breaking responsiveness */
+.ui-polish-v1 #runs-table {
+  table-layout: auto;
+}
+/* Simplify table: hide Failed (7), Broken (8), Duration (9) under polish flag */
+.ui-polish-v1 #runs-table th:nth-child(7),
+.ui-polish-v1 #runs-table td:nth-child(7),
+.ui-polish-v1 #runs-table th:nth-child(8),
+.ui-polish-v1 #runs-table td:nth-child(8),
+.ui-polish-v1 #runs-table th:nth-child(9),
+.ui-polish-v1 #runs-table td:nth-child(9) {
+  display: none !important;
+}
+
+/* Ensure hover/row background spans full width across all cells */
+.ui-polish-v1 #runs-table tbody td {
+  background: inherit;
+}
+
+/* Clean, text-first Run ID link; replace any old icon buttons */
+.ui-polish-v1 #runs-table a.run-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+.ui-polish-v1 #runs-table a.run-link:hover {
+  text-decoration: underline;
+}
+.ui-polish-v1 #runs-table a.run-link:focus-visible {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.ui-polish-v1 #runs-table a.run-link::after {
+  content: "↗";
+  font-size: 0.85em;
+  margin-left: 6px;
+  opacity: 0;
+  transition: opacity 120ms ease-in-out;
+}
+.ui-polish-v1 #runs-table a.run-link:hover::after {
+  opacity: 0.6;
+}
+.ui-polish-v1 #runs-table .icon-btn,
+.ui-polish-v1 #runs-table .icon-external,
+.ui-polish-v1 #runs-table .run-actions {
+  display: none !important;
+}
+
+.ui-polish-v1 #runs-table th.actions > span[aria-hidden="true"] {
+  display: none !important;
+}
+.ui-polish-v1 #runs-table th.actions::before {
+  content: "Open";
+  color: var(--text-dim);
+  font-weight: 600;
+}
+@media (prefers-color-scheme: dark) {
+  .ui-polish-v1 table.runs tbody tr:hover {
+    background: rgba(59, 130, 246, 0.18); /* stronger in dark mode */
+  }
+}
+
+/* Keyboard focus affordance on rows */
+.ui-polish-v1 #runs-table tbody tr:focus {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+}
+
+/* Sorting indicators (via aria-sort) */
+.ui-polish-v1 #runs-table thead th[aria-sort="ascending"]::after {
+  content: " \25B2"; /* ▲ */
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+.ui-polish-v1 #runs-table thead th[aria-sort="descending"]::after {
+  content: " \25BC"; /* ▼ */
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+
+/* Selected run panel hook */
+.ui-polish-v1 #run-info.info {
+  border-radius: var(--card-radius);
+  padding: 10px 12px;
+  gap: 8px 12px;
+}
+
+/* Accent-styled action button in Selected run panel */
+.ui-polish-v1 #run-info.info .btn {
+  appearance: none;
+  background: var(--accent, #2563eb);
+  color: #fff;
+  border: 1px solid color-mix(in oklab, var(--accent, #2563eb) 85%, black);
+  padding: 6px 12px;
+  line-height: 1.2;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 120ms ease-in-out, box-shadow 120ms ease-in-out,
+    transform 60ms ease-in-out;
+  cursor: pointer;
+}
+.ui-polish-v1 #run-info.info .btn:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--accent, #2563eb) 90%, black);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+.ui-polish-v1 #run-info.info .btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.ui-polish-v1 #run-info.info .btn:focus-visible {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+}
+.ui-polish-v1 #run-info.info .btn:disabled {
+  background: var(--bg-alt, #e5e7eb);
+  border-color: var(--border, #cbd5e1);
+  color: var(--text-dim, #6b7280);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Chart spacing and layout gap tweaks */
+.ui-polish-v1 #layout {
+  gap: 16px; /* balanced gutters */
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  grid-template-areas:
+    "trend trend top"
+    "trend trend top"
+    "details table table";
+}
+
+/* Assign areas (only children of #layout) */
+
+/* Assign areas */
+.ui-polish-v1 #kpis {
+  grid-area: kpis;
+}
+.ui-polish-v1 #trend {
+  grid-area: trend;
+}
+.ui-polish-v1 #top-failures {
+  grid-area: top;
+}
+.ui-polish-v1 #selected-run {
+  grid-area: details;
+}
+.ui-polish-v1 #recent-runs {
+  grid-area: table;
+}
+
+/* Tablet: stack top failures below trend */
+@media (max-width: 1100px) {
+  .ui-polish-v1 #layout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "trend trend"
+      "top top"
+      "details details"
+      "table table";
+  }
+}
+
+/* Mobile: single column */
+@media (max-width: 720px) {
+  .ui-polish-v1 #layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "trend"
+      "top"
+      "details"
+      "table";
+  }
+}
+
+/* Slightly darken the Top failing tests container when empty */
+.ui-polish-v1 #top-tests-section.is-empty {
+  background-color: color-mix(in oklab, var(--bg2, #f6f7f9), black 4%);
+  border-radius: var(--card-radius, 6px);
+}
+
+/* Basic contrast: ensure text is readable; rely on existing tokens for colors */
+.ui-polish-v1 #kpis .card .t {
+  color: var(--text-dim);
+}
+.ui-polish-v1 #kpis .card .v {
+  color: var(--text);
+} /* Recent runs: actions column and row UX */
+/* Top failing tests: clickable test name link styling */
+.ui-polish-v1 a.test-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+.ui-polish-v1 a.test-link:hover {
+  text-decoration: underline;
+}
+.ui-polish-v1 a.test-link:focus-visible {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.recent-runs-table td.run-id code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 0.95em;
+  letter-spacing: -0.01em;
+}
+
+.recent-runs-table tbody tr.is-clickable {
+  cursor: pointer;
+  transition: background-color 0.12s ease-in-out;
+}
+@media (prefers-color-scheme: dark) {
+  .recent-runs-table tbody tr.is-clickable:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .recent-runs-table tbody tr.is-clickable:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.recent-runs-table th.actions,
+.recent-runs-table td.actions {
+  text-align: right;
+  white-space: nowrap;
+  width: 72px;
+}
+
+.run-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.recent-runs-table td.actions {
+  color: var(--icon-color, currentColor);
+}
+@media (prefers-color-scheme: dark) {
+  .recent-runs-table td.actions {
+    --icon-color: #cfd8dc;
+    --icon-disabled: #5f6a72;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .recent-runs-table td.actions {
+    --icon-color: #44505a;
+    --icon-disabled: #b0b8bf;
+  }
+}
+.icon-btn {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  opacity: 0.9;
+  vertical-align: middle;
+  color: inherit;
+}
+.icon-btn svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+}
+.icon-btn:hover {
+  opacity: 1;
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--focus-ring, #4c9ffe);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.icon-btn.is-disabled {
+  pointer-events: none;
+  color: var(--icon-disabled, #9aa3aa);
+  opacity: 0.6;
+}
+/* Progressive cosmetic tweaks for runs page; safe if omitted */
+#summary-cards {
+  gap: 1rem;
+}
+#summary-cards .card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+#summary-cards .card:hover {
+  transform: translateY(-1px);
+}
+
+#runs-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 8px 10px;
+}
+#runs-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+/* Add subtle left accent on hover (inset shadow avoids overflow) */
+.ui-polish-v1 #runs-table tbody tr:hover {
+  box-shadow: inset 3px 0 0 var(--accent, #2563eb);
+}
+
+.tag-chip {
+  cursor: pointer;
+}
+@media (max-width: 720px) {
+  .tag-chip {
+    font-size: 10px;
+  }
+}
+
+/* ========================================================================== */
+/* Section: V2 overrides (top-level, high specificity)                        */
+/* --- Corrected V2 overrides (top-level, high specificity) ----------------- */
+/* Note: Earlier v2 rules were nested under :root by mistake, so browsers
+   ignored them. These overrides ensure v2 wins against base/v1 styles. */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis {
+  /* Remove extra margin and align as a compact grid row */
+  margin: 0 !important;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  position: relative; /* anchor for overlay chip */
+}
+/* Make KPI cards as tall as compact failures so the row aligns and leaves only grid gap above Trend */
+/* v2 KPI card height: tweak with --kpi-card-height */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card {
+  height: var(
+    --kpi-card-height,
+    160px
+  ); /* fixed to align with compact failures */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* Overlay the optional streak/notice chip so it doesn't force a new grid row */
+/* Hide floating KPI chips in v2 to avoid overlap with header badges */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis > .chip {
+  display: none !important;
+}
+/* Collapse the wrapper so its children (#kpis, #selected-summary, #top-failures-compact)
+   participate directly in the top-level dashboard grid */
+body.ui-polish-v2[data-ui="polish-v2"] #cards-grid {
+  display: contents !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+/* Define the four-column overview row for v2 */
+body.ui-polish-v2[data-ui="polish-v2"] .dashboard-grid {
+  display: grid;
+  grid-template-areas:
+    "header header header header"
+    "kpi1 kpi2 kpi3 kpi4"
+    "chart chart chart sidebar"
+    /* Bottom row must match spec: selected spans two, table spans two */
+    "detail detail table table";
+  /* Clamp the first column so Selected (and kpi1) never gets too wide */
+  grid-template-columns: clamp(320px, 35vw, 480px) 1fr 1fr 1fr;
+  gap: 8px; /* <= 8px between cards as per spec */
+  grid-auto-flow: row; /* no dense packing to keep structure deterministic */
+  grid-auto-columns: 0px; /* prevent implicit extra tracks */
+}
+/* Place the KPI strip in the first three columns; the fourth is used by compact failures */
+/* Column placement for overview row: [selected-summary] [KPIs x2] [compact top-failures] */
+/* Overview row mapping */
+body.ui-polish-v2[data-ui="polish-v2"] #selected-summary {
+  grid-area: kpi1;
+}
+/* The 3 KPI cards live inside #kpis which spans kpi2..kpi4 */
+/* Flatten KPI wrapper and place its three cards directly into the grid areas */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis {
+  display: contents !important;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card:nth-child(1) {
+  grid-area: kpi2;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card:nth-child(2) {
+  grid-area: kpi3;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card:nth-child(3) {
+  grid-area: kpi4;
+}
+/* v2 KPI font sizes (use same quick‑tweak variables) */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .t {
+  font-size: var(--kpi-title-size, 12px);
+}
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .v {
+  font-size: var(--kpi-value-size, 18px);
+}
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta {
+  font-size: var(--kpi-delta-size, 12px);
+}
+/* Match v2 symbol styling for clarity */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .delta .sym {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+/* Hide compact top-failures in v2 overview to match 4 cards spec */
+body.ui-polish-v2[data-ui="polish-v2"] #top-failures-compact {
+  display: none !important;
+}
+/* Keep legacy containers visible for tests that query their heights */
+body.ui-polish-v2[data-ui="polish-v2"] #suites,
+body.ui-polish-v2[data-ui="polish-v2"] #top-tests-chart {
+  display: block !important;
+}
+
+/* Ensure header occupies its own full-width row above overview */
+body.ui-polish-v2[data-ui="polish-v2"] #header-row {
+  grid-area: header;
+}
+/* Avoid double spacing: rely on grid gap, not header margin */
+body.ui-polish-v2[data-ui="polish-v2"] #header-row {
+  margin-bottom: 0 !important;
+}
+/* Pin overview row directly beneath header */
+/* Let #layout children participate directly in parent grid */
+/* Keep #layout as a grid container to satisfy layout specs */
+/* #layout (v2): use 3-column 2:2:1 with areas trend/top */
+body.ui-polish-v2[data-ui="polish-v2"] #layout {
+  display: grid !important;
+  /* Use minmax(0, fr) to ensure equal first two columns regardless of content */
+  grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr) !important;
+  /* Single chart row to avoid double-height tracks that create empty space */
+  grid-template-areas: "trend trend top" "detail table table" !important;
+  /* Span full width of parent grid to ensure correct computed columns */
+  grid-column: 1 / -1;
+}
+/* Let children shrink within their grid tracks */
+body.ui-polish-v2[data-ui="polish-v2"] #layout > * {
+  min-width: 0;
+}
+/* Charts row areas */
+body.ui-polish-v2[data-ui="polish-v2"] #trend {
+  grid-area: trend;
+  margin-top: 0 !important;
+  /* Make the chart fill the full grid row height */
+  display: flex;
+  /* Keep the container itself capped so the row height doesn't exceed chart */
+  max-height: 380px;
+  overflow: hidden;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #top-failures {
+  grid-area: top;
+  /* Prevent sidebar content from forcing a taller chart row */
+  align-self: start;
+  max-height: 380px;
+  overflow: auto;
+}
+/* Remove inner layout spacing to keep header→overview→charts gaps tight */
+body.ui-polish-v2[data-ui="polish-v2"] #layout {
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* Details row (two columns) */
+body.ui-polish-v2[data-ui="polish-v2"] #selected-run {
+  grid-area: detail;
+  position: sticky;
+  top: 8px; /* keep within dashboard gap */
+  align-self: start; /* prevent stretching */
+}
+body.ui-polish-v2[data-ui="polish-v2"] #recent-runs {
+  grid-area: table;
+}
+/* Keep wide tables from inflating their parent grid track */
+body.ui-polish-v2[data-ui="polish-v2"] #recent-runs .runs-container,
+body.ui-polish-v2[data-ui="polish-v2"] #recent-runs table {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* --- V2: Failure summary sidebar stack --- */
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Ensure the Plotly container uses available space in v2 */
+body.ui-polish-v2[data-ui="polish-v2"] #trend > #chart {
+  flex: 1 1 auto;
+  height: 100% !important; /* override h-380 fixed height */
+  min-height: 340px; /* keep a sensible minimum */
+  max-height: 380px; /* keep within expected validation bounds */
+  margin: 0 !important;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary .section-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary .chart,
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary table,
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary #top-tests-table {
+  width: 95%;
+  margin: 0 auto;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary .divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  opacity: 0.5;
+  margin: 4px 0;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary table thead th {
+  font-weight: 500;
+}
+/* Normalize flaky badges */
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary .chip {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+}
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary .chip.flaky-yes {
+  background: color-mix(in oklab, var(--broken, #fb8c00) 12%, var(--bg2));
+  border-color: color-mix(in oklab, var(--broken, #fb8c00) 40%, var(--border));
+  color: var(--text);
+}
+body.ui-polish-v2[data-ui="polish-v2"] #failure-summary .chip.flaky-no {
+  background: var(--bg2);
+  border-color: var(--border);
+  color: var(--text);
+}
+@media (max-width: 360px) {
+  body.ui-polish-v2[data-ui="polish-v2"] #failure-summary {
+    gap: 8px;
+  }
+}
+
+/* ========================================================================== */
+/* Section: V2 general card chrome and text sizes                             */
+body.ui-polish-v2[data-ui="polish-v2"] .card {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  padding: 10px;
+}
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card .t,
+body.ui-polish-v2[data-ui="polish-v2"] .card h3 {
+  margin: 0 0 6px;
+  font-size: var(--kpi-title-size, 12px);
+  color: var(--text-dim);
+}
+
+/* Selected run compact panel grid */
+body.ui-polish-v2[data-ui="polish-v2"] #run-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 12px;
+}
+@media (max-width: 720px) {
+  body.ui-polish-v2[data-ui="polish-v2"] #run-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ensure compact top-failures card hidden in v2 overview (spec uses 4 cards row) */
+/* Note: Visible variant exists in v1 */
+
+/* Empty state alignment for Top Tests */
+body.ui-polish-v2[data-ui="polish-v2"]
+  #top-tests-section.is-empty
+  #top-tests-empty {
+  display: block;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  height: 220px;
+  align-content: center;
+}
+
+/* Responsive: tablet (2 columns) */
+@media (max-width: 1200px) {
+  body.ui-polish-v2[data-ui="polish-v2"] .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "header header"
+      "kpi1 kpi2"
+      "kpi3 kpi4"
+      "chart sidebar"
+      "detail table";
+  }
+}
+
+/* Responsive: mobile (1 column) */
+@media (max-width: 768px) {
+  body.ui-polish-v2[data-ui="polish-v2"] .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "kpi1"
+      "kpi2"
+      "kpi3"
+      "kpi4"
+      "chart"
+      "sidebar"
+      "detail"
+      "table";
+  }
+}
+
+/* V2 responsive behavior for inner #layout grid (tablet and mobile) */
+@media (max-width: 1100px) {
+  body.ui-polish-v2[data-ui="polish-v2"] #layout {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-areas: "trend trend" "top top" "detail detail" "table table" !important;
+  }
+}
+@media (max-width: 720px) {
+  body.ui-polish-v2[data-ui="polish-v2"] #layout {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "trend"
+      "top"
+      "detail"
+      "table" !important;
+  }
+}
+body.ui-polish-v2[data-ui="polish-v2"] #selected-summary {
+  /* Give same card chrome so it lines up with KPI cards visually */
+  display: block !important; /* override inline display:none from template */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg2);
+  padding: 10px;
+  height: var(--kpi-card-height, 160px); /* match KPI + compact failures */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pagination toolbar minor polish for v2 */
+body.ui-polish-v2[data-ui="polish-v2"] #runs-pagination .btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+body.ui-polish-v2[data-ui="polish-v2"] #runs-pagination .btn:disabled {
+  opacity: 0.5;
+}
+/* Remove v2 compact card styles since it's hidden in overview */
+body.ui-polish-v2[data-ui="polish-v2"]
+  #top-failures-compact
+  #top-failures-mini {
+  flex: 1 1 auto;
+}
+
+/* Keep overview row cards equal height */
+body.ui-polish-v2[data-ui="polish-v2"] #kpis .card,
+body.ui-polish-v2[data-ui="polish-v2"] #top-failures-compact.card {
+  min-height: 120px;
+}
