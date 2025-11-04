@@ -1,0 +1,41 @@
+# Include version and license
+include VERSION
+include LICENSE
+
+# Include documentation
+include README.md
+recursive-include docs *.md
+
+# Include configuration examples
+include config.example.json
+include .env.example
+
+# Include static files for viewer
+recursive-include static *.css *.scss *.js
+include static/scss/README.md
+
+# Include templates if any
+recursive-include templates *.html
+
+# Exclude test files
+recursive-exclude src/tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+
+# Exclude development files
+exclude .gitignore
+exclude setup_dev.sh
+exclude setup.sh
+exclude Makefile
+
+# Exclude build artifacts
+recursive-exclude dist *
+recursive-exclude build *
+recursive-exclude *.egg-info *
+
+# Exclude run outputs
+recursive-exclude runs *
+recursive-exclude cache *
+exclude *.log
+exclude *.db
