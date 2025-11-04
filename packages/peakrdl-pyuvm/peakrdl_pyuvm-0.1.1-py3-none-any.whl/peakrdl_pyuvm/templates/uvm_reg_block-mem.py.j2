@@ -1,0 +1,75 @@
+{% import 'utils.j2' as utils with context %}
+
+#------------------------------------------------------------------------------
+# uvm_reg_block definition for memories
+#------------------------------------------------------------------------------
+{% macro class_definition(node) -%}
+{%- if class_needs_definition(node) %}
+# {{get_class_friendly_name(node)}}
+class {{get_class_name(node)}}(uvm_reg_block):
+
+    {{child_insts(node)|indent}}
+    {{function_new(node)|indent}}
+
+    {{function_build(node)|indent}}
+{% endif -%}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# Child instances
+#------------------------------------------------------------------------------
+{% macro child_insts(node) -%}
+{%- for child in node.children() if isinstance(child, RegNode) -%}
+{%- if child.is_array %}
+self.{{get_inst_name(child)}} = create_object_array({{child.array_dimensions}}, {{get_class_name(child)}}, {{get_inst_name(child)}})
+{%- else %}
+self.{{get_inst_name(child)}} = {{get_class_name(child)}}({{get_inst_name(child)}})
+{% endif -%}
+{% endfor -%}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# __init__() method
+#------------------------------------------------------------------------------
+{% macro function_new(node) -%}
+def __init__(self, name: str = "{{get_class_name(node)}}") -> None:
+    super().__init__(name)
+    self._mem = uvm_mem("mem", {{node.get_property('mementries')}}, {{node.get_property('memwidth')}}, "{{get_mem_access(node)}}")
+    {{child_insts(node)|indent}}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# build() method
+#------------------------------------------------------------------------------
+{% macro function_build(node) -%}
+def build(self):
+    self.default_map = self.create_map("reg_map", 0, {{(roundup_to(node.get_property('memwidth'), 8) / 8)|int}}, {{get_endianness(node)}})
+    self._mem.configure(self)
+    self.default_map.add_mem(self._mem, 0)
+    {%- for child in node.children() if isinstance(child, RegNode) -%}
+        {{uvm_vreg.build_instance(child)|indent}}
+    {%- endfor %}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# build() actions for uvm_reg_block instance (called by parent)
+#------------------------------------------------------------------------------
+{% macro build_instance(node) -%}
+{%- if node.is_array %}
+foreach(this.{{get_inst_name(node)}}[{{utils.array_iterator_list(node)}}]) begin
+    self.{{get_inst_name(node)}}{{utils.array_iterator_suffix(node)}} = {{get_class_name(node)}}($sformatf("{{get_inst_name(node)}}{{utils.array_suffix_format(node)}}", {{utils.array_iterator_list(node)}}))
+    self.{{get_inst_name(node)}}{{utils.array_iterator_suffix(node)}}.configure(self)
+    self.{{get_inst_name(node)}}{{utils.array_iterator_suffix(node)}}.build()
+    self.default_map.add_submap(self.{{get_inst_name(node)}}{{utils.array_iterator_suffix(node)}}.default_map, {{get_array_address_offset_expr(node)}})
+end
+{%- else %}
+self.{{get_inst_name(node)}} = {{get_class_name(node)}}("{{get_inst_name(node)}}")
+self.{{get_inst_name(node)}}.configure(self)
+self.{{get_inst_name(node)}}.build()
+self.default_map.add_submap(self.{{get_inst_name(node)}}.default_map, {{"0x%x" % node.raw_address_offset}})
+{%- endif %}
+{%- endmacro %}

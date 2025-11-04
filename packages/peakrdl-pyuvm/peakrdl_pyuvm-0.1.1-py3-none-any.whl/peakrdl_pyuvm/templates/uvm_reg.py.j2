@@ -1,0 +1,109 @@
+{% import 'utils.j2' as utils with context %}
+
+//------------------------------------------------------------------------------
+// uvm_reg definition
+//------------------------------------------------------------------------------
+{% macro class_definition(node) -%}
+{%- if class_needs_definition(node) %}
+# {{get_class_friendly_name(node)}}
+class {{get_class_name(node)}}(uvm_reg):
+
+    {{function_new(node)|indent}}
+    {{function_build(node)|indent}}
+
+{% endif -%}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# Child instances
+#------------------------------------------------------------------------------
+{% macro child_insts(node) -%}
+{%- for field in node.fields() -%}
+self.{{get_inst_name(field)}} = uvm_reg_field("{{get_inst_name(field)}}")
+{% endfor -%}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# new() function
+#------------------------------------------------------------------------------
+{% macro function_new(node) -%}
+def __init__(self, name: str = "{{get_inst_name(node)}}"):
+    super().__init__(name, {{node.get_property('regwidth')}}, uvm_coverage_model_e.UVM_NO_COVERAGE)
+    {{child_insts(node)|indent}}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# build() function
+#------------------------------------------------------------------------------
+{% macro function_build(node) -%}
+def build(self) -> None:
+    {%- for field in node.fields() %}
+    self.{{get_inst_name(field)}}.configure(self, {{field.width}}, {{field.lsb}}, "{{get_field_access(field)}}", {{field.is_volatile}}, {{"0x%x" % field.get_property('reset', default=0)}}, {{field.get_property('reset') is not none}}, True, False)
+    {%- endfor %}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# build() actions for uvm_reg instance (called by parent)
+#------------------------------------------------------------------------------
+{% macro build_instance(node) -%}
+{%- if node.is_array %}
+for i, reg in enumerate(self.{{get_inst_name(node)}}.flatten()):
+    reg.configure(self)
+    {{add_hdl_path_slices(node, get_inst_name(node))|trim}}
+    reg.build()
+    self.default_map.add_reg(reg, {{"0x%x" % node.raw_address_offset}} + i * {{node.array_stride}}, "{{get_reg_access(node)}}")
+{%- else %}
+self.{{get_inst_name(node)}} = {{get_class_name(node)}}("{{get_inst_name(node)}}")
+self.{{get_inst_name(node)}}.configure(self, None, "")
+{{add_hdl_path_slices(node, get_inst_name(node))|trim}}
+self.{{get_inst_name(node)}}.build()
+self.default_map.add_reg(self.{{get_inst_name(node)}}, {{"0x%x" % node.raw_address_offset}}, "{{get_reg_access(node)}}")
+{%- endif %}
+{%- endmacro %}
+
+#------------------------------------------------------------------------------
+# Load HDL path slices for this reg instance
+#------------------------------------------------------------------------------
+{% macro add_hdl_path_slices(node, inst_ref) -%}
+{%- if node.get_property('hdl_path') %}
+self.{{inst_ref}}.add_hdl_path_slice("{{node.get_property('hdl_path')}}", -1, -1)
+{%- endif -%}
+
+{%- if node.get_property('hdl_path_gate') %}
+self.{{inst_ref}}.add_hdl_path_slice("{{node.get_property('hdl_path_gate')}}", -1, -1, 0, "GATE")
+{%- endif -%}
+
+{%- for field in node.fields() %}
+{%- if field.get_property('hdl_path_slice') is none -%}
+{%- elif field.get_property('hdl_path_slice')|length == 1 %}
+self.{{inst_ref}}.add_hdl_path_slice("{{field.get_property('hdl_path_slice')[0]}}", {{field.lsb}}, {{field.width}})
+{%- elif field.get_property('hdl_path_slice')|length == field.width %}
+{%- for slice in field.get_property('hdl_path_slice') %}
+{%- if field.msb > field.lsb %}
+self.{{inst_ref}}.add_hdl_path_slice("{{slice}}", {{field.msb - loop.index0}}, 1)
+{%- else %}
+self.{{inst_ref}}.add_hdl_path_slice("{{slice}}", {{field.msb + loop.index0}}, 1)
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- endfor -%}
+
+{%- for field in node.fields() %}
+{%- if field.get_property('hdl_path_gate_slice') is none -%}
+{%- elif field.get_property('hdl_path_gate_slice')|length == 1 %}
+self.{{inst_ref}}.add_hdl_path_slice("{{field.get_property('hdl_path_gate_slice')[0]}}", {{field.lsb}}, {{field.width}}, 0, "GATE")
+{%- elif field.get_property('hdl_path_gate_slice')|length == field.width %}
+{%- for slice in field.get_property('hdl_path_gate_slice') %}
+{%- if field.msb > field.lsb %}
+self.{{inst_ref}}.add_hdl_path_slice("{{slice}}", {{field.msb - loop.index0}}, 1, 0, "GATE")
+{%- else %}
+self.{{inst_ref}}.add_hdl_path_slice("{{slice}}", {{field.msb + loop.index0}}, 1, 0, "GATE")
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}
+{%- endmacro %}

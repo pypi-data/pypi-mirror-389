@@ -1,0 +1,87 @@
+{% import 'utils.j2' as utils with context %}
+
+#------------------------------------------------------------------------------
+# uvm_reg_block definition
+#------------------------------------------------------------------------------
+{% macro class_definition(node) -%}
+{%- if class_needs_definition(node) %}
+# {{get_class_friendly_name(node)}}
+class {{get_class_name(node)}}(uvm_reg_block):
+
+    {{function_new(node)|indent}}
+    {{function_build(node)|indent}}
+{% endif -%}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# Child instances
+#------------------------------------------------------------------------------
+{% macro child_insts(node) -%}
+{%- for child in node.children() if isinstance(child, AddressableNode) -%}
+{%- if child.is_array -%}
+self.{{get_inst_name(child)}} = create_object_array({{get_class_name(child)}}, "{{get_inst_name(child)}}", {{child.array_dimensions}})
+{% else -%}
+self.{{get_inst_name(child)}} = {{get_class_name(child)}}("{{get_inst_name(child)}}")
+{% endif -%}
+{%- endfor -%}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# __init__() method
+#------------------------------------------------------------------------------
+{% macro function_new(node) -%}
+def __init__(self, name: str = "{{get_class_name(node)}}"):
+    super().__init__(name)
+    {{child_insts(node)|indent}}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# build() method
+#------------------------------------------------------------------------------
+{% macro function_build(node) -%}
+def build(self) -> None:
+    self.default_map = self.create_map("reg_map", 0, {{get_bus_width(node)}}, {{get_endianness(node)}})
+    {%- for child in node.children() -%}
+        {%- if isinstance(child, RegNode) -%}
+            {{uvm_reg.build_instance(child)|indent}}
+        {%- elif isinstance(child, (RegfileNode, AddrmapNode)) -%}
+            {{build_instance(child)|indent}}
+        {%- elif isinstance(child, MemNode) -%}
+            {{uvm_reg_block_mem.build_instance(child)|indent}}
+        {%- endif -%}
+    {%- endfor %}
+{%- endmacro %}
+
+
+#------------------------------------------------------------------------------
+# build() actions for uvm_reg_block instance (called by parent)
+#------------------------------------------------------------------------------
+{% macro build_instance(node) -%}
+{%- if node.is_array %}
+for i, block in enumerate(self.{{get_inst_name(node)}}.flatten()):
+    {%- if node.get_property('hdl_path') %}
+    block.configure(self, "{{node.get_property('hdl_path')}}")
+    {%- else %}
+    block.configure(self)
+    {%- endif %}
+    {%- if node.get_property('hdl_path_gate') %}
+    block.add_hdl_path("{{node.get_property('hdl_path_gate')}}", "GATE")
+    {%- endif %}
+    block.build()
+    self.default_map.add_submap(block.default_map, {{"0x%x" % node.raw_address_offset}} + i * {{"0x%x" % node.array_stride}})
+{%- else %}
+{%- if node.get_property('hdl_path') %}
+self.{{get_inst_name(node)}}.configure(self, "{{node.get_property('hdl_path')}}")
+{%- else %}
+self.{{get_inst_name(node)}}.configure(self)
+{%- endif %}
+{%- if node.get_property('hdl_path_gate') %}
+self.{{get_inst_name(node)}}.add_hdl_path("{{node.get_property('hdl_path_gate')}}", "GATE")
+{%- endif %}
+self.{{get_inst_name(node)}}.build()
+self.default_map.add_submap(self.{{get_inst_name(node)}}.default_map, {{"0x%x" % node.raw_address_offset}})
+{%- endif %}
+{%- endmacro %}
