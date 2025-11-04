@@ -1,0 +1,23 @@
+{
+  "tasks": [
+    {
+      "action": "rpa.click",
+      "params": {
+        "target": "Login Button"
+      }
+    },
+    {
+      "action": "data.clean_data",
+      "params": {
+        "data": "sales_data.csv"
+      }
+    },
+    {
+      "action": "ai.generate_text",
+      "params": {
+        "prompt": "Summarize the quarterly sales report",
+        "max_tokens": 200
+      }
+    }
+  ]
+}

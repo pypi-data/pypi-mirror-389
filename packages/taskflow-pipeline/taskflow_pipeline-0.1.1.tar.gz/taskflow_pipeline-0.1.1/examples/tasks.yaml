@@ -1,0 +1,26 @@
+tasks:
+  # RPA Task: Click on a button
+  - action: "rpa.click"
+    params:
+      target: "Submit Button"
+  
+  # RPA Task: Extract table from PDF
+  - action: "rpa.extract_table_from_pdf"
+    params:
+      file_path: "data/invoice.pdf"
+  
+  # Data Task: Clean data
+  - action: "data.clean_data"
+    params:
+      data: "data/customer_records.csv"
+  
+  # AI Task: Generate text
+  - action: "ai.generate_text"
+    params:
+      prompt: "Write a professional email to confirm a meeting"
+      max_tokens: 150
+  
+  # AI Task: Analyze sentiment
+  - action: "ai.analyze_sentiment"
+    params:
+      text: "This product is amazing! I love it so much."
