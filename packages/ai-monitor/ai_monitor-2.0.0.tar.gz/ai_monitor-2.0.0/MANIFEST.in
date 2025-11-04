@@ -1,0 +1,14 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include MIGRATION_GUIDE.md
+recursive-include ai_monitor *.md
+recursive-include ai_monitor *.txt
+recursive-include ai_monitor *.py
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .pytest_cache
+global-exclude .coverage
+global-exclude *.egg-info
+global-exclude ai_monitor_backup

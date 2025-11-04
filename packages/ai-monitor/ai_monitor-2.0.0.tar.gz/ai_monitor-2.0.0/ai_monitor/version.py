@@ -1,0 +1,4 @@
+"""Version information for ai-monitor package."""
+
+__version__ = "2.0.0"
+__version_info__ = (2, 0, 0)
