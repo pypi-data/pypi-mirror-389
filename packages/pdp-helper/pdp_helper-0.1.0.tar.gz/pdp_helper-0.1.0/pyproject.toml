@@ -1,0 +1,31 @@
+[project]
+name = "pdp-helper"
+version = "0.1.0"
+description = "Principled Data Processing CLI tool"
+authors = [
+    {name = "Sam Zhang",email = "sam.zhang@uvm.edu"}
+]
+license = {text = "GPL-3.0-or-later"}
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ruamel-yaml (>=0.18.10,<0.19.0)",
+    "typer (>=0.15.2,<0.16.0)",
+    "rich (>=14.0.0,<15.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "pdp"}]
+
+[tool.poetry.scripts]
+pdp = "pdp.cli:app"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+pyfakefs = "^5.8.0"
+expects = "^0.9.0"
+ipython = "^9.1.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
