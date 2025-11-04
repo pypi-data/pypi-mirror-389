@@ -1,0 +1,100 @@
+name: ecc204_support
+
+backend:
+  path: "backend"
+  routers:
+    - router
+  requires:
+    - wpc_pt_config
+
+frontend:
+  path: frontend
+  entrypoints:
+    - name: ecc204_tflxauth_config
+      title: ECC204-TFLXAUTH Configurator
+      description: ""
+      entry: "assets/ecc204_tflxauth/ECC204 TFLXAUTH Configurator.html"
+      applications:
+        - configurator
+      devices:
+        - ECC204-TFLXAUTH
+      boards:
+        - DM320118
+    - name: ecc204_tflxwpc_config
+      title: ECC204-TFLXWPC Configurator
+      description: ""
+      entry: "assets/ecc204_tflxwpc/ECC204 TFLXWPC Configurator.html"
+      applications:
+        - configurator
+      devices:
+        - ECC204-TFLXWPC
+      boards:
+        - DM320118
+    - name: ecc206_tflxauth_config
+      title: ECC206-TFLXAUTH Configurator
+      description: ""
+      entry: "assets/ecc206_tflxauth/ECC206_TFLXAUTH_Configurator.html"
+      applications:
+        - configurator
+      devices:
+        - ECC206-TFLXAUTH
+      boards:
+        - DM320118
+    - name: asym_auth_ecc204
+      title: Asymmetric Authentication
+      description: ""
+      entry: TrustFlex/ECC204-AsymmetricAuthentication.ipynb
+      icon:
+        name: asym_auth_ecc204_png
+        path: frontend/TrustFlex/assets/images/asymm_auth/asym_auth_ecc204.png
+      applications:
+        - Accessory Authentication
+        - Disposable Authentication
+        - IoT
+      devices:
+        - ECC204-TFLXAUTH
+      boards:
+        - DM320118
+    - name: sym_auth_ecc204
+      title: Symm Auth - Diversified Key
+      description: ""
+      entry: TrustFlex/ECC204-SymmetricAuthentication.ipynb
+      icon:
+        name: asym_auth_ecc204_png
+        path: frontend/TrustFlex/assets/images/symm_auth/sym_auth_ecc204.png
+      applications:
+        - Accessory Authentication
+        - Disposable Authentication
+        - IoT
+      devices:
+        - ECC204-TFLXAUTH
+      boards:
+        - DM320118
+    - name: wpc_auth_ecc204
+      title: WPC Authentication
+      description: ""
+      entry: TrustFlex/ECC204-WPC-Authentication.ipynb
+      icon:
+        name: wpc_auth_ecc204_png
+        path: frontend/TrustFlex/assets/images/wpc_auth/wpc_auth_ecc204.png
+      applications:
+        - WPC
+      devices:
+        - ECC204-TFLXWPC
+      boards:
+        - DM320118
+    - name: json_msg_auth_ecc204
+      title: JSON Message Authentication
+      description: "JSON Message authentication using Asymmetric Authentication"
+      entry: "TrustFlex/ECC204-JSON-Auth.ipynb"
+      icon:
+        name: sign_verify_ecc204_png
+        path: frontend/TrustFlex/assets/images/ecc204_json_auth/json_auth_ecc204.png
+      applications:
+        - Accessory Authentication
+        - Disposable Authentication
+      devices:
+        - ECC204-TFLXAUTH
+      boards:
+        - DM320118
+    

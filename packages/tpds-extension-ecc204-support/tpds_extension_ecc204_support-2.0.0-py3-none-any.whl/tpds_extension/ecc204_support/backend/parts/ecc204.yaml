@@ -1,0 +1,87 @@
+---
+title: ECC204 Device Information
+devices:
+  ECC204-TFLXAUTH:
+    basePart: ECC204
+    partLink: https://www.microchip.com/en-us/product/ECC204
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    partInterface:
+      - i2c
+      - swi
+    annualVolume: 100000
+    certificates:
+      - standard
+      - WPC
+  ECC204-TFLXWPC:
+    basePart: ECC204
+    partLink: https://www.microchip.com/en-us/product/ECC204
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    partInterface:
+      - i2c
+    annualVolume: 100000
+    certificates:
+      - standard
+      - WPC
+  ECC204-RBVCZ:
+    basePart: ECC204
+    partLink: https://www.microchip.com/en-us/product/ECC204
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    annualVolume: 100000
+    certificates:
+      - standard
+      - WPC
+parts:
+  - partNumber: ECC204-TFLXAUTHU
+    deviceName: ECC204-TFLXAUTH
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 40000
+    status: Introduction
+  - partNumber: ECC204-TFLXAUTHS
+    deviceName: ECC204-TFLXAUTH
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 39600
+    status: Introduction
+  - partNumber: ECC204-TFLXWPCU
+    deviceName: ECC204-TFLXWPC
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 40000
+    status: Introduction
+  - partNumber: ECC204-TFLXWPCS
+    deviceName: ECC204-TFLXWPC
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 39600
+    status: Introduction
+  - partNumber: ECC204-RBVCZ
+    deviceName: ECC204-RBVCZ
+    packagePin: RBH 3-pin contact
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 45000
+    status: Introduction

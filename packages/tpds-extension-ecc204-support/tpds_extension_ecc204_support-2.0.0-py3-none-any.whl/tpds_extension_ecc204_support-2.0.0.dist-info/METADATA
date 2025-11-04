@@ -1,0 +1,48 @@
+Metadata-Version: 2.4
+Name: tpds-extension-ecc204-support
+Version: 2.0.0
+Summary: Microchip(SPG) Trust Platform - ECC204 Device Support
+Home-page: https://www.microchip.com/TrustPlatform
+Author: Microchip Technology
+Author-email: SPG.Tools@microchip.com
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: tpds-core>=2.3.4
+Requires-Dist: tpds-helper>=2.3.6
+
+# Trust Platform Design Suite - ECC204 Connect Extension
+
+This module contains the frontend and backend services and resources required for the extension.
+
+
+## Release Notes
+
+### 2.0.0
+    - ECC206 TFLXAUTH Configurator and XML generation support is added
+
+### 1.9.4
+    - Configurator updates for Slot Write controls correction, Slot properties for consistency
+    - Proto provisioning message update with package link
+    - Bug fix for broken link on the configurators
+
+### 1.9.3
+    - Updated MoQ and Certificate details for Secure Exchange Process
+
+### 1.9.x
+    - Bug fix for slot3 encrypted write and firmware projects update
+    - Added Provisioning XML generation support
+    - Various other incremental updates since 1.1.0 release
+
+### 1.1.0
+	- Added JSON Message Authentication Usecase
+
+### 1.0.1
+    - Added Provision Prototype Samples to configurator page
+    - other minor updates
+
+### 1.0.0
+    - Initial version with options to generate provisioning files and Proto Provisioning Device.

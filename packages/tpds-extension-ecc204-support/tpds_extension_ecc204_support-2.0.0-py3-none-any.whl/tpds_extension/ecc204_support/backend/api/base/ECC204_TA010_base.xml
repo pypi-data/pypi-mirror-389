@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ECC204_Config xmlns="https://www.microchip.com/schema/ECC204_TA010_Config_1.2">
+  <Config_Name>ECC204_TA010 BASE XML</Config_Name>
+  <Additional_Data/>
+  <Configuration_Subzone_0>
+    <SN_0_1 encoding="Hex">0123</SN_0_1>
+    <SN_8 encoding="Hex">EE</SN_8>
+    <IO_Options>
+      <Interface>I2C</Interface>
+      <Reserved>0b0000000</Reserved>
+    </IO_Options>
+    <Reserved_11 encoding="Hex">00 00</Reserved_11>
+    <Primary_Deleted>Normal</Primary_Deleted>
+    <Reserved_14 encoding="Hex">00 00</Reserved_14>
+  </Configuration_Subzone_0>
+  <Configuration_Subzone_1>
+    <Chip_Mode>
+      <CMOS_En>Fixed_Reference</CMOS_En>
+      <Clock_Divider>0b11</Clock_Divider>
+      <RNG_NRBG_Health_Test_Auto_Clear>False</RNG_NRBG_Health_Test_Auto_Clear>
+      <Reserved>0b0000</Reserved>
+    </Chip_Mode>
+    <Slot_Config0>
+      <Limited_Use>False</Limited_Use>
+      <Reserved>0b0000000</Reserved>
+    </Slot_Config0>
+    <Reserved_2 encoding="Hex">00</Reserved_2>
+    <Reserved_3 encoding="Hex">00</Reserved_3>
+    <Slot_Config3>
+      <Write_Mode>Clear</Write_Mode>
+      <Limited_Use>False</Limited_Use>
+      <Reserved>0b000000</Reserved>
+    </Slot_Config3>
+    <Reserved_5 encoding="Hex">00 00 00 00 00 00 00 00 00 00 00</Reserved_5>
+    <Lock>False</Lock>
+  </Configuration_Subzone_1>
+  <Configuration_Subzone_2>
+    <Counts_Remaining>10000</Counts_Remaining>
+    <Lock>False</Lock>
+  </Configuration_Subzone_2>
+  <Configuration_Subzone_3>
+    <Device_Address>0x33</Device_Address>
+    <CMP_Mode>False</CMP_Mode>
+    <Reserved_1>0b0000000</Reserved_1>
+    <Reserved_2 encoding="Hex">00 00 00 00 00 00 00 00 00 00 00 00 00 00</Reserved_2>
+    <Lock>False</Lock>
+  </Configuration_Subzone_3>
+  <Slot_Locks>
+    <Slot_0>False</Slot_0>
+    <Slot_1>False</Slot_1>
+    <Slot_2>False</Slot_2>
+    <Slot_3>False</Slot_3>
+  </Slot_Locks>
+  <Data_Sources>
+    <Data_Source>
+      <Name>Slot1</Name>
+      <Description>Slot 1 Data Source</Description>
+      <X509_Certificate>
+        <TBS_Certificate>
+          <Version>V3</Version>
+          <Serial_Number from_source="True">Certificate_SN</Serial_Number>
+          <Validity>
+            <Not_Before type="Auto" from_source="True">Certificate_Not_Before</Not_Before>
+            <Not_After type="Auto" from_source="False">9999-12-31T23:59:59</Not_After>
+          </Validity>
+          <Subject>
+            <Relative_Distinguished_Name>
+              <Common_Name from_source="False" encoding="String_UTF8" type="UTF8_String">011430</Common_Name>
+            </Relative_Distinguished_Name>
+          </Subject>
+          <Subject_Public_Key_Info>
+            <Key from_source="True">Device_Public_Key</Key>
+          </Subject_Public_Key_Info>
+          <Extensions>
+            <Extension>
+              <Extn_ID>2.23.148.1.2</Extn_ID>
+              <Critical>True</Critical>
+              <Extn_Value from_source="True">WPC_Qi_Auth_RSID_Extn_Value</Extn_Value>
+            </Extension>
+          </Extensions>
+        </TBS_Certificate>
+        <Signature_Algorithm>
+              <ECDSA>
+                <Hash>SHA256</Hash>
+              </ECDSA>
+        </Signature_Algorithm>
+        <CA_Certificate_Chain encoding="PEM">
+          Subject: CN=004E-01
+          Issuer: CN=WPCCA1
+          -----BEGIN CERTIFICATE-----
+          MIIBLDCB06ADAgECAgh3YRK0EUearDAKBggqhkjOPQQDAjARMQ8wDQYDVQQDDAZX
+          UENDQTEwIBcNMjEwMzAzMTYwNDAxWhgPOTk5OTEyMzEyMzU5NTlaMBExDzANBgNV
+          BAMMBldQQ0NBMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABNNcV43vsZaWbQp0
+          /671u4gIIZTa6n0LTKdnGczpRlEbEoYHKaBFJauTsDhk13RbRqP9yG3FdkE+EQ2v
+          haEWQgejEzARMA8GA1UdEwEB/wQFMAMBAf8wCgYIKoZIzj0EAwIDSAAwRQIhAIMS
+          tEJn7HQtJpzhbvJlRgzq4cPEqxBxA9Bf/n0Uk+bQAiAwHq5hqiyTeAGomyJdwqV1
+          1tZ+8XLZkJ6pBzJV3XcdYw==
+          -----END CERTIFICATE-----
+
+
+          Subject: CN=WPCCA1
+          Issuer: CN=WPCCA1
+          -----BEGIN CERTIFICATE-----
+          MIIBQzCB66ADAgECAghAJ8OtthBx6DAKBggqhkjOPQQDAjARMQ8wDQYDVQQDDAZX
+          UENDQTEwIBcNMjMwMjA5MTMwNDU0WhgPOTk5OTEyMzEyMzU5NTlaMBIxEDAOBgNV
+          BAMMBzAwNEUtMDEwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT17oVhf5DSkk0V
+          CQ04nhHp7Yr+cfxo1YyAkCwC25vfELXB1JbAbpUVN1nKNTrPHJ6amuhdGNWCFRG7
+          8oLv8ECWoyowKDASBgNVHRMBAf8ECDAGAQH/AgEAMBIGBWeBFAEBAQH/BAYEBAAA
+          LKYwCgYIKoZIzj0EAwIDRwAwRAIgT9lT/X005YPGKcliyFtzShyIrv1Tx01hMF02
+          MjGIXsACIHDc7c58YszBT1gx0V3orvcv4PQipTt5Ywt/aQCixqBm
+          -----END CERTIFICATE-----
+        </CA_Certificate_Chain>
+      </X509_Certificate>  
+    </Data_Source>
+    <Data_Source>
+      <Name>Slot2</Name>
+      <Description>Slot 2 Data Source</Description>
+      <Static_Bytes>
+        <Public encoding="Hex">some</Public>
+      </Static_Bytes>
+    </Data_Source>
+    <Data_Source>
+      <Name>Slot3</Name>
+      <Description>Slot 3 Data Source</Description>
+      <Static_Bytes>
+        <Secret encoding="Hex" encrypted="False" algorithm="AES256_GCM" key_name="HMAC_Secret_key">
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        </Secret>
+      </Static_Bytes>
+    </Data_Source>
+    <Writer>
+      <Source_Name>Slot0</Source_Name>
+      <Description>Slot 0 writer</Description>
+      <Target>Slot 0</Target>
+    </Writer>
+    <Writer>
+      <Source_Name>Slot1</Source_Name>
+      <Description>Slot 1 writer</Description>
+      <Target>Slot 1</Target>
+    </Writer>
+    <Writer>
+      <Source_Name>Slot2</Source_Name>
+      <Description>Slot 2 writer</Description>
+      <Target>Slot 2</Target>
+    </Writer>
+    <Writer>
+      <Source_Name>Slot3</Source_Name>
+      <Description>Slot 3 writer</Description>
+      <Target>Slot 3</Target>
+    </Writer>
+  </Data_Sources>
+</ECC204_Config>
