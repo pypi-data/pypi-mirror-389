@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "itermonkey"
+version = "2025.11.3.2"
+authors = [
+  { name = "aegotastic", email = "pseudopersonal839@gmail.com" },
+]
+description = "A collection of Python utilities for lists, sets, dictionaries, and graphs."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = [
+  "networkx>=3.0"
+]
+keywords = ["python", "utilities", "data structures", "algorithms", "lists", "sets", "dictionaries", "graphs"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/aegotastic/IterMonkey"
+Repository = "https://github.com/aegotastic/IterMonkey"
+
+[tool.setuptools.packages.find]
+include = ["itermonkey*"]
