@@ -1,0 +1,20 @@
+[project]
+name = "myliu-ragflow-mcp-server-continue"
+version = "0.1.0"
+description = "RAGFlow MCP Server Continue"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+ "mcp>=1.20.0",
+ "ragflow-sdk>=0.21.1",
+]
+[[project.authors]]
+name = "liumengyao"
+email = "liumengyao@ieisystem.com"
+
+[build-system]
+requires = [ "uv_build>=0.8.17,<0.9.0",]
+build-backend = "uv_build"
+
+[project.scripts]
+myliu-ragflow-mcp-server-continue = "myliu_ragflow_mcp_server_continue:main"
