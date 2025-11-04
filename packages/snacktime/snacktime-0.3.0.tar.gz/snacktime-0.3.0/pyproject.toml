@@ -1,0 +1,23 @@
+version = "0.3.0"
+
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "snacktime"
+version = "0.3.0"
+description = "CLI that gives a random snack, a simple salad recipe, a random vegetable, or a sweet treat."
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.scripts]
+snacktime = "snacktime.__main__:main"
+
+[project.optional-dependencies]
+dev = ['pytest']
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["snacktime*"]
