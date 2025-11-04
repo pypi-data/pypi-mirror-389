@@ -1,0 +1,72 @@
+# Dedal library - Wrapper over Spack for building multiple target
+# environments: ESD, Virtual Boxes, HPC compatible kernels, etc.
+
+#  (c) Copyright 2025 Dedal developers
+
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+
+#      http://www.apache.org/licenses/LICENSE-2.0
+
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dedal"
+version = "1.0.0"
+description = "This package includes all the essential tools required to set up an EBRAINS Software Distribution environment."
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Adrian Ciu"},
+    { name = "Eleni Mathioulaki"},
+    { name = "Eric Müller"},
+    { name = "Jithu Murugan"},
+    { name = "Lia Domide"},
+    { name = "Wouter Klijn"},
+]
+maintainers = [
+    { name = "Brainiacs", email = "science@codemart.ro" }
+]
+keywords = [
+    "spack",
+    "package",
+    "packaging",
+    "environment",
+    "cache",
+    "caching",
+    "esd",
+]
+dependencies = [
+    "oras",
+    "ruamel.yaml",
+    "click",
+    "jsonpickle",
+    "pyyaml",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["coverage_html", "coverage_html/*"]
+
+[project.urls]
+Source = "https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal"
+
+[project.scripts]
+dedal = "dedal.cli.spack_manager_api:cli"
+
+[tool.setuptools.data-files]
+"dedal" = [
+    "dedal/logger/logging.conf",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-mock", "pytest-ordering", "coverage"]
