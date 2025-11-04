@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "dataset_load"
+version = "2025.0.1.0"
+description = "Load dataset using API call and convert json to pandas"
+authors = ["Ananya"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "my_krml_25763727", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.2"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
