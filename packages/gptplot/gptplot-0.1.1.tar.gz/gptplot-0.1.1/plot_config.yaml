@@ -1,0 +1,46 @@
+# PySciPlot Configuration File
+# All parameters are optional - CLI arguments override config values
+
+# Data columns (by name or 1-based index)
+x: time
+y: voltage
+# z: pressure    # Optional 3rd dimension
+
+# Plot type selection
+type: line       # Options: auto, line, scatter, hist, bar, box, surface, heatmap, quiver
+
+# Axis labels and title
+xlabel: Time (s)
+ylabel: Voltage (V)
+title: Voltage vs Time
+
+# Axis limits [min, max]
+xlim: [0, 10]
+ylim: [-1, 1]
+
+# Visual styling
+cmap: viridis    # Colormap for color-mapped plots
+style: white     # Seaborn style: white, whitegrid, darkgrid, ticks
+size: 6x4        # Figure size in inches (WIDTHxHEIGHT)
+dpi: 300         # Resolution for saved figures
+
+# File saving behavior
+# save_naming: overwrite    # Default: simple overwrite (conventional behavior)
+# save_naming: timestamp    # Use for experiment tracking: plot_20241103_143052.png
+# save_naming: numbered     # Auto-increment: plot_001.png, plot_002.png, ...
+# save_naming: uuid         # Unique ID: plot_a3f2c1.png
+
+format: png              # Options: png, pdf, svg
+# output_dir: ./results  # Save location (default: current directory)
+
+# Optional: histogram bins
+# bins: 50
+
+# Optional: disable grid
+# grid: false
+
+# Optional: theme presets (overrides style)
+# theme: journal         # Options: journal, presentation, dark, notebook
+
+# Optional: quiver plot scaling
+# scale: 1.0
