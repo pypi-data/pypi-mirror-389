@@ -1,0 +1,88 @@
+Metadata-Version: 2.4
+Name: jsonrpcproxy
+Version: 0.5
+Summary: Damn simple JSON-RPC client
+Author-email: Marcin Nowak <marcin.j.nowak@gmail.com>
+License: BSD License
+Project-URL: Homepage, https://github.com/marcinn/jsonrpcproxy
+Keywords: web,json,rpc,python
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: !=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*,>=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: requests<3.0,>=1.2.3
+Provides-Extra: dev
+Requires-Dist: ipython; extra == "dev"
+Requires-Dist: ipdb; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+
+
+# Damn simple JSON-RPC client for Python
+
+![PyPI - Version](https://img.shields.io/pypi/v/jsonrpcproxy)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/jsonrpcproxy)
+![PyPI - Status](https://img.shields.io/pypi/status/jsonrpcproxy)
+![PyPI - License](https://img.shields.io/pypi/l/jsonrpcproxy)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/jsonrpcproxy)
+
+
+## What is JSON-RPC
+
+JSON-RPC is a protocor similar to XML-RPC, but simpler and very lightweight.
+There is no necessary to generate nor parse XML documents by using heavy librariers, and there are no dependencies.
+
+For more information please read JSON-RPC v2.0 specification: http://www.jsonrpc.org/specification
+
+## JSON-RPC implementations for Python
+
+There are many implementations of JSON-RPC protocol in Python, mostly servers and clients in one package: http://en.wikipedia.org/wiki/JSON-RPC#Implementations
+
+## Why another JSON-package?
+
+Some time ago I was searching small, reliable and simple client (just client!) for calling JSON-RPC services,
+without many (any) dependencies and without strange layers of wrappers, but with responses simplest as possible.
+
+Finally I've found nothing like that, so I wrote my own.
+
+## Example
+
+```python
+import jsonrpcproxy as rpc
+
+calculator = rpc.Client('http://example.math.server/')
+
+try:
+    result = calculator.addNumbers(2,2)
+except rpc.HttpError as e:
+    print(e)
+else:
+    print("2 + 2 = %s" % result)
+
+```
+
+## Goals for the stable release
+
+  * automatic tests
+  * handling connection errors
+  * documentation
+  * 100% implementation of the JSON-RPC v2.0 specification (batches)
+
+## Future
+
+  * Python 3 support
+  * further simplifications ;)
+
+## Issues
+
+Please use Github to report issues: https://github.com/marcinn/jsonrpcproxy/issues
