@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "surframe-ucodec-pro"                # distribución (PyPI/TestPyPI)
+version = "0.16.0.post3"
+description = "Marker package for SURFRAME U-Codec PRO (no plugin code)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "LicenseRef-Proprietary"
+authors = [{ name = "Christ10-8" }]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Operating System :: OS Independent"
+]
+
+[tool.setuptools]
+packages = ["surframe_ucodec_pro"]          # paquete de import
