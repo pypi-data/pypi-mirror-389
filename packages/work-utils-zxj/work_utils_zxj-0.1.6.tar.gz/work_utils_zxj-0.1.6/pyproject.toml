@@ -1,0 +1,31 @@
+[project]
+name = "work-utils-zxj"
+version = "0.1.6"
+license = "MIT"
+description = "work util for self"
+authors = [
+    { name = "zxj", email = "1114062513@qq.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = []
+[project.optional-dependencies]
+comic      = ["pillow>=12.0.0,<13.0.0"]
+log        = []
+playwright = ["playwright==1.51.0"]
+utils      = ["pandas>=2.3.3,<3.0.0"]
+all        = ["pillow>=12.0.0,<13.0.0", "playwright==1.51.0", "pandas>=2.3.3,<3.0.0"]
+[tool.poetry]
+# Poetry 专属配置：指定包的位置（from=src 表示从 src 目录查找）
+packages = [
+    { include = "work_utils_zxj", from = "src" }
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "black (>=25.9.0,<26.0.0)"
+]
