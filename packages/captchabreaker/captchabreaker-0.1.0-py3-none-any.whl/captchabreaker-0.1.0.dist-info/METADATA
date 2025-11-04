@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: captchabreaker
+Version: 0.1.0
+Summary: A library to break captchas using ONNX models.
+Project-URL: homepage, https://github.com/ramSeraph/captchabreaker
+Project-URL: repository, https://github.com/ramSeraph/captchabreaker.git
+Author-email: Sreeram Kandimalla <kandimalla.sreeram@gmail.com>
+Requires-Python: >=3.9
+Requires-Dist: onnx
+Requires-Dist: onnxruntime
+Requires-Dist: pillow
+Requires-Dist: torch
+Requires-Dist: torchvision
+Description-Content-Type: text/markdown
+
+
+The inference code has been copied from:
+https://huggingface.co/spaces/docparser/Text_Captcha_breaker/tree/main
+
+The model itself is a copy of https://huggingface.co/DocParser/captcha Licensed under CC BY 4.0. I am hosting a copy of it in this repo for convenience at https://github.com/ramSeraph/captchabreaker/releases/tag/model
