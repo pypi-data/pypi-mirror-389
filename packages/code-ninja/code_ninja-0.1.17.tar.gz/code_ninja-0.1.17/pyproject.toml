@@ -1,0 +1,14 @@
+[project]
+name = "Code-ninja"
+version = "0.1.17"
+description = "Code-ninja is the error handler library and help to detect the error and after detect the error give the solution of error."
+authors = [{ name = "Asad Maqbool", email = "asadmaqbool639@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "openai","dotenv","rich"
+]
+
+[build-system]
+requires = ["uv_build>=0.9.2,<0.10.0"]
+build-backend = "uv_build"
