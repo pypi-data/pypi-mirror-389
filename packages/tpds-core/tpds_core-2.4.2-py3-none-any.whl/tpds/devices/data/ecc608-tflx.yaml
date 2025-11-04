@@ -1,0 +1,60 @@
+---
+title: ECC608 TrustFLEX Information
+devices:
+  ATECC608-TFLXTLS:
+    basePart: ATECC608
+    partLink: https://www.microchip.com/wwwproducts/eN/ATECC608C-TFLXTLS
+    provisioningFlow: TrustFLEX
+    partType: Silicon
+    productCategory: Secure Element
+    partInterface:
+      - i2c
+      - swi
+    tpdsRelease: Yes
+    ndaRequired: No
+    annualVolume: 100000
+    certificates:
+      - standard
+      - WPC
+parts:
+  - partNumber: ATECC608C-TFLXTLSU-Proto
+    deviceName: ATECC608-TFLXTLS
+    packagePin: UDFN-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608C-TFLXTLSS-Proto
+    deviceName: ATECC608-TFLXTLS
+    packagePin: SOIC-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608C-TFLXTLSU
+    deviceName: ATECC608-TFLXTLS
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 30000
+    status: Production
+  - partNumber: ATECC608C-TFLXTLSS
+    deviceName: ATECC608-TFLXTLS
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 2000
+      highVolume: 32000
+    status: Production
+  - partNumber: ATECC608C-RBHCZ
+    deviceName: ATECC608-TFLXTLS
+    packagePin: RBH 3-pin contact
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 30000
+    status: Production

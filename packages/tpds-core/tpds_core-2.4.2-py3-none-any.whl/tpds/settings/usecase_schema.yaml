@@ -1,0 +1,125 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/usecaseConfig"
+title: TPDS Usecase YAML Schema
+definitions:
+  usecaseConfig:
+    title: Usecase Config
+    type: object
+    additionalProperties: false
+    properties:
+      info:
+        type: "string"
+      help:
+        type: string
+      trainingVideos:
+        type: array
+        items:
+          type: string
+          format: uri
+      assetList:
+        $ref: "#/definitions/assetList"
+      firmware:
+        type: array
+        items:
+          type: string
+      transactionDiagram:
+        type: "string"
+      userInputs:
+        $ref: "#/definitions/userInputs"
+      supportedBoards:
+        type: array
+        items:
+          type: string
+      API:
+        type: string
+      configurator:
+        type: string
+    required:
+      - info
+      - help
+      - assetList
+      - transactionDiagram
+      - supportedBoards
+      - API
+  assetList:
+    type: array
+    items:
+      type: object
+      properties:
+        Handle:
+          type: integer
+        Slot:
+          type: integer
+        Description:
+          type: string
+      required:
+        - Description
+      anyOf:
+        - required: ["Handle"]
+        - required: ["Slot"]
+  userInputs:
+    type: array
+    items:
+      type: object
+      properties:
+        certificates:
+          $ref: "#/definitions/certificates"
+        keys:
+          $ref: "#/definitions/keys"
+        interface:
+          type: array
+          items:
+            type: string
+        input:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            tooltip:
+              type: string
+            inputType:
+              type: string
+            allowedFileExtensions:
+              type: array
+              items:
+                type: string
+          required:
+            - name
+            - description
+            - inputType
+  certificates:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tooltip:
+          type: string
+      required:
+        - name
+        - description
+  keys:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        allowedFileExtensions:
+          type: array
+          items:
+            type: string
+        uploadOnly:
+          type: boolean
+      required:
+        - name
+        - description

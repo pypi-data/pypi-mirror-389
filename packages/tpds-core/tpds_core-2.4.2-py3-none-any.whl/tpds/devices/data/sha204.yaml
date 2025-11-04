@@ -1,0 +1,52 @@
+---
+title: SHA204 Device Information
+devices:
+  ATSHA204A-TCSM:
+    basePart: ATSHA204A
+    partLink: https://www.microchip.com/en-us/product/ATSHA204A-TCSM
+    provisioningFlow: TrustCUSTOM
+    partType: Silicon
+    partInterface:
+      - i2c
+      - swi
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    ndaRequired: Yes
+    annualVolume: 100000
+  ATSHA204A-RBHCZ:
+    basePart: ATSHA204A
+    partLink: https://www.microchip.com/en-us/product/ATSHA204A-TCSM
+    provisioningFlow: TrustCUSTOM
+    partType: Silicon
+    productCategory: Secure Element
+    tpdsRelease: Yes
+    ndaRequired: Yes
+    annualVolume: 100000
+parts:
+  - partNumber: ATSHA204A-TCSMS
+    deviceName: ATSHA204A-TCSM
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 4000
+      highVolume: 48000
+    status: Under NDA
+  - partNumber: ATSHA204A-TCMSU
+    deviceName: ATSHA204A-TCSM
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume: 4000
+      highVolume: 45000
+    status: Under NDA
+  - partNumber: ATSHA204A-RBHCZ
+    deviceName: ATSHA204A-RBHCZ
+    packagePin: RBH 3-pin contact
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 45000
+    status: Under NDA

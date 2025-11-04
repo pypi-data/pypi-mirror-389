@@ -1,0 +1,174 @@
+---
+title: ECC608 TNG Information
+devices:
+  ATECC608-TNGTLS:
+    basePart: ATECC608
+    partLink: https://www.microchip.com/wwwproducts/en/ATECC608C-TNGTLS
+    toolLink: https://www.microchip.com/wwwproducts/en/ATECC608C-TNGTLS
+    provisioningFlow: Trust&Go
+    partType: Silicon
+    productCategory: Secure Element
+    partInterface:
+      - i2c
+      - swi
+    tpdsRelease: Yes
+    ndaRequired: No
+    certificates:
+      - standard
+      - WPC
+  ATECC608-TNGLORA:
+    basePart: ATECC608
+    partLink: https://www.microchip.com/wwwproducts/eN/ATECC608B-TNGLORA
+    toolLink: https://github.com/MicrochipTech/cryptoauthlib/wiki/TTI-Getting-Started
+    provisioningFlow: Trust&Go
+    partType: Silicon
+    productCategory: Secure Element
+    partInterface:
+      - i2c
+      - swi
+    tpdsRelease: Yes
+    ndaRequired: No
+    certificates:
+      - standard
+      - WPC
+  ATECC608-TNGACT:
+    basePart: ATECC608
+    partLink: https://www.microchip.com/wwwproducts/eN/ATECC608B-TNGACT
+    provisioningFlow: Trust&Go
+    partType: Silicon
+    productCategory: Secure Element
+    partInterface:
+      - i2c
+      - swi
+    tpdsRelease: Yes
+    ndaRequired: No
+    certificates:
+      - standard
+      - WPC
+parts:
+  - partNumber: ATECC608C-TNGTLSU-B
+    deviceName: ATECC608-TNGTLS
+    packagePin: UDFN-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608C-TNGTLSS-B
+    deviceName: ATECC608-TNGTLS
+    packagePin: SOIC-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608C-TNGTLSU-C
+    deviceName: ATECC608-TNGTLS
+    packagePin: UDFN-8
+    memory: N/A
+    media: Bag
+    moq: 100
+    status: Production
+  - partNumber: ATECC608C-TNGTLSS-C
+    deviceName: ATECC608-TNGTLS
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq: 100
+    status: Production
+  - partNumber: ATECC608C-TNGTLSU-G
+    deviceName: ATECC608-TNGTLS
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq: 2000
+    status: Production
+  - partNumber: ATECC608C-TNGTLSS-G
+    deviceName: ATECC608-TNGTLS
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq: 2000
+    status: Production
+  - partNumber: ATECC608B-TNGLORAS-B
+    deviceName: ATECC608-TNGLORA
+    packagePin: SOIC-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608B-TNGLORAU-B
+    deviceName: ATECC608-TNGLORA
+    packagePin: UDFN-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608B-TNGLORAS-C
+    deviceName: ATECC608-TNGLORA
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq: 100
+    status: Production
+  - partNumber: ATECC608B-TNGLORAU-C
+    deviceName: ATECC608-TNGLORA
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq: 100
+    status: Production
+  - partNumber: ATECC608B-TNGLORAS-G
+    deviceName: ATECC608-TNGLORA
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq: 2000
+    status: Production
+  - partNumber: ATECC608B-TNGLORAU-G
+    deviceName: ATECC608-TNGLORA
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq: 2000
+    status: Production
+  - partNumber: ATECC608B-TNGACTS-B
+    deviceName: ATECC608-TNGACT
+    packagePin: SOIC-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608B-TNGACTU-B
+    deviceName: ATECC608-TNGACT
+    packagePin: UDFN-8
+    memory: N/A
+    media: Bag
+    moq: 10
+    status: Production
+  - partNumber: ATECC608B-TNGACTS-C
+    deviceName: ATECC608-TNGACT
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq: 100
+    status: Production
+  - partNumber: ATECC608B-TNGACTU-C
+    deviceName: ATECC608-TNGACT
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq: 100
+    status: Production
+  - partNumber: ATECC608B-TNGACTS-G
+    deviceName: ATECC608-TNGACT
+    packagePin: SOIC-8
+    memory: N/A
+    media: Reel
+    moq: 2000
+    status: Production
+  - partNumber: ATECC608B-TNGACTU-G
+    deviceName: ATECC608-TNGACT
+    packagePin: UDFN-8
+    memory: N/A
+    media: Reel
+    moq: 2000
+    status: Production

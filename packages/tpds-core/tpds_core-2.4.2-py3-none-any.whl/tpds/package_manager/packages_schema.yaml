@@ -1,0 +1,62 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/manifest"
+title:
+  TPDS Package Manifest Schema
+definitions:
+  manifest:
+    title: manifest
+    type: object
+    additionalProperties: false
+    properties:
+      version:
+        type: string
+      packages:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/package_item"
+      extensions:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/package_item"
+    required:
+    - version
+    - packages
+    - extensions
+  package_item:
+    title: manifest_package_item
+    type: object
+    additionalProperties: true
+    properties:
+      description:
+        type: string
+      source:
+        $ref: "#/definitions/package_source"
+    required:
+    - description
+    - source
+  package_source:
+    title: package_source
+    type: object
+    additionalProperties: false
+    properties:
+      conda:
+        $ref: "#/definitions/conda_source"
+      pypi:
+        type: array
+        items:
+          type: string
+  conda_source:
+    title: conda_source
+    type: object
+    additionalProperties: false
+    properties:
+      channel:
+        type: string
+      packages:
+        type: array
+        items:
+          type: string
+    required:
+    - channel

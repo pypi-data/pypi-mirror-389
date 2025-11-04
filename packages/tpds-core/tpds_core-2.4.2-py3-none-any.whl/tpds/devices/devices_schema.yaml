@@ -1,0 +1,137 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/device_config"
+title: Device Info YAML Schema
+definitions:
+  device_config:
+    title: device_config
+    type: object
+    additionalProperties: true
+    properties:
+      title:
+        type: string
+      devices:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/device"
+      parts:
+        type: array
+        items:
+          $ref: "#/definitions/part"
+  device:
+    title: Device Definition
+    type: object
+    additionalProperties: True
+    properties:
+      basePart:
+        type: string
+      partLink:
+        type:
+          - string
+          - "null"
+      toolLink:
+        type:
+          - string
+          - "null"
+      provisioningFlow:
+        anyOf:
+          - $ref: "#/definitions/provisioningFlow"
+          - type: object
+            additionalProperties:
+              type: array
+              items:
+                type: string
+      partType:
+        enum:
+          - Module
+          - Silicon
+          - System-in-Package
+      partInterface:
+        $ref: "#/definitions/partInterface"
+      productCategory:
+        type:
+          - string
+          - "null"
+      tpdsRelease:
+        type: boolean
+      ndaRequired:
+        type: boolean
+      annualVolume:
+        type:
+          - integer
+          - "null"
+      certificates:
+        type:
+          - array
+          - "null"
+        items:
+          type: string
+          enum:
+            - standard
+            - WPC
+    required:
+      - basePart
+      - provisioningFlow
+  part:
+    title: Part Number Information
+    type: object
+    additionalProperties: False
+    properties:
+      partNumber:
+        type: string
+      deviceName:
+        type: string
+      packagePin:
+        type: string
+      partInterface:
+        $ref: "#/definitions/partInterface"
+      memory:
+        type:
+          - string
+          - "null"
+      media:
+        type:
+          - string
+          - "null"
+      moq:
+        anyOf:
+          - type: integer
+          - type: string
+          - type: "null"
+          - type: object
+            properties:
+              lowVolume:
+                type: [string, integer, "null"]
+                default: "-"
+              highVolume:
+                type: [string, integer, "null"]
+                default: "-"
+        default: 0
+      status:
+        type:
+          - string
+          - "null"
+    required:
+      - partNumber
+      - deviceName
+      - packagePin
+
+  partInterface:
+    type:
+      - array
+      - "null"
+    items:
+      type: string
+      enum:
+        - i2c
+        - spi
+        - swi
+  provisioningFlow:
+    title: ProvisioningFlow
+    enum:
+      - TrustCUSTOM
+      - Trust&Go
+      - TrustFLEX
+      - TrustMANAGER
+    type: string

@@ -1,0 +1,49 @@
+
+app_settings:
+  conda_path: ''
+  conda_required: False
+  conda_channels:
+  - microchiporg
+  - conda-forge
+  - defaults
+  pip_index:
+  version: '2.0.0'
+  jupyter_port: 8888
+  voila_template: tpds_template
+  voila_version: '0.2.4'
+  jupyter_config_file: 'TPDS_notebook_config.py'
+  websocket_port: 8080
+  minimize_to_tray: False
+  update_on_startup: True
+  local_path: 'tpds_application'
+  log_window: False
+  debug: True
+  develop: True
+  mplab_path: ''
+  mplab_version: ''
+  github_email: ''
+  github_ssh_key: ''
+  icon: assets/app.ico
+  log_file: ''
+
+packages:
+  core: ssh://git@bitbucket.microchip.com/spgappsext/tp_designsuite.git
+  core_branch: 'SPGAPPSEXT-732-trust-platform-convert-assets-python-to-individual-modules'
+  core_enabled: True
+  trust_custom: ''
+  trust_custom_branch: ''
+  trust_custom_enabled: False
+  trust_anchor: ''
+  trust_anchor_branch: ''
+  trust_anchor_enabled: False
+  tpds-core: ''
+  tpds-helper: ''
+  tpds-application: ''
+
+runtime_settings:
+  active_board:
+
+usecases:
+  paths: 
+  - 'usecases'
+  search_modules: true

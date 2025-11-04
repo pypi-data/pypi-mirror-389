@@ -1,0 +1,110 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/usecase_config"
+title:
+  Usecase YAML Schema
+definitions:
+  usecase_config:
+    title: usecase_config
+    type: object
+    additionalProperties: true
+    properties:
+      name:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      icon:
+        $ref: "#/definitions/icon"
+      applications:
+        $ref: "#/definitions/categories"
+      boards:
+        $ref: "#/definitions/categories"
+      devices:
+        $ref: "#/definitions/categories"
+      backend:
+        $ref: "#/definitions/backend"
+      frontend:
+        $ref: "#/definitions/frontend"
+  backend:
+    title: API
+    type: object
+    additionalProperties: false
+    properties:
+      path:
+        type: string
+      routers:
+        type: array
+        items:
+          type: string
+      requires:
+        type: array
+        items:
+          type: string
+    required:
+    - path
+  frontend:
+    title: Frontend
+    type: object
+    additionalProperties: false
+    properties:
+      path:
+        type: string
+      entrypoints:
+        type: array
+        items:
+          $ref: "#/definitions/entrypoint"
+        minItems: 1
+    anyOf:
+      - required:
+        - path
+      - required:
+        - entrypoints
+  entrypoint:
+    title: Entrypoint
+    type: object
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      icon:
+        $ref: "#/definitions/icon"
+      applications:
+        $ref: "#/definitions/categories"
+      boards:
+        $ref: "#/definitions/categories"
+      devices:
+        $ref: "#/definitions/categories"
+      entry:
+        type: string
+      groupTitle:
+        type: string
+      version:
+        type: string
+    required:
+    - name
+    - applications
+    - entry
+  categories:
+    title: Category List
+    type: array
+    items:
+      type: string
+    minItems: 1
+  icon:
+    anyOf: 
+      - type: string
+      - type: object
+        properties:
+          name:
+            type: string
+          path:
+            type: string
+        required:
+        - name

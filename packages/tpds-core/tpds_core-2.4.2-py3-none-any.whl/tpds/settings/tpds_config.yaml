@@ -1,0 +1,125 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/tpdsconfig"
+title:
+  TPDS Global Configuration Schema
+definitions:
+  tpdsconfig:
+    title: tpdsconfig
+    type: object
+    additionalProperties: false
+    properties:
+      usecases:
+        $ref: "#/definitions/usecases"
+      app_settings:
+        $ref: "#/definitions/app_settings"
+      packages:
+        $ref: "#/definitions/packages"
+      runtime_settings:
+        $ref: "#/definitions/runtime_settings"
+    required:
+    - usecases
+    - app_settings
+    - packages
+    - runtime_settings
+  usecases:
+    title: usecases
+    type: object
+    additionalProperties: false
+    properties:
+      paths:
+        type: array
+        contains:
+          type: string
+      search_modules:
+        type: boolean
+    anyOf:
+    - not:
+        properties:
+          search_modules: false
+        required:
+        - paths
+    - required:
+      - paths
+  app_settings:
+    title: app_settings
+    type: object
+    additionalProperties: True
+    properties:
+      conda_path:
+        type: string
+      conda_required:
+        type: boolean
+      conda_channels:
+        type: array
+        items:
+          type: string
+      pip_index:
+        type: 
+          - string
+          - "null"
+      version:
+        type: string
+      jupyter_port:
+        type: number
+      voila_template:
+        type: string
+      voila_version:
+        type: string
+      jupyter_config_file:
+        type: string
+      websocket_port:
+        type: number
+      minimize_to_tray:
+        type: boolean
+      update_on_startup:
+        type: boolean
+      local_path:
+        type: string
+      log_window:
+        type: boolean
+      debug:
+        type: boolean
+      develop:
+        type: boolean
+      mplab_path:
+        type: string
+      mplab_version:
+        type: string
+      github_email:
+        type: string
+      github_ssh_key:
+        type: string
+      icon:
+        type: string
+      log_file:
+        type: string
+  packages:
+    title: package_settings
+    type: object
+    additionalProperties: True
+    properties:
+      core:
+        type: string
+      core_branch:
+        type: string
+      core_enabled:
+        type: boolean
+      trust_custom:
+        type: string
+      trust_custom_branch:
+        type: string
+      trust_custom_enabled:
+        type: boolean
+      trust_anchor:
+        type: string
+      trust_anchor_branch:
+        type: string
+      trust_anchor_enabled:
+        type: boolean
+    required:
+    - core
+  runtime_settings:
+    active_board:
+      type: string

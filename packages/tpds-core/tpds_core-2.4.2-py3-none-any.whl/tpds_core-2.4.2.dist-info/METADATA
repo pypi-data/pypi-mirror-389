@@ -1,0 +1,107 @@
+Metadata-Version: 2.4
+Name: tpds-core
+Version: 2.4.2
+Summary: Microchip(SPG) Trust Platform Core 
+Maintainer-email: Microchip Technology <SPG.Tools@microchip.com>
+License: (c) 2015-2025 Microchip Technology Inc. and its subsidiaries.
+        
+        Subject to your compliance with these terms, you may use the Microchip Software
+        and any derivatives exclusively with Microchip products. It is your
+        responsibility to comply with third party license terms applicable to your
+        use of third party software (including open source software) that may
+        accompany Microchip Software.
+        
+        Redistribution of this Microchip Software in source or binary form is allowed
+        and must include the above terms of use and the following disclaimer with the
+        distribution and accompanying materials.
+        
+        THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+        EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+        WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+        PARTICULAR PURPOSE. IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT,
+        SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE
+        OF ANY KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF
+        MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.
+        TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL
+        CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF
+        FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+        
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: asn1crypto
+Requires-Dist: beautifulsoup4
+Requires-Dist: deepdiff
+Requires-Dist: cryptography~=35.0.0
+Requires-Dist: python-multipart
+Requires-Dist: fastapi
+Requires-Dist: jsonschema
+Requires-Dist: Markdown
+Requires-Dist: packaging
+Requires-Dist: psutil
+Requires-Dist: pydantic<2.0
+Requires-Dist: pymcuprog
+Requires-Dist: pyusb
+Requires-Dist: PyYAML
+Requires-Dist: starlette
+Requires-Dist: tabulate
+Requires-Dist: uvicorn
+Requires-Dist: jupyter_client==7.4.1
+Requires-Dist: jupyter_core==5.3.1
+Requires-Dist: jupyter-server==1.24.0
+Requires-Dist: jupyterlab-pygments==0.2.2
+Requires-Dist: jupyterlab_server==2.24.0
+Requires-Dist: jupyterlab-widgets==3.0.8
+Requires-Dist: traitlets==5.9.0
+Requires-Dist: notebook<7,>=6.4.12
+Requires-Dist: nbclient==0.7.4
+Requires-Dist: nbconvert==7.7.4
+Requires-Dist: voila==0.4.0
+Requires-Dist: cryptoauthlib>=20241015
+Requires-Dist: tpds-application-root
+Requires-Dist: tpds-boards
+Requires-Dist: tpds-manifest
+Requires-Dist: tpds-helper>=2.3.10
+Requires-Dist: tpds-voila-template
+Requires-Dist: tpds-device-manifest
+Provides-Extra: dev
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: test
+Requires-Dist: httpx; extra == "test"
+Requires-Dist: responses==0.23.1; extra == "test"
+Requires-Dist: prompt-toolkit==3.0.41; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: pytest-integration; extra == "test"
+Dynamic: license-file
+
+Trust Platform Design Suite - Core
+===============================================================================
+
+This module contains the backend services and resources required by the TPDS application and utilities.
+
+## Release Notes
+
+### 2.4.2
+   - Added Demo UI feature updates
+
+### 2.4.1
+   - Manifest generation and parser updates for lite and larger key types
+   - Bug fix for broken link on the configurators
+
+### 2.4.0
+   - Improved Usecase UI support for migrating from Notebook to native React and Python based Usecases
+
+### 2.3.20
+   - Added updates for Secure Exchange Process and MoQ details processing for UI
+   - Bug fix for reopening the Usecase Notebook
+
+### 2.3.19
+   - CryptoAuthLib version requirement updated

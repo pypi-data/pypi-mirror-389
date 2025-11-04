@@ -1,0 +1,53 @@
+---
+title: System in Package and Module Information
+devices:
+  ATSAMA5D27-WLSOM1:
+    basePart: ATSAMA5D27-WLSOM1
+    partLink: https://www.microchip.com/wwwproducts/eN/ATSAMA5D27-WLSOM1
+    toolLink: https://www.microchip.com/wwwproducts/eN/ATSAMA5D27-WLSOM1
+    provisioningFlow: Trust&Go
+    partType: Module
+    productCategory: MicroProcessor
+    tpdsRelease: No
+    ndaRequired: No
+  PIC32CMLS60:
+    basePart: PIC32CMLS60
+    partLink:
+    provisioningFlow: TrustFLEX
+    partType: System-in-Package
+    productCategory: MCU32
+    tpdsRelease: No
+    certificates:
+      - standard
+      - WPC
+  WFI32E01:
+    basePart: WFI32E01
+    partLink: https://www.microchip.com/wwwproducts/en/WFI32E01PC
+    toolLink: https://www.microchip.com/wwwproducts/en/WFI32E01PC
+    provisioningFlow: Trust&Go
+    partType: Module
+    productCategory: Wireless
+    tpdsRelease: Yes
+    ndaRequired: No
+parts:
+  - partNumber: ATSAMA5D27-WLSOM1
+    deviceName: ATSAMA5D27-WLSOM1
+    packagePin: SMD-188
+    memory: -/256M LPDDR2
+    media: Tray
+    moq: 12
+    status: Production
+  - partNumber: WFI32E01PC
+    deviceName: WFI32E01
+    packagePin: SMD-54
+    memory: 1M/256K
+    media: Tray
+    moq: 40
+    status: Production
+  - partNumber: WFI32E01UC
+    deviceName: WFI32E01
+    packagePin: SMD-54
+    memory: 1M/256K
+    media: Tray
+    moq: 40
+    status: Production

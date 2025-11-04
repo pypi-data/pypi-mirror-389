@@ -1,0 +1,39 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/boards_config"
+title:
+  Board Info YAML Schema
+definitions:
+  boards_config:
+    title: boards_config
+    type: object
+    additionalProperties: true
+    properties:
+      title:
+        type: string
+      boards:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/board"
+  board:
+    title: Board Definition
+    type: object
+    additionalProperties: True
+    properties:
+      description:
+        type: string
+      partNumber:
+        type: string
+      web_link:
+        type: string
+      img:
+        type:
+          - string
+          - 'null'
+    kit_name:
+      type: string
+    product_string:
+      type: string
+    required:
+      - description

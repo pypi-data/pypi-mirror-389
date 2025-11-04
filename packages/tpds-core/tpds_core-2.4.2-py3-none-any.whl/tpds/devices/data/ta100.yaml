@@ -1,0 +1,51 @@
+---
+title: TA100 Device Information
+devices:
+  TA100:
+    basePart: TA100
+    partLink: https://www.microchip.com/en-us/product/ta100
+    toolLink: https://www.microchip.com/en-us/product/ta100
+    provisioningFlow: TrustCUSTOM
+    partType: Silicon
+    productCategory: Secure Element
+    partInterface:
+      - i2c
+      - spi
+    tpdsRelease: Yes
+    ndaRequired: Yes
+    annualVolume: 10000
+    certificates:
+      - standard
+      - WPC
+parts:
+  - partNumber: TA100T-Y240C2X01
+    deviceName: TA100
+    packagePin: SOIC-8
+    partInterface:
+      - i2c
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 9900
+    status: Under NDA
+  - partNumber: TA100-Y240C2X01
+    deviceName: TA100
+    packagePin: SOIC-8
+    partInterface:
+      - spi
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 9900
+    status: Under NDA
+  - partNumber: TA100-Y240UFB01
+    deviceName: TA100
+    packagePin: VQFN-24
+    memory: N/A
+    media: Reel
+    moq:
+      lowVolume:
+      highVolume: 12000
+    status: Under NDA
