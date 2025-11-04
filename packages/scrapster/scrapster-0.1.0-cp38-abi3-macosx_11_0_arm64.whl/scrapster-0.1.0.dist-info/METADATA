@@ -1,0 +1,36 @@
+Metadata-Version: 2.4
+Name: scrapster
+Version: 0.1.0
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Rust
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Keywords: metrics,system,rust,pyo3
+License: MIT
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Project-URL: Homepage, https://github.com/kemalcanbora/scrapster
+
+# scrapster
+
+Rust-powered system metrics collector exposed to Python via PyO3.
+
+## Installation
+
+```
+pip install scrapster
+```
+
+## Usage
+
+```python
+import scrapster
+
+m = scrapster.get_metrics_once(1000)  # wait ~1s and return a dict
+print(m["cpu_usage_percent"], m["mem_used_bytes"])
+```
+
+## Notes
+- Some metrics rely on Linux `/proc/*` files; on non-Linux systems these may be zero.
+
+
