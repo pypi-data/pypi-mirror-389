@@ -1,0 +1,176 @@
+{
+  "id": "trading",
+  "name": "Trading Schedule Optimization",
+  "domain": "finance",
+  "problem_type": "trade_execution",
+  "description": "Optimizes trade execution scheduling to minimize market impact, slippage, and transaction costs while meeting execution targets and time constraints.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Algorithmic Trading Expert",
+    "profile": "15+ years in quantitative trading and execution algorithms. Expert in market microstructure, execution costs, and VWAP/TWAP strategies.",
+    "priorities": [
+      "Minimize execution cost (slippage + commissions)",
+      "Minimize market impact",
+      "Meet VWAP targets",
+      "Respect time windows",
+      "Balance urgency vs. stealth",
+      "Manage liquidity constraints"
+    ],
+    "key_metrics": [
+      "Implementation shortfall",
+      "Total slippage (bps)",
+      "VWAP deviation",
+      "Market impact (%)"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Execution Algorithm Specialist",
+    "profile": "PhD in Financial Engineering. Expert in optimal execution theory, liquidity modeling, and dynamic programming.",
+    "problem_class": "Optimal Trade Execution Problem - Dynamic Programming",
+    "formulation": "Minimize expected execution cost considering market impact, volatility, and urgency. Dynamic programming formulation with discrete time slices and volume constraints.",
+    "complexity": "O(n * T * V) where n = trades, T = time slices, V = volume levels"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "execution_cost",
+        "weight": 0.5,
+        "formula": "sum(abs(execution_price - benchmark_price) * quantity)",
+        "description": "Minimize total slippage and costs"
+      },
+      {
+        "name": "market_impact",
+        "weight": 0.3,
+        "formula": "sum(trade_volume / market_volume * price_impact)",
+        "description": "Minimize market impact"
+      },
+      {
+        "name": "vwap_deviation",
+        "weight": 0.15,
+        "formula": "abs(avg_execution_price - vwap) / vwap",
+        "description": "Track VWAP benchmark"
+      },
+      {
+        "name": "urgency_satisfaction",
+        "weight": 0.05,
+        "formula": "urgent_trades_completed_early / total_urgent",
+        "description": "Complete urgent trades first"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "time_window_violation",
+        "weight": 100.0,
+        "description": "Missing mandatory execution windows"
+      },
+      {
+        "name": "slippage_limit_violation",
+        "weight": 50.0,
+        "description": "Exceeding max allowed slippage"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "time_windows",
+        "formula": "execute trade within [start_time, end_time]",
+        "description": "Respect execution time constraints"
+      },
+      {
+        "name": "position_limits",
+        "formula": "quantity <= max_position_size",
+        "description": "Risk management position limits"
+      },
+      {
+        "name": "market_hours",
+        "formula": "trades during market open hours only",
+        "description": "Execute during market hours"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "liquidity_constraints",
+        "penalty": 10.0,
+        "formula": "trade_volume <= X% of market_volume",
+        "description": "Limit participation rate"
+      },
+      {
+        "name": "urgency_priority",
+        "penalty": 5.0,
+        "formula": "execute high-urgency trades earlier",
+        "description": "Prioritize urgent orders"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 80,
+    "max_generations": 150,
+    "crossover_rate": 0.75,
+    "mutation_rate": 0.25,
+    "tournament_size": 4,
+    "elite_size": 8,
+    "crossover_config": {
+      "type": "schedule_crossover",
+      "description": "Exchanges execution timing between solutions"
+    },
+    "mutation_config": {
+      "type": "timing_mutation",
+      "description": "Adjusts execution timing and volume splits",
+      "mutation_strength": 0.15
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY**\n\n**Problem:**\n{problem_description}\n\n**Return JSON:**\n```json\n{{\n  \"trade_count\": <number>,\n  \"constraints\": {{\n    \"time_window\": <minutes or null>,\n    \"slippage_tolerance\": <percentage or null>,\n    \"liquidity_constraints\": <boolean>\n  }},\n  \"objective\": \"minimize_cost\" | \"vwap\" | \"minimize_impact\"\n}}\n```\n\n**Rules:**\n1. Extract trade count: \"100 trades\" → {{\"trade_count\": 100}}\n2. Time window from \"within X hours\", \"by market close\"\n3. Slippage from \"max 10 bps slippage\"\n4. Liquidity if mentions \"participation rate\", \"volume limits\"\n\nReturn ONLY JSON.",
+    "required_fields": ["trade_count"],
+    "optional_fields": ["constraints"],
+    "validation_rules": [
+      "trade_count > 0"
+    ],
+    "data_usage_explanation": "Generates trades with symbols, quantities, strategies, and urgency. Creates realistic market conditions and liquidity profiles."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Total Slippage",
+        "key": "total_slippage",
+        "format": "basis_points",
+        "target": "<10 bps"
+      },
+      {
+        "name": "Implementation Shortfall",
+        "key": "implementation_shortfall",
+        "format": "currency"
+      },
+      {
+        "name": "VWAP Deviation",
+        "key": "vwap_deviation",
+        "format": "percentage",
+        "target": "<0.5%"
+      },
+      {
+        "name": "Market Impact",
+        "key": "market_impact",
+        "format": "percentage"
+      }
+    ],
+    "visualization_types": ["execution_timeline", "price_impact_chart", "vwap_comparison"],
+    "narrative_template": "Optimized execution schedule for {trade_count} trades. Total slippage: {total_slippage} bps, Implementation shortfall: ${implementation_shortfall}. VWAP deviation: {vwap_deviation}%.",
+    "export_formats": ["json", "csv", "execution_report", "tca_analysis"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+

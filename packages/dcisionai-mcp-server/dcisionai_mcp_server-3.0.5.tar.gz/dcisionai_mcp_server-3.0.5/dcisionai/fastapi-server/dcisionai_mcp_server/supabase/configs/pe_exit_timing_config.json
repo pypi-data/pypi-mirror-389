@@ -1,0 +1,144 @@
+{
+  "domain_id": "pe_exit_timing",
+  "name": "Private Equity Exit Timing Optimization",
+  "description": "Optimize exit timing for PE portfolio companies by analyzing market conditions, company performance, and economic indicators to determine the optimal exit window that maximizes after-tax returns.",
+  "version": "1.0.0",
+  "enabled": true,
+  "category": "private_equity",
+  "tags": [
+    "exit",
+    "timing",
+    "valuation",
+    "pe",
+    "m&a"
+  ],
+  "objective_config": {
+    "type": "single_objective",
+    "objectives": [
+      "Maximize after-tax exit value considering timing, market conditions, and holding costs"
+    ],
+    "formula": "(Expected_Exit_Value * (1 - Tax_Rate)) - Holding_Costs - Opportunity_Cost"
+  },
+  "constraints_config": {
+    "constraints": [
+      "Company EBITDA growth rate must meet minimum threshold",
+      "Exit must occur before fund end date minus 12 months",
+      "Market conditions must be favorable (valuation multiples, IPO window)",
+      "Sufficient buyer appetite (strategic and financial buyers)",
+      "Management team must be stable (no key departures expected)",
+      "Hold period must qualify for long-term capital gains if possible"
+    ],
+    "hard_constraints": [
+      "fund_lifecycle",
+      "minimum_performance"
+    ],
+    "soft_constraints": [
+      "market_conditions",
+      "buyer_appetite",
+      "tax_optimization"
+    ]
+  },
+  "data_sources": {
+    "required": [
+      "company_name",
+      "current_ebitda",
+      "acquisition_date",
+      "fund_end_date"
+    ],
+    "optional": [
+      "industry_sector",
+      "buyer_pipeline",
+      "management_projections",
+      "debt_structure"
+    ],
+    "external_apis": [
+      {
+        "provider": "polygon",
+        "data_type": "public_comps_multiples",
+        "required": true,
+        "purpose": "Get valuation multiples (EV/EBITDA, P/E) for comparable public companies"
+      },
+      {
+        "provider": "alpha_vantage",
+        "data_type": "economic_indicators",
+        "required": true,
+        "purpose": "GDP growth, interest rates, inflation for valuation modeling"
+      },
+      {
+        "provider": "alpha_vantage",
+        "data_type": "sector_performance",
+        "required": true,
+        "purpose": "Sector-specific market conditions and M&A activity"
+      }
+    ]
+  },
+  "parsing_config": {
+    "llm_model": "claude-3-5-haiku-20241022",
+    "max_tokens": 2048,
+    "temperature": 0.0,
+    "use_synthetic_data": true,
+    "synthetic_data_generator": "pe_exit_generator",
+    "prompt_template": "You are a private equity exit planning specialist. Extract:\n\n1. Portfolio Company Details:\n   - Company name\n   - Industry sector\n   - Current EBITDA ($M)\n   - EBITDA growth rate (%)\n   - Revenue ($M)\n\n2. Deal Information:\n   - Acquisition date (MM/YYYY)\n   - Purchase price ($M)\n   - Entry multiple (EV/EBITDA)\n   - Current ownership %\n\n3. Fund Context:\n   - Fund vintage year\n   - Fund end date\n   - Target IRR (%)\n\n4. Market Context:\n   - Industry M&A activity (hot/moderate/cold)\n   - Potential buyers mentioned\n\nReturn JSON with all details."
+  },
+  "ga_params": {
+    "population_size": 50,
+    "generations": 100,
+    "mutation_rate": 0.1,
+    "crossover_rate": 0.7,
+    "elitism_count": 5,
+    "tournament_size": 3
+  },
+  "output_format": {
+    "sections": [
+      "company_performance_analysis",
+      "market_conditions_assessment",
+      "valuation_scenarios",
+      "exit_timing_recommendation",
+      "risk_analysis",
+      "buyer_landscape",
+      "implementation_timeline"
+    ],
+    "visualizations": [
+      "exit_value_timeline",
+      "scenario_comparison",
+      "risk_sensitivity"
+    ],
+    "export_formats": [
+      "exec_summary_pdf",
+      "board_presentation_pptx",
+      "json_api"
+    ]
+  },
+  "domain_expert": {
+    "title": "Private Equity Principal",
+    "profile": "Expert in portfolio company value creation, market timing, exit strategy execution, and GP-LP dynamics with 12+ years at top-tier PE firms",
+    "priorities": [
+      "Exit value maximization (IRR and MOIC)",
+      "Tax optimization (long-term vs short-term capital gains)",
+      "Market timing and sector sentiment analysis",
+      "Fund lifecycle management and LP expectations"
+    ],
+    "speaks_about": [
+      "EBITDA multiples and valuation trends",
+      "IPO window timing",
+      "M&A market conditions",
+      "tax efficiency of exit timing",
+      "fund DPI and TVPI metrics",
+      "comparable transaction analysis"
+    ]
+  },
+  "math_expert": {
+    "title": "Time-Series Optimization Specialist",
+    "profile": "Expert in dynamic programming, scenario analysis, and temporal decision-making under uncertainty",
+    "formulation": "Dynamic optimization maximizing after-tax exit proceeds across time periods with market condition modeling",
+    "problem_class": "Stochastic Dynamic Programming with Time-Dependent Constraints",
+    "solution_method": "Monte Carlo scenario evaluation with market condition weighting",
+    "defensibility": [
+      "Scenario-based valuation modeling",
+      "Market sentiment quantification",
+      "Tax rate optimization analysis",
+      "Confidence interval estimation (95% confidence)",
+      "Sensitivity analysis on valuation multiples"
+    ]
+  }
+}
