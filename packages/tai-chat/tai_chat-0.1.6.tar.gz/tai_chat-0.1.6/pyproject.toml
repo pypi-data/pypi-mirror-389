@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "tai-chat"
+version = "0.1.6"
+description = ""
+authors = ["MateoSaezMata <msaez@triplealpha.in>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.3.0"
+tai-sql = "^0.3.39"
+
+[tool.poetry.group.dev.dependencies]
+database = {path = "tai_chat/database", develop = true}
+
+[tool.poetry.scripts]
+tai-chat = "tai_chat.cli.main:cli"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

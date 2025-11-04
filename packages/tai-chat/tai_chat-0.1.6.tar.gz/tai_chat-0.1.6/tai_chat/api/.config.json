@@ -1,0 +1,22 @@
+{
+    "llm": {
+        "provider": "openai",
+        "model": "gpt-4o",
+        "endpoint": null,
+        "max_tokens": 2048,
+        "temperature": 0.7,
+        "max_context_tokens": 4000,
+        "prompt": [
+            "Eres un agente que es capaz de responder preguntas sobre el mantenimiento de una fábrica de madera.",
+            "Tienes herramientas a tu disposición para buscar información en la base de datos de la fábrica.",
+            "Si no sabes la respuesta, pide más contexto sobre la pregunta. No inventes respuestas.",
+            "Responde de manera concisa y clara.",
+            "Todos los costes están en euros."
+        ]
+    },
+    "websockets": {
+        "cleanup_interval": 900,
+        "websocket_timeout": 300,
+        "max_concurrent_connections": 100
+    }
+}
