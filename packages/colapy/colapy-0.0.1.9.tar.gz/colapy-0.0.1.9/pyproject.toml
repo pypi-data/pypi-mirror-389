@@ -1,0 +1,86 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.5",
+    "cmake>=3.15",
+    "pybind11",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "colapy"
+version = "0.0.1.9"
+description = "Python binding for COLA framework"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Artemii Novikov", email = "artyasen@yandex.ru" }
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: C++",
+]
+keywords = [
+    "cpp",
+    "bindings",
+]
+dependencies = []
+requires-python = ">=3.8"
+
+[project.urls]
+Repository = "https://github.com/ZakayZ/COLA-PY"
+
+[project.scripts]
+cola = "colapy.cli:main"
+
+[dependency-groups]
+test = [
+    "pytest",
+]
+dev = [
+    {include-group = "test"},
+    "ruff",
+    "cibuildwheel",
+]
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.source-dir = "."
+
+sdist.include = [
+    "src/**/*",
+    "cmake/**/*", 
+    "data/**/*",
+    "CMakeLists.txt",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+    "*.cpp", "*.h", "*.hh", "*.hpp",
+    "*.cmake", "*.in",
+]
+
+sdist.exclude = [
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.so",
+    "**/*.dll", 
+    "**/*.dylib",
+    "build/**",
+    "dist/**",
+    "**/*.egg-info/**",
+]
+
+[tool.cibuildwheel]
+build-frontend = "build"
+enable = ["pypy"]
+# test-command = "python -m pytest tests"
+# test-sources = ["pyproject.toml", "tests"]
+# test-groups = ["test"]
