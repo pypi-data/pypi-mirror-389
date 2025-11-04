@@ -1,0 +1,231 @@
+Metadata-Version: 2.4
+Name: qBitrr2
+Version: 5.3.0
+Summary: "A simple Python script to talk to qBittorrent and Arr's"
+Home-page: https://github.com/Feramance/qBitrr
+Author: Feramance
+Author-email: fera@fera.wtf
+License: MIT
+Project-URL: Issue Tracker, https://github.com/Feramance/qBitrr/issues
+Project-URL: Source Code, https://github.com/Feramance/qBitrr
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Terminals
+Classifier: Topic :: Utilities
+Classifier: Typing :: Typed
+Requires-Python: <4,>=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: cachetools
+Requires-Dist: colorama
+Requires-Dist: coloredlogs
+Requires-Dist: flask
+Requires-Dist: environ-config
+Requires-Dist: ffmpeg-python
+Requires-Dist: jaraco.docker
+Requires-Dist: packaging
+Requires-Dist: pathos
+Requires-Dist: peewee
+Requires-Dist: ping3
+Requires-Dist: pyarr
+Requires-Dist: qbittorrent-api
+Requires-Dist: requests
+Requires-Dist: tomlkit
+Requires-Dist: waitress
+Requires-Dist: croniter
+Provides-Extra: dev
+Requires-Dist: black==24.3.0; extra == "dev"
+Requires-Dist: bump2version==1.0.1; extra == "dev"
+Requires-Dist: isort==5.10.1; extra == "dev"
+Requires-Dist: pip-tools==7.3.0; extra == "dev"
+Requires-Dist: pre-commit==3.3.3; extra == "dev"
+Requires-Dist: pyinstaller==5.13.1; extra == "dev"
+Requires-Dist: pyupgrade==2.31.0; extra == "dev"
+Requires-Dist: twine==3.7.1; extra == "dev"
+Requires-Dist: ujson==5.10.0; extra == "dev"
+Requires-Dist: upgrade-pip==0.1.4; extra == "dev"
+Provides-Extra: fast
+Requires-Dist: ujson==5.10.0; extra == "fast"
+Provides-Extra: all
+Requires-Dist: black==24.3.0; extra == "all"
+Requires-Dist: bump2version==1.0.1; extra == "all"
+Requires-Dist: isort==5.10.1; extra == "all"
+Requires-Dist: pip-tools==7.3.0; extra == "all"
+Requires-Dist: pre-commit==3.3.3; extra == "all"
+Requires-Dist: pyinstaller==5.13.1; extra == "all"
+Requires-Dist: pyupgrade==2.31.0; extra == "all"
+Requires-Dist: twine==3.7.1; extra == "all"
+Requires-Dist: ujson==5.10.0; extra == "all"
+Requires-Dist: upgrade-pip==0.1.4; extra == "all"
+Requires-Dist: ujson==5.10.0; extra == "all"
+Dynamic: license-file
+
+# qBitrr
+
+[![PyPI](https://img.shields.io/pypi/v/qBitrr2?label=PyPI)](https://pypi.org/project/qBitrr2/)
+[![Downloads](https://img.shields.io/pypi/dm/qBitrr2)](https://pypi.org/project/qBitrr2/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/feramance/qbitrr.svg)](https://hub.docker.com/r/feramance/qbitrr)
+[![CodeQL](https://github.com/Feramance/qBitrr/actions/workflows/codeql.yml/badge.svg?branch=master)](https://github.com/Feramance/qBitrr/actions/workflows/codeql.yml)
+[![Nightly Build](https://github.com/Feramance/qBitrr/actions/workflows/nightly.yml/badge.svg?branch=master)](https://github.com/Feramance/qBitrr/actions/workflows/nightly.yml)
+[![pre-commit.ci](https://results.pre-commit.ci/badge/github/Feramance/qBitrr/master.svg)](https://results.pre-commit.ci/latest/github/Feramance/qBitrr/master)
+[![License: MIT](https://img.shields.io/pypi/l/qbitrr)](LICENSE)
+
+> 🧩 qBitrr keeps qBittorrent, Radarr, Sonarr, Lidarr, and your request tools chatting happily so downloads finish, import, and clean up without babysitting.
+
+## 📚 What's Inside
+- [Overview](#-overview)
+- [Highlights](#-highlights)
+- [State of the Project](#-state-of-the-project)
+- [Quickstart](#-quickstart)
+  - [Install with pip](#install-with-pip)
+  - [Run with Docker](#run-with-docker)
+- [Configuration](#-configuration)
+- [Built-in Web UI](#-built-in-web-ui)
+- [Day-to-day Ops](#-day-to-day-ops)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [Support](#-support)
+- [License](#-license)
+
+## 🧠 Overview
+qBitrr is the glue that keeps the *Arr ecosystem tidy. It watches qBittorrent for stalled jobs, kicks Radarr/Sonarr/Lidarr when something finishes, prunes your completed folder, and even offers a slick React dashboard so you can see what's running at a glance.
+
+## ✨ Highlights
+- 🚑 **Health checks** – spot stalled or broken torrents, blacklist them on the relevant Arr, and optionally trigger a re-search.
+- 📬 **Instant imports** – call `DownloadedMoviesScan` and `DownloadedEpisodesScan` the moment qBittorrent is done.
+- 🧹 **Smart skips & cleanup** – ignore by extension, folder, or regex and keep completed downloads tidy.
+- 🔍 **ffprobe verification** – confirm files are real media before handing them off.
+- 🔄 **Arr keep-alive** – schedule RSS refreshes, queue updates, missing-media searches, CF-score rescans, and more.
+- 🛰️ **Request automation** – pull in Overseerr/Ombi asks and auto-manage trackers.
+- 💾 **Disk guard rails** – pause torrenting when free space dips under your threshold.
+- 💻 **First-party Web UI** – live process monitoring, log tails, Arr insights, and config edits in one place.
+
+## 📌 State of the Project
+The long-term plan is still to ship a C# rewrite, but the Python edition isn't going anywhere—it gets regular fixes and features, and the Web UI is now production-ready. Ideas and PRs are welcome! Head over to the [issue templates](.github/ISSUE_TEMPLATE) or the [PR checklist](.github/pull_request_template.md) to get started.
+
+## ⚡ Quickstart
+qBitrr supports Python 3.12+ on Linux, macOS, and Windows. Run it natively or in Docker—whatever fits your stack.
+
+### Install with pip
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install qBitrr2
+
+# First run creates ~/config/config.toml
+qBitrr2
+```
+
+Update later with:
+```bash
+python -m pip install --upgrade qBitrr2
+```
+
+### Run with Docker
+Minimal setup:
+```bash
+docker run -d \
+  --name qbitrr \
+  --tty \
+  -e TZ=Europe/London \
+  -p 6969:6969 \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /path/to/appdata/qbitrr:/config \
+  -v /path/to/completed/downloads:/completed_downloads:rw \
+  --restart unless-stopped \
+  feramance/qbitrr:latest
+```
+
+The container automatically binds its WebUI to `0.0.0.0`; exposing `6969` makes the dashboard reachable at `http://<host>:6969/ui`.
+
+Compose example with a little more structure:
+```yaml
+services:
+  qbitrr:
+    image: feramance/qbitrr:latest
+    user: 1000:1000
+    restart: unless-stopped
+    tty: true
+    environment:
+      TZ: Europe/London
+    ports:
+      - "6969:6969"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /path/to/appdata/qbitrr:/config
+      - /path/to/completed/downloads:/completed_downloads:rw
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+        max-file: "3"
+    depends_on:
+      - qbittorrent
+      - radarr-1080p
+      - sonarr-1080p
+```
+
+> ℹ️ On first boot the container writes `config.toml` under `/config`. Update the values to match your mounts and restart the container.
+
+## 🛠️ Configuration
+- Default config path: `~/config/config.toml` (native) or `/config/config.toml` (Docker).
+- Tag new downloads in Radarr/Sonarr/Lidarr so qBitrr can map them correctly.
+- qBittorrent 5.x works via a config flag (will become default later). The latest validated build is **4.6.7**.
+- Turn on logging (`Settings.Logging = true`) when you need support—logs land in `~/logs/` or `/config/logs`.
+
+See `config.example.toml` for every knob and dial.
+
+## 🖥️ Built-in Web UI
+The React + Vite dashboard listens on `http://<host>:6969/ui` by default.
+
+- 🔐 **Authentication** – set `Settings.WebUIToken` to protect `/api/*`. The UI itself uses the `/web/*` helpers.
+- 🗂️ **Tabs** – Processes, Logs, Radarr, Sonarr, Lidarr, and Config—all live data, all actionable.
+- 🧪 **Developing the UI** – the source lives in `webui/`. Run `npm ci && npm run dev` to hack locally, and `npm run build` (or `make syncenv`) before committing so the bundled assets stay current.
+
+## 🔁 Day-to-day Ops
+- ♻️ Rebuild Arr metadata via "Rebuild Arrs" in the UI or `POST /api/arr/rebuild`.
+- 🔁 Restart individual loops or slam the "Restart All" button when something is stuck.
+- 📬 Overseerr/Ombi integration pulls new requests automatically once configured.
+- 🗃️ Logs roll into `~/logs/` (think `Main.log`, `WebUI.log`, etc.)—view them in the UI or right off disk.
+
+## 🆘 Troubleshooting
+1. Enable file logging, reproduce the issue, and grab the relevant snippets (scrub secrets).
+2. Open the [bug report template](.github/ISSUE_TEMPLATE/bug_report.yml). Include:
+   - qBitrr version (`qBitrr2 --version` or Docker tag)
+   - OS / deployment details
+   - qBittorrent + Arr versions (and request tools if used)
+   - Reproduction steps and what you expected to happen
+3. For feature ideas, hop over to the [feature request template](.github/ISSUE_TEMPLATE/feature_request.yml).
+
+## 🤝 Contributing
+We'd love your help! Before opening a PR:
+- Read the [pull request template](.github/pull_request_template.md).
+- Run `make lint` or `pre-commit run --all-files` for Python changes; `npm run lint` for UI code.
+- Add or update tests when behaviour changes.
+- Mention docs or release notes updates if users should know about the change.
+
+Unsure whether an idea fits? File a feature request first and we'll chat.
+
+## ❤️ Support
+- ⭐ Star the repo to spread the word.
+- 🐛 Report issues with logs attached so we can fix them faster.
+- 🛠️ Contribute code, docs, translations—whatever you enjoy.
+- ☕ Sponsor development:
+  - [Patreon](https://patreon.com/qBitrr)
+  - [PayPal](https://www.paypal.me/feramance)
+
+Every bit of support keeps qBitrr humming—thanks for being here!
+
+## 📄 License
+qBitrr is released under the [MIT License](LICENSE).
