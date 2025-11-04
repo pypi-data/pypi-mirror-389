@@ -1,0 +1,55 @@
+{
+    "config": {
+        "abort": {
+            "single_instance_allowed": "Ve\u0107 konfigurisano. Mogu\u0107a je samo jedna konfiguracija."
+        }
+    },
+    "entity": {
+        "light": {
+            "light": {
+                "name": "Svetlo"
+            }
+        },
+        "sensor": {
+            "plate": {
+                "state": {
+                    "plate_step_12": "6\u2022",
+                    "plate_step_13": "7",
+                    "plate_step_14": "7\u2022",
+                    "plate_step_15": "8",
+                    "plate_step_16": "8\u2022"
+                }
+            },
+            "program_phase": {
+                "state": {
+                    "heating": "Grejanje",
+                    "not_running": "Ne radi"
+                }
+            },
+            "status": {
+                "state": {
+                    "idle": "Mirovanje",
+                    "not_connected": "Nije povezano",
+                    "off": "Isklju\u010den",
+                    "on": "Uklju\u010den"
+                }
+            }
+        }
+    },
+    "services": {
+        "get_programs": {
+            "fields": {
+                "device_id": {
+                    "name": "Ure\u0111aj"
+                }
+            }
+        },
+        "set_program": {
+            "fields": {
+                "device_id": {
+                    "name": "Ure\u0111aj"
+                }
+            }
+        }
+    }
+}
