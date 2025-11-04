@@ -1,0 +1,130 @@
+---
+source: crates/ruff_python_parser/src/parser/tests.rs
+expression: suite
+snapshot_kind: text
+---
+[
+    Expr(
+        StmtExpr {
+            node_index: AtomicNodeIndex(..),
+            range: 0..19,
+            value: Call(
+                ExprCall {
+                    node_index: AtomicNodeIndex(..),
+                    range: 2..19,
+                    func: Attribute(
+                        ExprAttribute {
+                            node_index: AtomicNodeIndex(..),
+                            range: 2..19,
+                            value: Call(
+                                ExprCall {
+                                    node_index: AtomicNodeIndex(..),
+                                    range: 2..19,
+                                    func: Attribute(
+                                        ExprAttribute {
+                                            node_index: AtomicNodeIndex(..),
+                                            range: 2..6,
+                                            value: Name(
+                                                ExprName {
+                                                    node_index: AtomicNodeIndex(..),
+                                                    range: 2..6,
+                                                    id: Name("__xonsh__"),
+                                                    ctx: Load,
+                                                },
+                                            ),
+                                            attr: Identifier {
+                                                id: Name("cmd"),
+                                                range: 2..6,
+                                                node_index: AtomicNodeIndex(..),
+                                            },
+                                            ctx: Load,
+                                        },
+                                    ),
+                                    arguments: Arguments {
+                                        range: 2..19,
+                                        node_index: AtomicNodeIndex(..),
+                                        args: [
+                                            StringLiteral(
+                                                ExprStringLiteral {
+                                                    node_index: AtomicNodeIndex(..),
+                                                    range: 2..6,
+                                                    value: StringLiteralValue {
+                                                        inner: Single(
+                                                            StringLiteral {
+                                                                range: 2..6,
+                                                                node_index: AtomicNodeIndex(..),
+                                                                value: "echo",
+                                                                flags: StringLiteralFlags {
+                                                                    quote_style: Single,
+                                                                    prefix: Empty,
+                                                                    triple_quoted: false,
+                                                                },
+                                                            },
+                                                        ),
+                                                    },
+                                                },
+                                            ),
+                                            StringLiteral(
+                                                ExprStringLiteral {
+                                                    node_index: AtomicNodeIndex(..),
+                                                    range: 7..10,
+                                                    value: StringLiteralValue {
+                                                        inner: Single(
+                                                            StringLiteral {
+                                                                range: 7..10,
+                                                                node_index: AtomicNodeIndex(..),
+                                                                value: "123",
+                                                                flags: StringLiteralFlags {
+                                                                    quote_style: Single,
+                                                                    prefix: Empty,
+                                                                    triple_quoted: false,
+                                                                },
+                                                            },
+                                                        ),
+                                                    },
+                                                },
+                                            ),
+                                            StringLiteral(
+                                                ExprStringLiteral {
+                                                    node_index: AtomicNodeIndex(..),
+                                                    range: 11..18,
+                                                    value: StringLiteralValue {
+                                                        inner: Single(
+                                                            StringLiteral {
+                                                                range: 11..18,
+                                                                node_index: AtomicNodeIndex(..),
+                                                                value: "hello",
+                                                                flags: StringLiteralFlags {
+                                                                    quote_style: Single,
+                                                                    prefix: Empty,
+                                                                    triple_quoted: false,
+                                                                },
+                                                            },
+                                                        ),
+                                                    },
+                                                },
+                                            ),
+                                        ],
+                                        keywords: [],
+                                    },
+                                },
+                            ),
+                            attr: Identifier {
+                                id: Name("out"),
+                                range: 2..19,
+                                node_index: AtomicNodeIndex(..),
+                            },
+                            ctx: Load,
+                        },
+                    ),
+                    arguments: Arguments {
+                        range: 2..19,
+                        node_index: AtomicNodeIndex(..),
+                        args: [],
+                        keywords: [],
+                    },
+                },
+            ),
+        },
+    ),
+]

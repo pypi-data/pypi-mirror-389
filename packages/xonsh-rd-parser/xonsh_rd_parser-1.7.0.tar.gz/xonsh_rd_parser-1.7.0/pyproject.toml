@@ -1,0 +1,58 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "xonsh_rd_parser"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+description = "A Rust based, recursive descent parser for Xonsh"
+
+[dependency-groups]
+dev = [
+    "pip",
+    "pytest-subtests>=0.13.1",
+    "pytest>=8.2.2",
+    "maturin-import-hook>=0.1.0",
+    "pytest-codspeed",
+    "pytest-memray",
+    #    "pytest-insta",
+    "psutil",
+    "inline-snapshot",
+    "ruamel.yaml",
+    "tomlkit",
+    "packaging",
+    "xonsh>=0.19.9",
+]
+[tool.maturin]
+features = ["pyo3/extension-module"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+exclude = ["crates", "tests/data"]
+
+[tool.ruff.lint]
+ignore = [
+    "E402", # top level imports
+]
+
+[tool.poe.tasks]
+test.sequence = [
+    { cmd = "cargo clippy" },
+    { cmd = "cargo nextest run --workspace --all-features" },
+    { cmd = "pytest" },
+]
+bench.sequence = [
+    { cmd = "pytest --codspeed --codspeed-warmup-time=5 tests/bench.py" },
+    { cmd = "pytest tests/bench.py::test_parse_file --memray" },
+    { cmd = "pytest tests/bench.py::test_xonsh_ply --memray" },
+    { cmd = "cargo bench" }
+]
+pull-ruff-crates.script = "tasks:pull_ruff_crates"
