@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "test_policy_package"
+version = "0.0.1"
+authors = [
+    { name="test_policy_package", email="placeholder@placeholder.com" },
+]
+description = "Rucio template policy package"
+requires-python = ">=3.9"
+classifiers = [
+   "Programming Language :: Python :: 3",
+   "Operating System :: OS Independent",
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[project.optional-dependencies]
+dev = [
+    "rucio>=35.5.0"
+]
