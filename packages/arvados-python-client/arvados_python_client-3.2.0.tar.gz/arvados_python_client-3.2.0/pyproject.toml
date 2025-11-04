@@ -1,0 +1,60 @@
+# Copyright (C) The Arvados Authors. All rights reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["setuptools ~= 80.9"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["dependencies", "version"]
+name = "arvados-python-client"
+description = "Arvados client library"
+authors = [
+  {name = "Arvados", email = "info@arvados.org"},
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Science/Research",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+license = "Apache-2.0"
+license-files = [
+  "LICENSE-2.0.txt",
+]
+readme = "README.rst"
+requires-python = "~= 3.10"
+
+[project.urls]
+Homepage = "https://arvados.org"
+Documentation = "https://doc.arvados.org"
+Repository = "https://git.arvados.org/arvados.git"
+Issues = "https://dev.arvados.org/projects/arvados/issues"
+Changelog = "https://arvados.org/releases/"
+
+[tool.setuptools]
+script-files = [
+  "bin/arv-copy",
+  "bin/arv-get",
+  "bin/arv-keepdocker",
+  "bin/arv-ls",
+  "bin/arv-normalize",
+  "bin/arv-put",
+  "bin/arv-ws",
+]
+
+[tool.setuptools.data-files]
+"share/doc/arvados-python-client" = [
+  "LICENSE-2.0.txt",
+  "README.rst",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
