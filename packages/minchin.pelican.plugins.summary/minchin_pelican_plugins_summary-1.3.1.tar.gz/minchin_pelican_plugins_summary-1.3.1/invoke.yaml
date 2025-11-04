@@ -1,0 +1,18 @@
+releaser:
+  module_name: minchin.pelican.plugins.summary
+  here: .
+  docs: none
+  test: none
+  source: minchin
+  changelog: CHANGELOG.rst
+  version: minchin\pelican\plugins\summary\__init__.py
+  test_command: python .\minchin\pelican\plugins\summary\test_summary.py
+  version_bump: none
+  extra_packages:
+    test:
+      - pelican
+      - setuptools
+      - wheel
+      - semantic-version
+    pypi:
+      - python-dateutil
