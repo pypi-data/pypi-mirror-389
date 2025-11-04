@@ -1,0 +1,10 @@
+anthropic>=0.51.0
+sinapsis>=0.2.10
+sinapsis-chatbots-base
+sinapsis-generic-data-tools[pillow]>=0.1.10
+
+[all]
+sinapsis-anthropic[chatbot]
+
+[chatbot]
+sinapsis-chatbots-base[chatbot]>=0.1.8
