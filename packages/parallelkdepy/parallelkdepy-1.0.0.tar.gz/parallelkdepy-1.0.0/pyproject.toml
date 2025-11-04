@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "parallelkdepy"
+version = "1.0.0"
+description = "Python wrapper of ParallelKDE.jl"
+authors = ["Christian Sustay <christian.sustay@tum.de>"]
+license = "MIT" # or whichever license you chose
+readme = "README.md"
+homepage = "https://github.com/chrissm23/ParallelKDEpy"
+repository = "https://github.com/chrissm23/ParallelKDEpy"
+documentation = "https://chrissm23.github.io/ParallelKDEpy" # optional
+packages = [{ include = "parallelkdepy", from = "src" }]
+include = [
+  { path = "src/parallelkdepy/juliapkg.json", format = [
+    "sdist",
+    "wheel",
+  ] },
+]
+
+[tool.poetry-dynamic-versioning]
+enable = false
+fix-shallow-repository = true
+
+[tool.poetry-dynamic-versioning.substitution]
+folders = [{ path = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"   # minimum supported Python version
+juliacall = "^0.9"
+numpy = "^2.0"
+# any other runtime deps here
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+pytest-cov = "^6.1"
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
+
+[build-system]
+requires = ["poetry-core>=1.5.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^8.2"
+sphinx-multiversion = "^0.2.4"
+myst-parser = "^4.0"
+furo = "^2024.04"
+sphinx-autobuild = "^2024.10"
+matplotlib = "^3.10"
