@@ -1,0 +1,447 @@
+Metadata-Version: 2.4
+Name: auth
+Version: 0.9.2
+Summary: Authorization for humans
+Author-email: Farshid Ashouri <farsheed.ashouri@gmail.com>
+License: Apache-2.0
+Keywords: authorization,role,auth,groups,membership,ensure,ldap
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Natural Language :: English
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: >=3.9
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: flask>=2.0.0
+Requires-Dist: flask-cors>=3.0.0
+Requires-Dist: sqlalchemy>=1.4.0
+Requires-Dist: waitress>=2.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov>=2.0; extra == "dev"
+Requires-Dist: ruff>=0.0.260; extra == "dev"
+Requires-Dist: mypy>=1.0; extra == "dev"
+Requires-Dist: types-requests; extra == "dev"
+Requires-Dist: black>=22.0; extra == "dev"
+Requires-Dist: isort>=5.0; extra == "dev"
+Dynamic: license-file
+
+====================================
+Auth | Authorization for Humans
+====================================
+
+RESTful, Simple Authorization system with ZERO configuration.
+
+.. image:: https://badge.fury.io/py/auth.svg
+    :target: https://badge.fury.io/py/auth
+
+.. image:: https://img.shields.io/pypi/dm/auth.svg
+    :target: https://pypi.python.org/pypi/auth
+
+.. image:: https://api.travis-ci.org/ourway/auth.svg
+    :target: https://travis-ci.org/ourway/auth
+
+.. image:: https://codecov.io/github/ourway/auth/coverage.svg?branch=master
+    :target: https://codecov.io/github/ourway/auth?branch=master
+
+.. note:: **IMPORTANT: Version 0.9.2 is a BREAKING CHANGE**
+
+   This version (0.9.2) moves the client secret key from URL path parameters to the Authorization header for improved security.
+   All API endpoints now require the client key to be passed as a Bearer token in the Authorization header.
+   
+   **Before:** ``/api/membership/{KEY}/{user}/{group}``
+   **After:** ``/api/membership/{user}/{group}`` with header ``Authorization: Bearer {KEY}``
+   
+   If you need the previous version with URL-based keys:
+   
+   .. code:: Bash
+   
+       pip install auth==0.9.1
+
+***************
+What is Auth?
+***************
+Auth is a modern Python module that makes authorization simple, scalable, and powerful. It provides a beautiful RESTful API for use in micro-service architectures and platforms. 
+
+Built with Flask, SQLAlchemy, and modern Python tools, it offers robust APIs and modern database support with SQLite3 as the default backend.
+
+It supports Python 3.7+ and requires ZERO configuration steps. Just type ``auth-server`` and press enter!
+
+I use Travis and Codecov to keep myself honest.
+
+*******************
+Requirements
+*******************
+
+Auth uses **SQLite3** as the default database. The database file is automatically created at ``~/.auth.sqlite3``. No additional setup required!
+
+*******************
+Installation
+*******************
+
+.. code:: Bash
+
+    pip install auth
+
+
+*******************
+Show me an example
+*******************
+Let's imagine you have two users, **Jack** and **Sara**. Sara can cook and Jack can dance. Both can laugh.
+
+You also need to choose a secret key for your application. The client key **must be a valid UUID4** for new API usage. Each application instance should have its own unique key for proper scope separation.
+
+.. code:: Python
+
+    import uuid
+    my_secret_key = str(uuid.uuid4())  # Generate a valid UUID4
+    from auth import Authorization
+    cas = Authorization(my_secret_key)
+
+Now, let's add 3 groups: Cookers, Dancers and Laughers. Remember that groups are Roles. So when we create a group, indeed we create a role:
+
+.. code:: Python
+
+    cas.add_role('cookers')
+    cas.add_role('dancers')
+    cas.add_role('laughers')
+
+Great! You have 3 groups and you need to authorize them to do special things.
+
+.. code:: Python
+
+    cas.add_permission('cookers', 'cook')
+    cas.add_permission('dancers', 'dance')
+    cas.add_permission('laughers', 'laugh')
+
+Good. You let cookers to cook and dancers to dance etc...
+The final part is to set memberships for Sara and Jack:
+
+.. code:: Python
+
+    cas.add_membership('sara', 'cookers')
+    cas.add_membership('sara', 'laughers')
+    cas.add_membership('jack', 'dancers')
+    cas.add_membership('jack', 'laughers')
+
+That's all we need. Now let's ensure that Jack can dance:
+
+.. code:: Python
+
+    if cas.user_has_permission('jack', 'dance'):
+        print('YES!!! Jack can dance.')
+
+**********************
+Authorization Methods
+**********************
+
+Use pydoc to see all methods:
+
+.. code:: Bash
+
+    pydoc auth.Authorization
+
+*******************
+RESTful API
+*******************
+Let's run the server on port 4000:
+
+.. code:: Bash
+
+    auth-server
+
+Simple! Authorization server is ready to use.
+
+You can use it via simple curl or using the mighty Requests module. So in your remote application, you can do something like this:
+
+.. code:: Python
+
+    import requests
+    import uuid
+    secret_key = str(uuid.uuid4())  # Client key must be a valid UUID4
+    auth_api = "http://127.0.0.1:4000/api"
+
+Let's create admin role:
+
+.. code:: Python
+
+    requests.post(auth_api+'/role/admin', headers={"Authorization": f"Bearer {secret_key}"})
+
+And let's add a permission to the admin role:
+
+.. code:: Python
+
+    requests.post(auth_api+'/permission/admin/manage', headers={"Authorization": f"Bearer {secret_key}"})
+
+And finally let's check if an admin can manage:
+
+.. code:: Python
+
+    response = requests.get(auth_api+'/has_permission/admin/manage', headers={"Authorization": f"Bearer {secret_key}"})
+    print(response.json())
+
+********************
+RESTful API helpers
+********************
+Auth comes with a helper class that makes your life easy.
+Note: The client key must be a valid UUID4.
+
+.. code:: Python
+
+    import uuid
+    from auth.client import Client
+    service = Client(str(uuid.uuid4()), 'http://192.168.99.100:4000')  # Use a valid UUID4
+    print(service)
+    service.add_role(role='admin')
+    service.get_roles()
+
+*******************
+API Methods
+*******************
+
+.. code:: Bash
+
+    pydoc auth.CAS.REST.service
+
+.. note:: **Important:** All API endpoints require a valid UUID4 Bearer token in the 'Authorization' header.
+
+- ``/ping`` [GET]
+
+ Ping API, useful for your monitoring tools
+
+- ``/api/membership/{user}/{group}`` [GET/POST/DELETE]
+
+ Adding, removing and getting membership information.
+
+- ``/api/permission/{group}/{name}`` [GET/POST/DELETE]
+
+ Adding, removing and getting permissions
+
+- ``/api/has_permission/{user}/{name}`` [GET]
+
+ Getting user permission info
+
+- ``/api/role/{role}`` [GET/POST/DELETE]
+
+  Adding, removing and getting roles
+
+- ``/api/which_roles_can/{name}`` [GET]
+
+  For example:  Which roles can send_mail?
+
+- ``/api/which_users_can/{name}`` [GET]
+
+  For example:  Which users can send_mail?
+
+- ``/api/user_permissions/{user}`` [GET]
+
+  Get all permissions that a user has
+
+- ``/api/role_permissions/{role}`` [GET]
+
+  Get all permissions that a role has
+
+- ``/api/user_roles/{user}`` [GET]
+
+    Get roles that user assigned to
+
+- ``/api/roles`` [GET]
+
+    Get all available roles
+
+*******************
+Use Cases
+*******************
+
+**Microservices Architecture**
+- Centralized authorization service for multiple microservices
+- Consistent permission management across your entire platform
+- Easy integration with Flask-based services
+
+**Multi-tenant Applications**
+- Separate authorization scopes using different secret keys
+- Manage permissions for different organizations or teams
+- Scalable role-based access control
+
+**API Gateway Authorization**
+- Validate user permissions before routing requests
+- Centralized permission checks for API endpoints
+- Real-time permission validation
+
+**Content Management Systems**
+- Role-based content access control
+- User group management for collaborative editing
+- Fine-grained permission control for different content types
+
+**Enterprise Applications**
+- Department-based access control
+- Project team permission management
+- Audit trail through comprehensive API logging
+
+**Educational Platforms**
+- Student/Teacher role management
+- Course access permissions
+- Group project collaboration controls
+
+**Healthcare Systems**
+- HIPAA-compliant access controls
+- Patient data access management
+- Staff role-based permissions
+
+*******************
+Deployment
+*******************
+
+Deploying Auth module in production environment is easy:
+
+.. code:: Bash
+
+    python -c "from auth.main import app; app.run(host='0.0.0.0', port=4000, threaded=True, debug=False)"
+
+For production use with multiple workers using waitress:
+
+.. code:: Bash
+
+    pip install waitress
+    waitress-serve --host=0.0.0.0 --port=4000 --threads=4 auth.main:app
+
+*******************
+Dockerizing
+*******************
+
+It's simple:
+
+.. code:: Bash
+
+    docker build -t python/auth-server .
+    docker run --name=auth -p 4000:4000 -d --restart=always python/auth-server
+
+*******************
+Copyright
+*******************
+
+- Farshid Ashouri `@RODMENA LIMITED <mailto:farsheed.ashouri@gmail.com>`_
+
+*******************
+Documentation
+*******************
+Feel free to dig into source code. If you think you can improve the documentation, please do so and send me a pull request.
+
+*******************
+Architecture
+*******************
+
+.. code-block:: mermaid
+
+    graph TB
+        subgraph "Client Applications"
+            A["Application 1"]
+            B["Application 2"]
+            C["Application N"]
+        end
+
+        subgraph "Auth Service"
+            subgraph "API Layer"
+                D["Flask Routes"]
+                E["Request Validation"]
+                F["Response Handling"]
+            end
+
+            subgraph "Service Layer"
+                G["AuthorizationService"]
+                H["Permission Logic"]
+                I["Membership Logic"]
+            end
+
+            subgraph "Data Layer"
+                J["SQLAlchemy ORM"]
+                K["SQLite Database"]
+                L["Table Models"]
+            end
+        end
+
+        subgraph "External Systems"
+            M["Microservices"]
+            N["API Gateway"]
+            O["Monitoring Tools"]
+        end
+
+        A --> D
+        B --> D
+        C --> D
+        D --> G
+        E --> G
+        F --> G
+        G --> H
+        G --> I
+        G --> J
+        J --> K
+        J --> L
+        D --> M
+        D --> N
+        D --> O
+
+    style D fill:#e1f5fe
+    style G fill:#e8f5e8
+    style J fill:#fff3e0
+    style K fill:#ffebee
+
+**********************************
+Remote Access with reTunnel
+**********************************
+
+To securely expose your local Auth server to the internet without complex networking setup, we recommend using `reTunnel <https://retunnel.com>`_.
+
+**Installation:**
+
+.. code:: Bash
+
+    pip install retunnel
+
+**Usage:**
+
+To serve your local Auth server running on port 4000:
+
+.. code:: Bash
+
+    retunnel http 4000
+
+This will provide you with a secure public URL that forwards requests to your local Auth server.
+
+**Benefits of using reTunnel:**
+- No need to configure firewalls or expose ports directly
+- Secure encrypted tunnel
+- Easy to use with a simple command
+- No complex networking setup required
+- Perfect for testing and development
+
+**********
+To DO
+**********
+- Add Authentication features
+- Improve Code Coverage
+- Add support for additional database backends (PostgreSQL, MySQL)
+- Add OpenAPI documentation enhancements
+
+************************
+Unit Tests and Coverage
+************************
+Comprehensive test suite with pytest covering all functionality:
+
+.. code:: Bash
+
+    pytest
