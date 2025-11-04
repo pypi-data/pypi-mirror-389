@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="pas.plugins.kimug"
+    >
+
+  <adapter factory=".classic.KimugControlPanelAdapter" />
+  <browser:page
+      name="kimug-controlpanel"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".classic.KimugSettingsControlPanel"
+      permission="cmf.ManagePortal"
+      layer="pas.plugins.kimug.interfaces.IDefaultBrowserLayer"
+      />
+
+
+</configure>

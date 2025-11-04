@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    >
+
+  <genericsetup:upgradeStep
+      title="Remove authentic users"
+      profile="pas.plugins.kimug:default"
+      source="1000"
+      destination="1001"
+      handler="..utils.remove_authentic_users"
+      />
+
+  <genericsetup:upgradeSteps
+      profile="pas.plugins.kimug:default"
+      source="1001"
+      destination="1002"
+      >
+    <genericsetup:upgradeDepends
+        title="Add Kimug controlpanel"
+        import_steps="controlpanel"
+        />
+  </genericsetup:upgradeSteps>
+
+</configure>
