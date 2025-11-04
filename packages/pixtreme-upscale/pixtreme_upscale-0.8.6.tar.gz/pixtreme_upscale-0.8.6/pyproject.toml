@@ -1,0 +1,83 @@
+[project]
+name = "pixtreme-upscale"
+version = "0.8.6"
+description = "Multi-backend deep learning upscalers for pixtreme"
+authors = [
+    { name = "minamik", email = "mia@sync.dev" },
+]
+readme = "README.md"
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: GPU :: NVIDIA CUDA :: 12",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pixtreme-core>=0.8.6",
+    "torch>=2.0",
+    "onnx>=1.18.0",
+    "onnxconverter-common>=1.13.0",
+    "onnx-graphsurgeon",
+    "onnxruntime-gpu>=1.22.0",
+    "basicsr-fixed>=1.4.2",
+    "spandrel>=0.4.1",
+    "spandrel_extra_arches>=0.2.0",
+]
+
+[project.optional-dependencies]
+tensorrt = [
+    "tensorrt-cu12>=10.11.0.33",
+]
+
+[project.urls]
+repository = "https://github.com/sync-dev-org/pixtreme"
+issues = "https://github.com/sync-dev-org/pixtreme/issues"
+
+[build-system]
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"
+
+[tool.uv]
+index = [
+    { name = "pytorch-cuda", url = "https://download.pytorch.org/whl/cu126", explicit = true },
+]
+
+[tool.uv.sources.pixtreme-core]
+workspace = true
+
+[tool.uv.sources.torch]
+index = "pytorch-cuda"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/pixtreme_upscale",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "README.md",
+    "LICENSE",
+]
+exclude = [
+    "/.pytest_cache",
+    "/__pycache__",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
