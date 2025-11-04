@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.26.1"]
+build-backend = "hatchling.build"
+
+[project]
+name = "oursin"
+dynamic = ["version"]
+description = 'Urchin - Universal Renderer Creating Helpful Images for Neuroscience Python API'
+readme = "README.md"
+requires-python = ">=3.10, <3.13"
+license = "MIT"
+keywords = ["virtualbrainlab", "neuroscience", "renderer"]
+authors = [
+  { name = "Daniel Birman", email = "daniel.birman@alleninstitute.org" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+]
+dependencies = [
+  "pydantic>=2.7.0",
+  "python-socketio[client]>=5.8",
+  "numpy>=1.23.3",
+  "Pillow>=10.4.0",
+  "vbl-aquarium>=0.0.23",
+]
+
+[tool.hatch.version]
+path = "oursin/__about__.py"
+
+[project.urls]
+Documentation = "https://virtualbrainlab.org/urchin/installation_and_use.html"
+Issues = "https://github.com/VirtualBrainLab/Urchin/issues"
+Source = "https://github.com/VirtualBrainLab/Urchin"
