@@ -1,0 +1,2 @@
+from .configuration_MiniMindVL import MiniMindVLConfig
+from .modeling_MiniMindVL import MiniMindVLM
