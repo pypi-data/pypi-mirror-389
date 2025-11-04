@@ -1,0 +1,49 @@
+[project]
+name = "MambuPy"
+authors = [{name = "Javier Novoa C.", email = "jstitch@gmail.com"}]
+license = {file = "LICENSE"}
+description="A python library for using Mambu APIs."
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.7"
+dynamic = ["version"]
+dependencies = [
+ "PyYAML==6.0.1",
+ "requests==2.31.0",
+ "requests_toolbelt==1.0.0",
+ "dateutils==0.6.12",
+]
+keywords = ["mambu"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Financial and Insurance Industry",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[project.optional-dependencies]
+full = ["SQLAlchemy==1.3.6", "mysqlclient==2.1.0"]
+doc = ["sphinx==5.0.0", "sphinx_rtd_theme"]
+dev = ["freezegun==1.1.0", "mock", "coverage", "pylint", "ruff", "black", "isort"]
+deploy = ["build", "twine"]
+devtools = ["ipython", "ipdb", "devpi-client>=7.2.0"]
+
+[project.urls]
+Homepage = "https://mambupydocs.readthedocs.io"
+Documentation = "https://mambupydocs.readthedocs.io"
+Repository = "https://gitlab.com/jstitch/mambupy"
+Issues = "https://gitlab.com/jstitch/mambupy/-/issues"
+Changelog = "https://gitlab.com/jstitch/mambupy/-/raw/master/CHANGELOG"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["MambuPy*", "mambupy*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "MambuPy.__version__"}
+
+[build-system]
+requires = ["setuptools>=42","wheel"]
+build-backend = "setuptools.build_meta"
