@@ -1,0 +1,32 @@
+[project]
+name = "mtg_pynance"
+version = "0.1.7.2"
+description = "Package of tools to record, store, and analyze your Magic the Gathering collection."
+authors = [
+    { name = "Zach Serikow", email = "76140451+sigmanotation@users.noreply.github.com" },
+]
+dependencies = [
+    "requests>=2.32.3",
+    "pathlib>=1.0.1",
+    "datetime>=5.5",
+    "polars>=0.20.31",
+    "numpy>=1.26.4",
+    "tqdm>=4.66.4",
+    "mkdocstrings-python>=1.10.3",
+    "mkdocs-material>=9.5.27",
+    "black>=24.4.2",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+
+[project.license]
+text = "GPL-3.0-only"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
