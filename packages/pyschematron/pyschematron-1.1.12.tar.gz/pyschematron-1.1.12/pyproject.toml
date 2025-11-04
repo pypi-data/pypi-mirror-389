@@ -1,0 +1,52 @@
+[project]
+name = "pyschematron"
+description = "Schematron validation in Python."
+readme = "README.rst"
+version = "1.1.12"
+requires-python = ">=3.12"
+keywords = ["Schematron", "XML validation"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3.12",
+]
+license = { file="LICENSE" }
+authors = [
+    { name = "Robbert Harms", email = "robbert@xkls.nl" }
+]
+dependencies = [
+    "xmlschema~=4.1.0",
+    "elementpath~=5.0.4",
+    "typer>=0.19.2",
+    "appdirs~=1.4.4",
+    "lxml~=6.0.0",
+    "Jinja2~=3.1.6",
+    "ruyaml~=0.91.0",
+    "frozendict~=2.4.6"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest~=8.3.4",
+    "pytest-check~=2.5.0",
+    "pytest-cov~=6.0.0",
+    "pytest-html~=4.1.1",
+    "tox~=4.24.1"
+]
+doc = [
+    "Sphinx~=8.2.0",
+    "git-cliff~=2.8.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/robbert-harms/pyschematron/"
+
+[project.scripts]
+pyschematron = "pyschematron.cli:app"
+
+[build-system]
+requires = ["flit_core >=3.9,<4"]
+build-backend = "flit_core.buildapi"
