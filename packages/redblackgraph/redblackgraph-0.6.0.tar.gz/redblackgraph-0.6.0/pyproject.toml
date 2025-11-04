@@ -1,0 +1,124 @@
+[build-system]
+# Minimum requirements for building with meson-python
+requires = [
+    "meson-python>=0.15.0",
+    "meson>=1.2.0",
+    "ninja",
+    "Cython>=3.0.0",
+    "tempita>=0.5.2",  # For template processing (.c.in, .h.in files)
+    # NumPy is needed at build time for C API headers
+    "numpy>=2.0.0,<3.0",
+]
+build-backend = "mesonpy"
+
+[project]
+name = "redblackgraph"
+# Version is set in meson.build (meson-python doesn't support dynamic versioning)
+version = "0.6.0"
+description = "Red Black Graph - AVOS algebra for graph computation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "AGPLv3+"}
+authors = [
+    {name = "Daniel Rapp", email = "rappdw@gmail.com"},
+]
+maintainers = [
+    {name = "Daniel Rapp", email = "rappdw@gmail.com"},
+]
+keywords = ["graph", "algebra", "AVOS", "sparse", "matrix"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: C",
+    "Programming Language :: C++",
+    "Programming Language :: Cython",
+]
+
+# Runtime dependencies
+dependencies = [
+    "numpy>=2.0.0,<3.0",  # NumPy 2.x required (use v0.5.x for NumPy 1.x)
+    "scipy>=1.11.0",
+]
+
+[project.optional-dependencies]
+# File I/O utilities (CSV/Excel graph readers/writers)
+io = [
+    "fs-crawler>=0.3.2",
+    "XlsxWriter",
+]
+dev = [
+    "wheel>=0.29",
+]
+test = [
+    "pytest>=3.0",
+    "pytest-cov>=2.4",
+    "pylint>=1.8.1",
+    "fs-crawler>=0.3.2",  # Tests use RelationshipFileReader
+    "XlsxWriter",  # Tests use RedBlackGraphWriter
+]
+
+[project.urls]
+Homepage = "https://github.com/rappdw/redblackgraph"
+Repository = "https://github.com/rappdw/redblackgraph"
+Download = "https://github.com/rappdw/redblackgraph"
+
+[project.scripts]
+rbg = "redblackgraph.__main__:main"
+
+[tool.meson-python.args]
+# Pass additional arguments to meson if needed
+# setup = ["-Doption=value"]
+
+[tool.cibuildwheel]
+# Build wheels for CPython 3.10, 3.11, 3.12 on all platforms
+build = "cp310-* cp311-* cp312-*"
+
+# Skip PyPy, musllinux, and 32-bit builds
+skip = "pp* *-musllinux_* *-win32 *-manylinux_i686"
+
+# Test that the wheel can be imported successfully
+test-command = "python -c \"import redblackgraph; print('✓ Import successful, version:', redblackgraph.__version__)\""
+
+# Only need runtime dependencies for import test
+test-requires = ["numpy"]
+
+# Build configuration
+[tool.cibuildwheel.linux]
+# Use manylinux2014 for broader compatibility
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+
+# Ninja is installed via pip in the build environment
+# No system packages needed
+
+[tool.cibuildwheel.macos]
+# Build for both x86_64 and arm64 on macOS
+archs = ["x86_64", "arm64"]
+
+# Install dependencies via brew if needed
+before-all = [
+    "brew install ninja || true"
+]
+
+[tool.cibuildwheel.windows]
+# Windows-specific configuration
+before-build = [
+    "pip install delvewheel",  # For bundling DLLs into wheels
+    "pip install ninja",
+]
+# Use delvewheel to repair wheels and bundle necessary DLLs
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
