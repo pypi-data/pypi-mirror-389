@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "ml-robust-eval"
+version = "0.1.7"
+description = "ML evaluation, validation, and test case generation toolkit with production monitoring."
+authors = ["vikhyat-ch <vikhyathchoppa699@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+keywords = ["machine-learning", "evaluation", "metrics", "monitoring", "prometheus", "grafana"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+prometheus-client = {version = ">=0.18.0", optional = true}
+
+[tool.poetry.extras]
+monitoring = ["prometheus-client"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
