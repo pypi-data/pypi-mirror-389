@@ -1,0 +1,217 @@
+Metadata-Version: 2.4
+Name: fastfeatures
+Version: 0.1.1
+Summary: Modular features discovery system for FastAPI projects.
+License-Expression: MIT
+License-File: LICENSE
+Author: Yuri Seki
+Author-email: yuriseki@gmail.com
+Requires-Python: >=3.10
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Dist: alembic (>=1.17.1,<2.0.0)
+Requires-Dist: click (>=8.1.7,<9.0.0)
+Requires-Dist: fastapi (>=0.118.3,<0.119.0)
+Requires-Dist: python-dotenv (>=1.0.0,<2.0.0)
+Requires-Dist: setuptools (>=69.0.3,<70.0.0)
+Requires-Dist: sqlalchemy (>=2.0.44,<3.0.0)
+Requires-Dist: sqlmodel (>=0.0.27,<0.0.28)
+Project-URL: Homepage, https://github.com/yuriseki/fastfeatures
+Project-URL: Issues, https://github.com/yuriseki/fastfeatures/issues
+Description-Content-Type: text/markdown
+
+# Fast-Features: A Modular Approach to FastAPI Development
+
+`fast-features` is a powerful toolkit for FastAPI projects designed to accelerate development by providing scaffolding, feature generation, and automatic discovery of project components. It promotes a modular and organized project structure, allowing developers to focus on business logic rather than boilerplate code.
+
+## Why a Modular Structure?
+
+As applications grow, maintaining a single, monolithic codebase becomes increasingly challenging. A modular, feature-based architecture offers several advantages:
+
+*   **Scalability**: By organizing your code into self-contained features, you can easily scale your application by adding, removing, or modifying features without affecting other parts of the system.
+*   **Maintainability**: A modular structure makes it easier to understand, debug, and test your code. Each feature has a clear responsibility, reducing cognitive load and simplifying maintenance.
+*   **Separation of Concerns**: By separating your application into distinct features, you enforce a clean separation of concerns, leading to more robust and reliable code.
+*   **Team Collaboration**: A modular architecture allows multiple developers to work on different features simultaneously with minimal conflicts, improving team productivity.
+
+`fast-features` is designed to help you achieve these benefits by providing a solid foundation for building modular FastAPI applications.
+
+## Key Features
+
+*   **Project Scaffolding**: Kickstart your FastAPI project with a production-ready, modular structure in seconds. The `fastfeatures-scaffold` command generates a new project with a logical directory structure, including a core application setup and an empty `features` directory, ready for you to start building.
+*   **Feature Generation**: Accelerate your development workflow by generating new features with a single command. The `fastfeatures-feature` command creates a new feature with a predefined structure, including models, services, and routes, so you can focus on implementing the business logic.
+*   **Automatic Settings Generation**: Simplify your application's configuration with automatic settings generation. The `fastfeatures-settings` command generates a Pydantic `settings.py` file from your `.env` file, with support for nested settings, providing a type-safe and organized way to manage your application's configuration.
+*   **Automatic Route Discovery**: `fast-features` automatically discovers and includes `APIRouter` instances from your features, so you don't have to manually wire up your routes. This reduces boilerplate code and ensures that your routes are always up-to-date.
+*   **Automatic Model Discovery**: `fast-features` automatically discovers your `SQLModel` and `SQLAlchemy` models, making it easy to work with your database and ensuring that your models are always available when you need them.
+
+## Installation
+
+```bash
+poetry add fast-features
+```
+
+## Getting Started
+
+1.  **Create a new project:**
+
+    ```bash
+    fastfeatures-scaffold
+    ```
+
+2.  **Generate a new feature:**
+
+    ```bash
+    fastfeatures-feature
+    ```
+
+3.  **Enable route discovery in `app/main.py`:**
+
+    ```python
+    from fastfeatures.core.routes_discoverer import add_features_routes
+    from app import features
+
+    # ... (existing app setup)
+
+    add_features_routes(app, features)
+    ```
+
+4.  **Run your application:**
+
+    ```bash
+    uvicorn main:app --reload
+    ```
+
+## Usage
+
+### Project Scaffolding
+
+To create a new FastAPI project, use the `fastfeatures-scaffold` command. This command will prompt you for the project name and description.
+
+```bash
+fastfeatures-scaffold
+```
+
+This will create a new project scaffold in the current directory with the following structure:
+
+```
+<PROJECT_NAME>/
+├── .env
+├── main.py
+└── app/
+    ├── __init__.py
+    ├── core/
+    │   ├── __init__.py
+    │   ├── settings.py
+    │   └── lib/
+    │       ├── __init__.py
+    │       └── database.py
+    ├── features/
+    │   └── __init__.py
+    └── main.py
+```
+
+### Feature Generation
+
+To generate a new feature, use the `fastfeatures-feature` command. This command will prompt you for the feature name.
+
+```bash
+fastfeatures-feature
+```
+
+This will create a new feature directory inside `app/features` with the following structure:
+
+```
+app/features/<feature_name>/
+├── __init__.py
+├── models/
+│   ├── __init__.py
+│   └── <feature_name>.py
+├── routes.py
+└── services/
+    ├── __init__.py
+    └── <feature_name>_services.py
+```
+
+### Settings Generation
+
+To generate a `settings.py` file from your `.env` file, use the `fastfeatures-settings` command.
+
+```bash
+fastfeatures-settings --env-file=.env --output-path=app/core/settings.py
+```
+
+This will generate a `settings.py` file with nested Pydantic models. For example:
+
+```python
+# THIS FILE IS AUTO-GENERATED...
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    DEV_MODE: bool = False
+    
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+settings = Settings()
+```
+
+### Route Discovery
+
+To automatically discover and include all the `APIRouter` instances from your features, add the following to your `app/main.py`:
+
+```python
+from fastfeatures.core.routes_discoverer import add_features_routes
+from app import features
+
+# ... (existing app setup)
+
+add_features_routes(app, features)
+```
+
+### Model Discovery
+
+To automatically discover all your `SQLModel` and `SQLAlchemy` models, you can use the `get_sql_models` function. This is particularly useful for database migrations with Alembic.
+
+```python
+from fastfeatures.core.models_discoverer import get_sql_models
+from app import features
+
+# Discover all SQL models from the features module
+sql_models = get_sql_models(features)
+```
+
+## The "Features" Concept
+
+A "feature" is a self-contained unit of functionality that encapsulates a specific part of your application's domain. Each feature has its own models, services, and routes, promoting a clean separation of concerns and making your code easier to understand and maintain.
+
+*   **`models`**: This directory contains the data models for your feature, defined using `SQLModel` or `SQLAlchemy`.
+*   **`routes`**: This directory contains the API routes for your feature, defined using `FastAPI`'s `APIRouter`.
+*   **`services`**: This directory contains the business logic for your feature, which is used by the routes to interact with the models and perform actions.
+
+By organizing your code into features, you can build complex applications in a more structured and maintainable way.
+
+## Alembic Integration
+
+To use Alembic with `fast-features`, you need to configure your `migrations/env.py` file to automatically discover your models. Add the following code to your `migrations/env.py` file, just after the original `config = context.config` line:
+
+```python
+#### BEGIN OF CUSTOM CODE ####
+from sqlmodel import SQLModel
+from app.core.settings import Settings
+from fastfeatures import get_sql_models
+from app import features
+
+get_sql_models(features)
+config.set_main_option("sqlalchemy.url", Settings.DATABASE_URL)
+#### END OF CUSTOM CODE ####
+```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
