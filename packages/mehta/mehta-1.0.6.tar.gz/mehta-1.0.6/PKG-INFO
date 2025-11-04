@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: mehta
+Version: 1.0.6
+Summary: A telegram SDK offering clean and simple command decorators.
+Author: Ankit Mehta
+Author-email: starexx.m@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pyTeleBot
+Requires-Dist: telebot
+Requires-Dist: requests
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+**Installation**:
+```sh
+pip install mehta
+```
+
+**Basic Setup**:
+```py
+from mehta import telegram
+
+bot = telegram()
+
+@bot.commands(['start'])
+def welcome(message):
+    return "Hello World!"
+
+bot.run("TOKEN")
+```
