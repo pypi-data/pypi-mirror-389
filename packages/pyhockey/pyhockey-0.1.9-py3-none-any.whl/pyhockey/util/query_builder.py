@@ -1,0 +1,159 @@
+"""
+Module used to construct SQL queries that will be used to query the database.
+
+Instead of each individual module building the queries based on their provided inputs,
+use this module to manage this task in a central location.
+
+When each of the primary modules are called, they will call a function here, and using
+the provided parameters, an SQL query string will be constructed and returned.
+"""
+
+from pyhockey.util.input_validation import check_input_type, check_input_values, validate_date_range
+
+# Define custom type for inputs into our queries
+type QueryValue = str | int | float | list[str] | list[int] | list[float]
+
+
+def construct_query(table_name: str,
+                    column_mapping: dict[str, QueryValue],
+                    qualifiers: dict[str, str] | None = None,
+                    order_by: list[str] | None = None) -> str:
+    """ Constructs the query string to request data from database.
+
+    Function that takes parameters passed into the primary functions and constructs an
+    SQL query that can be used to query the data.
+
+    Args:
+    
+        table_name: 
+            The name of the table being queried.
+        column_mapping: 
+            A dict mapping column names in the table to values they need to be evaluated against. 
+            Multiple values can be provided in a list and all will be combined in an 'OR'
+            statement.
+        qualifiers: 
+            A dict mapping certain column names to evaluations which will be applied to the query,
+            e.g. '<' or '>' conditions, defaults to None.
+        order_by: 
+            A list of strings corresponding to column names that the results will be sorted by.
+
+    Returns:
+
+        The full query provided as a string.
+    """
+
+    # This condition will raise an error if mis-matched types or invalid values were provided
+    if check_input_type(column_mapping=column_mapping) and \
+       check_input_values(column_mapping=column_mapping, table=table_name):
+        pass
+
+    query: str = f"SELECT * FROM {table_name} WHERE "
+
+    query_conditions: list[str] = []
+
+    if qualifiers:
+        # Qualifiers will be provided in a dict in a format, e.g.,
+        #   'iceTime': '>100',
+        # to indicate that the query should filter for entries with iceTime > 100.
+
+        # When dealing with date ranges, some additional checks are necessary
+        if 'start_date' in qualifiers.keys() or 'end_date' in qualifiers.keys():
+            column_mapping = validate_date_range(column_mapping, qualifiers)
+
+        for column_name, value in qualifiers.items():
+            # 'start_date' and 'end_date' need slightly special handling, as they don't
+            # correspond to actual table columns
+            if column_name == 'start_date':
+                query_conditions.append(f"gameDate >= '{value}'")
+            elif column_name == 'end_date':
+                query_conditions.append(f"gameDate <= '{value}'")
+            else:
+                query_conditions.append(f"{column_name} {value}")
+
+    for column_name, value in column_mapping.items():
+        # The keys of the column_mapping dict will be strings corresponding to the column
+        # names in the table, whereas the values will be filters applied to those columns.
+
+        # Default value for most columns is None, so skip those
+        if value is None:
+            continue
+
+        # Also skip the 'team' input if the value is 'ALL', since no filter is needed
+        if column_name == 'team' and value == 'ALL':
+            continue
+
+        # Names are handled slightly differently than other columns
+        if column_name == 'name':
+            condition: str = handle_names(value)
+
+        # These values can be of multiple types, and can also potentially be a list of items.
+        elif isinstance(value, list):
+            if isinstance(value[0], str):
+                # Add single quotes to value if dealing with strings
+                condition: str = " OR ".join(f"{column_name} = '{v}'" for v in value)
+            else:
+                condition: str = " OR ".join(f"{column_name} = {v}" for v in value)
+
+            # Make sure the 'OR' conditions are bracketed
+            condition = f"({condition})"
+
+        # If we're dealing with a singleton and not a list...
+        else:
+            # Add single quotes to value if dealing with strings
+            if isinstance(value, str):
+                condition: str = f"{column_name} = '{value}'"
+            else:
+                condition: str = f"{column_name} = {value}"
+
+        query_conditions.append(condition)
+
+    all_conditions: str = " AND ".join(query_conditions)
+
+    query += all_conditions
+
+    if order_by:
+        # If order_by is provided, it will be a list of column names, so construct
+        # the ORDER BY statement and append it to the query.
+        order: str = f" ORDER BY {', '.join(order_by)}"
+
+        query += order
+
+    return query
+
+
+def handle_names(value: str | list[str]) -> str:
+    """ Function to handle conditions on player names.
+
+    When names are provided to filter a table on, use a 'LIKE' comparison instead of '=' as well
+    as wildcards to try and cover as many provided inputs as possible. 
+    
+    E.g., if just a single word is given, assume it to be either a first or last name, and thus
+    the condition will be
+        name LIKE '%INPUT%', 
+    whereas if two or more words are given, the condition will look like
+        name LIKE '%INPUT_A%INPUT_B%'.
+
+    Args:
+
+        value: 
+            The provided input(s) for the name to be filtered against.
+
+    Returns:
+
+        The properly formatted condition for comparing names.
+    """
+
+    # These values can be of multiple types, and can also potentially be a list of items.
+    if isinstance(value, list):
+        name_values = [f'%{"%".join(v.split())}%' for v in value]
+        condition: str = " OR ".join(f"name LIKE '{n}'" for n in name_values)
+
+        # Make sure the 'OR' conditions are bracketed
+        condition = f"({condition})"
+
+    # If we're dealing with a singleton and not a list...
+    else:
+        name_value = f'%{"%".join(value.split())}%'
+        condition: str = f"name LIKE '{name_value}'"
+
+    return condition
