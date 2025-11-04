@@ -1,0 +1,24 @@
+[project]
+name = "partomatic"
+version = "0.3.8"
+authors = [
+  { name="x0pherl"},
+]
+description = "build123d Part extended for CI/CD automation"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/x0pherl/partomatic"
+Issues = "https://github.com/x0pherl/partomatic/issues"
+Documentation = "https://partomatic.readthedocs.org"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+
+build-backend = "hatchling.build"
