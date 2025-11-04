@@ -1,0 +1,25 @@
+version = 1
+SPDX-PackageName = "svine"
+SPDX-PackageSupplier = "Stephan Druskat <stephan.druskat@dlr.de>"
+SPDX-PackageDownloadLocation = "https://pypi.org/project/svine/"
+
+[[annotations]]
+path = ["**/*.py"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 German Aerospace Center (DLR)"
+SPDX-License-Identifier = "MIT"
+SPDX-FileContributor = "Stephan Druskat <stephan.druskat@dlr.de>"
+
+[[annotations]]
+path = [".gitignore", "*.lock", "*.toml", "CITATION.cff"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 German Aerospace Center (DLR)"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileContributor = "Stephan Druskat <stephan.druskat@dlr.de>"
+
+[[annotations]]
+path = ["**.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 German Aerospace Center (DLR)"
+SPDX-License-Identifier = "CC-BY-4.0"
+SPDX-FileContributor = "Stephan Druskat <stephan.druskat@dlr.de>"
