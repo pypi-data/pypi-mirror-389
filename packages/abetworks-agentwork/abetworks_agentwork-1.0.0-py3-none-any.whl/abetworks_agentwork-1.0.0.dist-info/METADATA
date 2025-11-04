@@ -1,0 +1,174 @@
+Metadata-Version: 2.4
+Name: abetworks-agentwork
+Version: 1.0.0
+Summary: SDK for building AI agents that integrate with Abetworks platform
+Home-page: https://github.com/abetworks/abetworks-agentwork
+Author: Abetworks
+Author-email: contact@abetworks.in
+Project-URL: Bug Tracker, https://github.com/abetworks/abetworks-agentwork/issues
+Project-URL: Documentation, https://docs.abetworks.in
+Project-URL: Source Code, https://github.com/abetworks/abetworks-agentwork
+Project-URL: Website, https://abetworks.in
+Keywords: ai agents automation abetworks sdk flask fastapi
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Framework :: Flask
+Classifier: Framework :: FastAPI
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.28.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: python-dotenv>=1.0.0
+Provides-Extra: flask
+Requires-Dist: flask>=2.3.0; extra == "flask"
+Provides-Extra: fastapi
+Requires-Dist: fastapi>=0.100.0; extra == "fastapi"
+Requires-Dist: uvicorn>=0.23.0; extra == "fastapi"
+Provides-Extra: all
+Requires-Dist: flask>=2.3.0; extra == "all"
+Requires-Dist: fastapi>=0.100.0; extra == "all"
+Requires-Dist: uvicorn>=0.23.0; extra == "all"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+
+# Abetworks AgentWork SDK
+
+Build AI agents for the Abetworks platform with Python. This SDK provides everything you need to create Flask or FastAPI agents that integrate seamlessly with Abetworks.
+
+## Installation
+
+```bash
+# Basic installation
+pip install abetworks-agentwork
+
+# With Flask support
+pip install abetworks-agentwork[flask]
+
+# With FastAPI support
+pip install abetworks-agentwork[fastapi]
+
+# With all frameworks
+pip install abetworks-agentwork[all]
+```
+
+## Quick Start
+
+### Flask Agent
+
+```python
+from abetworks_agentwork import FlaskAgent, AgentResponse
+from flask import Flask
+
+app = Flask(__name__)
+agent = FlaskAgent(
+    agent_id="my-custom-agent",
+    name="My Custom Agent",
+    api_key="your-abetworks-api-key"
+)
+
+@agent.task("process_data")
+def process_data(input_data, org_id, task_id):
+    # Your agent logic here
+    result = {"processed": input_data.get("text", "").upper()}
+    return AgentResponse(
+        status="success",
+        output=result,
+        metadata={"chars_processed": len(input_data.get("text", ""))}
+    )
+
+# Register routes with Flask
+agent.register_routes(app)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
+```
+
+### FastAPI Agent
+
+```python
+from abetworks_agentwork import FastAPIAgent, AgentResponse
+from fastapi import FastAPI
+
+app = FastAPI()
+agent = FastAPIAgent(
+    agent_id="my-custom-agent",
+    name="My Custom Agent",
+    api_key="your-abetworks-api-key"
+)
+
+@agent.task("analyze_sentiment")
+async def analyze_sentiment(input_data, org_id, task_id):
+    text = input_data.get("text", "")
+    # Your NLP logic here
+    sentiment = "positive" if "good" in text.lower() else "neutral"
+    
+    return AgentResponse(
+        status="success",
+        output={"sentiment": sentiment, "text": text},
+        metadata={"confidence": 0.95}
+    )
+
+# Register routes with FastAPI
+agent.register_routes(app)
+```
+
+## Features
+
+- 🔐 **Built-in Authentication**: Secure API key validation
+- 🏢 **Multi-tenant Support**: Automatic org_id isolation
+- ⚡ **Framework Flexibility**: Works with Flask or FastAPI
+- 📝 **Type Safety**: Pydantic models for data validation
+- 🔄 **Auto Registration**: Register your agent with Abetworks platform
+- 📊 **Error Handling**: Standardized error responses
+- 🧪 **Testing Utilities**: Built-in test helpers
+
+## Agent Registration
+
+Register your agent with the Abetworks platform:
+
+```python
+agent.register_with_platform(
+    abetworks_url="https://your-abetworks-instance.com",
+    description="Analyzes sentiment in customer feedback",
+    category="analytics",
+    icon="💬",
+    price=0
+)
+```
+
+## Documentation
+
+- Full Documentation: [https://docs.abetworks.in](https://docs.abetworks.in)
+- GitHub Repository: [https://github.com/abetworks/abetworks-agentwork](https://github.com/abetworks/abetworks-agentwork)
+- Website: [https://abetworks.in](https://abetworks.in)
+
+## Support
+
+- Email: contact@abetworks.in
+- Issues: [GitHub Issues](https://github.com/abetworks/abetworks-agentwork/issues)
+
+## License
+
+MIT License - see LICENSE file for details
