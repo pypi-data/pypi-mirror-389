@@ -1,0 +1,28 @@
+[project]
+name = "diffusionism"
+version = "0.0.1-beta.9"
+authors = [
+  { name = "Caewinix", email = "Caewinix@yeah.net" },
+]
+dependencies = [
+  "torch>=2.0.0",
+  "numpy",
+  "torchflint>=0.0.1b10",
+  "pipelight>=0.0.1b5"
+]
+description = "Diffusionism is a Python library for rapid prototyping and deployment of diffusion models. It provides a flexible, inheritance-based architecture, allowing easy integration of new methods, with built-in pipelines for training and inference. It accelerates development and ensures reproducibility by separating general mechanics from model-specific logic."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+"Homepage" = "https://github.com/Caewinix/diffusionism"
+"Bug Tracker" = "https://github.com/Caewinix/diffusionism/issues"
