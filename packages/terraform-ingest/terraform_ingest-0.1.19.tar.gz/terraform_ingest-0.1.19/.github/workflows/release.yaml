@@ -1,0 +1,196 @@
+name: Publish to PyPI, TestPyPI, and GitHub
+run-name: Publish Release - ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+  workflow_dispatch:
+
+env:
+  PROJECT_NAME: terraform-ingest
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv sync
+
+      - name: Build package
+        run: |
+          uv build
+      
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    needs: build
+    permissions:
+      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+    environment:
+      name: production
+      url: https://pypi.org/p/${{ env.PROJECT_NAME }}
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/${{ env.PROJECT_NAME }}
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
+  create-release:
+    name: Create Release - ${{ github.ref_name }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: publish-to-pypi
+    if: github.ref_type == 'tag' # only publish release to GitHub on tag pushes
+    steps:
+      - name: Create Release
+        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
+        with:
+          files: dist/*
+          make_latest: true
+          generate_release_notes: true
+
+  publish-mcp:
+    runs-on: ubuntu-latest
+    needs: publish-to-pypi
+    permissions:
+      id-token: write  # Required for OIDC authentication
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Install MCP Publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          chmod +x mcp-publisher
+
+      - name: Validate server.json against schema
+        run: |
+          # Download the JSON schema
+          curl -s -o server.schema.json "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json"
+          
+          # Install jq for JSON validation
+          sudo apt-get update && sudo apt-get install -y jq
+          
+          # Validate server.json against the schema using jq
+          # First, check if the schema is valid
+          jq empty server.schema.json || { echo "Schema file is not valid JSON"; exit 1; }
+          
+          # Check if server.json is valid
+          jq empty server.json || { echo "server.json is not valid JSON"; exit 1; }
+          
+          # Basic schema validation checks
+          echo "Validating server.json structure..."
+          
+          # Check required fields
+          jq -e '.name' server.json > /dev/null || { echo "Missing required field: name"; exit 1; }
+          jq -e '.title' server.json > /dev/null || { echo "Missing required field: title"; exit 1; }
+          jq -e '.description' server.json > /dev/null || { echo "Missing required field: description"; exit 1; }
+          jq -e '.version' server.json > /dev/null || { echo "Missing required field: version"; exit 1; }
+          jq -e '.["$schema"]' server.json > /dev/null || { echo "Missing required field: \$schema"; exit 1; }
+          
+          # Check that at least one of packages or remotes exists
+          HAS_PACKAGES=$(jq 'has("packages") and (.packages | length) > 0' server.json)
+          HAS_REMOTES=$(jq 'has("remotes") and (.remotes | length) > 0' server.json)
+          if [ "$HAS_PACKAGES" = "false" ] && [ "$HAS_REMOTES" = "false" ]; then
+            echo "Must have either 'packages' or 'remotes' defined"
+            exit 1
+          fi
+          
+          # Validate name format
+          NAME=$(jq -r '.name' server.json)
+          if [[ ! $NAME =~ ^io\.github\.[a-z0-9_-]+/[a-z0-9_-]+$ ]] && [[ ! $NAME =~ ^com\.[a-z0-9_-]+(\.[a-z0-9_-]+)*/[a-z0-9_-]+$ ]]; then
+            echo "Invalid name format: $NAME (must be io.github.username/name or com.company.domain/name)"
+            exit 1
+          fi
+          
+          # Validate description length (max 100 chars)
+          DESC=$(jq -r '.description' server.json)
+          DESC_LEN=${#DESC}
+          if [ $DESC_LEN -gt 100 ]; then
+            echo "Description too long: $DESC_LEN chars (max 100)"
+            exit 1
+          fi
+          
+          echo "✓ server.json validation passed"
+
+      - name: Update server.json version from git tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "Updating server.json version to: $VERSION"
+          jq --arg v "$VERSION" '.version = $v' server.json > tmp.json && mv tmp.json server.json
+          # Also update package versions
+          jq --arg v "$VERSION" '.packages[].version = $v' server.json > tmp.json && mv tmp.json server.json
+          cat server.json
+
+      - name: Login to MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        run: ./mcp-publisher publish
+
+      - name: Verify Publication
+        run: |
+          sleep 2  # Give registry a moment to process
+          SERVER_NAME=$(jq -r '.name' server.json)
+          echo "Verifying publication of $SERVER_NAME..."
+          curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=$SERVER_NAME" | jq .
