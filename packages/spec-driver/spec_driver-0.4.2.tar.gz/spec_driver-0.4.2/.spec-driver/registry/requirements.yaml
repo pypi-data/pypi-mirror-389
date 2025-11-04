@@ -1,0 +1,2688 @@
+requirements:
+  PROD-001.FR-001:
+    label: FR-001
+    title: Claude Command Provides Complete Workflow
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: functional
+    category: workflow
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by:
+    - AUD-001
+    coverage_evidence:
+    - VT-001
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-001.FR-002:
+    label: FR-002
+    title: Agent Completes All YAML Blocks Without Manual Editing
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: functional
+    category: automation
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by:
+    - AUD-001
+    coverage_evidence:
+    - VT-002
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-001.FR-003:
+    label: FR-003
+    title: Clarification Questions Limited to Critical Decisions
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: functional
+    category: ux
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by:
+    - AUD-001
+    coverage_evidence:
+    - VT-003
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-001.FR-004:
+    label: FR-004
+    title: Spec Type Determines Section Content Adaptation
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: functional
+    category: workflow
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by:
+    - AUD-001
+    coverage_evidence: []
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-001.FR-005:
+    label: FR-005
+    title: Validation Integrated Before Workflow Completion
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: functional
+    category: validation
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by:
+    - AUD-001
+    coverage_evidence: []
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-001.NF-001:
+    label: NF-001
+    title: First-Time User Experience Requires Minimal Cognitive Load
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: non-functional
+    category: ux
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by:
+    - AUD-001
+    coverage_evidence:
+    - VA-001
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-001.NF-002:
+    label: NF-002
+    title: Registry Sync Success Rate >95% on First Attempt
+    specs:
+    - PROD-001
+    primary_spec: PROD-001
+    kind: non-functional
+    category: reliability
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-002
+    path: specify/product/PROD-001/PROD-001.md
+  PROD-002.FR-001:
+    label: FR-001
+    title: Agent Command Provides Complete Workflow Guidance
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-001
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.FR-002:
+    label: FR-002
+    title: Default Behavior Creates Complete Delta Bundle
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-002
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.FR-003:
+    label: FR-003
+    title: Users Can Provide Known Relationships Explicitly
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-003
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.FR-004:
+    label: FR-004
+    title: Agent Discovers and Suggests Additional Relationships
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-004
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.FR-005:
+    label: FR-005
+    title: Clear Error Messages Guide Users to Corrections
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-005
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.FR-006:
+    label: FR-006
+    title: Delta Creation Includes Design Revision Artifact
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-013
+    verified_by: []
+    coverage_evidence:
+    - VT-006
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.NF-001:
+    label: NF-001
+    title: First-Time Users Complete Delta Creation in Under 5 Minutes
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-001
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-002.NF-002:
+    label: NF-002
+    title: Creation Success Rate Exceeds 95% on First Attempt
+    specs:
+    - PROD-002
+    primary_spec: PROD-002
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-002
+    path: specify/product/PROD-002/PROD-002.md
+  PROD-003.FR-001:
+    label: FR-001
+    title: System MUST enable creation of policies with unique POL-XXX identifiers
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-001
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-002:
+    label: FR-002
+    title: 'System MUST support policy lifecycle statuses: draft, required, deprecated'
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-002
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-003:
+    label: FR-003
+    title: System MUST enable creation of standards with unique STD-XXX identifiers
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-003
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-004:
+    label: FR-004
+    title: 'System MUST support standard statuses: draft, required, default, deprecated
+      (where "default" indicates recommended unless justified)'
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-004
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-005:
+    label: FR-005
+    title: System MUST provide CLI commands to list policies and standards with filtering
+      (by status, tags, references)
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-005
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-006:
+    label: FR-006
+    title: System MUST provide CLI commands to display full policy/standard details
+      including metadata and cross-references
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-006
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-007:
+    label: FR-007
+    title: System MUST support bidirectional cross-references between policies and
+      standards (policies can reference standards and vice versa)
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-007
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.FR-008:
+    label: FR-008
+    title: System MUST allow ADRs, specs, deltas, and other artifacts to reference
+      policies and standards via frontmatter fields
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-008
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.NF-001:
+    label: NF-001
+    title: Policies and standards MUST use consistent template structure (Statement,
+      Rationale, Scope, Verification) for predictable authoring experience
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: non-functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD-003-009
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-003.NF-002:
+    label: NF-002
+    title: CLI commands for policies/standards MUST follow existing spec-driver UX
+      patterns (argument structure, output formats, filtering semantics)
+    specs:
+    - PROD-003
+    primary_spec: PROD-003
+    kind: non-functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-010
+    verified_by: []
+    coverage_evidence:
+    - VA-PROD-003-001
+    path: specify/product/PROD-003/PROD-003.md
+  PROD-004.FR-001:
+    label: FR-001
+    title: System MUST validate frontmatter for all 11 kinds using metadata definitions
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-001
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.FR-002:
+    label: FR-002
+    title: System MUST enforce kind-specific required fields and constraints
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-002
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.FR-003:
+    label: FR-003
+    title: System MUST generate JSON Schema from frontmatter metadata definitions
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-003
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.FR-004:
+    label: FR-004
+    title: CLI MUST support `schema show frontmatter.{kind}` commands for all kinds
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-003
+    verified_by: []
+    coverage_evidence:
+    - VT-004
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.FR-005:
+    label: FR-005
+    title: System MUST maintain backward compatibility during migration
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-005
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.FR-006:
+    label: FR-006
+    title: System MUST support gradual per-call-site opt-in migration
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.NF-001:
+    label: NF-001
+    title: Validation behavior MUST match imperative validator (zero regressions)
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-006
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.NF-002:
+    label: NF-002
+    title: JSON Schema generation MUST complete in <100ms per kind
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-004.NF-003:
+    label: NF-003
+    title: Migration MUST not break existing code at any point
+    specs:
+    - PROD-004
+    primary_spec: PROD-004
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-004/PROD-004.md
+  PROD-005.FR-001:
+    label: FR-001
+    title: Leaf Python Package Identification
+    specs:
+    - PROD-005
+    primary_spec: PROD-005
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-002
+    verified_by:
+    - AUD-002
+    coverage_evidence:
+    - VT-001
+    path: specify/product/PROD-005/PROD-005.md
+  PROD-005.FR-002:
+    label: FR-002
+    title: Deterministic File Ordering Within Packages
+    specs:
+    - PROD-005
+    primary_spec: PROD-005
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-002
+    verified_by: []
+    coverage_evidence:
+    - VT-002
+    path: specify/product/PROD-005/PROD-005.md
+  PROD-005.FR-003:
+    label: FR-003
+    title: Sync Operation Package Support
+    specs:
+    - PROD-005
+    primary_spec: PROD-005
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-002
+    verified_by: []
+    coverage_evidence:
+    - VT-003
+    path: specify/product/PROD-005/PROD-005.md
+  PROD-005.FR-004:
+    label: FR-004
+    title: File-to-Package Resolution
+    specs:
+    - PROD-005
+    primary_spec: PROD-005
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-002
+    verified_by: []
+    coverage_evidence:
+    - VT-004
+    path: specify/product/PROD-005/PROD-005.md
+  PROD-005.NF-001:
+    label: NF-001
+    title: Git Diff Stability
+    specs:
+    - PROD-005
+    primary_spec: PROD-005
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-001
+    path: specify/product/PROD-005/PROD-005.md
+  PROD-005.NF-002:
+    label: NF-002
+    title: Design Extensibility
+    specs:
+    - PROD-005
+    primary_spec: PROD-005
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-002
+    path: specify/product/PROD-005/PROD-005.md
+  PROD-006.FR-001:
+    label: FR-001
+    title: System MUST create phase markdown files from template with valid `phase.overview`
+      frontmatter block
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VT-PHASE-001
+    - VT-PHASE-007
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-006.FR-002:
+    label: FR-002
+    title: System MUST automatically determine next phase number by examining existing
+      phases for the given plan
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VT-PHASE-002
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-006.FR-003:
+    label: FR-003
+    title: System MUST enhance delta display to show plan ID, phase count, and phase
+      summaries with objectives
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VT-PHASE-003
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-006.FR-004:
+    label: FR-004
+    title: System MUST auto-populate phase metadata including phase ID, plan ID, and
+      delta ID from plan context
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VT-PHASE-004
+    - VT-PHASE-006
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-006.FR-005:
+    label: FR-005
+    title: System MUST validate phase.overview schema during sync and report validation
+      errors
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VT-PHASE-005
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-006.NF-001:
+    label: NF-001
+    title: Phase creation command MUST complete in <2 seconds for plans with up to
+      20 existing phases
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: non-functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VA-PHASE-001
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-006.NF-002:
+    label: NF-002
+    title: Delta display MUST remain readable with up to 10 phases without truncation
+      loss of critical information
+    specs:
+    - PROD-006
+    primary_spec: PROD-006
+    kind: non-functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-004
+    verified_by: []
+    coverage_evidence:
+    - VA-PHASE-002
+    path: specify/product/PROD-006/PROD-006.md
+  PROD-007.FR-001:
+    label: FR-001
+    title: Users MUST be able to complete placeholder specs through guided agent workflow
+    specs:
+    - PROD-007
+    primary_spec: PROD-007
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-005
+    verified_by: []
+    coverage_evidence:
+    - VT-001
+    path: specify/product/PROD-007/PROD-007.md
+  PROD-007.FR-002:
+    label: FR-002
+    title: System MUST preserve manually-created spec content during completion
+    specs:
+    - PROD-007
+    primary_spec: PROD-007
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-005
+    verified_by: []
+    coverage_evidence:
+    - VT-002
+    path: specify/product/PROD-007/PROD-007.md
+  PROD-007.FR-003:
+    label: FR-003
+    title: Users MUST be able to complete multiple specs in batch mode
+    specs:
+    - PROD-007
+    primary_spec: PROD-007
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-005
+    verified_by: []
+    coverage_evidence:
+    - VT-003
+    path: specify/product/PROD-007/PROD-007.md
+  PROD-007.FR-004:
+    label: FR-004
+    title: Users MUST be able to choose automation level for batch operations
+    specs:
+    - PROD-007
+    primary_spec: PROD-007
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-005
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-007/PROD-007.md
+  PROD-007.NF-001:
+    label: NF-001
+    title: Batch operations MUST show clear progress and complete in reasonable time
+    specs:
+    - PROD-007
+    primary_spec: PROD-007
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-005
+    verified_by: []
+    coverage_evidence:
+    - VA-001
+    path: specify/product/PROD-007/PROD-007.md
+  PROD-007.NF-002:
+    label: NF-002
+    title: Interactive mode MUST minimize user questions
+    specs:
+    - PROD-007
+    primary_spec: PROD-007
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-005
+    verified_by: []
+    coverage_evidence:
+    - VA-002
+    path: specify/product/PROD-007/PROD-007.md
+  PROD-008.FR-001:
+    label: FR-001
+    title: "The specs frontmatter and coverage block MUST be the authoritative record\
+      \ of each requirement\u2019s lifecycle state and supporting evidence."
+    specs:
+    - PROD-008
+    - PROD-009
+    primary_spec: PROD-008
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-007
+    verified_by: []
+    coverage_evidence:
+    - VH-201
+    path: specify/product/PROD-008/PROD-008.md
+  PROD-008.FR-002:
+    label: FR-002
+    title: Every delta that changes requirement behaviour MUST provide an implementation
+      plan documenting planned VT/VA/VH artefacts and promote the final state back
+      into the owning spec coverage block before completion.
+    specs:
+    - PROD-008
+    - PROD-009
+    primary_spec: PROD-008
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-007
+    verified_by: []
+    coverage_evidence:
+    - VA-320
+    path: specify/product/PROD-008/PROD-008.md
+  PROD-008.FR-003:
+    label: FR-003
+    title: Audits MUST reconcile observed behaviour against the spec coverage block
+      and raise drift through validation warnings until the spec is corrected or follow-up
+      work is scheduled.
+    specs:
+    - PROD-008
+    primary_spec: PROD-008
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-007
+    verified_by: []
+    coverage_evidence:
+    - VT-902
+    path: specify/product/PROD-008/PROD-008.md
+  PROD-008.NF-001:
+    label: NF-001
+    title: Lifecycle updates MUST propagate through the registry within one sync cycle
+      (< 5 minutes) after a spec change.
+    specs:
+    - PROD-008
+    primary_spec: PROD-008
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-008/PROD-008.md
+  PROD-008.NF-002:
+    label: NF-002
+    title: Validation warnings about lifecycle drift MUST be actionable, surfacing
+      responsible artefacts and suggested remediation steps.
+    specs:
+    - PROD-008
+    primary_spec: PROD-008
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-008/PROD-008.md
+  PROD-009.FR-001:
+    label: FR-001
+    title: Specs MUST allow authors to declare baseline lifecycle statuses (`planned`,
+      `asserted`, `legacy_verified`, `deprecated`) directly in coverage entries.
+    specs:
+    - PROD-009
+    primary_spec: PROD-009
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VH-330
+    path: specify/product/PROD-009/PROD-009.md
+  PROD-009.FR-002:
+    label: FR-002
+    title: The lifecycle engine MUST overlay statuses from deltas and audits using
+      timestamp precedence, preferring audits over deltas when recorded at the same
+      time.
+    specs:
+    - PROD-009
+    primary_spec: PROD-009
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-007
+    verified_by: []
+    coverage_evidence:
+    - VA-421
+    path: specify/product/PROD-009/PROD-009.md
+  PROD-009.FR-003:
+    label: FR-003
+    title: Validation MUST emit corrective warnings when overlays disagree and keep
+      humans informed until a new delta or audit resolves the conflict.
+    specs:
+    - PROD-009
+    primary_spec: PROD-009
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-007
+    verified_by: []
+    coverage_evidence:
+    - VT-940
+    path: specify/product/PROD-009/PROD-009.md
+  PROD-009.NF-001:
+    label: NF-001
+    title: Lifecycle projections MUST expose provenance (source artefact, timestamp,
+      actor) for the effective status.
+    specs:
+    - PROD-009
+    primary_spec: PROD-009
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-009/PROD-009.md
+  PROD-009.NF-002:
+    label: NF-002
+    title: Warning messages SHOULD be actionable within one hop (point to artefacts
+      and remediation) and default to warning severity rather than errors.
+    specs:
+    - PROD-009
+    primary_spec: PROD-009
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/product/PROD-009/PROD-009.md
+  PROD-010.FR-001:
+    label: FR-001
+    title: Standardize --json across list commands
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-009
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-JSON-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-002:
+    label: FR-002
+    title: Add --json to show commands
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-009
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-JSON-002
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-003:
+    label: FR-003
+    title: Add status filter to specs
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-009
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-FILTER-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-004:
+    label: FR-004
+    title: Multi-value filter support
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-011
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-FILTER-002
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-005:
+    label: FR-005
+    title: Reverse relationship queries
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-011
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-FILTER-003
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-006:
+    label: FR-006
+    title: Enum introspection
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-011
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-SCHEMA-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-007:
+    label: FR-007
+    title: Help text enhancement
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-011
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-SCHEMA-002
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-008:
+    label: FR-008
+    title: --machine-readable flag
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-MACHINE-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-009:
+    label: FR-009
+    title: Pagination support
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-MACHINE-002
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-010:
+    label: FR-010
+    title: Error message improvements
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-ERROR-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-011:
+    label: FR-011
+    title: CLI MUST provide kind-specific backlog list shortcuts (issues/problems/improvements/risks)
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-014
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-BACKLOG-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-012:
+    label: FR-012
+    title: CLI MUST provide help command showing core concepts, workflows, and conventions
+      from markdown sources
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-HELP-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-013:
+    label: FR-013
+    title: Help system MUST distinguish between immutable (spec-driver core) and customizable
+      (project-specific) documentation
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-HELP-002
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-014:
+    label: FR-014
+    title: CLI MUST support installing customizable help docs to project for user
+      modification
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-HELP-003
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.FR-015:
+    label: FR-015
+    title: CLI MUST support per-file validation of frontmatter and YAML blocks
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-PROD010-VALIDATE-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.NF-001:
+    label: NF-001
+    title: Token efficiency final validation
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-PROD010-TOKEN-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.NF-002:
+    label: NF-002
+    title: Agent workflow validation
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VH-PROD010-AGENT-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-010.NF-003:
+    label: NF-003
+    title: Validate against UX research findings
+    specs:
+    - PROD-010
+    primary_spec: PROD-010
+    kind: non-functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-009
+    verified_by: []
+    coverage_evidence:
+    - VH-PROD010-UX-001
+    path: specify/product/PROD-010/PROD-010.md
+  PROD-011.FR-001:
+    label: FR-001
+    title: Remove Phase-01 Auto-Creation**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-016
+    verified_by: []
+    coverage_evidence:
+    - VT-011-001
+    - VT-016-001
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-002:
+    label: FR-002
+    title: Enable Phase Creation When No Phases Exist**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by:
+    - DE-016
+    verified_by: []
+    coverage_evidence:
+    - VT-011-002
+    - VT-016-002
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-003:
+    label: FR-003
+    title: Hook Installation System**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011-003
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-004:
+    label: FR-004
+    title: Default Workflow Hooks**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011-004
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-005:
+    label: FR-005
+    title: IP Automation Metadata Schema**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011-005
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-006:
+    label: FR-006
+    title: Constitution Integration in Commands**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011-006
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-007:
+    label: FR-007
+    title: Constitution Validation Tooling**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011-007
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.FR-008:
+    label: FR-008
+    title: VCS Abstraction**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011-008
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.NF-001:
+    label: NF-001
+    title: High Workflow Adoption**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VH-011-001
+    path: specify/product/PROD-011/PROD-011.md
+  PROD-011.NF-002:
+    label: NF-002
+    title: Improved Delta Quality**
+    specs:
+    - PROD-011
+    primary_spec: PROD-011
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-011-001
+    path: specify/product/PROD-011/PROD-011.md
+  SPEC-110.FR-001:
+    label: FR-001
+    title: CLI MUST provide single unified entry point (`spec-driver`) routing to
+      all subcommand groups (list, show, create, sync, schema, backfill, complete,
+      workspace)
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: cli
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-STRUCTURE-001
+    - VT-CLI-WORKSPACE-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-002:
+    label: FR-002
+    title: List commands MUST delegate all data access to registries and all formatting
+      to formatters (zero business logic in CLI)
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: architecture
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-LIST-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-003:
+    label: FR-003
+    title: "Backfill command MUST detect stub specs (status='stub' or \u226430 lines)\
+      \ and replace body with template while preserving frontmatter"
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: automation
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-BACKFILL-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-004:
+    label: FR-004
+    title: Sync command MUST delegate to sync adapters for multi-language code-to-spec
+      synchronization (Python, Go, TypeScript) and MUST support separate ADR registry
+      synchronization via `--adr` flag
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: integration
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-SYNC-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-005:
+    label: FR-005
+    title: 'All list commands MUST support consistent flag patterns (--format, --json,
+      --filter, --regexp, --case-insensitive, --root) and MUST apply regexp filtering
+      to artifact-specific fields:'
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: cli
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-COMMON-001
+    - VT-CLI-FILTER-001
+    - VT-CLI-JSON-001
+    - VT-CLI-REGEXP-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-006:
+    label: FR-006
+    title: 'All list commands MUST support output formats: table (default), json,
+      tsv; list specs command MUST additionally support --status/-s filter for filtering
+      by spec status (draft, active, deprecated, superseded)'
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: cli
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-FORMAT-001
+    - VT-CLI-JSON-SCHEMA-001
+    - VT-CLI-STATUS-FILTER-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-007:
+    label: FR-007
+    title: Schema commands MUST list block schemas and frontmatter schemas separately
+      (via `schema list blocks|frontmatter|all`) and MUST display schema details in
+      json-schema or yaml-example formats
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: documentation
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-SCHEMA-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-008:
+    label: FR-008
+    title: 'Create commands MUST support all artifact types using templates:'
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: cli
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-CREATE-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-009:
+    label: FR-009
+    title: Show commands MUST display detailed artifact information for all major
+      types (specs, deltas, revisions, ADRs, requirements) and MUST include `show
+      template` for displaying spec templates
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: cli
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-SHOW-001
+    - VT-CLI-SHOW-JSON-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.FR-010:
+    label: FR-010
+    title: Complete delta command MUST mark delta as completed AND update associated
+      requirement statuses to 'live' in revision source files
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: functional
+    category: automation
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-COMPLETE-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.NF-001:
+    label: NF-001
+    title: CLI commands MUST complete typical operations (list, show, create) in <2
+      seconds on standard hardware
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: non-functional
+    category: performance
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-INTEGRATION-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-110.NF-002:
+    label: NF-002
+    title: CLI modules MUST average <200 lines per file to maintain thin orchestration
+      pattern
+    specs:
+    - SPEC-110
+    primary_spec: SPEC-110
+    kind: non-functional
+    category: architecture
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-CLI-ERROR-001
+    path: specify/tech/SPEC-110/SPEC-110.md
+  SPEC-112.FR-001:
+    label: FR-001
+    title: CLI MUST accept a path argument (file or directory) and validate it exists
+      before processing
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-001
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.FR-002:
+    label: FR-002
+    title: 'CLI MUST support `--type` argument with choices: `public` (default), `all`,
+      `tests` to control documentation variants'
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-002
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.FR-003:
+    label: FR-003
+    title: CLI MUST exit with code 1 for invalid inputs (missing path, permission
+      errors, invalid arguments) and print clear error messages
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-003
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.FR-004:
+    label: FR-004
+    title: CLI MUST support `--check` mode that verifies documentation matches code
+      without writing files, exiting 0 if unchanged or 1 if changes detected
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-004
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.FR-005:
+    label: FR-005
+    title: "CLI MUST format results with status symbols: `+` (created), `~` (changed),\
+      \ `=` (unchanged), `\u2717` (error), with `\u2713`/`\u2717` in check mode"
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-005
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.FR-006:
+    label: FR-006
+    title: CLI MUST print summary statistics showing counts by status (created, changed,
+      unchanged, errors) after processing multiple files
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-006
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.FR-007:
+    label: FR-007
+    title: CLI MUST maintain backward compatibility with original interface including
+      all argument names, default values, and exit codes
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-007
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.NF-001:
+    label: NF-001
+    title: "CLI MUST complete documentation generation for typical package (\u2264\
+      100 files) in \u22645 seconds (wall time) on modern hardware"
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VA-001
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-112.NF-002:
+    label: NF-002
+    title: CLI MUST preserve all original argument names, defaults, and behaviors
+      to ensure zero-modification migration for existing scripts
+    specs:
+    - SPEC-112
+    primary_spec: SPEC-112
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VH-001
+    path: specify/tech/SPEC-112/SPEC-112.md
+  SPEC-114.FR-001:
+    label: FR-001
+    title: Schema Definition API
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.FR-002:
+    label: FR-002
+    title: Field Constraints
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.FR-003:
+    label: FR-003
+    title: Runtime Validation
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.FR-004:
+    label: FR-004
+    title: Validation Errors
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.FR-005:
+    label: FR-005
+    title: JSON Schema Generation
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.FR-006:
+    label: FR-006
+    title: Conditional Rules in JSON Schema
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.NF-001:
+    label: NF-001
+    title: Immutability
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.NF-002:
+    label: NF-002
+    title: Error Quality
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-114.NF-003:
+    label: NF-003
+    title: Standards Compliance
+    specs:
+    - SPEC-114
+    primary_spec: SPEC-114
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-114/SPEC-114.md
+  SPEC-116.NF-001:
+    label: NF-001
+    title: Fast Metadata Lookup**
+    specs:
+    - SPEC-116
+    primary_spec: SPEC-116
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-116/SPEC-116.md
+  SPEC-116.NF-002:
+    label: NF-002
+    title: Clear Schema Definitions**
+    specs:
+    - SPEC-116
+    primary_spec: SPEC-116
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-116/SPEC-116.md
+  SPEC-116.NF-003:
+    label: NF-003
+    title: Validation Correctness**
+    specs:
+    - SPEC-116
+    primary_spec: SPEC-116
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-116/SPEC-116.md
+  SPEC-122.FR-001:
+    label: FR-001
+    title: Define RequirementRecord dataclass with uid, label, title, specs, primary_spec,
+      kind, status, introduced, implemented_by, verified_by, path fields
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-REQ-RECORD-001
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-002:
+    label: FR-002
+    title: 'Support requirement status values: pending, in-progress, live, retired'
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-REQ-LIFECYCLE-001
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-003:
+    label: FR-003
+    title: Load and save requirements registry at `.spec-driver/registry/requirements.yaml`
+    specs:
+    - PROD-009
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-004:
+    label: FR-004
+    title: 'Extract requirements from spec markdown using pattern `- FR-NNN: Title`
+      (case-insensitive, bold/italic tolerant)'
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-REQ-SYNC-001
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-005:
+    label: FR-005
+    title: Parse structured spec.relationships blocks for explicit requirement lists
+      (primary, collaborators)
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-006:
+    label: FR-006
+    title: Process delta frontmatter applies_to.requirements and relationship blocks
+      to link deltas to requirements
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-REQ-CHANGE-001
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-007:
+    label: FR-007
+    title: Process revision blocks for requirement moves, introductions, and lifecycle
+      updates
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-008:
+    label: FR-008
+    title: Support move_requirement operation updating uid, specs, primary_spec, path,
+      and introduced fields
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.FR-009:
+    label: FR-009
+    title: 'Provide search API with filters: query, status, spec, implemented_by,
+      introduced_by, verified_by'
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-REQ-SEARCH-001
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.NF-001:
+    label: NF-001
+    title: Registry file uses UTF-8 encoding and sorted YAML keys for diff stability
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.NF-002:
+    label: NF-002
+    title: Sync operations idempotent (re-running produces identical registry)
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-122.NF-003:
+    label: NF-003
+    title: Search results sorted by UID for stable output
+    specs:
+    - SPEC-122
+    primary_spec: SPEC-122
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-122/SPEC-122.md
+  SPEC-124.FR-001:
+    label: FR-001
+    title: LanguageAdapter base class MUST define abstract methods for `discover_targets()`,
+      `describe()`, `generate()`, and `supports_identifier()`
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-001
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-002:
+    label: FR-002
+    title: LanguageAdapter MUST provide `validate_source_exists()` to check file/directory
+      existence and git tracking status
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-002
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-003:
+    label: FR-003
+    title: PythonAdapter MUST discover Python modules using package structure and
+      `__init__.py` detection
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-003
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-004:
+    label: FR-004
+    title: PythonAdapter MUST generate AST-based documentation preserving docstring
+      formatting (including indentation)
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-004
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-005:
+    label: FR-005
+    title: GoAdapter MUST discover Go packages using `go list` command
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-005
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-006:
+    label: FR-006
+    title: GoAdapter MUST validate Go toolchain and gomarkdoc availability before
+      generation
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-006
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-007:
+    label: FR-007
+    title: TypeScriptAdapter MUST discover logical modules (directories with index.ts/js,
+      standalone files, src/ subdirectories)
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-007
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-008:
+    label: FR-008
+    title: TypeScriptAdapter MUST extract AST using ts-morph via ts-doc-extract subprocess
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-008
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.FR-009:
+    label: FR-009
+    title: TypeScriptAdapter MUST detect and support npm, pnpm, and bun package managers
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-009
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.NF-001:
+    label: NF-001
+    title: "All adapters MUST generate deterministic output (same input \u2192 same\
+      \ output)"
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-010
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.NF-002:
+    label: NF-002
+    title: Adapters MUST fail gracefully with descriptive errors when required toolchains
+      are unavailable
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-011
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-124.NF-003:
+    label: NF-003
+    title: TypeScriptAdapter MUST support multiple package managers without requiring
+      explicit configuration
+    specs:
+    - SPEC-124
+    primary_spec: SPEC-124
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-012
+    path: specify/tech/SPEC-124/SPEC-124.md
+  SPEC-125.FR-001:
+    label: FR-001
+    title: Validator MUST validate all requirement lifecycle links (implemented_by,
+      introduced_by, verified_by) point to existing artifacts
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-001
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-125.FR-002:
+    label: FR-002
+    title: Validator MUST detect when change artifact relations reference non-existent
+      requirements
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-002
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-125.FR-003:
+    label: FR-003
+    title: Validator MUST validate change artifact `applies_to.requirements` fields
+      reference existing requirements
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-003
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-125.FR-004:
+    label: FR-004
+    title: Validator MUST validate all ADR `related_decisions` references point to
+      existing decision IDs
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-004
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-125.FR-005:
+    label: FR-005
+    title: Validator MUST warn (in strict mode) when active ADRs reference deprecated
+      or superseded ADRs
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-005
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-125.FR-006:
+    label: FR-006
+    title: Validator MUST return structured ValidationIssue objects with level, artifact,
+      and message
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-006
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-125.NF-001:
+    label: NF-001
+    title: Validator MUST complete full workspace validation in <5 seconds for typical
+      workspace size (100 specs, 500 requirements, 50 changes, 30 ADRs)
+    specs:
+    - SPEC-125
+    primary_spec: SPEC-125
+    kind: non-functional
+    category: null
+    status: active
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-VALIDATOR-007
+    path: specify/tech/SPEC-125/SPEC-125.md
+  SPEC-128.FR-001:
+    label: FR-001
+    title: Component MUST [specific technical capability]
+    specs:
+    - SPEC-128
+    primary_spec: SPEC-128
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence:
+    - VT-XXX
+    path: specify/tech/SPEC-128/SPEC-128.md
+  SPEC-128.FR-002:
+    label: FR-002
+    title: System MUST [integration or contract requirement]
+    specs:
+    - SPEC-128
+    primary_spec: SPEC-128
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-128/SPEC-128.md
+  SPEC-128.FR-003:
+    label: FR-003
+    title: Component MUST [data handling or state management]
+    specs:
+    - SPEC-128
+    primary_spec: SPEC-128
+    kind: functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-128/SPEC-128.md
+  SPEC-128.NF-001:
+    label: NF-001
+    title: '[Performance constraint with specific metrics]'
+    specs:
+    - SPEC-128
+    primary_spec: SPEC-128
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-128/SPEC-128.md
+  SPEC-128.NF-002:
+    label: NF-002
+    title: '[Scalability or resource requirement]'
+    specs:
+    - SPEC-128
+    primary_spec: SPEC-128
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-128/SPEC-128.md
+  SPEC-128.NF-003:
+    label: NF-003
+    title: '[Reliability or fault tolerance]'
+    specs:
+    - SPEC-128
+    primary_spec: SPEC-128
+    kind: non-functional
+    category: null
+    status: pending
+    tags: []
+    introduced: null
+    implemented_by: []
+    verified_by: []
+    coverage_evidence: []
+    path: specify/tech/SPEC-128/SPEC-128.md

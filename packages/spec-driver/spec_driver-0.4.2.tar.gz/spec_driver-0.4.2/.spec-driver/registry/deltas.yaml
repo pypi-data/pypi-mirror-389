@@ -1,0 +1,2094 @@
+deltas:
+  DE-002:
+    kind: delta
+    status: completed
+    name: Delta - Python package-level spec granularity
+    slug: python-package-level-spec-granularity
+    updated: '2025-11-02'
+    path: change/deltas/DE-002-python-package-level-spec-granularity/DE-002.md
+    applies_to:
+      specs:
+      - PROD-005
+      requirements:
+      - PROD-005.FR-001
+      - PROD-005.FR-002
+      - PROD-005.FR-003
+      - PROD-005.FR-004
+    relations:
+    - type: satisfies
+      target: PROD-005
+      attributes:
+        nature: Establishes Python package-level spec granularity pattern
+    plan:
+      id: IP-002
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-002
+        delta: DE-002
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-005
+          collaborators: []
+        requirements:
+          targets:
+          - PROD-005.FR-001
+          - PROD-005.FR-002
+          - PROD-005.FR-003
+          - PROD-005.FR-004
+          dependencies: []
+        phases:
+        - id: IP-002.PHASE-01
+        - id: IP-002.PHASE-02
+        - id: IP-002.PHASE-03
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-002.PHASE-01
+        plan: IP-002
+        delta: DE-002
+        name: Phase 01 - Tooling & Validation
+        objective: Implement package detection logic, validate deterministic ordering,
+          audit registry for package-level support. Ensure foundation is sound before
+          migration.
+        entrance_criteria:
+        - PROD-005 spec approved and synced
+        - DE-002 delta created
+        - Research complete on existing codebase
+        exit_criteria:
+        - Package detection logic implemented and tested
+        - Deterministic ordering validated across platforms
+        - Registry audit complete with adaptation plan
+        - VT-001 and VT-002 passing
+        - VA-002 design review complete
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-002.PHASE-02
+        plan: IP-002
+        delta: DE-002
+        name: Phase 02 - Migration Execution
+        objective: Delete file-level specs, generate package-level specs, update relationships,
+          sync registry. Execute the breaking change cleanly.
+        entrance_criteria:
+        - Phase 01 complete
+        - Tooling changes tested and validated
+        - 16 leaf packages identified
+        exit_criteria:
+        - All existing file-level specs deleted (if any)
+        - 16 package-level specs created
+        - Registry synced successfully
+        - Validation passes with no errors
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-002.PHASE-03
+        plan: IP-002
+        delta: DE-002
+        name: Phase 03 - Verification & Documentation
+        objective: Complete verification testing (VT-003, VT-004), update documentation,
+          verify contract stability, confirm acceptance gates.
+        entrance_criteria:
+        - Phase 02 complete
+        - Package-level specs synced and validated
+        - 16 package-level specs created (SPEC-110 to SPEC-125)
+        exit_criteria:
+        - VT-003 passing (integration test with package-level specs)
+        - VT-004 passing (file-to-package resolution tests)
+        - VA-001 complete (git diff stability analysis)
+        - Documentation updated
+        - All acceptance gates met
+  DE-003:
+    kind: delta
+    status: completed
+    name: Delta - CLI Integration for Frontmatter Schema Show Commands
+    slug: cli-integration-for-frontmatter-schema-show-commands
+    updated: '2025-11-02'
+    path: change/deltas/DE-003-cli-integration-for-frontmatter-schema-show-commands/DE-003.md
+    applies_to:
+      specs:
+      - PROD-004
+      requirements:
+      - PROD-004.FR-004
+    relations:
+    - type: implements
+      target: PROD-004.FR-004
+      attributes: {}
+    plan:
+      id: IP-003
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-003
+        delta: DE-003
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-004
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-003.PHASE-01
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-003.PHASE-01
+        plan: IP-003
+        delta: DE-003
+        objective: Extend existing schema CLI commands to support all 16 frontmatter
+          kinds with JSON Schema and YAML example output formats.
+        entrance_criteria:
+        - Frontmatter metadata registry accessible
+        - Existing schema.py patterns understood
+        exit_criteria:
+        - All frontmatter kinds accessible via CLI
+        - Comprehensive tests passing
+        - Lint checks passing
+        verification:
+          tests:
+          - supekku/cli/schema_test.py
+          evidence:
+          - 23 schema tests passing (8 new)
+          - 78 total CLI tests passing
+          - Ruff: 0 errors
+          - Pylint: 9.67/10
+        tasks:
+        - Review existing CLI structure
+        - Verify frontmatter registry
+        - Extend list command for frontmatter
+        - Extend show command for frontmatter
+        - Add helper functions
+        - Write comprehensive tests
+        - Lint and manual testing
+        risks: []
+  DE-004:
+    kind: delta
+    status: completed
+    name: Delta - Phase Management Implementation
+    slug: phase-management-implementation
+    updated: '2025-11-03'
+    path: change/deltas/DE-004-phase-management-implementation/DE-004.md
+    applies_to:
+      specs:
+      - PROD-006
+      requirements:
+      - PROD-006.FR-001
+      - PROD-006.FR-002
+      - PROD-006.FR-003
+      - PROD-006.FR-004
+      - PROD-006.FR-005
+      - PROD-006.NF-001
+      - PROD-006.NF-002
+    plan:
+      id: IP-004
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-004
+        delta: DE-004
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-006
+          collaborators: []
+        requirements:
+          targets:
+          - PROD-006.FR-001
+          - PROD-006.FR-002
+          - PROD-006.FR-003
+          - PROD-006.FR-004
+          - PROD-006.FR-005
+          - PROD-006.NF-001
+          - PROD-006.NF-002
+          dependencies: []
+        phases:
+        - id: IP-004.PHASE-01
+          name: Phase 01 - Create Phase Command
+          objective: Implement `create phase` command with auto-numbering, metadata
+            population, and template rendering. Covers core phase creation logic.
+          entrance_criteria:
+          - DE-004 delta approved
+          - PROD-006 spec reviewed
+          exit_criteria:
+          - create_phase() function implemented in creation.py
+          - CLI command wired in cli/create.py
+          - VT-PHASE-001, VT-PHASE-002, VT-PHASE-004 passing
+          - Manual test: create phase for IP-002 works
+        - id: IP-004.PHASE-02
+          name: Phase 02 - Enhanced Display & Validation
+          objective: Enhance delta display formatter to show phases. Add schema validation
+            for phase.overview blocks during sync.
+          entrance_criteria: &id001
+          - Phase 01 complete
+          - Phase creation working and tested
+          exit_criteria: &id002
+          - format_delta_details() shows phase summaries
+          - Schema validation enforces phase.overview correctness
+          - VT-PHASE-003, VT-PHASE-005 passing
+          - Manual test: show delta DE-002 displays all phases
+        - id: IP-004.PHASE-03
+          name: Phase 03 - Verification & Polish
+          objective: Complete verification artifacts (performance, UX review), ensure
+            quality gates pass, update documentation.
+          entrance_criteria: &id003
+          - Phase 02 complete
+          - All core functionality working
+          exit_criteria: &id004
+          - VA-PHASE-001 (performance) complete
+          - VA-PHASE-002 (UX review) complete
+          - All tests + linters passing
+          - Documentation updated
+        - id: IP-004.PHASE-04
+          name: Phase 04 - Plan Metadata Auto-Update
+          objective: Implement automatic plan frontmatter updates when creating phases,
+            ensuring `show delta --json` reflects newly created phases immediately.
+          entrance_criteria:
+          - Phase 01 complete
+          - Understanding of plan.overview block structure
+          exit_criteria:
+          - create_phase() updates plan.overview phases array
+          - VT-PHASE-006 passing (plan metadata update tests)
+          - Manual test - create phase updates JSON output
+          - All tests + linters passing
+        - id: IP-004.PHASE-05
+          name: Phase 05 - Structured Progress Tracking
+          objective: Implement phase.tracking@v1 YAML block for structured completion
+            tracking of entrance/exit criteria and tasks, replacing regex-based progress
+            parsing.
+          entrance_criteria:
+          - Phases 01, 02, 04 complete
+          - User approval for structured tracking design
+          exit_criteria:
+          - phase.tracking@v1 schema defined
+          - Parser/validator implemented
+          - Formatter updated to use tracking data
+          - Phase template includes tracking block
+          - VT-PHASE-007 passing
+          - Backward compatibility maintained
+        - id: IP-004.PHASE-06
+          name: Phase 06 - Schema Simplification & Verification
+          objective: Simplify plan.overview schema to eliminate duplication (ID-only
+            phases), add JSON schema for phase.tracking@v1, execute verification artifacts,
+            and prepare DE-004 for completion.
+          entrance_criteria:
+          - Phases 01, 04, 05 complete (core functionality implemented)
+          - All VT-PHASE tests passing (VT-001 through VT-007)
+          - Duplication between plan.overview and phase.overview identified
+          exit_criteria:
+          - plan.overview schema simplified (phases array = ID-only objects)
+          - create_phase writes only ID to plan.overview
+          - Backward compatibility maintained for old format plans
+          - phase.tracking@v1 has JSON schema support
+          - VA-PHASE-001 and VA-PHASE-002 executed
+          - IP-004.md migrated to simplified format
+          - All tests passing, linters clean
+          - Requirements registry updated with verification status
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-004.PHASE-01
+        plan: IP-004
+        delta: DE-004
+        name: Phase 01 - Create Phase Command
+        objective: Implement `create phase` command with auto-numbering, metadata
+          population, and template rendering. Covers core phase creation logic.
+        entrance_criteria:
+        - DE-004 delta approved
+        - PROD-006 spec reviewed
+        exit_criteria:
+        - create_phase() function implemented in creation.py
+        - CLI command wired in cli/create.py
+        - VT-PHASE-001, VT-PHASE-002, VT-PHASE-004 passing
+        - Manual test - create phase for IP-002 works
+        verification:
+          tests:
+          - VT-PHASE-001
+          - VT-PHASE-002
+          - VT-PHASE-004
+          evidence:
+          - Test output showing all tests passing
+          - Manual test creating phase for IP-002
+          - Lint output (ruff + pylint) passing
+        tasks:
+        - Implement create_phase() function
+        - Add CLI command in create.py
+        - Write comprehensive unit tests
+        - Test with real implementation plan
+        risks:
+        - Phase numbering logic may be complex
+        - Template rendering may need escaping
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-004.PHASE-04
+        plan: IP-004
+        delta: DE-004
+        name: Phase 04 - Plan Metadata Auto-Update
+        objective: Implement automatic plan frontmatter updates when creating phases,
+          ensuring show delta --json reflects newly created phases immediately.
+        entrance_criteria:
+        - Phase 01 complete
+        - Understanding of plan.overview block structure
+        exit_criteria:
+        - create_phase() updates plan.overview phases array
+        - VT-PHASE-006 passing (plan metadata update tests)
+        - Manual test - create phase updates JSON output
+        - All tests + linters passing
+        verification:
+          tests:
+          - VT-PHASE-006
+          evidence:
+          - Test output showing plan metadata update tests passing
+          - Manual test showing phase in JSON output after creation
+          - Lint output (ruff + pylint) passing
+        tasks:
+        - Research plan.overview block update pattern
+        - Implement update_plan_metadata() helper function
+        - Integrate into create_phase() function
+        - Write VT-PHASE-006 tests
+        - Manual verification with IP-002
+        risks:
+        - YAML block manipulation may be fragile
+        - Race conditions if multiple phases created simultaneously
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-004.PHASE-05
+        plan: IP-004
+        delta: DE-004
+        name: Phase 05 - Structured Progress Tracking
+        objective: Implement phase.tracking@v1 YAML block for structured completion
+          tracking of entrance/exit criteria and tasks, replacing regex-based progress
+          parsing.
+        entrance_criteria:
+        - Phases 01, 02, 04 complete (core functionality working)
+        - Understanding of existing phase.overview block structure
+        - User approval for structured tracking design
+        exit_criteria:
+        - phase.tracking@v1 schema defined and documented
+        - Parser/validator for tracking block implemented
+        - Formatter updated to use structured data instead of regex
+        - Phase template includes new tracking block
+        - VT-PHASE-007 passing (tracking block tests)
+        - Backward compatibility maintained (tracking block optional)
+        verification:
+          tests:
+          - VT-PHASE-007
+          evidence:
+          - Test output showing tracking block parsing/validation
+          - Manual test with phase-05.md tracking block
+          - Backward compat test with existing phases (no tracking block)
+        tasks:
+        - Define phase.tracking@v1 schema
+        - Implement parser and validator
+        - Update formatter to use tracking data
+        - Update phase template
+        - Write comprehensive tests
+        - Add migration guide for existing phases
+        risks:
+        - Breaking changes to existing phase files
+        - Complex data structure may be harder to maintain manually
+        - Need to support both tracking block and markdown checkboxes
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-004.PHASE-06
+        plan: IP-004
+        delta: DE-004
+        objective: Simplify plan.overview schema to eliminate duplication (ID-only
+          phases array), add JSON schema for phase.tracking@v1, execute verification
+          artifacts, and prepare DE-004 for completion.
+        entrance_criteria:
+        - Phases 01, 04, 05 complete (core functionality implemented)
+        - All VT-PHASE tests passing (VT-001 through VT-007)
+        - phase.overview schema already registered and working
+        exit_criteria:
+        - phase.tracking@v1 has JSON schema with schema show support
+        - VA-PHASE-001 executed (performance benchmark <2sec for 20 phases)
+        - VA-PHASE-002 executed (UX review of delta display readability)
+        - All acceptance criteria in DE-004 satisfied
+        - Requirements registry updated with verification status
+        verification:
+          tests:
+          - VA-PHASE-001
+          - VA-PHASE-002
+          evidence:
+          - JSON schema for phase.tracking viewable via schema show
+          - Performance benchmark results
+          - UX review findings
+          - Updated requirements registry
+        tasks:
+        - Research metadata-driven validation pattern for phase.tracking
+        - Create JSON schema definition for phase.tracking@v1
+        - Register schema in metadata system
+        - Verify schema show phase.tracking works
+        - Execute VA-PHASE-001 (performance benchmark)
+        - Execute VA-PHASE-002 (UX review)
+        - Update requirements registry with verification results
+        - Update DE-004 with completion notes
+        risks:
+        - Metadata-driven validation migration may be complex
+        - Performance may not meet <2sec threshold (mitigation: optimize if needed)
+      - id: IP-004.PHASE-02
+        name: Phase 02 - Enhanced Display & Validation
+        objective: Enhance delta display formatter to show phases. Add schema validation
+          for phase.overview blocks during sync.
+        entrance_criteria: *id001
+        exit_criteria: *id002
+        phase: IP-004.PHASE-02
+      - id: IP-004.PHASE-03
+        name: Phase 03 - Verification & Polish
+        objective: Complete verification artifacts (performance, UX review), ensure
+          quality gates pass, update documentation.
+        entrance_criteria: *id003
+        exit_criteria: *id004
+        phase: IP-004.PHASE-03
+  DE-005:
+    kind: delta
+    status: completed
+    name: Delta - implement spec backfill
+    slug: implement-spec-backfill
+    updated: '2025-11-02'
+    path: change/deltas/DE-005-implement-spec-backfill/DE-005.md
+    applies_to:
+      specs:
+      - PROD-007
+      requirements:
+      - PROD-007.FR-001
+      - PROD-007.FR-002
+      - PROD-007.FR-003
+      - PROD-007.FR-004
+      - PROD-007.NF-001
+      - PROD-007.NF-002
+    plan:
+      id: IP-005
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-005
+        delta: DE-005
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-007
+          collaborators:
+          - SPEC-110
+          - SPEC-112
+        requirements:
+          targets:
+          - PROD-007.FR-001
+          - PROD-007.FR-002
+          - PROD-007.FR-005
+          - PROD-007.FR-006
+          dependencies: []
+        phases:
+        - id: IP-005.PHASE-01
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-005.PHASE-01
+        plan: IP-005
+        delta: DE-005
+        objective: 'Implement simplified spec backfill: stub detection, CLI body replacement
+          with template, and agent workflow. Agent handles intelligent completion.
+          Batch mode deferred.'
+        entrance_criteria:
+        - PROD-007 complete and validated
+        - Contracts generation working (via sync)
+        - Task 1.1 (show template) complete
+        exit_criteria:
+        - Stub detection logic implemented and tested
+        - CLI backfill command replaces body with template
+        - Agent command workflow functional
+        - End-to-end backfill demonstrated
+        verification:
+          tests:
+          - VT-004
+          - VT-005
+          - VT-001
+          evidence:
+          - End-to-end workflow demonstration
+          - Test suite passing
+        tasks:
+        - Implement stub detection (1.2)
+        - Build CLI backfill command (1.4 - simplified)
+        - Write agent command (1.5 - revised)
+        - Integration testing (1.6)
+        risks:
+        - Stub detection false positives
+        - Accidental overwrite of manual content
+  DE-006:
+    kind: delta
+    status: completed
+    name: Delta - Standardize CLI JSON output support
+    slug: standardize-cli-json-output-support
+    updated: '2025-11-02'
+    path: change/deltas/DE-006-standardize-cli-json-output-support/DE-006.md
+    applies_to:
+      specs:
+      - SPEC-003
+      - SPEC-004
+      requirements: []
+    relations:
+    - type: resolves
+      target: ISSUE-007
+      attributes:
+        nature: Fixes inconsistent --json support across CLI commands
+    plan:
+      id: IP-006
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-006
+        delta: DE-006
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - SPEC-003
+          - SPEC-004
+          - SPEC-006
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-006.PHASE-01
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-006.PHASE-01
+        plan: IP-006
+        delta: DE-006
+        objective: Add --json flag to create and list CLI commands with standardized
+          output format
+        entrance_criteria:
+        - Delta DE-006 approved
+        - Existing --json pattern understood (create.py lines 58-79)
+        - Standard JSON schema defined
+        exit_criteria:
+        - All create subcommands (issue, problem, improvement, risk) support --json
+        - List specs command supports --json shorthand
+        - All tests passing (69 CLI tests)
+        - Ruff and Pylint passing
+        - ISSUE-007 resolved
+        verification:
+          tests:
+          - test_create_issue_json_output
+          - test_create_problem_json_output
+          - test_create_risk_json_output
+          evidence:
+          - Git commit 8f388ea
+          - All 69 CLI tests passing
+          - Ruff 100% clean
+          - Pylint 10/10 score
+        tasks:
+        - Add --json to create issue, problem, improvement, risk
+        - Add --json shorthand to list specs
+        - Write JSON output tests
+        - Run full test suite
+        - Resolve ISSUE-007
+        risks:
+        - Breaking text output (mitigated - --json is opt-in)
+        - Inconsistent JSON schema (mitigated - standard format defined)
+  DE-007:
+    kind: delta
+    status: completed
+    name: Delta - Lifecycle coverage enforcement
+    slug: lifecycle-coverage-enforcement
+    updated: '2025-11-03'
+    path: change/deltas/DE-007-lifecycle-coverage-enforcement/DE-007.md
+    applies_to:
+      specs:
+      - PROD-008
+      - PROD-009
+      - SPEC-122
+      requirements:
+      - PROD-008.FR-001
+      - PROD-008.FR-002
+      - PROD-008.FR-003
+      - PROD-009.FR-002
+      - PROD-009.FR-003
+    plan:
+      id: IP-007
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-007
+        delta: DE-007
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-008
+          - PROD-009
+          - SPEC-122
+          collaborators: []
+        requirements:
+          targets:
+          - PROD-008.FR-001
+          - PROD-008.FR-002
+          - PROD-008.FR-003
+          - PROD-009.FR-002
+          - PROD-009.FR-003
+          dependencies: []
+        phases:
+        - id: IP-007.PHASE-01
+        - id: IP-007.PHASE-02
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-007.PHASE-01
+        plan: IP-007
+        delta: DE-007
+        objective: Wire verification coverage entries into the requirements registry
+          lifecycle and emit drift warnings when coverage disagrees with audits or
+          plans.
+        entrance_criteria:
+        - SPEC-122 guidance reviewed
+        - Test fixtures for coverage-enabled specs identified
+        exit_criteria:
+        - Registry sync updates lifecycle fields from coverage status changes
+        - Validation warning emitted for simulated spec vs audit/plan drift
+        - VT-902 integration test passing
+        verification:
+          tests:
+          - VT-902
+          evidence:
+          - Lifecycle sync logs
+          - Validation warning output snapshot
+        tasks:
+        - Add coverage block extraction to registry sync
+        - Implement lifecycle status aggregation logic
+        - Add drift detection and warning emission
+        - Create test fixtures with coverage blocks
+        - Write comprehensive integration tests
+        risks:
+        - Registry regression affecting existing specs
+        - Performance impact from additional parsing
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-007.PHASE-02
+        plan: IP-007
+        delta: DE-007
+        objective: Enforce coverage hand-back in the delta completion workflow and
+          document the updated process for agents.
+        entrance_criteria:
+        - Phase 01 exit criteria met
+        - CLI fixtures prepared for completion workflow tests
+        exit_criteria:
+        - spec-driver complete delta blocks when coverage entries missing
+        - RUN.md / CLAUDE command docs updated with enforcement guidance
+        - VA-320 and VH-201 verification complete
+        verification:
+          tests:
+          - VA-320
+          - VH-201
+          evidence:
+          - CLI run log demonstrating enforcement messaging
+          - Documentation change references
+        tasks:
+        - id: 2.1
+          description: Add coverage completeness check function
+          status: completed
+        - id: 2.2
+          description: Integrate check into delta completion workflow
+          status: completed
+        - id: 2.3
+          description: Add --force flag for emergency overrides
+          status: completed
+        - id: 2.4
+          description: Implement environment variable for feature toggle
+          status: completed
+        - id: 2.5
+          description: Update RUN.md with coverage workflow
+          status: completed
+        - id: 2.6
+          description: Update agent documentation
+          status: completed
+        - id: 2.7
+          description: Create completion workflow tests
+          status: completed
+        risks:
+        - Enforcement blocks legitimate emergency fixes
+        - False positives for legacy specs without coverage
+  DE-008:
+    kind: delta
+    status: completed
+    name: Separate coverage evidence from audit verification
+    slug: add-coverage-evidence
+    updated: '2025-11-03'
+    path: change/deltas/DE-008-add-coverage-evidence/DE-008.md
+    applies_to:
+      specs:
+      - SPEC-122
+      - SPEC-125
+      requirements: []
+    relations:
+    - type: addresses
+      target: ISSUE-012
+      attributes:
+        description: Separates coverage artifacts from verified_by field
+    plan:
+      id: IP-008
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-008
+        delta: DE-008
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - SPEC-122
+          collaborators:
+          - SPEC-125
+          - SPEC-120
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-008.PHASE-01
+          name: Phase 01 - Schema & sync foundation
+          objective: Add coverage_evidence field to RequirementRecord and update sync
+            logic to populate it instead of verified_by for VT/VA/VH artifacts.
+          entrance_criteria:
+          - SPEC-122 guidance reviewed
+          - Test fixtures identified
+          exit_criteria:
+          - RequirementRecord serialization includes coverage_evidence
+          - Coverage sync populates coverage_evidence, not verified_by
+          - Unit tests passing for schema and sync
+          - Zero regressions
+        - id: IP-008.PHASE-02
+          name: Phase 02 - Validation & display
+          objective: Implement validation warnings for coverage edge cases and update
+            all display/formatting to distinguish coverage from audit verification.
+          entrance_criteria:
+          - Phase 01 exit criteria met
+          exit_criteria:
+          - Validation warnings trigger for coverage without baseline status
+          - Validation warnings trigger for missing audits after grace period
+          - CLI/JSON output shows both fields separately
+          - All tests passing, linters clean
+          - Documentation updated
+        - id: IP-008.PHASE-02
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-008.PHASE-01
+        plan: IP-008
+        delta: DE-008
+        objective: Add coverage_evidence field to RequirementRecord and update sync
+          logic to populate it instead of verified_by for VT/VA/VH artifacts.
+        entrance_criteria:
+        - SPEC-122 guidance reviewed
+        - Test fixtures identified
+        exit_criteria:
+        - RequirementRecord serialization includes coverage_evidence
+        - Coverage sync populates coverage_evidence, not verified_by
+        - Unit tests passing for schema and sync
+        - Zero regressions
+        verification:
+          tests:
+          - VT-910
+          - VT-911
+          evidence:
+          - Test run output showing coverage_evidence serialization
+          - Test run output showing sync logic
+        tasks:
+        - id: '1.1'
+          description: Add coverage_evidence field to RequirementRecord dataclass
+        - id: '1.2'
+          description: Update RequirementRecord serialization methods
+        - id: '1.3'
+          description: Update coverage sync logic to populate coverage_evidence
+        - id: '1.4'
+          description: Write unit tests for schema changes
+        - id: '1.5'
+          description: Write unit tests for sync logic
+        - id: '1.6'
+          description: Run full test suite and verify zero regressions
+        - id: '1.7'
+          description: Lint and fix any issues
+        risks:
+        - description: Breaking existing code that accesses RequirementRecord
+          mitigation: Comprehensive test coverage before changes
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-008.PHASE-02
+        plan: IP-008
+        delta: DE-008
+        objective: Implement validation warnings for coverage edge cases and update
+          all display/formatting to distinguish coverage from audit verification.
+        entrance_criteria:
+        - Phase 01 exit criteria met
+        exit_criteria:
+        - Validation warnings trigger for coverage without baseline status
+        - Validation warnings trigger for missing audits after grace period
+        - CLI/JSON output shows both fields separately
+        - All tests passing, linters clean
+        - Documentation updated
+        verification:
+          tests:
+          - VT-912
+          - VT-913
+          - VT-914
+          - VA-321
+          - VH-202
+          evidence:
+          - Test run output showing validation warnings
+          - CLI output showing coverage_evidence and verified_by separately
+          - Updated documentation
+        tasks:
+        - id: '2.1'
+          description: Add validation warnings for coverage without baseline status
+        - id: '2.2'
+          description: Add validation warnings for missing audits after grace period
+        - id: '2.3'
+          description: Update requirement formatters to display coverage_evidence
+        - id: '2.4'
+          description: Update CLI JSON output for coverage_evidence
+        - id: '2.5'
+          description: Write tests for validation warnings (VT-912, VT-913)
+        - id: '2.6'
+          description: Write tests for formatter updates
+        - id: '2.7'
+          description: Run integration test for complete workflow (VT-914)
+        - id: '2.8'
+          description: Update glossary documentation
+        - id: '2.9'
+          description: Run full test suite and lint
+        risks:
+        - description: Validation warning thresholds may be unclear
+          mitigation: Use 30-day default for grace period, make configurable
+  DE-009:
+    kind: delta
+    status: completed
+    name: Delta - CLI JSON consistency fixes
+    slug: cli-json-consistency-fixes
+    updated: '2025-01-04'
+    path: change/deltas/DE-009-cli-json-consistency-fixes/DE-009.md
+    applies_to:
+      specs:
+      - SPEC-110
+      requirements:
+      - PROD-010.FR-001
+      - PROD-010.FR-002
+      - PROD-010.FR-003
+      - PROD-010.NF-003
+    plan:
+      id: IP-009
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-009
+        delta: DE-009
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - SPEC-110
+          collaborators:
+          - SPEC-120
+        requirements:
+          targets:
+          - PROD-010.FR-001
+          - PROD-010.FR-002
+          - PROD-010.FR-003
+          - PROD-010.NF-003
+          dependencies: []
+        phases:
+        - id: IP-009.PHASE-01
+        - id: IP-009.PHASE-02
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-009.PHASE-01
+        plan: IP-009
+        delta: DE-009
+        objective: 'Implement Priority 1 CLI consistency fixes: standardize --json
+          flag across all list/show commands, add status filter to specs, ensure backward
+          compatibility, and validate against UX research findings.'
+        entrance_criteria:
+        - Development environment set up with uv and dependencies installed
+        - Existing CLI test suite passing (just test)
+        - Both linters passing (just lint, just pylint)
+        - Familiarity with CLAUDE.md skinny CLI patterns and formatter separation
+        - UX research report reviewed (docs/ux-research-cli-2025-11-03.md)
+        exit_criteria:
+        - All list commands support both --json and --format=json flags
+        - All show commands support --json flag with documented behavior
+        - list specs command supports -s/--status filter matching other commands
+        - All unit tests passing with new test coverage for changes
+        - Both linters passing with zero warnings
+        - Help text updated and accurate for all modified commands
+        - JSON output schemas validated as stable (no breaking changes)
+        - Manual agent workflow testing confirms consistency improvements
+        verification:
+          tests:
+          - VT-CLI-JSON-CONSISTENCY
+          - VT-CLI-STATUS-SPECS
+          - VT-CLI-REGRESSION
+          evidence:
+          - VT-PROD010-JSON-001
+          - VT-PROD010-JSON-002
+          - VT-PROD010-FILTER-001
+          - VH-PROD010-UX-001
+        tasks:
+        - id: '1.1'
+          description: Research existing JSON flag implementations and status filtering
+            patterns
+          status: pending
+        - id: '1.2'
+          description: Write tests for --json flag on all list commands (TDD)
+          status: pending
+        - id: '1.3'
+          description: Implement --json shorthand for list commands (deltas, adrs,
+            requirements, revisions, changes)
+          status: pending
+        - id: '1.4'
+          description: Write tests for --json flag on show commands (TDD)
+          status: pending
+        - id: '1.5'
+          description: Implement --json support for show commands (spec, delta, adr,
+            requirement, revision)
+          status: pending
+        - id: '1.6'
+          description: Write tests for status filter on specs command (TDD)
+          status: pending
+        - id: '1.7'
+          description: Implement status filter for list specs command
+          status: pending
+        - id: '1.8'
+          description: Update help text for all modified commands
+          status: pending
+        - id: '1.9'
+          description: Run full test suite and linters, fix any issues
+          status: pending
+        - id: '1.10'
+          description: Manual validation against UX research Priority 1 findings
+          status: pending
+        risks:
+        - description: Breaking changes to JSON schemas disrupt agent workflows
+          likelihood: low
+          impact: high
+          mitigation: Comprehensive regression tests validate schema stability before
+            and after changes
+        - description: Status filter implementation differs from other commands
+          likelihood: medium
+          impact: medium
+          mitigation: Reuse exact patterns from list_deltas; test for behavioral parity
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-009.PHASE-02
+        plan: IP-009
+        delta: DE-009
+        objective: Complete PROD-010.FR-002 by implementing proper JSON serialization
+          for show commands that currently return incomplete output (show spec) or
+          crash (show adr, show policy, show standard). Add to_dict() methods to model
+          objects or create dedicated JSON formatters to match the working pattern
+          used by show delta/requirement.
+        entrance_criteria:
+        - Development environment set up with uv and dependencies installed
+        - Phase 01 completed - list commands and some show commands working
+        - Existing CLI test suite passing (just test)
+        - Both linters passing (just lint, just pylint)
+        - Understanding of current implementation gaps (spec/adr/policy/standard)
+        - Familiarity with working patterns (show delta uses format_delta_details_json
+          formatter)
+        exit_criteria:
+        - All show commands support --json flag with full structured output
+        - show spec --json returns complete spec data (not just {"id":"..."})
+        - show adr --json returns complete decision data without crashing
+        - show policy --json returns complete policy data (if policies exist)
+        - show standard --json returns complete standard data (if standards exist)
+        - Consistent JSON schema patterns across all show commands
+        - All unit tests passing with new test coverage for fixed commands
+        - Both linters passing with zero warnings
+        - Manual testing confirms all show --json commands work properly
+        - PROD-010.FR-002 coverage status updated to "verified"
+        verification:
+          tests:
+          - VT-CLI-SHOW-SPEC-JSON
+          - VT-CLI-SHOW-ADR-JSON
+          - VT-CLI-SHOW-POLICY-JSON
+          - VT-CLI-SHOW-STANDARD-JSON
+          evidence:
+          - VT-PROD010-JSON-002
+        tasks:
+        - id: '2.1'
+          description: Research existing model structures and identify to_dict() implementation
+            patterns
+          status: pending
+        - id: '2.2'
+          description: Write tests for show spec --json returning full spec data (TDD)
+          status: pending
+        - id: '2.3'
+          description: Implement to_dict() method on Spec model or create format_spec_details_json
+            formatter
+          status: pending
+        - id: '2.4'
+          description: Update show spec command to use proper JSON serialization
+          status: pending
+        - id: '2.5'
+          description: Write tests for show adr --json returning full decision data
+            (TDD)
+          status: pending
+        - id: '2.6'
+          description: Implement to_dict() method on DecisionRecord model
+          status: pending
+        - id: '2.7'
+          description: Update show adr command to use proper JSON serialization
+          status: pending
+        - id: '2.8'
+          description: Write tests for show policy/standard --json (TDD)
+          status: pending
+        - id: '2.9'
+          description: Implement to_dict() methods on PolicyRecord and StandardRecord
+            models
+          status: pending
+        - id: '2.10'
+          description: Update show policy/standard commands to use proper JSON serialization
+          status: pending
+        - id: '2.11'
+          description: Run full test suite and linters, fix any issues
+          status: pending
+        - id: '2.12'
+          description: Manual validation of all show --json commands
+          status: pending
+        - id: '2.13'
+          description: Update PROD-010 coverage block to mark FR-002 as verified
+          status: pending
+        risks:
+        - description: Adding to_dict() methods might break existing code that expects
+            different structure
+          likelihood: low
+          impact: medium
+          mitigation: Comprehensive test coverage; check for existing usage of these
+            models
+        - description: JSON output schema differences between show commands confuse
+            agents
+          likelihood: medium
+          impact: high
+          mitigation: Follow consistent pattern - all show commands return similar
+            top-level structure
+  DE-010:
+    kind: delta
+    status: completed
+    name: Delta - Policy and Standard Management
+    slug: policy-and-standard-management
+    updated: '2025-11-03'
+    path: change/deltas/DE-010-policy-and-standard-management/DE-010.md
+    applies_to:
+      specs:
+      - PROD-003
+      requirements:
+      - PROD-003.FR-001
+      - PROD-003.FR-002
+      - PROD-003.FR-003
+      - PROD-003.FR-004
+      - PROD-003.FR-005
+      - PROD-003.FR-006
+      - PROD-003.FR-007
+      - PROD-003.FR-008
+      - PROD-003.NF-001
+      - PROD-003.NF-002
+    plan:
+      id: IP-010
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-010
+        delta: DE-010
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-003
+          collaborators: []
+        requirements:
+          targets:
+          - PROD-003.FR-001
+          - PROD-003.FR-002
+          - PROD-003.FR-003
+          - PROD-003.FR-004
+          - PROD-003.FR-005
+          - PROD-003.FR-006
+          - PROD-003.FR-007
+          - PROD-003.FR-008
+          - PROD-003.NF-001
+          - PROD-003.NF-002
+          dependencies: []
+        phases:
+        - id: IP-010.PHASE-01
+        - id: IP-010.PHASE-02
+        - id: IP-010.PHASE-03
+        - id: IP-010.PHASE-04
+        - id: IP-010.PHASE-05
+        - id: IP-010.PHASE-02
+        - id: IP-010.PHASE-03
+        - id: IP-010.PHASE-04
+        - id: IP-010.PHASE-05
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-010.PHASE-01
+        plan: IP-010
+        delta: DE-010
+        objective: Create domain packages (policies/, standards/) with models, registry,
+          and creation logic mirroring the proven decisions/ package architecture.
+        entrance_criteria:
+        - Delta DE-010 approved and PROD-003 reviewed
+        - Decisions package structure understood (SPEC-117 reference)
+        - Template structure defined
+        exit_criteria:
+        - PolicyRecord and StandardRecord models implemented
+        - PolicyRegistry and StandardRegistry with YAML serialization
+        - Creation functions with ID generation and frontmatter building
+        - Unit tests passing for all domain logic
+        - Lint checks passing (just lint, just pylint)
+        verification:
+          tests:
+          - VT-PROD-003-001 - E2E test for policy creation
+          - VT-PROD-003-002 - Integration test for policy lifecycle
+          - VT-PROD-003-003 - E2E test for standard creation
+          - VT-PROD-003-004 - Unit test for default status behavior
+          evidence:
+          - Test run output showing all unit tests passing
+          - Lint checks passing (ruff + pylint)
+          - Registry YAML files generated correctly
+        tasks:
+        - id: '1.1'
+          description: Research decisions package architecture
+        - id: '1.2'
+          description: Create policies/ package structure
+        - id: '1.3'
+          description: Create standards/ package structure
+        - id: '1.4'
+          description: Implement PolicyRecord and StandardRecord models
+        - id: '1.5'
+          description: Implement PolicyRegistry with YAML serialization
+        - id: '1.6'
+          description: Implement StandardRegistry with YAML serialization
+        - id: '1.7'
+          description: Implement policy creation with ID generation
+        - id: '1.8'
+          description: Implement standard creation with ID generation
+        - id: '1.9'
+          description: Create policy and standard templates
+        - id: '1.10'
+          description: Write comprehensive unit tests
+        - id: '1.11'
+          description: Lint and validate all code
+        risks:
+        - description: Decisions package may use internal APIs not suitable for reuse
+          mitigation: Extract patterns, not code; implement independently if needed
+        - description: Template structure may need iteration
+          mitigation: Start with PROD-003 spec; refine based on actual usage
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-010.PHASE-02
+        plan: IP-010
+        delta: DE-010
+        objective: Implement pure formatting functions for policies and standards
+          following decision_formatters patterns (table/JSON/TSV output).
+        entrance_criteria:
+        - Phase 01 complete (domain models + registries working)
+        - PolicyRecord and StandardRecord models available
+        - decision_formatters.py reviewed and patterns understood
+        - Architectural principles internalized
+        exit_criteria:
+        - policy_formatters.py and standard_formatters.py created
+        - Pure functions for details, table, JSON, TSV formats
+        - Comprehensive test coverage (29 test cases)
+        - Formatters exported from formatters/__init__.py
+        - All tests passing (just test)
+        - All linters passing (just lint + just pylint)
+        verification:
+          tests:
+          - VT-PROD-003-009 - Template validation for policies/standards consistency
+          evidence:
+          - 29 test cases passing (14 policy + 15 standard)
+          - Pylint: 9.86/10 (duplicate code warnings expected)
+          - Ruff: All checks passed
+        tasks:
+        - id: '2.1'
+          description: Create policy_formatters.py with pure formatting functions
+        - id: '2.2'
+          description: Create standard_formatters.py with pure formatting functions
+        - id: '2.3'
+          description: Add policy/standard status styles to theme.py
+        - id: '2.4'
+          description: Create policy_formatters_test.py with comprehensive tests
+        - id: '2.5'
+          description: Create standard_formatters_test.py with comprehensive tests
+        - id: '2.6'
+          description: Export formatters from formatters/__init__.py
+        - id: '2.7'
+          description: Lint and test all code
+        risks:
+        - description: JSON output format might differ from expectations
+          mitigation: Follow table_utils.format_as_json pattern (wraps in {"items"})
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-010.PHASE-03
+        plan: IP-010
+        delta: DE-010
+        objective: Add CLI create/list/show commands for policies and standards following
+          skinny CLI pattern (delegate to registries + formatters).
+        entrance_criteria:
+        - Phase 02 complete - formatters working
+        - CLI architecture patterns understood (list.py, show.py, create.py)
+        - PolicyRegistry and StandardRegistry with collect/filter methods available
+        - Formatters exported and tested
+        exit_criteria:
+        - CLI commands implemented for policies and standards
+        - All commands follow skinny CLI pattern (<150 lines per file)
+        - Integration tests passing
+        - Help text clear and consistent with ADR commands
+        - All linters passing (ruff + pylint)
+        verification:
+          tests:
+          - VT-PROD-003-005 - Integration test for list commands with filters
+          - VT-PROD-003-006 - Integration test for show commands
+          evidence:
+          - CLI integration tests passing
+          - Manual CLI smoke tests (create, list, show workflows)
+          - Lint checks passing
+        tasks:
+        - id: '3.1'
+          description: Add policy commands to list.py (list policies)
+        - id: '3.2'
+          description: Add standard commands to list.py (list standards)
+        - id: '3.3'
+          description: Add policy commands to show.py (show policy)
+        - id: '3.4'
+          description: Add standard commands to show.py (show standard)
+        - id: '3.5'
+          description: Add policy creation to create.py (create policy)
+        - id: '3.6'
+          description: Add standard creation to create.py (create standard)
+        - id: '3.7'
+          description: Write CLI integration tests
+        - id: '3.8'
+          description: Lint and test all code
+        risks:
+        - description: CLI flags inconsistent across artifact types
+          mitigation: Review existing CLI patterns; maintain consistency with ADRs/specs
+        - description: Filter logic duplicated across commands
+          mitigation: Defer abstraction until pattern proven (3+ uses)
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-010.PHASE-04
+        plan: IP-010
+        delta: DE-010
+        objective: "Implement bidirectional cross-references between policies \u2194\
+          \ standards \u2194 ADRs with automatic backlink maintenance in registries."
+        entrance_criteria:
+        - Phase 03 complete - CLI commands working
+        - PolicyRecord and StandardRecord have reference fields (standards, policies)
+        - DecisionRecord has policies field but needs standards field
+        - Backlink infrastructure exists in all three models
+        - Cross-reference patterns understood
+        exit_criteria:
+        - DecisionRecord extended with standards field
+        - Backlink maintenance implemented in all three registries
+        - Formatters display cross-references and backlinks
+        - CLI list commands support cross-reference filtering
+        - Cross-reference integrity tests passing
+        - All linters passing (ruff + pylint)
+        verification:
+          tests:
+          - "VT-PROD-003-007 - Bidirectional policy \u2194 standard references"
+          - VT-PROD-003-008 - Policy/standard references in ADRs with backlinks
+          evidence:
+          - Integration tests for cross-reference integrity
+          - Manual testing of backlink generation
+          - Lint checks passing
+        tasks:
+        - id: '4.1'
+          description: Add standards field to DecisionRecord model
+        - id: '4.2'
+          description: Update DecisionRegistry.sync() for policy/standard backlinks
+        - id: '4.3'
+          description: Update PolicyRegistry.sync() for decision backlinks
+        - id: '4.4'
+          description: Update StandardRegistry.sync() for decision/policy backlinks
+        - id: '4.5'
+          description: Add cross-reference display to decision_formatters
+        - id: '4.6'
+          description: Add backlink display to policy_formatters
+        - id: '4.7'
+          description: Add backlink display to standard_formatters
+        - id: '4.8'
+          description: Add --standard flag to list adrs command
+        - id: '4.9'
+          description: Write cross-reference integrity tests
+        - id: '4.10'
+          description: Lint and test all code
+        risks:
+        - description: Existing ADR files lack standards field
+          mitigation: Field defaults to empty list - backward compatible
+        - description: Backlink generation logic complex
+          mitigation: Follow existing backlink patterns from decisions package
+        - description: Formatter display cluttered with too many cross-refs
+          mitigation: Show count in table view, full list in details/JSON
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-010.PHASE-05
+        plan: IP-010
+        delta: DE-010
+        objective: Complete E2E verification, update documentation, validate all acceptance
+          criteria, and ensure delta completion requirements satisfied.
+        entrance_criteria:
+        - Phase 04 complete - cross-references and backlinks working
+        - All unit and integration tests passing (1,327 tests)
+        - All linters passing (ruff + pylint)
+        - Domain models, registries, formatters, CLI commands functional
+        exit_criteria:
+        - All VT verification artifacts executed and documented
+        - VA-PROD-003-001 (UX review) complete
+        - README/documentation updated with policy/standard examples
+        - All delta acceptance criteria verified
+        - Requirements coverage complete for all 10 requirements
+        - Final quality gates passing (just test/lint/pylint)
+        - Delta ready for completion (uv run spec-driver complete delta DE-010)
+        verification:
+          tests:
+          - VT-PROD-003-001 - E2E test for policy creation
+          - VT-PROD-003-002 - Integration test for policy lifecycle
+          - VT-PROD-003-003 - E2E test for standard creation
+          - VT-PROD-003-004 - Unit test for default status behavior
+          - VT-PROD-003-005 - Integration test for list commands with filters
+          - VT-PROD-003-006 - Integration test for show commands
+          - "VT-PROD-003-007 - Bidirectional policy \u2194 standard references"
+          - VT-PROD-003-008 - Policy/standard references in ADRs with backlinks
+          - VT-PROD-003-009 - Template validation for consistency
+          - VA-PROD-003-001 - UX review for CLI discoverability
+          evidence:
+          - All test output captured and documented
+          - Manual verification of CLI workflows
+          - Documentation review and updates
+          - Requirements coverage verification
+        tasks:
+        - id: '5.1'
+          description: Review and document all VT test artifacts (VT-PROD-003-001
+            through VT-PROD-003-009)
+        - id: '5.2'
+          description: Conduct UX review for CLI patterns and discoverability (VA-PROD-003-001)
+        - id: '5.3'
+          description: Update README with policy/standard usage examples
+        - id: '5.4'
+          description: Validate all delta acceptance criteria
+        - id: '5.5'
+          description: Update requirements coverage in PROD-003 spec
+        - id: '5.6'
+          description: Run final quality gates and document results
+        - id: '5.7'
+          description: Prepare delta completion documentation
+        risks:
+        - description: Coverage gaps in verification artifacts
+          mitigation: Systematic review of IP-010 coverage block against actual tests
+        - description: Documentation drift from implementation
+          mitigation: Manual verification of all code examples in README
+  DE-011:
+    kind: delta
+    status: in-progress
+    name: Delta - CLI enhanced filtering and self-documentation
+    slug: cli-enhanced-filtering-and-self-documentation
+    updated: '2025-11-03'
+    path: change/deltas/DE-011-cli-enhanced-filtering-and-self-documentation/DE-011.md
+    applies_to:
+      specs:
+      - SPEC-110
+      requirements:
+      - PROD-010.FR-004
+      - PROD-010.FR-005
+      - PROD-010.FR-006
+      - PROD-010.FR-007
+    plan:
+      id: IP-011
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-011
+        delta: DE-011
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - SPEC-110
+          collaborators:
+          - SPEC-120
+        requirements:
+          targets:
+          - PROD-010.FR-004
+          - PROD-010.FR-005
+          - PROD-010.FR-006
+          - PROD-010.FR-007
+          dependencies: []
+        phases:
+        - id: IP-011.PHASE-01
+        - id: IP-011.PHASE-02
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-011.PHASE-01
+        plan: IP-011
+        delta: DE-011
+        objective: Implement multi-value filtering and reverse relationship queries
+          for all list commands, enabling agents to construct complex queries natively
+          without post-processing with jq/grep.
+        entrance_criteria:
+        - Development environment set up with uv and dependencies installed
+        - DE-009 completed (consistent JSON and status filtering baseline)
+        - Existing CLI test suite passing (just test)
+        - Both linters passing (just lint, just pylint)
+        - Familiarity with CLAUDE.md skinny CLI patterns and formatter separation
+        - Understanding of existing filter patterns (list deltas, list adrs, etc.)
+        exit_criteria:
+        - Multi-value filter parsing utility implemented and tested
+        - All list commands support comma-separated multi-value filters
+        - Reverse relationship query flags implemented on relevant commands
+        - Registry methods support reverse queries with glob pattern matching
+        - Backward compatibility: existing single-value filters unchanged
+        - All unit tests passing with comprehensive new test coverage
+        - Both linters passing with zero warnings
+        - Performance: reverse queries complete in <2s for typical registries
+        - Manual workflow testing confirms multi-value and reverse query functionality
+        verification:
+          tests:
+          - VT-CLI-MULTI-FILTER
+          - VT-CLI-REVERSE-QUERY
+          - VT-CLI-BACKWARD-COMPAT
+          evidence:
+          - VT-PROD010-FILTER-002
+          - VT-PROD010-FILTER-003
+        tasks:
+        - id: '1.1'
+          description: Research existing filter patterns and registry query methods
+          status: pending
+        - id: '1.2'
+          description: Create core/filters.py module with multi-value filter utilities
+          status: pending
+        - id: '1.3'
+          description: Write tests for multi-value filter parsing (TDD)
+          status: pending
+        - id: '1.4'
+          description: Implement multi-value filter support in all list commands
+          status: pending
+        - id: '1.5'
+          description: Write tests for reverse relationship queries (TDD)
+          status: pending
+        - id: '1.6'
+          description: Add reverse query methods to registries (deltas, requirements,
+            specs)
+          status: pending
+        - id: '1.7'
+          description: Implement reverse relationship flags in list commands
+          status: pending
+        - id: '1.8'
+          description: Add glob pattern support for verification artifact matching
+          status: pending
+        - id: '1.9'
+          description: Write tests for verification status/kind filters (TDD)
+          status: pending
+        - id: '1.10'
+          description: Implement --vstatus and --vkind flags for list requirements
+          status: pending
+        - id: '1.11'
+          description: Write backward compatibility tests
+          status: pending
+        - id: '1.12'
+          description: Run full test suite and linters, fix any issues
+          status: pending
+        - id: '1.13'
+          description: Performance testing for reverse queries
+          status: pending
+        - id: '1.14'
+          description: Manual validation of multi-value and reverse query workflows
+          status: pending
+        risks:
+        - description: Multi-value filter parsing breaks existing regex filters
+          likelihood: medium
+          impact: high
+          mitigation: Comprehensive backward compatibility tests; escape comma in
+            regex if needed
+        - description: Reverse relationship queries too slow on large registries
+          likelihood: medium
+          impact: medium
+          mitigation: Index relationships in registry; implement early filtering;
+            performance tests
+        - description: Glob pattern parsing conflicts with shell expansion
+          likelihood: medium
+          impact: low
+          mitigation: Quote patterns in examples; document shell escaping requirements
+      - id: IP-011.PHASE-02
+        phase: IP-011.PHASE-02
+  DE-012:
+    kind: delta
+    status: completed
+    name: Delta - Restore Entry/Exit Criteria to IP Schema
+    slug: restore-entry-exit-criteria-to-ip-schema
+    updated: '2025-11-03'
+    path: change/deltas/DE-012-restore-entry-exit-criteria-to-ip-schema/DE-012.md
+    applies_to:
+      specs:
+      - PROD-006
+      - SPEC-110
+      - SPEC-114
+      requirements: []
+    plan:
+      id: IP-012
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-012
+        delta: DE-012
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-006
+          - SPEC-110
+          - SPEC-114
+          collaborators: []
+        requirements:
+          targets:
+          - ISSUE-013.FR-013.001
+          - ISSUE-013.FR-013.002
+          - ISSUE-013.NF-013.001
+          dependencies: []
+        phases:
+        - id: IP-012.PHASE-01
+          name: Schema Restoration & Phase Creation Enhancement
+          objective: Restore entry/exit criteria fields to plan.overview schema and
+            update create_phase to copy criteria from IP to phase sheets
+          entrance_criteria:
+          - DE-012 delta reviewed and accepted
+          - ISSUE-013 requirements understood
+          - DE-004 phase creation code reviewed for patterns
+          exit_criteria:
+          - plan_metadata.py schema updated with optional fields
+          - create_phase() copies criteria to phase.overview and phase.tracking
+          - VT-SCHEMA-013-001 passing (schema validation tests)
+          - VT-CREATE-013-002 passing (phase creation tests)
+          - VT-COMPAT-013-001 passing (backward compatibility tests)
+          - All existing tests pass (1200+ tests)
+          - Both ruff and pylint clean
+        - id: IP-012.PHASE-02
+        - id: IP-012.PHASE-01
+        - id: IP-012.PHASE-01
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-012.PHASE-01
+        plan: IP-012
+        delta: DE-012
+        objective: Restore entry/exit criteria fields to plan.overview schema and
+          update create_phase to copy criteria from IP to phase sheets
+        entrance_criteria:
+        - DE-004 phase creation code reviewed for patterns
+        - DE-012 delta reviewed and accepted
+        - ISSUE-013 requirements understood
+        exit_criteria:
+        - All existing tests pass (1200+ tests)
+        - Both ruff and pylint clean
+        - VT-COMPAT-013-001 passing (backward compatibility tests)
+        - VT-CREATE-013-002 passing (phase creation tests)
+        - VT-SCHEMA-013-001 passing (schema validation tests)
+        - create_phase() copies criteria to phase.overview and phase.tracking
+        - plan_metadata.py schema updated with optional fields
+        verification:
+          tests: []
+          evidence: []
+        tasks: []
+        risks: []
+      - id: IP-012.PHASE-02
+        phase: IP-012.PHASE-02
+  DE-013:
+    kind: delta
+    status: completed
+    name: Delta - add design artefacts to delta package
+    slug: add-design-artefacts-to-delta-package
+    updated: '2025-11-04'
+    path: change/deltas/DE-013-add-design-artefacts-to-delta-package/DE-013.md
+    applies_to:
+      specs:
+      - SPEC-110
+      - SPEC-116
+      requirements:
+      - PROD-002.FR-006
+    plan:
+      id: IP-013
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-013
+        delta: DE-013
+        revision_links:
+          aligns_with: []
+        specs:
+          primary: []
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-013.PHASE-01
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-013.PHASE-01
+        plan: IP-013
+        delta: DE-013
+        objective: Validate design revision schema expectations and capture the automation
+          approach.
+        entrance_criteria:
+        - Delta DE-013 approved for planning.
+        - Frontmatter schema reference available locally.
+        exit_criteria:
+        - Template requirements captured in plan.
+        - Implementation steps documented and approved.
+        verification:
+          tests:
+          - Inspect schema via `uv run spec-driver schema show frontmatter.design_revision`.
+          evidence:
+          - Notes recorded in plan and phase log.
+        tasks:
+        - id: 1
+          description: Review glossary + schema requirements for design revision.
+          status: done
+        - id: 2
+          description: Define template sections + metadata expectations.
+          status: done
+        - id: 3
+          description: Outline implementation/testing steps in plan.
+          status: done
+        risks:
+        - description: Template misses required schema field.
+          mitigation: Cross-check schema output, capture TODOs explicitly.
+  DE-014:
+    kind: delta
+    status: completed
+    name: Delta - backlog command shortcuts
+    slug: backlog-command-shortcuts
+    updated: '2025-11-04'
+    path: change/deltas/DE-014-backlog-command-shortcuts/DE-014.md
+    applies_to:
+      specs:
+      - PROD-010
+      requirements:
+      - PROD-010.FR-011
+    plan:
+      id: IP-014
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-014
+        delta: DE-014
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - PROD-010
+          collaborators: []
+        requirements:
+          targets:
+          - PROD-010.FR-011
+          dependencies: []
+        phases:
+        - id: IP-014.PHASE-01
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-014.PHASE-01
+        plan: IP-014
+        delta: DE-014
+        objective: Describe the outcome for this phase.
+        entrance_criteria: []
+        exit_criteria: []
+        verification:
+          tests: []
+          evidence: []
+        tasks: []
+        risks: []
+  DE-015:
+    kind: delta
+    status: completed
+    name: Delta - Implement backlog prioritization with interactive ordering
+    slug: implement-backlog-prioritization-with-interactive-ordering
+    updated: '2025-11-04'
+    path: change/deltas/DE-015-implement-backlog-prioritization-with-interactive-ordering/DE-015.md
+    applies_to:
+      specs: []
+      requirements: []
+    plan:
+      id: IP-015
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-015
+        delta: DE-015
+        revision_links:
+          aligns_with: []
+        specs:
+          primary: []
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-015.PHASE-01
+        - id: IP-015.PHASE-02
+        - id: IP-015.PHASE-03
+        - id: IP-015.PHASE-04
+        - id: IP-015.PHASE-02
+        - id: IP-015.PHASE-03
+        - id: IP-015.PHASE-04
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-015.PHASE-01
+        plan: IP-015
+        delta: DE-015
+        objective: Create backlog registry infrastructure with sync command to initialize
+          and maintain ordered list of backlog item IDs
+        entrance_criteria:
+        - IP-015 approved
+        - Research findings reviewed
+        exit_criteria:
+        - Registry YAML schema defined at .spec-driver/registry/backlog.yaml
+        - sync backlog command working
+        - Registry read/write functions implemented and tested
+        - VT-015-002 tests passing
+        - Lint checks pass
+        verification:
+          tests:
+          - VT-015-002
+          evidence:
+          - sync command output
+          - generated registry file
+        tasks:
+        - 1.1 Define registry YAML schema
+        - 1.2 Implement registry read/write functions
+        - 1.3 Create sync backlog command
+        - 1.4 Write comprehensive tests
+        - 1.5 Run lint and fix issues
+        risks:
+        - Registry file conflicts with concurrent edits (low impact, document limitation)
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-015.PHASE-02
+        plan: IP-015
+        delta: DE-015
+        objective: Implement priority ordering and display logic so backlog items
+          are shown in registry order with severity/ID fallback
+        entrance_criteria:
+        - Phase 1 complete (registry infrastructure working)
+        - Registry contains item ordering
+        exit_criteria:
+        - Head-tail partition algorithm implemented and tested
+        - Priority sort function implemented
+        - list backlog command uses priority ordering by default
+        - VT-015-001 and VT-015-003 tests passing
+        - Lint checks pass
+        verification:
+          tests:
+          - VT-015-001
+          - VT-015-003
+          evidence:
+          - list command output showing priority order
+          - test results
+        tasks:
+        - 2.1 Implement head-tail partition algorithm
+        - 2.2 Implement priority sort function
+        - 2.3 Update discover_backlog_items to use registry ordering
+        - 2.4 Update formatters to display in priority order
+        - 2.5 Write comprehensive tests
+        - 2.6 Run lint and fix issues
+        risks:
+        - Sort function complexity with multiple fallback levels (mitigate with clear
+          tests)
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-015.PHASE-03
+        plan: IP-015
+        delta: DE-015
+        objective: Build editor utility and interactive reordering flow so users can
+          open filtered items in $EDITOR and save reordered list
+        entrance_criteria:
+        - Phase 2 complete (priority.py module provides partition/merge functions)
+        - Registry contains backlog ordering
+        - partition/merge algorithm tested and working
+        exit_criteria:
+        - editor.py utility created with invoke_editor() function
+        - Markdown list generation implemented
+        - Markdown parsing handles edge cases (syntax errors, duplicates, missing
+          items)
+        - Merge algorithm correctly integrates user edits with hidden items
+        - VT-015-004 tests passing (mocked editor)
+        - Lint checks pass
+        verification:
+          tests:
+          - VT-015-004
+          evidence:
+          - Mocked editor tests passing
+          - Manual smoke test with actual $EDITOR
+          - Edge case validation (malformed input)
+        tasks:
+        - 3.1 Create editor.py utility module
+        - 3.2 Implement markdown list generation from BacklogItems
+        - 3.3 Implement markdown list parsing to extract IDs
+        - 3.4 Wire partition algorithm to merge user edits
+        - 3.5 Write comprehensive tests (mocked editor)
+        - 3.6 Run lint and fix issues
+        risks:
+        - Editor invocation fails on some platforms (mitigate with $EDITOR/$VISUAL/vi
+          fallback)
+        - User provides malformed markdown (mitigate with defensive parsing, validation)
+        - Parsing breaks with unusual item titles (mitigate with ID-first parsing,
+          not title matching)
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-015.PHASE-04
+        plan: IP-015
+        delta: DE-015
+        objective: Wire interactive prioritization into CLI commands and add delta
+          creation from backlog items
+        entrance_criteria:
+        - Phase 3 complete (editor utility and markdown functions working)
+        - edit_backlog_ordering() function available and tested
+        - Registry sync working (Phase 1)
+        - Priority ordering working (Phase 2)
+        exit_criteria:
+        - --prioritize flag working in list backlog command
+        - --order-by-id flag provides chronological fallback
+        - create delta --from-backlog ITEM-ID populates template
+        - VT-015-005 CLI integration tests passing
+        - VH-015-001 manual verification complete
+        - Lint checks pass
+        verification:
+          tests:
+          - VT-015-005
+          - VH-015-001
+          evidence:
+          - CLI integration tests passing
+          - Manual workflow test results
+          - User acceptance of interactive editor flow
+        tasks:
+        - 4.1 Add --prioritize flag to list backlog command
+        - 4.2 Add --order-by-id flag for chronological fallback
+        - 4.3 Implement create delta --from-backlog flag
+        - 4.4 Write CLI integration tests (VT-015-005)
+        - 4.5 Perform manual verification (VH-015-001)
+        - 4.6 Run lint and fix issues
+        risks:
+        - User confusion if --prioritize doesn't persist (document: must save registry)
+        - create delta integration may need template updates (check existing template)
+        - Manual testing may reveal UX issues (iterate based on feedback)
+  DE-016:
+    kind: delta
+    status: completed
+    name: Delta - Remove phase-01 auto-creation and enable intelligent phase creation
+    slug: remove-phase-01-auto-creation-and-enable-intelligent-phase-creation
+    updated: '2025-11-04'
+    path: change/deltas/DE-016-remove-phase-01-auto-creation-and-enable-intelligent-phase-creation/DE-016.md
+    applies_to:
+      specs:
+      - PROD-011
+      requirements:
+      - PROD-011.FR-001
+      - PROD-011.FR-002
+    plan:
+      id: IP-016
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-016
+        delta: DE-016
+        revision_links:
+          aligns_with: []
+        specs:
+          primary: []
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-016.PHASE-01
+      phases:
+      - id: IP-016.PHASE-01
+        phase: IP-016.PHASE-01
+  DE-017:
+    kind: delta
+    status: completed
+    name: Delta - Add category support to requirements
+    slug: add-category-support-to-requirements
+    updated: '2025-11-04'
+    path: change/deltas/DE-017-add-category-support-to-requirements/DE-017.md
+    applies_to:
+      specs: []
+      requirements: []
+    relations:
+    - type: relates_to
+      target: IMPR-001
+      attributes:
+        note: Add category support to requirements
+    plan:
+      id: IP-017
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-017
+        delta: DE-017
+        revision_links:
+          aligns_with: []
+        specs:
+          primary: []
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-017.PHASE-01
+        - id: IP-017.PHASE-02
+      phases:
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-017.PHASE-01
+        plan: IP-017
+        delta: DE-017
+        objective: Extend RequirementRecord data model to support categories, update
+          parser regex to extract categories from inline and frontmatter syntax, implement
+          merge precedence logic.
+        entrance_criteria:
+        - Gate check complete (IP-017 section 3)
+        - Design revision reviewed (DR-017)
+        - Test strategy understood
+        exit_criteria:
+        - RequirementRecord has category field with serialization support
+        - _REQUIREMENT_LINE regex captures optional (category) group
+        - _records_from_content extracts category from inline and frontmatter
+        - RequirementRecord.merge handles category with body precedence
+        - VT-017-001 and VT-017-002 passing
+        - Linters passing (ruff + pylint)
+        verification:
+          tests:
+          - VT-017-001 (unit tests for category parsing)
+          - VT-017-002 (unit tests for merge precedence)
+          evidence:
+          - Test output showing all parsing scenarios pass
+          - Lint output showing zero warnings
+        tasks:
+        - id: '1.1'
+          description: Add category field to RequirementRecord dataclass
+        - id: '1.2'
+          description: Update to_dict and from_dict methods for category serialization
+        - id: '1.3'
+          description: Extend _REQUIREMENT_LINE regex to capture (category) group
+        - id: '1.4'
+          description: Update _records_from_content to extract category from inline
+            and frontmatter
+        - id: '1.5'
+          description: Update RequirementRecord.merge to handle category with body
+            precedence
+        - id: '1.6'
+          description: Add category field to SPEC_FRONTMATTER_METADATA and PROD_FRONTMATTER_METADATA
+        - id: '1.7'
+          description: Write VT-017-001 unit tests for category parsing
+        - id: '1.8'
+          description: Write VT-017-002 unit tests for merge precedence
+        - id: '1.9'
+          description: Run linters and fix any issues
+        risks:
+        - risk: Regex complexity introduces parsing bugs
+          mitigation: Comprehensive edge case testing
+      - schema: supekku.phase.overview
+        version: 1
+        phase: IP-017.PHASE-02
+        plan: IP-017
+        delta: DE-017
+        objective: Add category filtering to CLI list command, create requirement_formatters
+          module with category column display, implement integration tests for filtering
+          and display.
+        entrance_criteria:
+        - Phase 1 complete (data model and parser working)
+        - Category field tested and working in registry
+        - VT-017-001 and VT-017-002 passing
+        exit_criteria:
+        - requirement_formatters.py module created with category formatting
+        - CLI list command supports --category filter (substring match)
+        - Existing -r (regexp) and -i (case-insensitive) filters work with category
+          field
+        - Category column appears in list output
+        - VT-017-003 and VT-017-004 passing (integration tests)
+        - Linters passing (ruff + pylint)
+        verification:
+          tests:
+          - VT-017-003 (integration tests for CLI category filtering)
+          - VT-017-004 (integration tests for category column display)
+          evidence:
+          - Test output showing filtering scenarios pass
+          - CLI output showing category column
+          - Lint output showing zero warnings
+        tasks:
+        - id: '2.1'
+          description: Create requirement_formatters.py module
+        - id: '2.2'
+          description: Implement format_requirement_list_item with category column
+        - id: '2.3'
+          description: Add --category filter option to list requirements CLI
+        - id: '2.4'
+          description: Extend existing regexp/case-insensitive filters to include
+            category
+        - id: '2.5'
+          description: Update CLI to use formatter for requirement display
+        - id: '2.6'
+          description: Write VT-017-003 integration tests for category filtering
+        - id: '2.7'
+          description: Write VT-017-004 integration tests for category display
+        - id: '2.8'
+          description: Run linters and fix any issues
+        risks:
+        - risk: CLI output formatting breaks existing scripts
+          mitigation: Keep backward compatible default format
+        - risk: Filter logic complexity
+          mitigation: Follow existing filter patterns in codebase
+  DE-018:
+    kind: delta
+    status: completed
+    name: Delta - Add Tags column to list table output for all artifact types
+    slug: add-tags-column-to-list-table-output-for-all-artifact-types
+    updated: '2025-11-04'
+    path: change/deltas/DE-018-add-tags-column-to-list-table-output-for-all-artifact-types/DE-018.md
+    applies_to:
+      specs:
+      - SPEC-110
+      - SPEC-120
+      requirements: []
+    plan:
+      id: IP-018
+      overview:
+        schema: supekku.plan.overview
+        version: 1
+        plan: IP-018
+        delta: DE-018
+        revision_links:
+          aligns_with: []
+        specs:
+          primary:
+          - SPEC-110
+          - SPEC-120
+          collaborators: []
+        requirements:
+          targets: []
+          dependencies: []
+        phases:
+        - id: IP-018-P01
+      phases:
+      - id: IP-018-P01
+        phase: IP-018-P01
