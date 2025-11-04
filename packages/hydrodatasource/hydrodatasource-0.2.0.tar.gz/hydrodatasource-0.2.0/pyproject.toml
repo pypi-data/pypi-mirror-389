@@ -1,0 +1,183 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hydrodatasource"
+dynamic = ["version"]
+description = "A python project to deal with hydrological datasources"
+authors = [{name = "Wenyu Ouyang", email = "hust2014owen@gmail.com"}]
+license = {text = "BSD License"}
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["hydrodatasource", "hydrology", "data", "water", "geospatial"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "geopandas",
+    "openpyxl",
+    "xlrd",
+    "requests",
+    "scipy",
+    "pywavelets",
+    "psycopg2-binary",
+    "sqlalchemy",
+    "loguru",
+    "kerchunk",
+    "cfgrib",
+    "eccodes",
+    "h5py",
+    "chardet",
+    "intake",
+    "polars",
+    "wget",
+    "dataretrieval",
+    "pygeohydro",
+    "pykalman",
+    "xarray",
+    "hydroutils>=0.1.0",
+    "hydrodataset>=0.2.0",
+    "hydrotopo",
+    "aqua-fetch[all]",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Code formatting and linting
+    "black",
+    "black[jupyter]",
+    "flake8",
+    
+    # Testing
+    "pytest",
+    "pytest-runner",
+    "pytest-asyncio",
+    "pytest-mock",
+    
+    # Packaging
+    "wheel",
+    "twine",
+    
+    # Development tools
+    "watchdog",
+    "tox",
+    "coverage",
+]
+
+docs = [
+    # Sphinx documentation
+    "Sphinx",
+    
+    # MkDocs documentation
+    "mkdocs",
+    "mkdocs-git-revision-date-plugin",
+    "mkdocs-git-revision-date-localized-plugin",
+    "mkdocs-jupyter>=0.24.0",
+    "mkdocs-material>=9.1.3",
+    "mkdocs-pdf-export-plugin",
+    "mkdocstrings",
+    "mkdocstrings-crystal",
+    "mkdocstrings-python-legacy",
+    
+    # Jupyter notebook support
+    "ipykernel",
+    "nbconvert",
+    "nbformat",
+    
+    # Additional tools
+    "livereload",
+    "pygments",
+    "pymdown-extensions",
+    "mkdocs-include-markdown-plugin",
+]
+
+[project.urls]
+Homepage = "https://github.com/iHeadWater/hydrodatasource"
+Repository = "https://github.com/iHeadWater/hydrodatasource"
+Documentation = "https://github.com/iHeadWater/hydrodatasource"
+"Bug Tracker" = "https://github.com/iHeadWater/hydrodatasource/issues"
+
+# Hatch version management
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.1.1"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "hydrodatasource/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hydrodatasource"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/hydrodatasource",
+    "/tests",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/AUTHORS.rst",
+    "/MANIFEST.in",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+collect_ignore = ["setup.py"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310', 'py311', 'py312']
+include = '''\.pyi?$'''
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "docs",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg-info",
+    ".venv",
+    ".tox",
+]
+
+[tool.uv]
+# Override aqua-fetch's outdated dependency constraints
+# aqua-fetch 限制了 pandas<=2.1.4，但实际上新版本的 pandas 和 xarray 已经修复了兼容性问题
+override-dependencies = [
+    "pandas>=2.2.0",
+]

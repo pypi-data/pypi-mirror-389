@@ -1,0 +1,331 @@
+import geopandas as gpd
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+from scipy.spatial import Voronoi
+from shapely.geometry import Polygon
+import hydrodatasource.configs.config as hdscc
+
+
+def calculate_thiesen_polygons(stations, basin):
+    """
+    Calculate Thiessen polygons and clip to basin boundary.
+
+    Parameters:
+    ------------
+    stations: GeoDataFrame
+        stations within the basin
+    basin: GeoDataFrame
+        basin shapefile
+
+    Returns:
+    ---------
+    clipped_polygons: GeoDataFrame
+        a GeoDataFrame containing the clipped Voronoi polygons with area_ratio as a column
+    """
+    if len(stations) < 2:
+        stations["original_area"] = np.nan
+        stations["clipped_area"] = np.nan
+        stations["area_ratio"] = 1.0
+        return stations
+
+    # get the minimum and maximum coordinates of the basin boundary, and build the bounding box
+    x_min, y_min, x_max, y_max = basin.total_bounds
+
+    # extend the bounding box
+    x_min -= 1.0 * (x_max - x_min)
+    x_max += 1.0 * (x_max - x_min)
+    y_min -= 1.0 * (y_max - y_min)
+    y_max += 1.0 * (y_max - y_min)
+
+    bounding_box = np.array(
+        [[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]]
+    )
+
+    # extract the coordinates of the stations
+    points = np.array([point.coords[0] for point in stations.geometry])
+
+    # combine the coordinates of the stations with the bounding box points, ensuring that the Voronoi polygons cover the entire basin
+    points_extended = np.concatenate((points, bounding_box), axis=0)
+
+    # calculate the Voronoi diagram
+    vor = Voronoi(points_extended)
+
+    # extract the Voronoi region corresponding to each point
+    regions = [vor.regions[vor.point_region[i]] for i in range(len(points))]
+
+    # generate polygons
+    polygons = [
+        Polygon([vor.vertices[i] for i in region if i != -1])
+        for region in regions
+        if -1 not in region
+    ]
+
+    # create a GeoDataFrame
+    gdf_polygons = gpd.GeoDataFrame(geometry=polygons, crs=stations.crs)
+    gdf_polygons["STCD"] = stations["STCD"].values
+    gdf_polygons["original_area"] = gdf_polygons.geometry.area
+
+    # clip the polygons to the basin boundary
+    clipped_polygons = gpd.clip(gdf_polygons, basin)
+    clipped_polygons["clipped_area"] = clipped_polygons.geometry.area
+    clipped_polygons["area_ratio"] = (
+        clipped_polygons["clipped_area"] / clipped_polygons["clipped_area"].sum()
+    )
+
+    return clipped_polygons
+
+
+def calculate_voronoi_polygons(stations, basin_geom):
+    """
+    @deprecated
+
+    Previous version of calculate_thiesen_polygons.
+    Deprecated in favor of calculate_thiesen_polygons.
+    Deprecated since version 0.0.11: Use calculate_thiesen_polygons instead.
+
+    Parameters
+    ----------
+    stations : GeoDataFrame
+        stations within the basin
+    basin_geom : GeoDataFrame
+        basin shapefile
+
+    Returns
+    -------
+    clipped_polygons_gdf : GeoDataFrame
+        clipped voronoi polygons
+    """
+
+    bounding_box = basin_geom.envelope.exterior.coords
+    points = np.array([point.coords[0] for point in stations.geometry])
+    points_extended = np.concatenate((points, bounding_box))
+    vor = Voronoi(points_extended)
+    regions = [vor.regions[vor.point_region[i]] for i in range(len(points))]
+    polygons = [
+        Polygon(vor.vertices[region]).buffer(0)
+        for region in regions
+        if -1 not in region
+    ]
+    polygons_gdf = gpd.GeoDataFrame(geometry=polygons, crs=stations.crs)
+    polygons_gdf["station_id"] = stations["STCD"].astype(str).values
+    polygons_gdf["original_area"] = polygons_gdf.geometry.area
+    clipped_polygons_gdf = gpd.clip(polygons_gdf, basin_geom)
+    clipped_polygons_gdf["clipped_area"] = clipped_polygons_gdf.geometry.area
+    total_basin_area = basin_geom.area
+    clipped_polygons_gdf["area_ratio"] = (
+        clipped_polygons_gdf["clipped_area"] / total_basin_area
+    )
+    return clipped_polygons_gdf
+
+
+def calculate_weighted_rainfall(
+    station_weights,
+    rainfall_df,
+    station_id_name="STCD",
+    rainfall_name="DRP",
+    time_name="TM",
+):
+    """
+    Calculate weighted average rainfall.
+
+    @deprecated
+    Deprecated in favor of basin_mean_func.
+    Deprecated since version 0.0.11: Use basin_mean_func instead.
+
+    Parameters:
+    ------------
+    station_weights
+        the weight of each station.
+    rainfall_df
+        rainfall data DataFrame.
+
+    Returns:
+    ---------
+    weighted_average_rainfall
+        weighted average rainfall DataFrame.
+    """
+    station_weights[station_id_name] = station_weights[station_id_name].astype(str)
+
+    # merge thiesen polygons and rainfall data
+    merged_data = pd.merge(station_weights, rainfall_df, on=station_id_name)
+
+    # calculate weighted rainfall
+    merged_data["weighted_rainfall"] = (
+        merged_data[rainfall_name] * merged_data["area_ratio"]
+    )
+
+    return merged_data.groupby(time_name)["weighted_rainfall"].sum().reset_index()
+
+
+def basin_mean_func(df, weights_dict=None):
+    """
+    Generic basin averaging method that supports both arithmetic mean and weighted mean (e.g. Thiessen polygon weights)
+
+    When some columns have missing values in a row, the function automatically switches to arithmetic mean
+    for that row instead of using weights. This ensures robustness when dealing with incomplete data.
+
+    Parameters
+    ----------
+    df : DataFrame
+        Time series DataFrame for multiple stations, with station names as column names;
+        each column should be a time series of rainfall data for a specific station
+    weights_dict : dict, optional
+        Dictionary with tuple of station names as keys and list of weights as values.
+        If None, arithmetic mean is used.
+
+    NOTE: the keys of list must be in the same order as the columns of df.
+        hence, an easy way is you give your df with a sorted column names and then
+        use the same order to create the keys of weights_dict.
+        for example:
+        weights_dict = {
+            ("st1", "st2", "st3", "st4"): [0.25, 0.5, 0.1, 0.15],
+        }
+        df = df[["st1", "st2", "st3", "st4"]]
+        then the keys of weights_dict must be in the same order as the columns of df.
+
+    NOTE:
+        we set the format of weights_dict like this because we want to extend it to match the weights_dict key based on the missing data situation and the key in weights_dict.
+        This is a TODO item.
+        if the key in weights_dict matches the columns of df, we use the weights in weights_dict;
+        if the key in weights_dict does not match the columns of df, we use the arithmetic mean.
+        For example, if the columns of df are ["st1", "st2", "st3", "st4"], and the weights_dict is:
+        weights_dict = {
+            ("st1", "st2", "st3", "st4"): [0.25, 0.5, 0.1, 0.15],
+            ("st1", "st2", "st3"): [0.25, 0.5, 0.1],
+            ("st3", "st4"): [0.1, 0.15],
+        }
+        then when st4 has missing data, we use the weights in ("st1", "st2", "st3") to calculate the weighted mean;
+        and when st1 and st2 have missing data, we use the weights in ("st3", "st4") to calculate the weighted mean.
+        Otherwise, we use the arithmetic mean.
+
+        But this function is not finished yet, and the weights_dict now only supports the case that the keys of weights_dict has all the columns of df;
+        if any column in df is missing, the function will use the arithmetic mean.
+
+    Returns
+    -------
+    Series
+        Basin-averaged time series
+    """
+    if not weights_dict:
+        return df.mean(axis=1, skipna=True)
+
+    # check if the keys of weights_dict are in the same order as the columns of df
+    for key in weights_dict.keys():
+        # Get indices of elements in key that exist in df.columns
+        col_indices = [list(df.columns).index(col) for col in key if col in df.columns]
+        # Check if indices are in ascending order, i.e. if the order matches
+        if col_indices != sorted(col_indices):
+            raise AssertionError(
+                "The station order in each weights_dict key must match the order in df.columns"
+            )
+
+    # Get the complete set of stations that weights are defined for
+    all_weighted_stations = set()
+    for key in weights_dict.keys():
+        all_weighted_stations.update(key)
+
+    # Check which columns exist in both df and weights_dict
+    weighted_cols = [col for col in df.columns if col in all_weighted_stations]
+
+    # Find the weights key that matches our available columns
+    # Try to find exact match first, then sorted match
+    full_weights = None
+    full_station_tuple = None
+
+    for key in weights_dict.keys():
+        # Check if this key contains exactly the same stations as our weighted_cols
+        if set(key) == set(weighted_cols):
+            full_station_tuple = key
+            full_weights = weights_dict[key]
+            break
+
+    if full_weights is None:
+        # If no weights for full set, fall back to arithmetic mean
+        return df.mean(axis=1, skipna=True)
+
+    # Reorder columns to match the order in the weights key
+    ordered_cols = list(full_station_tuple)
+
+    # Create a boolean mask for missing values
+    missing_mask = df[ordered_cols].isna()
+
+    # Check if all rows have complete data (no missing values)
+    complete_rows_mask = ~missing_mask.any(axis=1)
+
+    # Initialize result with NaN
+    result = pd.Series(index=df.index, dtype=float)
+
+    # For rows with complete data, use weighted average
+    if complete_rows_mask.any():
+        complete_data = df.loc[complete_rows_mask, ordered_cols]
+        # Vectorized weighted average calculation
+        weights_array = np.array(full_weights)
+        result.loc[complete_rows_mask] = (complete_data * weights_array).sum(axis=1)
+
+    # For rows with missing data, use arithmetic mean of available stations
+    incomplete_rows_mask = ~complete_rows_mask
+    if incomplete_rows_mask.any():
+        incomplete_data = df.loc[incomplete_rows_mask, ordered_cols]
+        result.loc[incomplete_rows_mask] = incomplete_data.mean(axis=1, skipna=True)
+
+    return result
+
+
+def plot_voronoi_polygons(original_polygons, clipped_polygons, basin):
+    fig, (ax_original, ax_clipped) = plt.subplots(1, 2, figsize=(12, 6))
+    _plot_voronoi_polygons(
+        original_polygons, ax_original, basin, "Original Voronoi Polygons"
+    )
+    _plot_voronoi_polygons(
+        clipped_polygons, ax_clipped, basin, "Clipped Voronoi Polygons"
+    )
+    plt.tight_layout()
+    plt.show()
+
+
+def _plot_voronoi_polygons(arg0, ax, basin, arg3):
+    arg0.plot(ax=ax, edgecolor="black")
+    basin.boundary.plot(ax=ax, color="red")
+    ax.set_title(arg3)
+
+
+def stations_within_basin(basin_gdf, station_gdf, buffer_m=0, basin_crs_epsg=3857):
+    """
+    Get stations within the buffered basin boundary
+    Parameters
+    ----------
+    basin_gdf : GeoDataFrame
+        GeoDataFrame containing the basin shapefile
+    station_gdf : GeoDataFrame
+        GeoDataFrame containing the station shapefile
+    buffer_m : float
+        Buffer distance in meters, default 0
+    basin_crs_epsg : int
+        EPSG code for projected coordinate system, default 3857 (in meters)
+    Returns
+    -------
+    GeoDataFrame
+        Stations within the buffered basin boundary
+    """
+    # Project to coordinate system in meters
+    basin_proj = basin_gdf.to_crs(epsg=basin_crs_epsg)
+    station_proj = station_gdf.to_crs(epsg=basin_crs_epsg)
+    # Add buffer to basin
+    basin_proj = basin_proj.copy()
+    basin_proj["geometry"] = basin_proj.geometry.buffer(buffer_m)
+    # Convert back to original coordinate system
+    basin_buffered = basin_proj.to_crs(basin_gdf.crs)
+    station_proj = station_proj.to_crs(basin_gdf.crs)
+    return gpd.sjoin(station_proj, basin_buffered, how="inner", predicate="within")
+
+
+if __name__ == "__main__":
+    basin_gdf = gpd.read_file(
+        r"D:\Code\songliaodb_analysis\data\11rsvr_basins_shp\21100150-大伙房水库                    .shp"
+    )
+    station_gdf = gpd.read_file(
+        r"D:\Code\songliaodb_analysis\results\chn_dllg_data\all_stations.shp"
+    )
+    stations = stations_within_basin(basin_gdf, station_gdf, buffer_m=5000)
+    print(stations)
