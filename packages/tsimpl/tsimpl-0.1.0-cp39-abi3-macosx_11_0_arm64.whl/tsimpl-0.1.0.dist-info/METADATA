@@ -1,0 +1,176 @@
+Metadata-Version: 2.4
+Name: tsimpl
+Version: 0.1.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Rust
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+License-File: LICENSE
+Summary: E-graph T-count optimizer for Clifford+T (Python bindings)
+Keywords: e-graphs,compiler,quantum,clifford+T,optimization
+Author-email: Harshit Lakum <harshitlakum2012@gmail.com>
+License: MIT
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+
+# tsimpl
+
+> Python bindings for a Rust **e-graph optimizer** that minimizes **T-count** in Clifford+T circuits.
+> Stack: Rust · `egg` e-graphs · cost-based extraction · PyO3 (`abi3`) · maturin.
+
+---
+
+## Highlights
+
+* **T-count minimization** with rewrite sets: T-parity cancel, Clifford normalize, RZ commutation, CNOT identities.
+* **Cost model**: minimize **T-count** → tie-break by **depth** → then **gate count**.
+* **Two-liner API** + **CLI** for batch use; emits **OpenQASM 2.0**.
+* Wheels built with `abi3` (Python **3.9+**); works on Apple Silicon/macOS and Linux (when wheels are provided).
+
+---
+
+## Install (local dev)
+
+```bash
+pip install maturin
+maturin develop
+```
+
+> After publishing to PyPI you’ll be able to do:
+>
+> ```bash
+> pip install tsimpl
+> ```
+
+---
+
+## Quickstart
+
+### Python API
+
+```python
+import tsimpl as ts
+
+qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[1];
+t q[0];
+t q[0];
+h q[0];
+z q[0];
+h q[0];
+"""
+
+opt_qasm, stats = ts.optimize_qasm(qasm)
+print(stats)
+print(opt_qasm)
+```
+
+Example output:
+
+```text
+{'t_before': 2, 't_after': 0, 'depth_before': 5, 'depth_after': 2, 'gates_before': 5, 'gates_after': 2}
+
+OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[1];
+s q[0];
+x q[0];
+```
+
+### CLI
+
+```bash
+tsimpl --in input.qasm --out output.qasm --stats
+```
+
+Example:
+
+```bash
+tsimpl --in examples/qft3.qasm --stats
+# {'t_before': 2, 't_after': 0, 'depth_before': 6, 'depth_after': 3, 'gates_before': 6, 'gates_after': 3}
+# (optimized OpenQASM printed to stdout)
+```
+
+---
+
+## What it does (under the hood)
+
+* **Language/AST**: `H, S, T, X, Z, CNOT, RZ(π/2^k), Seq(...)`.
+* **Rewrite rules** (subset):
+
+  * **T-parity**: `T · T  ⇒  S`
+  * **Clifford norms**: `H·Z·H ⇒ X`, `H·X·H ⇒ Z`, `S·S ⇒ Z`, etc.
+  * **Commutation**: move `RZ(π/2^k)` past gates when legal to expose cancellations.
+  * **CNOT identities**: `CNOT(a,b); CNOT(a,b) ⇒ I` and adjacent cleanups.
+* **Extractor**: custom cost function prioritizes T-count → depth → gate count.
+
+---
+
+## When to use
+
+* Reducing non-Clifford budget before synthesis/mapping.
+* Cleaning small/medium building blocks (QFT slices, QAOA layers, adders) before backend passes.
+* Teaching/demo for **e-graphs in quantum compilers**.
+
+---
+
+## Development
+
+```bash
+# create/edit Rust bindings
+cargo build
+
+# run Python-side install in editable mode
+maturin develop
+
+# quick Python API test
+python - <<'PY'
+import tsimpl as ts, sys
+opt, s = ts.optimize_qasm("OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg q[1];\nt q[0];\nt q[0];")
+print(s); print(opt)
+PY
+```
+
+### Tests & examples
+
+* Keep small QASM samples in `examples/` (e.g., `qft3.qasm`, `qaoa_p1.qasm`, `adder2.qasm`).
+* Add property tests (semantic equality via external simulators) in future versions.
+
+### Benchmarks (optional)
+
+* Use `criterion` on the Rust core crate for: time to fixpoint, rule fire counts, success rate on blocks.
+
+---
+
+## Roadmap
+
+* [ ] More phase-polynomial/phase-gadget rules.
+* [ ] Equivalence checks vs simulators (Qiskit Aer/`statevector`) in CI.
+* [ ] Manylinux/macOS wheels via GitHub Actions + `maturin build`.
+* [ ] QASM3/JSON IR I/O, multi-qubit RZ patterns, light peephole mapping.
+
+---
+
+## License
+
+MIT © 2025 Harshit Lakum
+
+---
+
+## Citation
+
+If this tool helps your research, please cite:
+
+```
+Harshit Lakum, "tsimpl: E-graph T-count Optimizer for Clifford+T", 2025. 
+```
+
+---
+
+## Acknowledgements
+
+* `egg` e-graph framework and the broader equality saturation community.
+* OpenQASM community tooling inspiring the simple I/O used here.
+
