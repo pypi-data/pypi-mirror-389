@@ -1,0 +1,38 @@
+Metadata-Version: 2.4
+Name: yardstiq
+Version: 0.1.0
+Summary: CLI tool to run benchmark over QPUs
+License: Apache-2.0
+Project-URL: Repository, https://github.com/QuantumCommons/yardstiq
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: typer[all]
+Requires-Dist: platformdirs
+Requires-Dist: toml
+Requires-Dist: keyring
+Requires-Dist: qami
+Dynamic: license-file
+
+# Yardstiq (ys)
+
+Quantum Benchmarking CLI and extensible tool.
+
+## Installation
+
+```bash
+pip install yardstiq yardstiq-default
+```
+
+```bash
+ys --help
+
+ys qpu ls
+
+ys benchmark run vqe --qpu=local/qiskit-aer
+```
