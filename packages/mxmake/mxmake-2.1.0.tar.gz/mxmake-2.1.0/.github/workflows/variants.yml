@@ -1,0 +1,107 @@
+name: Python/VENV/Installer Variants
+
+on:
+  push:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+        # we test on lowest and highest supported versions
+        - "3.10"
+        - "3.14"
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: "pip"
+    - name: VENV to be created with pip
+      run: |
+        make VENV_ENABLED=true VENV_CREATE=true PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
+        make clean
+    - name: VENV to be created with uv (local install, no global UV)
+      run: |
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 test
+        make clean
+    - name: VENV to be created with uv (global UV auto-detected)
+      run: |
+        pip install uv
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=${{ matrix.python-version }} test
+        make clean
+        pip uninstall -y uv
+    - name: VENV pre-installed with pip
+      run: |
+        python -m venv existingvenv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
+        make clean
+        rm -r existingvenv
+    - name: VENV pre-installed with uv (local install, no global UV)
+      run: |
+        python -m venv existingvenv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=uv test
+        make clean
+        rm -r existingvenv
+    - name: VENV pre-installed with uv (global UV auto-detected)
+      run: |
+        python -m venv existingvenv
+        pip install uv
+        make VENV_ENABLED=true VENV_CREATE=false VENV_FOLDER=existingvenv PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 test
+        make clean
+        pip uninstall -y uv
+        rm -r existingvenv
+    - name: VENV with global UV using different UV_PYTHON
+      run: |
+        pip install uv
+        make VENV_ENABLED=true VENV_CREATE=true PYTHON_PACKAGE_INSTALLER=uv PRIMARY_PYTHON=python3 UV_PYTHON=${{ matrix.python-version }} test
+        make clean
+        pip uninstall -y uv
+    - name: Global Python with pip
+      run: |
+        make VENV_ENABLED=false VENV_CREATE=false PRIMARY_PYTHON=python3 PYTHON_PACKAGE_INSTALLER=pip test
+        make clean
+
+  uv-only:
+    name: UV-only (no Python) - Python ${{ matrix.uv-python }}
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        uv-python: ["3.10", "3.14"]
+    steps:
+    - name: Install system dependencies (NOT Python)
+      run: |
+        apt-get update
+        apt-get install -y make curl ca-certificates git
+
+    - uses: actions/checkout@v5
+
+    - name: Install UV globally
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Verify NO Python installed
+      run: |
+        ! which python3 || (echo "ERROR: Python found!" && exit 1)
+        ! which python || (echo "ERROR: Python found!" && exit 1)
+
+    - name: Run make install with UV only
+      run: make UV_PYTHON=${{ matrix.uv-python }} install
+
+    - name: Verify venv created with correct Python version
+      run: |
+        .venv/bin/python --version
+        .venv/bin/python --version | grep "${{ matrix.uv-python }}"
