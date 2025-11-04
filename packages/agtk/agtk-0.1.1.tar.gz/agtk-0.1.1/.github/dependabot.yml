@@ -1,0 +1,40 @@
+version: 2
+
+updates:
+  # Python dependencies (uv)
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+    # Use "chore:" prefix - dependency updates won't trigger releases
+    # Change to "fix" if you want every dependency update to create a release
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+
+    labels:
+      - "dependencies"
+
+    # Group all updates to reduce PR noise
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
+    commit-message:
+      prefix: "chore(ci)"
+
+    labels:
+      - "dependencies"
+
+    groups:
+      github-actions:
+        patterns:
+          - "*"
