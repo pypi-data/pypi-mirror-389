@@ -1,0 +1,14 @@
+{% load i18n allauth %}
+
+<div role="alert" class="alert alert-soft alert-info">
+  <strong class="tooltip tooltip-warning" data-tip="{% trans 'Warning' %}">
+    <i class="size-4 lg:size-6" data-lucide="alert-triangle"></i>
+    <span class="sr-only">{% trans 'Warning' %}:</span>
+  </strong>
+
+  <p>
+    {% blocktrans trimmed %}You currently do not have any email address set up.
+    You should really add an email address so you can receive notifications,
+    reset your password, etc.{% endblocktrans %}
+  </p>
+</div>

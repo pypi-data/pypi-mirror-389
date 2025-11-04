@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "django-allauth-xui"
+version = "0.1.1"
+description = "Modern, responsive UI layer for django-allauth, styled with TailwindCSS and daisyUI."
+authors = ["Yousef Abu Shanab <josephyousef249@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "allauth_xui" }]
+homepage = "https://github.com/youzarsiph/django-allauth-xui"
+repository = "https://github.com/youzarsiph/django-allauth-xui"
+documentation = "https://github.com/youzarsiph/django-allauth-xui"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+django = ">=5.2.7"
+django-allauth = ">=65.13.0"
+
+[tool.poetry.group.dev.dependencies]
+django-debug-toolbar = ">=6.0.0"
+ruff = ">=0.14.2"
+black = ">=25.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

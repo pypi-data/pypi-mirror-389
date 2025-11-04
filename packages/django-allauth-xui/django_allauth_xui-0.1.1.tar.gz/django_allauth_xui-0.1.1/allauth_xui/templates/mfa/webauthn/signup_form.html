@@ -1,0 +1,70 @@
+{% extends "account/base_entrance.html" %}{% load i18n static allauth %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Create Passkey" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}You are about to create a passkey for your account.
+    As you can add additional keys later on, you can use a descriptive name to
+    tell the keys apart.{% endblocktrans %}
+  </p>
+
+  <form
+    action="{% url 'mfa_signup_webauthn' %}"
+    method="post"
+    class="grid gap-4"
+  >
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button
+      type="button"
+      id="mfa_webauthn_signup"
+      class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="circle-plus" class="size-4 lg:size-6"></i>
+      {% trans "Create" %}
+    </button>
+  </form>
+
+  <button
+    type="submit"
+    form="logout-from-stage"
+    class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+  >
+    <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+    {% trans "Cancel" %}
+  </button>
+
+  <form
+    id="logout-from-stage"
+    method="post"
+    action="{% url 'account_logout' %}"
+    class="hidden"
+  >
+    <input type="hidden" name="next" value="{% url 'account_login' %}" />
+    {% csrf_token %}
+  </form>
+
+  {% include "mfa/webauthn/snippets/scripts.html" %}
+
+  <!---->
+  {{ js_data|json_script:"js_data" }}
+  <script
+    data-allauth-onload="allauth.webauthn.forms.signupForm"
+    type="application/json"
+  >
+    {
+      "ids": {
+        "signup": "mfa_webauthn_signup",
+        "credential": "{{ form.credential.auto_id }}",
+        "data": "js_data"
+      }
+    }
+  </script>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "mfa/base_entrance.html" %}{% load i18n static allauth %}
+
+<!---->
+{% block head_title %}{% trans "Trust this Browser?" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Trust this Browser?" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}If you choose to trust this browser, you will not be
+    asked for a verification code the next time you sign in.{% endblocktrans %}
+  </p>
+
+  <form
+    action="{% url 'mfa_trust' as action_url %}"
+    method="post"
+    class="grid gap-4"
+  >
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <div class="grid gap-4 w-full md:flex md:items-center">
+      <button
+        name="action"
+        value="trust"
+        type="submit"
+        class="grow btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+        {% blocktrans with period=trust_until|timeuntil:trust_from trimmed %}Trust for {{ period }}{% endblocktrans %}
+      </button>
+      <button
+        name="action"
+        value="skip"
+        type="submit"
+        class="grow btn btn-sm btn-soft btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+        {% trans "Don't Trust" %}
+      </button>
+      <button
+        type="submit"
+        form="logout-from-stage"
+        class="grow btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="x" class="size-4 lg:size-6"></i>
+        {% trans "Cancel" %}
+      </button>
+    </div>
+
+    <form
+      id="logout-from-stage"
+      method="post"
+      action="{% url 'account_logout' %}"
+      class="hidden"
+    >
+      <input type="hidden" name="next" value="{% url 'account_login' %}" />
+      {% csrf_token %}
+    </form>
+  </form>
+</div>
+{% endblock %}

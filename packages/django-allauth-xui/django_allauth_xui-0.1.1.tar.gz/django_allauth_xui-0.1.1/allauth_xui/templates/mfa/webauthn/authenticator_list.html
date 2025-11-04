@@ -1,0 +1,89 @@
+{% extends "mfa/webauthn/base.html" %}{% load i18n static humanize allauth %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Security Keys" %}</h1>
+
+  {% if authenticators|length == 0 %}
+  <p>{% blocktrans %}No security keys have been added.{% endblocktrans %}</p>
+  {% else %}
+  <table>
+    <thead>
+      <tr>
+        <th>{% trans "Key" %}</th>
+        <th>{% trans "Usage" %}</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for authenticator in authenticators %}
+      <tr>
+        <td>
+          {{ authenticator }}
+
+          <!---->
+          {% if authenticator.wrap.is_passwordless is True %}
+          <span class="badge badge-sm badge-primary md:badge-md">
+            <i data-lucide="key" class="size-4 lg:size-6"></i>
+            {% trans "Passkey" %}
+          </span>
+          {% elif authenticator.wrap.is_passwordless is False %}
+          <span class="badge badge-sm badge-secondary md:badge-md">
+            <i data-lucide="lock-keyhole" class="size-4 lg:size-6"></i>
+            {% trans "Security key" %}
+          </span>
+          {% else %}
+          <span
+            title="{% trans 'This key does not indicate whether it is a passkey.' %}"
+            class="badge badge-sm badge-warning md:badge-md"
+          >
+            <i data-lucide="lock-keyhole" class="size-4 lg:size-6"></i>
+            {% trans "Unspecified" %}
+          </span>
+          {% endif %}
+        </td>
+        <td>
+          {% blocktrans with created_at=authenticator.created_at|date:"SHORT_DATE_FORMAT" trimmed %}Added on {{ created_at }}{% endblocktrans %}.
+
+          <!---->
+          {% if authenticator.last_used_at %}
+          <!---->
+          {% blocktrans with last_used=authenticator.last_used_at|naturaltime trimmed %}Last used {{ last_used }}{% endblocktrans %}
+          <!---->
+          {% else %}
+          <!---->
+          {% trans "Not used." %}{% endif %}
+        </td>
+        <td>
+          <a
+            href="{% url 'mfa_edit_webauthn' pk=authenticator.pk %}"
+            class="btn btn-sm btn-ghost"
+          >
+            <i data-lucide="pencil-line" class="size-4 lg:size-6"></i>
+            {% trans "Edit" %}
+          </a>
+          <a
+            href="{% url 'mfa_remove_webauthn' pk=authenticator.pk %}"
+            class="btn btn-sm btn-error"
+          >
+            <i data-lucide="x" class="size-4 lg:size-6"></i>
+            {% trans "Remove" %}
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <a
+    href="{% url 'mfa_add_webauthn' %}"
+    class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+  >
+    <i data-lucide="circle-plus" class="size-4 lg:size-6"></i>
+    {% trans "Add" %}
+  </a>
+</div>
+{% endblock %}

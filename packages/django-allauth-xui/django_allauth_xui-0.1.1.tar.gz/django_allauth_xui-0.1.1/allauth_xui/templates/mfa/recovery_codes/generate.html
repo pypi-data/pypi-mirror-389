@@ -1,0 +1,41 @@
+{% extends "mfa/recovery_codes/base.html" %}{% load i18n allauth %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Recovery Codes" %}</h1>
+  <p>
+    {% blocktrans trimmed %}You are about to generate a new set of recovery
+    codes for your account.{% endblocktrans %}
+
+    <!---->
+    {% if unused_code_count %}
+    <!---->
+    {% blocktrans trimmed %}This action will invalidate your existing codes.{% endblocktrans %}
+    <!---->
+    {% endif %}
+
+    <!---->
+    {% blocktrans trimmed %}Are you sure?{% endblocktrans %}
+  </p>
+
+  <form
+    method="post"
+    class="grid gap-4"
+    action="{% url 'mfa_generate_recovery_codes' %}"
+  >
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button
+      type="submit"
+      class="btn btn-sm {% if unused_code_count %} btn-error {% else %} btn-primary {% endif %} lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="qr-code" class="size-4 lg:size-6"></i>
+      {% trans 'Generate' %}
+    </button>
+  </form>
+</div>
+{% endblock %}

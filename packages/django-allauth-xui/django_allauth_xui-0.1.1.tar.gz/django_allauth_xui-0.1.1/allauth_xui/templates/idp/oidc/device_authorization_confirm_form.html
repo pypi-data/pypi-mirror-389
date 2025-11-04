@@ -1,0 +1,57 @@
+{% extends "allauth/layouts/entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Authorize" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Confirm Device" %}</h1>
+
+  <p>
+    {% blocktrans with client_name=client.name trimmed %} Please confirm the
+    code shown on your {{ client_name }} to authorize this device.{% endblocktrans %}
+  </p>
+
+  <fieldset class="fieldset border border-base-300 rounded-box p-4">
+    <legend class="fieldset-legend">{% trans "Code" %}</legend>
+
+    <label class="label">
+      <input
+        disabled
+        type="text"
+        value="{{ user_code }}"
+        class="input input-sm input-primary lg:input-md"
+      />
+
+      <span class="sr-only">{% trans "Code" %}</span>
+    </label>
+  </fieldset>
+
+  <form action="{{ authorization_url }}" method="post" class="grid gap-4">
+    {% include 'allauth/components/form.html' %}
+
+    <div class="grid gap-4 w-full md:flex md:items-center">
+      <button
+        type="submit"
+        name="action"
+        value="confirm"
+        class="grow btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+        {% trans "Confirm" %}
+      </button>
+      <button
+        type="submit"
+        name="action"
+        value="deny"
+        class="grow btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+        {% trans "Deny" %}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

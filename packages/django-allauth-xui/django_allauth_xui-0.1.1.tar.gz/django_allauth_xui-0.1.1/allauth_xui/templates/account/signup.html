@@ -1,0 +1,58 @@
+{% extends "account/base_entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Sign Up" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}Already have an account? Then please
+    <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}
+  </p>
+
+  {% if not SOCIALACCOUNT_ONLY %}
+  <form
+    method="post"
+    class="not-prose grid gap-4"
+    action="{% url 'account_signup' %}"
+  >
+    {% csrf_token %}{{ redirect_field }}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="heart-handshake" class="size-4 lg:size-6"></i>
+      {% trans "Sign Up" %}
+    </button>
+  </form>
+  {% endif %}
+
+  <!---->
+  {% if PASSKEY_SIGNUP_ENABLED %}
+  <div role="separator" class="divider divider-primary text-primary font-bold">
+    {% trans 'OR' %}
+  </div>
+
+  <div class="grid gap-4">
+    <a
+      href="{{ signup_by_passkey_url }}"
+      class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="key" class="size-4 lg:size-6"></i>
+      {% trans "Sign up using a passkey" %}
+    </a>
+  </div>
+  {% endif %}
+
+  <!---->
+  {% if SOCIALACCOUNT_ENABLED %}
+  <!---->
+  {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+  <!---->
+  {% endif %}
+</div>
+{% endblock %}

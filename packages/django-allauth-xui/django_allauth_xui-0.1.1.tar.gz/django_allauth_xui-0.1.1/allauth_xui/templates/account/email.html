@@ -1,0 +1,188 @@
+{% extends "account/base_manage_email.html" %}{% load i18n static allauth %}
+
+<!---->
+{% block head_title %}{% trans 'Email Addresses' %}{% endblock %}
+
+<!---->
+{% block navbar_end %}
+<!---->
+{% if can_add_email %}
+<div
+  data-tip="{% trans 'Add new email' %}"
+  class="tooltip tooltip-left tooltip-primary rtl:tooltip-right"
+>
+  <button
+    name="action_primary"
+    onclick="newEmail.showModal()"
+    class="btn btn-square btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+  >
+    <i data-lucide="mail-plus" class="size-4 lg:size-6"></i>
+
+    <span class="sr-only">{% trans 'Add new email' %}</span>
+  </button>
+</div>
+
+<dialog id="newEmail" class="modal not-prose">
+  <section class="relative modal-box grid max-w-xl gap-6 bg-base-200">
+    <header class="flex items-center justify-between gap-4 text-primary">
+      <h2 class="text-lg font-semibold lg:text-2xl">
+        {% trans 'Add Email Address' %}
+      </h2>
+
+      <div
+        class="tooltip tooltip-left rtl:tooltip-right"
+        data-tip="{% trans 'Close' %}"
+      >
+        <button
+          onclick="newEmail.close()"
+          class="btn btn-square btn-sm btn-ghost md:btn-md 2xl:btn-lg"
+        >
+          <i data-lucide="x" class="size-4 lg:size-6"></i>
+
+          <span class="sr-only">{% trans 'Close' %}</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <form method="post" class="grid gap-4" action="{% url 'account_email' %}">
+        {% csrf_token %}
+
+        <!---->
+        {% include 'allauth/components/form.html' %}
+
+        <button
+          name="action_add"
+          class="grow btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+        >
+          {% trans 'Add Email' %}
+        </button>
+      </form>
+    </main>
+  </section>
+</dialog>
+{% endif %}
+<!---->
+{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans 'Email Addresses' %}</h1>
+
+  {% if emailaddresses %}
+  <p>
+    {% blocktrans trimmed %}The following email addresses are associated with
+    your account:{% endblocktrans %}
+  </p>
+
+  <form action="{% url 'account_email' %}" method="post" class="grid gap-8">
+    {% csrf_token %}
+
+    <div class="grid gap-2">
+      {% for radio in emailaddress_radios %}
+      <!---->
+      {% with emailaddress=radio.emailaddress %}
+      <fieldset class="fieldset border border-base-300 rounded-box p-4">
+        <legend class="fieldset-legend">
+          {% if emailaddress.primary %}
+          <span
+            class="tooltip tooltip-primary"
+            data-tip="{% trans 'Primary' %}"
+          >
+            <i
+              data-lucide="circle-check"
+              class="size-4 text-primary lg:size-6"
+            ></i>
+            <span class="sr-only">{% trans 'Primary' %}</span>
+          </span>
+          {% endif %}
+
+          <!---->
+          {% if emailaddress.verified %}
+          <span class="tooltip tooltip-info" data-tip="{% trans 'Verified' %}">
+            <i data-lucide="badge-check" class="size-4 text-info lg:size-6"></i>
+            <span class="sr-only">{% trans 'Verified' %}</span>
+          </span>
+          {% else %}
+          <span
+            class="tooltip tooltip-warning"
+            data-tip="{% trans 'Unverified' %}"
+          >
+            <i
+              data-lucide="badge-alert"
+              class="size-4 text-warning lg:size-6"
+            ></i>
+            <span class="sr-only">{% trans 'Unverified' %}</span>
+          </span>
+          {% endif %}
+        </legend>
+
+        <label class="label">
+          <input
+            required
+            type="radio"
+            name="email"
+            id="{{ radio.id }}"
+            value="{{ emailaddress.email }}"
+            class="radio radio-sm radio-primary lg:radio-md"
+          />
+
+          <span>{{ emailaddress.email }}</span>
+        </label>
+      </fieldset>
+      {% endwith %}
+      <!---->
+      {% endfor %}
+    </div>
+
+    <div class="grid gap-4 w-full md:flex md:items-center">
+      <button
+        type="submit"
+        name="action_primary"
+        class="grow btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="mail-check" class="size-4 lg:size-6"></i>
+        {% trans 'Make Primary' %}
+      </button>
+      <button
+        type="submit"
+        name="action_send"
+        class="grow btn btn-sm btn-soft btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="badge-plus" class="size-4 lg:size-6"></i>
+        {% trans 'Re-send Verification' %}
+      </button>
+      <button
+        type="submit"
+        name="action_remove"
+        class="grow btn btn-sm btn-error lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="mail-minus" class="size-4 lg:size-6"></i>
+        {% trans 'Remove' %}
+      </button>
+    </div>
+  </form>
+  {% else %}
+  <!---->
+  {% include "account/snippets/warn_no_email.html" %}
+  <!---->
+  {% endif %}
+</div>
+{% endblock %}
+
+<!---->
+{% block extra_body %}
+<script src="{% static 'account/js/account.js' %}"></script>
+<script src="{% static 'account/js/onload.js' %}"></script>
+<script
+  data-allauth-onload="allauth.account.forms.manageEmailForm"
+  type="application/json"
+>
+  {
+    "i18n": {
+      "confirmDelete": "{% trans 'Do you really want to remove the selected email address?' %}"
+    }
+  }
+</script>
+{% endblock %}

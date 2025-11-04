@@ -1,0 +1,157 @@
+{% extends "mfa/base_manage.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Two-Factor Authentication" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Two-Factor Authentication" %}</h1>
+
+  <div class="tabs tabs-sm tabs-border lg:tabs-md xl:tabs-lg">
+    {% if "totp" in MFA_SUPPORTED_TYPES %}
+    <input
+      type="radio"
+      name="mfa"
+      class="tab"
+      checked
+      aria-label="{% trans 'Authenticator App' %}"
+    />
+    <div class="tab-content border-base-300 bg-base-100 p-4 lg:p-8">
+      <section>
+        <h2>{% trans "Authenticator App" %}</h2>
+
+        {% if authenticators.totp %}
+        <p>
+          {% trans "Authentication using an authenticator app is active." %}
+        </p>
+
+        <a
+          href="{% url 'mfa_deactivate_totp' %}"
+          class="btn btn-sm btn-error lg:btn-md"
+        >
+          <i data-lucide="shield-minus" class="size-4 lg:size-6"></i>
+          {% trans "Deactivate" %}
+        </a>
+        {% else %}
+        <p>{% trans "An authenticator app is not active." %}</p>
+
+        <a
+          href="{% url 'mfa_activate_totp' %}"
+          class="btn btn-sm btn-primary lg:btn-md"
+        >
+          <i data-lucide="shield-plus" class="size-4 lg:size-6"></i>
+          {% trans "Activate" %}
+        </a>
+        {% endif %}
+      </section>
+    </div>
+    {% endif %}
+
+    <!---->
+    {% if "webauthn" in MFA_SUPPORTED_TYPES %}
+    <input
+      type="radio"
+      name="mfa"
+      class="tab"
+      checked
+      aria-label="{% trans 'Security Keys' %}"
+    />
+    <div class="tab-content border-base-300 bg-base-100 p-4 lg:p-8">
+      <section>
+        <h2>{% trans "Security Keys" %}</h2>
+
+        {% if authenticators.webauthn|length %}
+        <p>
+          {% blocktrans count count=authenticators.webauthn|length trimmed %}You have
+          added {{ count }} security key.{% plural %} You have added {{ count }}
+          security keys.{% endblocktrans %}
+        </p>
+
+        <a
+          href="{% url 'mfa_list_webauthn' %}"
+          class="btn btn-sm btn-primary lg:btn-md"
+        >
+          <i data-lucide="tower-control" class="size-4 lg:size-6"></i>
+          {% trans "Manage" %}
+        </a>
+        {% else %}
+        <p>{% trans "No security keys have been added." %}</p>
+
+        <a
+          href="{% url 'mfa_add_webauthn'%}"
+          class="btn btn-sm btn-primary lg:btn-md"
+        >
+          <i data-lucide="circle-plus" class="size-4 lg:size-6"></i>
+          {% trans "Add" %}
+        </a>
+        {% endif %}
+      </section>
+    </div>
+    {% endif %}
+
+    <!---->
+    {% if "recovery_codes" in MFA_SUPPORTED_TYPES %}
+    <input
+      type="radio"
+      name="mfa"
+      class="tab"
+      checked
+      aria-label="{% trans 'Recovery Codes' %}"
+    />
+    {% with total_count=authenticators.recovery_codes.generate_codes|length unused_count=authenticators.recovery_codes.get_unused_codes|length %}
+    <div class="tab-content border-base-300 bg-base-100 p-4 lg:p-8">
+      <section>
+        <h2>{% trans "Recovery Codes" %}</h2>
+
+        {% if authenticators.recovery_codes %}
+        <p>
+          {% blocktrans count unused_count=unused_count trimmed %}There is
+          {{ unused_count }} out of {{ total_count }} recovery codes available.
+          {% plural %}There are {{ unused_count }} out of {{ total_count }}
+          recovery codes available.{% endblocktrans %}
+        </p>
+        {% else %}
+        <p>{% trans "No recovery codes set up." %}</p>
+        {% endif %}
+
+        <!---->
+        {% if is_mfa_enabled %}
+        <!---->
+        {% if authenticators.recovery_codes %}
+        <!---->
+        {% if unused_count > 0 %}
+        <a
+          href="{% url 'mfa_view_recovery_codes'%}"
+          class="btn btn-sm btn-error lg:btn-md"
+        >
+          <i data-lucide="eye" class="size-4 lg:size-6"></i>
+          {% trans "View" %}
+        </a>
+        <a
+          href="{% url 'mfa_download_recovery_codes' %}"
+          class="btn btn-sm btn-error lg:btn-md"
+        >
+          <i data-lucide="download" class="size-4 lg:size-6"></i>
+          {% trans "Download" %}
+        </a>
+        {% endif %}
+        <!---->
+        {% endif %}
+
+        <a
+          href="{% url 'mfa_generate_recovery_codes'%}"
+          class="btn btn-sm btn-error lg:btn-md"
+        >
+          <i data-lucide="qr-code" class="size-4 lg:size-6"></i>
+          {% trans "Download" %}
+        </a>
+        {% endif %}
+      </section>
+    </div>
+    {% endwith %}
+    <!---->
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

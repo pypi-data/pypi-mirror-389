@@ -1,0 +1,35 @@
+{% extends "mfa/totp/base.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Deactivate Authenticator App" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Deactivate Authenticator App" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}You are about to deactivate authenticator app based
+    authentication. Are you sure?{% endblocktrans %}
+  </p>
+
+  <form
+    action="{% url 'mfa_deactivate_totp' %}"
+    method="post"
+    class="grid gap-4"
+  >
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button
+      type="submit"
+      class="grow btn btn-sm btn-error lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="shield-minus" class="size-4 lg:size-6"></i>
+      {% trans "Deactivate" %}
+    </button>
+  </form>
+</div>
+{% endblock %}

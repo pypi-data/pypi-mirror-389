@@ -1,0 +1,44 @@
+{% extends "mfa/webauthn/base.html" %}{% load i18n static allauth %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Add Security Key" %}</h1>
+
+  <form action="{% url 'mfa_add_webauthn' %}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button
+      type="button"
+      id="mfa_webauthn_add"
+      class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="circle-plus" class="size-4 lg:size-6"></i>
+      {% trans "Add" %}
+    </button>
+  </form>
+
+  {% include "mfa/webauthn/snippets/scripts.html" %}
+
+  <!---->
+  {{ js_data|json_script:"js_data" }}
+
+  <script
+    data-allauth-onload="allauth.webauthn.forms.addForm"
+    type="application/json"
+  >
+    {
+      "ids": {
+        "add": "mfa_webauthn_add",
+        "passwordless": "{{ form.passwordless.auto_id }}",
+        "credential": "{{ form.credential.auto_id }}",
+        "data": "js_data"
+      }
+    }
+  </script>
+</div>
+
+{% endblock %}

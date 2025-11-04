@@ -1,0 +1,16 @@
+{% extends "allauth/layouts/entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Authorize" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Device Denied" %}</h1>
+
+  <p>
+    {% blocktrans with client_name=client.name trimmed %}Authorization for your
+    {{ client_name }} device has been denied.{% endblocktrans %}
+  </p>
+</div>
+{% endblock %}
