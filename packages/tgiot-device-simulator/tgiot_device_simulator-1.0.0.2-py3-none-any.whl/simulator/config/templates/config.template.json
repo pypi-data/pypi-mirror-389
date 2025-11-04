@@ -1,0 +1,34 @@
+{
+  "iotPlatform": {
+    "baseUrl": "https://your-iot-platform.com/api",
+    "oauth2": {
+      "clientId": "spa-app",
+      "authorization_endpoint": "https://your-authority.your-region.cloudapp.azure.com/application/o/authorize/",
+      "token_endpoint": "https://your-authority.your-region.cloudapp.azure.com/application/o/token/"
+    }
+  },
+  "provisioner": {
+    "baseUrl": "https://your-provisioner-app.azurewebsites.net"
+  },
+  "iotHub": {
+    "hostName": "your-iot-hub-name.azure-devices.net"
+  },
+  "messaging": {
+    "intervals": {
+      "measurement": 60,
+      "sw_logs": 180,
+      "state": 120,
+      "events": 300
+    },
+    "enabled": {
+      "measurement": true,
+      "sw_logs": false,
+      "state": true,
+      "events": true
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/simulator.log"
+  }
+}
