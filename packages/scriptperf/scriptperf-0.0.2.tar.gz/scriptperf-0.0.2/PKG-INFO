@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: scriptperf
+Version: 0.0.2
+Summary: Run Python scripts with performance monitoring (CPU and memory usage tracking)
+Home-page: https://github.com/all-for-freedom/scriptperf
+Author: all-for-freedom
+Author-email: yangshen@hunnu.edu.cn
+License: MIT
+Project-URL: Source, https://github.com/all-for-freedom/scriptperf
+Project-URL: Changelog, https://github.com/all-for-freedom/scriptperf/blob/main/CHANGELOG.rst
+Project-URL: Tracker, https://github.com/all-for-freedom/scriptperf/issues
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Description-Content-Type: text/x-rst; charset=UTF-8
+License-File: LICENSE.txt
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: matplotlib>=3.5.0
+Requires-Dist: importlib-metadata; python_version < "3.8"
+Provides-Extra: testing
+Requires-Dist: setuptools; extra == "testing"
+Requires-Dist: pytest; extra == "testing"
+Requires-Dist: pytest-cov; extra == "testing"
+Dynamic: license-file
+
+==========
+scriptperf
+==========
+
+Run Python scripts with performance monitoring (CPU and memory usage tracking).
+
+Installation
+------------
+
+.. code-block:: bash
+
+    pip install scriptperf
+
+Usage
+-----
+
+.. code-block:: bash
+
+    # Run a script with performance monitoring
+    spx demo.py
+
+    # Custom sampling interval and output directory
+    spx demo.py --interval 0.2 --output ./reports
+
+    # Pass arguments to the script
+    spx demo.py --arg1 value1 --arg2 value2
+
+Features
+--------
+
+- Real-time CPU and memory usage monitoring
+- Automatic performance report generation (PNG charts)
+- Support for passing arguments to monitored scripts
+- Configurable sampling interval and output directory
+
+Requirements
+------------
+
+- Python 3.8+
+- psutil>=5.9.0
+- matplotlib>=3.5.0
+
+Repository
+----------
+
+https://github.com/all-for-freedom/scriptperf
+
+License
+-------
+
+MIT License

@@ -1,0 +1,64 @@
+# Build and distribution files
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+.conda*/
+ENV/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary and binary files
+*~
+*.py[cod]
+*.so
+*.orig
+*.log
+*.pot
+.cache/
+
+# IDE and editor files
+.*.swp
+*/.ipynb_checkpoints/*
+.DS_Store
+.ropeproject
+.project
+.pydevproject
+.settings
+.idea
+.vscode
+tags
+
+# Unittest and coverage
+htmlcov/
+.coverage
+.coverage.*
+.tox
+junit*.xml
+coverage.xml
+.pytest_cache/
+
+# Docs build files
+docs/api/
+docs/_rst/
+docs/_build/
+cover/
+MANIFEST
+sdist/
+
+# Config files (keep setup.cfg)
+*.cfg
+!.isort.cfg
+!setup.cfg
+
+# Python version
+.python-version
