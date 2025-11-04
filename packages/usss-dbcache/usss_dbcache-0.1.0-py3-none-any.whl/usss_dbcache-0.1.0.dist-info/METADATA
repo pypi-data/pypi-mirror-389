@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: usss-dbcache
+Version: 0.1.0
+Summary: Cache Manger: cache parquet compressed database table as longblob in database cache table 
+Author-email: Julian Briggs <julian.briggs@sheffield.ac.uk>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/pypa/usss-dbcache
+Project-URL: Issues, https://github.com/pypa/usss-dbcache/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: configargparse
+Requires-Dist: fastparquet
+Requires-Dist: mysql-connector-python
+Requires-Dist: pandas
+Requires-Dist: python-dotenv
+Requires-Dist: pyyaml
+Requires-Dist: sqlalchemy
+Requires-Dist: snappy
+Provides-Extra: dev
+Requires-Dist: black; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pandas-stubs; extra == "dev"
+Requires-Dist: pylint-pytest; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: pytest-mock; extra == "dev"
+Requires-Dist: radon; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: types-pymysql; extra == "dev"
+Requires-Dist: types-pyyaml; extra == "dev"
+Dynamic: license-file
+
+# dbcache
+Cache a large table: select into a DataFrame, to_parquet(... compression='gzip") into a buffer, insert into cache table as a longblob
+
+Use as a library and/or a standalone program.
+
+For options:
+dbcache.py --help
+
+See docs: [Dbcache2025](https://docs.google.com/document/d/1QMFd4NwRwndlj4ySmeSX0noZ2Okf55HakDzMwWP3B_E/edit?usp=drive_link)
