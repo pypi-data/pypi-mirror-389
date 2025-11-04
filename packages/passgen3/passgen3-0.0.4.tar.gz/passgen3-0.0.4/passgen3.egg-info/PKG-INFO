@@ -1,0 +1,60 @@
+Metadata-Version: 2.4
+Name: passgen3
+Version: 0.0.4
+Summary: Python модуль для генерации пароля
+Author-email: Timofey <timofey1166@email.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/itz-timoxa/passgen3
+Project-URL: Repository, https://github.com/itz-timoxa/passgen3
+Keywords: generator,password,random
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+Легковесный Python модуль (в нескольких килобайтах) для генерации пароля
+
+Что нового в версии 0.0.4:
+
+    — Инструкция стала еще понятнее
+    — В разделе "Что нового" добавлен в начале знак '—' для визуальности
+    — Добавлен параметр "special_symbols" в методе generate
+    — Понизили требования Python. Теперь он требует Python версии 3.6 а не 3.8
+
+
+Инструкция:
+Passgen3 поддерживает только метод generate и некоторые исключения
+
+Вот некоторые функции в методе generate:
+
+    Параметр            Тип             Функция
+
+
+    length              int	    Длина пароля (по умолчанию: 8)
+    only_int	       bool	    Только цифры (0–9)
+    without_int	       bool	    Без цифр (только буквы a–z, A–Z)
+    only_letters	    bool	Только буквы (a–z, A–Z)
+    upper_letters	    bool	Только заглавные буквы (A–Z)
+    lower_letters	    bool	Только строчные буквы (a–z)
+    special_symbols     bool    Включает специальные символы (!@#$%^&*()_+-=[]{}|;:,.<>?)    
+
+А вот и некоторые исключения:
+
+            Ошибка                                                          Значение(причина)
+
+
+    ConfigurationConflictError      Возникает при конфликте параметров генерации. Например использование параметров only_int и without_int в True
+        InvalidLengthError          Возникает, если длина строки некорректна (≤ 0 или не целое число). Например задать значение length -10
+  
