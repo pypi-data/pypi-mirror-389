@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: aspire-inference
+Version: 0.1.0a7
+Summary: Accelerate Sequential Posterior Inference via REuse
+Author-email: "Michael J. Williams" <michaeljw1@googlemail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/mj-will/aspire
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Requires-Dist: array-api-compat
+Requires-Dist: wrapt
+Requires-Dist: h5py
+Provides-Extra: scipy
+Requires-Dist: scipy; extra == "scipy"
+Provides-Extra: jax
+Requires-Dist: jax; extra == "jax"
+Requires-Dist: jaxlib; extra == "jax"
+Requires-Dist: flowjax; extra == "jax"
+Provides-Extra: torch
+Requires-Dist: torch; extra == "torch"
+Requires-Dist: zuko; extra == "torch"
+Requires-Dist: tqdm; extra == "torch"
+Provides-Extra: minipcn
+Requires-Dist: minipcn; extra == "minipcn"
+Provides-Extra: emcee
+Requires-Dist: emcee; extra == "emcee"
+Provides-Extra: blackjax
+Requires-Dist: blackjax; extra == "blackjax"
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-requires; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Dynamic: license-file
+
+# aspire: Accelerated Sequential Posterior Inference via REuse
+
+aspire is a framework for reusing existing posterior samples to obtain new results at a reduced code.
+
+## Installation
+
+aspire can be installed from PyPI using `pip`
+
+```
+pip install aspire-inference
+```
+
+**Important:** the name of `aspire` on PyPI is `aspire-inference` but once installed
+the package can be imported and used as `aspire`.
