@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard</title>
+    <style>
+      :root {
+        --text-dim: #64748b;
+        --border: #d1d5db;
+        --accent: #2563eb;
+        --ok: #16a34a;
+        --fail: #dc2626;
+        --broken: #f59e0b;
+      }
+      [data-theme="dark"] {
+        --bg: #0f1115;
+        --bg2: #1b1f26;
+        --text: #f3f4f6;
+        --text-dim: #94a3b8;
+        --border: #2a313b;
+        --accent: #3b82f6;
+        --ok: #22c55e;
+        --fail: #ef4444;
+        --broken: #f59e0b;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        margin: 16px;
+        background: var(--bg);
+        color: var(--text);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .subtle {
+        color: var(--text-dim);
+        font-size: 12px;
+      }
+      .panel {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+      }
+      #header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 0.75rem;
+      }
+      .header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 12px;
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        background: var(--bg2);
+        border-radius: 999px;
+        padding: 2px 8px;
+        white-space: nowrap;
+      }
+      a.badge {
+        text-decoration: none;
+      }
+      a.badge:hover {
+        text-decoration: none;
+      }
+      #theme {
+        position: relative;
+        width: 46px;
+        height: 24px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--bg2);
+        color: transparent;
+        text-indent: -9999px;
+        cursor: pointer;
+      }
+      #theme::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease;
+      }
+      [data-theme="dark"] #theme::before {
+        transform: translateX(22px);
+      }
+      #kpis {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 8px 0 12px;
+      }
+      #kpis .card {
+        padding: 8px 10px;
+        min-width: 150px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg2);
+      }
+      #kpis .card .t {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      #kpis .card .v {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .chip {
+        display: inline-block;
+        padding: 2px 8px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--bg2);
+        font-size: 12px;
+      }
+      .chip.subtle {
+        color: var(--text-dim);
+      }
+      #layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr);
+        grid-template-areas: "trend trend top" "trend trend top" "detail table table";
+        gap: 1rem;
+      }
+      #layout > * {
+        min-width: 0;
+      }
+      @media (max-width: 1100px) {
+        #layout {
+          grid-template-columns: 1fr 1fr;
+          grid-template-areas: "trend trend" "top top" "detail detail" "table table";
+        }
+      }
+      @media (max-width: 720px) {
+        #layout {
+          grid-template-columns: 1fr;
+          grid-template-areas: "trend" "top" "detail" "table";
+        }
+      }
+      .info {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 10px;
+        align-items: center;
+        font-size: 12px;
+        background: var(--bg);
+        border: 1px dashed var(--border);
+        border-radius: 8px;
+        padding: 8px;
+      }
+      .info .k {
+        display: inline-block;
+        color: var(--text-dim);
+        font-weight: 500;
+      }
+      .info .v {
+        color: var(--text);
+        position: relative;
+      }
+      #selected-summary-content {
+        display: grid;
+        grid-template-columns: auto 1fr auto 1fr;
+        gap: 6px 12px;
+        align-items: center;
+        font-size: 12px;
+      }
+      #selected-summary-content .k {
+        color: var(--text-dim);
+        font-weight: 500;
+      }
+      #selected-summary-content .v {
+        color: var(--text);
+        font-weight: 600;
+      }
+      #selected-summary-content code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+          "Liberation Mono", monospace;
+        font-size: 0.95em;
+        letter-spacing: -0.01em;
+      }
+      @media (max-width: 620px) {
+        #selected-summary-content {
+          grid-template-columns: auto 1fr;
+        }
+      }
+      table.runs {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table.runs thead th {
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 6px;
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+      table.runs tbody td {
+        padding: 6px 6px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      table.runs tbody tr:nth-child(even) {
+        background: var(--bg);
+      }
+      table.runs tbody tr:hover {
+        background: rgba(59, 130, 246, 0.08);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg2);
+        color: var(--text);
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn:not(:disabled):hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+      .footer {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: var(--text-dim);
+        font-size: 12px;
+        margin-top: 16px;
+      }
+      .pager {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .pager .group {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pager .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .pager select {
+        background: var(--bg2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 4px 8px;
+      }
+      .pager input[type="search"] {
+        background: var(--bg2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 8px;
+        min-width: 200px;
+      }
+      .h-380 {
+        height: 380px;
+      }
+      .h-260 {
+        height: 260px;
+      }
+      .h-160 {
+        height: 160px;
+      }
+      .empty-state {
+        display: none;
+        border: 1px dashed var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+      }
+      #top-tests-chart[style*="display: none"] {
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+      }
+      #top-failing-tests {
+        margin-bottom: 12px;
+      }
+      .chart-title,
+      #top-failures h3,
+      #failure-summary h4.section-label {
+        font-size: 14px;
+        line-height: 1.25;
+        color: var(--text-dim);
+        font-weight: 700;
+        margin: 8px 0 6px;
+      }
+      .runs-container {
+        overflow-x: auto;
+      }
+      table.runs thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--bg);
+      }
+      #runs-table td:first-child code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+          "Liberation Mono", monospace;
+        font-size: 0.95em;
+        letter-spacing: -0.01em;
+      }
+      #runs-table tbody tr {
+        cursor: pointer;
+      }
+      #runs-table tbody tr:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+      .visually-hidden {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #table-tests thead th {
+        font-size: 12px;
+        color: var(--text-dim);
+        font-weight: 600;
+        padding: 4px 6px;
+      }
+      #table-tests tbody td {
+        font-size: 12px;
+        padding: 4px 6px;
+      }
+      #table-tests tbody .chip {
+        font-size: 11px;
+        padding: 1px 8px;
+      }
+    </style>
+  </head>
+  <body
+    data-ui="polish-v2"
+    class="ui-polish-v2"
+    data-page-size="20"
+    data-paging="pager"
+  >
+    <div class="dashboard-grid">
+      <div id="header-row">
+        <h1>Dashboard</h1>
+        <div class="header-actions">
+          <span id="last-updated" class="badge" title=""></span>
+          <a
+            id="back-to-runs"
+            class="badge"
+            href="#"
+            style="display: none"
+            title="Go to runs index"
+            aria-label="Go to runs index"
+            >Runs index</a
+          >
+          <button
+            id="theme"
+            aria-label="Toggle theme"
+            aria-pressed="false"
+            data-theme-toggle
+          >
+            Toggle
+          </button>
+        </div>
+      </div>
+
+      <section id="cards-grid" class="cards-grid" data-testid="cards-grid">
+        <section id="kpis" data-testid="runs-summary"></section>
+        <section
+          id="selected-summary"
+          class="panel"
+          aria-live="polite"
+          style="display: none"
+        >
+          <h2 class="visually-hidden">Selected run summary</h2>
+          <div id="selected-summary-content"></div>
+        </section>
+        <section
+          id="top-failures-compact"
+          class="panel card"
+          aria-labelledby="top-failures-compact-title"
+        >
+          <h2 id="top-failures-compact-title" class="visually-hidden">
+            Top failing tests (compact)
+          </h2>
+          <div id="top-failures-mini" class="h-160"></div>
+          <ul
+            id="top-failures-list"
+            style="margin: 8px 0 0; padding-left: 18px"
+          ></ul>
+        </section>
+      </section>
+
+      <section id="layout" class="grid">
+        <section id="trend" class="panel card" aria-labelledby="trend-title">
+          <h2 id="trend-title" class="visually-hidden">Trend</h2>
+          <div id="chart" class="h-380"></div>
+        </section>
+        <section
+          id="top-failures"
+          class="panel card"
+          aria-labelledby="top-failures-title"
+        >
+          <h2 id="top-failures-title" class="visually-hidden">
+            Top failing tests
+          </h2>
+          <div id="failure-summary">
+            <h4 class="section-label chart-title">
+              Failure distribution (by area)
+            </h4>
+            <div
+              id="failures-by-area"
+              class="chart h-260"
+              aria-label="Failures by area"
+              aria-describedby="desc-failures-by-area"
+            ></div>
+            <p id="desc-failures-by-area" class="visually-hidden">
+              Bar chart showing distribution of failures by area for the last 10
+              runs.
+            </p>
+            <hr class="divider" aria-hidden="true" />
+            <h3 class="chart-title">Top failing tests (last 10)</h3>
+            <div id="top-tests-section">
+              <div id="top-tests-empty" class="subtle empty-state">
+                No failing tests in the last 10 runs 🎉
+              </div>
+              <div
+                id="top-failing-tests"
+                class="chart h-160"
+                aria-label="Top failing tests"
+                aria-describedby="desc-top-failing-tests"
+              ></div>
+              <p id="desc-top-failing-tests" class="visually-hidden">
+                Bar chart of the most frequently failing tests across the last
+                10 runs.
+              </p>
+              <div id="top-tests-table">
+                <table
+                  id="table-tests"
+                  style="width: 100%; border-collapse: collapse"
+                >
+                  <caption class="visually-hidden">
+                    Top failing tests from the last 10 runs
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Test</th>
+                      <th>Fails</th>
+                      <th>Flaky</th>
+                      <th>Last failed</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div
+                id="top-tests-more"
+                class="subtle"
+                style="display: none; margin-top: 6px"
+              >
+                <a href="#" id="top-tests-viewall">View all</a>
+              </div>
+            </div>
+          </div>
+          <div id="suites" class="h-260" style="display: none"></div>
+          <div id="top-tests-chart" class="h-160" style="display: none"></div>
+        </section>
+        <section
+          id="selected-run"
+          class="panel card"
+          aria-labelledby="selected-run-title"
+        >
+          <h2 id="selected-run-title" class="visually-hidden">Selected run</h2>
+          <div class="subtle">Selected run</div>
+          <div
+            id="run-info"
+            class="info"
+            data-testid="selected-run-panel"
+            aria-live="polite"
+          ></div>
+        </section>
+        <section
+          id="recent-runs"
+          class="panel card"
+          aria-labelledby="recent-runs-title"
+        >
+          <h2 id="recent-runs-title" class="visually-hidden">Recent runs</h2>
+          <div class="subtle" style="margin-top: 10px">Recent runs</div>
+          <div
+            id="runs-pagination"
+            class="pager"
+            aria-label="Recent runs pagination toolbar"
+          >
+            <div class="group">
+              <input
+                id="run-filter"
+                type="search"
+                placeholder="Filter runs…"
+                aria-label="Filter runs"
+              />
+            </div>
+            <div class="group" id="pager-btns">
+              <button
+                id="page-prev"
+                class="btn"
+                type="button"
+                aria-label="Previous page"
+              >
+                Prev
+              </button>
+              <button
+                id="page-next"
+                class="btn"
+                type="button"
+                aria-label="Next page"
+              >
+                Next
+              </button>
+            </div>
+            <div class="group subtle" id="page-info" aria-live="polite">
+              Page <span id="page-cur">1</span> of
+              <span id="page-total">1</span>
+            </div>
+            <div class="group">
+              <label for="page-size" class="subtle">Rows per page</label>
+              <select
+                id="page-size"
+                name="page-size"
+                aria-label="Rows per page"
+              >
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+          <div class="runs-container" data-testid="recent-runs-table">
+            <table id="runs-table" class="runs">
+              <caption class="visually-hidden">
+                Recent runs table
+              </caption>
+              <thead data-testid="recent-runs-header">
+                <tr>
+                  <th scope="col">Run</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Commit</th>
+                  <th scope="col">Triggered by</th>
+                  <th scope="col">Env</th>
+                  <th scope="col">Pass%</th>
+                  <th scope="col">Failed</th>
+                  <th scope="col">Broken</th>
+                  <th scope="col">Duration</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="load-more-wrap" style="display: none; margin-top: 8px">
+            <button
+              id="load-more"
+              class="btn"
+              type="button"
+              aria-label="Load more runs"
+            >
+              Load more
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <div class="footer" aria-label="Traceability">
+        <span>Allure Hosting dashboard</span>
+        <span>data: ./data/history.json</span>
+      </div>
+
+      <link rel="stylesheet" href="./assets/runs-polish.css?v=20251013-1" />
+      <script src="./assets/runtime.js?v=20251013-1" defer></script>
+    </div>
+  </body>
+</html>
