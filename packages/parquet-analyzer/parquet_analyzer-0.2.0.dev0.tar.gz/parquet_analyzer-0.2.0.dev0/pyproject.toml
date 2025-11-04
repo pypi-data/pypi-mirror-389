@@ -1,0 +1,97 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "parquet-analyzer"
+dynamic = ["version"]
+description = "Inspect the on-disk layout and metadata of Parquet files."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Chungmin Lee"}
+]
+keywords = ["parquet", "thrift", "data-engineering", "debugging"]
+dependencies = [
+  "thrift>=0.16",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Debuggers",
+  "Topic :: System :: Filesystems",
+]
+
+[project.optional-dependencies]
+dev = [
+  "hatch",
+  "ruff",
+  "pytest",
+  "pytest-cov",
+  "pyarrow",
+]
+
+[project.urls]
+Homepage = "https://github.com/clee704/parquet-analyzer"
+Issues = "https://github.com/clee704/parquet-analyzer/issues"
+Source = "https://github.com/clee704/parquet-analyzer"
+
+[project.scripts]
+"parquet-analyzer" = "parquet_analyzer.cli:main"
+
+[tool.hatch.version]
+path = "src/parquet_analyzer/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "src/parquet_analyzer",
+  "src/parquet",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/parquet_analyzer",
+  "src/parquet",
+  "README.md",
+  "LICENSE",
+  "parquet.thrift",
+  "example.json",
+  "example-segments.json",
+  "requirements.txt",
+]
+
+[tool.hatch.envs.dev]
+features = ["dev"]
+
+[tool.hatch.envs.dev.scripts]
+lint = "ruff check src"
+lint-fix = "ruff check --fix src"
+test = "pytest"
+test-cov = "pytest --cov=parquet_analyzer --cov-report=term-missing --cov-report=xml --cov-fail-under=80"
+check = [
+  "lint",
+  "test",
+  "test-cov",
+]
+update-thrift = [
+  "curl -fsSL https://raw.githubusercontent.com/apache/parquet-format/master/src/main/thrift/parquet.thrift -o parquet.thrift",
+  "thrift --gen py --out src parquet.thrift",
+  "rm -f src/__init__.py",
+]
+
+[tool.ruff]
+target-version = "py311"
+extend-exclude = ["src/parquet"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
