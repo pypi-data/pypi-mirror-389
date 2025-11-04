@@ -1,0 +1,60 @@
+[project]
+name = "py-rtoon"
+version = "0.1.0"
+description = "Python bindings for rtoon - Token-Oriented Object Notation for efficient LLM data serialization"
+readme = "README.md"
+authors = [
+    { name = "Prem Chotepanit", email = "prem.ch@ku.th" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = []
+keywords = [
+    "toon",
+    "serialization",
+    "llm",
+    "token-efficient",
+    "rust",
+    "pyo3",
+    "data-format",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/premchotipanit/py-rtoon"
+Repository = "https://github.com/premchotipanit/py-rtoon"
+Documentation = "https://github.com/premchotipanit/py-rtoon#readme"
+Issues = "https://github.com/premchotipanit/py-rtoon/issues"
+Changelog = "https://github.com/premchotipanit/py-rtoon/releases"
+
+[tool.maturin]
+module-name = "py_rtoon._core"
+python-packages = ["py_rtoon"]
+python-source = "src"
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "src/**/*.rs" }, { file = "Cargo.toml" }, { file = "Cargo.lock" }]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[dependency-groups]
+dev = [
+    "maturin>=1.9.6",
+    "pytest>=8.4.2",
+]
