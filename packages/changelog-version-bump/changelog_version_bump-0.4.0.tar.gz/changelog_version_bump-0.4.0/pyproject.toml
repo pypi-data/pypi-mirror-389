@@ -1,0 +1,21 @@
+[project]
+name = "changelog-version-bump"
+version = "0.4.0"
+description = "A CLI tool to detect version labels in temp.md"
+authors = [
+    { name = "Richard Oberdieck", email = "rico@bankingcircle.com" },
+    { name = "Ruben Menke", email = "rum@bankingcircle.com" }
+    ]
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = []
+
+[project.scripts]
+changelog-version-bump = "changelog:main"
+remove-comments = "hooks.remove_comments.cli:main"
+delete-folder = "hooks.delete_folder.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
