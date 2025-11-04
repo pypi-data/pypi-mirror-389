@@ -1,0 +1,72 @@
+# BASE IMAGE: Preconfigured R and INLA setup
+# note: This should point to a specific hash to avoid breaking changes when the base image updates
+FROM ghcr.io/dhis2-chap/docker_r_inla@sha256:adfc916416f7cd56d6d0368cfdf22d5a24844cafe626259ca9dc48a695142feb
+
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Use copy mode for mounted volumes (avoids symlink issues in Docker)
+ENV UV_LINK_MODE=copy
+
+# Copy uv binary from official source image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Create non-root user 'chap' and prepare /app directory
+RUN useradd -m -s /bin/bash chap && \
+    mkdir -p /app && chown -R chap:chap /app
+
+# Install system dependencies (in one efficient layer)
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    git \
+    curl \
+    libffi-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libncurses-dev \
+    libssl-dev \
+    libsqlite3-dev \
+    make \
+    build-essential \
+    zlib1g-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set pyenv environment variables
+ENV PYENV_ROOT=/pyenv
+ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+
+# Install pyenv
+RUN git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
+
+# Copy Python version file and install specific Python version
+COPY .python-version ./.python-version
+RUN pyenv install --skip-existing "$(cat .python-version)" && \
+    pyenv global "$(cat .python-version)"
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files and assign ownership to 'chap'
+COPY ./pyproject.toml .
+COPY ./uv.lock .
+COPY ./.python-version .python-version
+COPY ./chap_core ./chap_core
+COPY ./config ./config
+COPY ./README.md .
+
+# Install only production dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
+
+# Switch to non-root user
+# skipping chown because slow
+RUN mkdir /app/logs
+RUN chown -R chap:chap /app/logs
+# RUN chown -R chap:chap /app/*
+RUN chown -R chap:chap /pyenv
+USER chap
+
+# Ensure local venv tools are prioritized
+ENV PATH="/app/.venv/bin:$PATH"

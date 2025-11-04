@@ -1,0 +1,90 @@
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    networks:
+      - chap-network
+
+  chap:
+    depends_on:
+      redis:
+        condition: service_started
+      worker:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    container_name: chap
+    build: .
+    environment:
+      - GOOGLE_SERVICE_ACCOUNT_EMAIL=${GOOGLE_SERVICE_ACCOUNT_EMAIL}
+      - GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=${GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CHAP_DATABASE_URL=postgresql://root:thisisnotgoingtobeexposed@postgres:5432/chap_core
+      - CELERY_BROKER=redis://redis:6379/0
+      - IS_IN_DOCKER=1
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    working_dir: /app
+    networks:
+      - chap-network
+
+  worker:
+    container_name: worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # NOTE: Built from Dockerfile.worker which extends the INLA worker image with chap-core
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - GOOGLE_SERVICE_ACCOUNT_EMAIL=${GOOGLE_SERVICE_ACCOUNT_EMAIL}
+      - GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=${GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
+      - IS_IN_DOCKER=1
+      - CHAP_DATABASE_URL=postgresql://root:thisisnotgoingtobeexposed@postgres:5432/chap_core
+      - CELERY_BROKER=redis://redis:6379
+      - C_FORCE_ROOT=1 #TODO: Remove this when we have a proper user
+    command: "/app/.venv/bin/celery -A chap_core.rest_api.celery_tasks worker --loglevel=info"
+    working_dir: /app
+    networks:
+      - chap-network
+
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: thisisnotgoingtobeexposed
+      POSTGRES_DB: chap_core
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d chap_core"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    volumes:
+      - chap-db:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    networks:
+      - chap-network
+
+  # chtorch model (which uses chapkit)
+#  chtorch:
+#    image: ghcr.io/dhis2-chap/chtorch:chapkit2-1aa43a0
+#    ports:
+#      - "5001:8000"
+#    restart: unless-stopped
+#    networks:
+#      - chap-network
+
+
+networks:
+  chap-network:
+    driver: bridge
+
+volumes:
+  chap-db: {}

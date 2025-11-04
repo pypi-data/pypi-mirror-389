@@ -1,0 +1,75 @@
+Metadata-Version: 2.4
+Name: chap_core
+Version: 1.1.0
+Summary: Climate Health Analysis Platform (CHAP)
+Project-URL: Homepage, https://github.com/dhis2/chap-core
+Author-email: Chap Team <chap@dhis2.org>
+License: AGPLv3 license
+License-File: LICENSE
+Keywords: chap_core
+Requires-Python: >=3.13
+Requires-Dist: alembic>=1.14.0
+Requires-Dist: altair>=5.5.0
+Requires-Dist: bionumpy>=1.0.14
+Requires-Dist: celery[pytest]>=5.5.3
+Requires-Dist: cyclopts>=3.24.0
+Requires-Dist: diskcache>=5.6.3
+Requires-Dist: docker>=7.1.0
+Requires-Dist: fastapi>=0.118.0
+Requires-Dist: geopandas>=1.1.1
+Requires-Dist: geopy>=2.4.1
+Requires-Dist: gitpython>=3.1.45
+Requires-Dist: gluonts>=0.16.2
+Requires-Dist: gunicorn>=23.0.0
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: jsonschema>=4.25.1
+Requires-Dist: libpysal>=4.13.0
+Requires-Dist: matplotlib>=3.10.6
+Requires-Dist: mlflow-skinny>=3.4.0
+Requires-Dist: numpy>=2.1.3
+Requires-Dist: optuna>=4.5.0
+Requires-Dist: orjson>=3.11.3
+Requires-Dist: packaging>=25.0
+Requires-Dist: pandas>=2.1.4
+Requires-Dist: pandera>=0.26.1
+Requires-Dist: plotly>=6.3.1
+Requires-Dist: pooch>=1.8.2
+Requires-Dist: psycopg2-binary>=2.9.10
+Requires-Dist: pyarrow>=21.0.0
+Requires-Dist: pycountry>=24.6.1
+Requires-Dist: pydantic-geojson>=0.2.0
+Requires-Dist: pydantic>=2.11.10
+Requires-Dist: python-dateutil>=2.9.0.post0
+Requires-Dist: python-dotenv>=1.1.1
+Requires-Dist: python-multipart>=0.0.20
+Requires-Dist: pyyaml>=6.0.3
+Requires-Dist: requests>=2.32.5
+Requires-Dist: rq>=2.6.0
+Requires-Dist: scikit-learn>=1.7.2
+Requires-Dist: sqlmodel>=0.0.25
+Requires-Dist: topojson>=1.10
+Requires-Dist: unidecode>=1.4.0
+Requires-Dist: uvicorn>=0.37.0
+Requires-Dist: vegafusion>=2.0.2
+Requires-Dist: virtualenv>=20.34.0
+Requires-Dist: vl-convert-python>=1.8.0
+Requires-Dist: xarray>=2025.10.0
+Description-Content-Type: text/markdown
+
+# Welcome to the Chap modelling platform!
+
+This is the main repository for the Chap modelling platform.
+
+[Read more about the Chap project here](https://github.com/dhis2-chap/chap-core/wiki)
+
+## Code documentation
+
+The main documentation for the modelling platform is located at [https://dhis2-chap.github.io/chap-core/](https://dhis2-chap.github.io/chap-core/).
+
+## Development
+
+We have an open Github board with plans, roadmaps and todo here: [https://github.com/orgs/dhis2-chap/projects/4](https://github.com/orgs/dhis2-chap/projects/4).
+
+## Issues/Bugs
+
+If you find any bugs or issues when using this code base, we appreciate it if you file a bug report here: https://github.com/dhis2-chap/chap-core/issues/new
