@@ -1,0 +1,100 @@
+{% load custom_tags_and_filters %}
+<div class="panel-body">
+    <h3 class="customization-section-title">Hydra settings</h3>
+    <form method="POST" action="{% url 'customize' 'hydra' %}" class="form-horizontal">
+        {% csrf_token %}
+        <div class="form-group {% if errors.hydra_excluded_tool_categories %}has-error{% endif %}">
+            <label class="control-label col-md-3" for="exclude_categories">Excluded tool categories</label>
+            <div class="col-md-7">
+                <input id="exclude_categories"
+                       type="text"
+                       autocomplete="off"
+                       class="form-control"
+                       placeholder="Search for a category to exclude">
+            </div>
+            {% if errors.hydra_excluded_tool_categories %}
+                <div class="col-md-offset-3 col-md-9 help-block light-grey">{{ errors.hydra_excluded_tool_categories.error }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <div id="category-list" class="col-md-offset-3 col-md-9">No tool categories are excluded.</div>
+        </div>
+        <div class="form-group {% if errors.hydra_excluded_tools %}has-error{% endif %}">
+            <label class="control-label col-md-3" for="exclude_tool">Excluded tools</label>
+            <div class="col-md-7">
+                <input id="exclude_tool"
+                       type="text"
+                       autocomplete="off"
+                       class="form-control"
+                       placeholder="Search for a tool to exclude">
+            </div>
+            {% if errors.hydra_excluded_tools %}
+                <div class="col-md-offset-3 col-md-9 help-block light-grey">{{ errors.hydra_excluded_tools.error }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <div id="tool-list" class="col-md-offset-3 col-md-9">No tools are excluded.</div>
+        </div>
+        <div class="customization-separation"></div>
+        <div class="form-group">
+            <div class="text-center">{% button type="save" value="Save settings" %}</div>
+        </div>
+    </form>
+</div>
+<script>
+	function add_category_to_list(list_selector, on_click, id, text, removal_title, input_name)
+	{
+        let search_selection_id = id.replace(/[^a-zA-Z0-9-_]/g, "_")
+		let div_id = input_name + "_" + search_selection_id;
+		let div_id_selector = "#" + search_selection_id;
+		let addition = '<div id="' + div_id + '"><a href="javascript:' + on_click + '(\'' + id + '\')" class="grey hover-black" title="' + $($.parseHTML(removal_title)).text() + '">' +
+		'<span class="glyphicon glyphicon-remove-circle"></span>' +
+		'</a> ' + text + '<input type="hidden" name="' + input_name + '" value="' + id + '"><br></div>';
+		const non_empty_inputs = $(list_selector).find('input').filter(function()
+		{
+			return $(this).val().trim() !== '';
+		});
+		if(non_empty_inputs.length === 0) // If the list is empty then replace the empty message with the list item.
+		{
+			$(list_selector).html(addition);
+		}
+		else if($(div_id_selector).length === 0) // Only add the element if it's not already in the list.
+		{
+			$(list_selector).append(addition);
+		}
+	}
+
+	function add_item(jquery_event, search_selection, dataset_name)
+	{
+        const list_name = "#" + dataset_name + "-list";
+        const remove_function_name = "remove_" + dataset_name;
+        const submit_name = "hydra_" + dataset_name + "_list"
+        $(this).typeahead('val', '').focus();
+        let search_selection_id = search_selection.id;
+        if (dataset_name === 'category')
+        {
+            add_category_to_list(list_name, remove_function_name, search_selection.id, search_selection.name, "Remove " + search_selection.name, submit_name);
+		}
+        else
+        {
+			add_to_list(list_name, remove_function_name, search_selection_id, search_selection.name, "Remove " + search_selection.name, submit_name);
+		}
+	}
+    function remove_tool(tool_id)
+	{
+		remove_from_list("#tool-list", "#hydra_tool_list_" + tool_id, "No tools are excluded.");
+	}
+    function remove_category(category)
+	{
+        let sanitized_category = category.replace(/[^a-zA-Z0-9-_]/g, "_");
+		remove_from_list("#category-list", "#hydra_category_list_" + sanitized_category, "No tool categories are excluded.");
+	}
+	$('#exclude_tool').autocomplete('tool', add_item, {% json_search_base_with_extra_fields tools %}, true, true);
+	$('#exclude_categories').autocomplete('category', add_item, {% json_search_base_with_extra_fields categories %}, true, true);
+    {% for tool in selected_tools %}
+		add_item(undefined, {name:'{{ tool.name }}', id:{{ tool.id }}}, "tool");
+	{% endfor %}
+	{% for category in selected_categories %}
+		add_item(undefined, {name:'{{ category }}', id:'{{ category }}'}, "category");
+	{% endfor %}
+</script>
