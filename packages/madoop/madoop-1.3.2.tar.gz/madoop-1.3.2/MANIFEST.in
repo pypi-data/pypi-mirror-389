@@ -1,0 +1,15 @@
+include LICENSE
+include MANIFEST.in
+include README.md
+include README_Hadoop_Streaming.md
+include CONTRIBUTING.md
+include .pylintrc
+graft tests
+graft madoop/example
+
+# Avoid dev and and binary files
+exclude tox.ini
+exclude .coveragerc
+exclude .editorconfig
+global-exclude *.pyc
+global-exclude __pycache__
