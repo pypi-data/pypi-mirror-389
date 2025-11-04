@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "htmlight"
+version = "0.1.2"
+description = "Light html generator"
+authors = ["Kostiantyn Shmyhelskyi <graflearnt@gmail.com>"]
+license = "GNU General Public License v3.0"
+readme = "README.md"
+packages = [{include = "htmlight"}]
+homepage = "https://github.com/GrafLearnt/htmlight"
+documentation = "https://github.com/GrafLearnt/htmlight/blob/main/README.md"
+keywords = ["html"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.6.1"
+ruff = "^0.1.3"
+black = "^23.10.1"
+pytest = "^7.4.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 100
+
+[tool.mypy]
+python_version = 3.9
