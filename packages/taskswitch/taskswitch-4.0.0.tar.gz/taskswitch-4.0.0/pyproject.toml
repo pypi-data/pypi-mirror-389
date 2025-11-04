@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskswitch"
+version = "4.0.0"
+description = "Zero friction pure progress - A powerful CLI time tracker with SQLite backend"
+readme = "README.md"
+authors = [
+    {name = "DP26112", email = "davorin.p@pm.me"}
+]
+license = "MIT"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business",
+    "Topic :: Utilities",
+    "Environment :: Console",
+]
+keywords = [
+    "time-tracker",
+    "task-management",
+    "productivity",
+    "cli",
+    "sqlite",
+    "time-tracking",
+    "project-management",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pytz>=2023.3",
+    "colorama>=0.4.6",
+    "peewee>=3.17.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.7.0",
+    "mypy>=1.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/DP26112/simple-time-tracker"
+Repository = "https://github.com/DP26112/simple-time-tracker"
+Issues = "https://github.com/DP26112/simple-time-tracker/issues"
+Changelog = "https://github.com/DP26112/simple-time-tracker/blob/main/CHANGELOG.md"
+
+[project.scripts]
+taskswitch = "taskswitch.__main__:main"
+
+[tool.setuptools]
+packages = ["taskswitch"]
+
+[tool.setuptools.package-data]
+taskswitch = ["*.yaml"]
+
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
