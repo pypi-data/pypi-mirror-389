@@ -1,0 +1,255 @@
+{
+  "v": 10,
+  "name": "cqtech",
+  "folders": [],
+  "requests": [
+    {
+      "v": "16",
+      "name": "token",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/system/oauth2-openapi/token",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\nimport CryptoJS from 'https://esm.run/crypto-js@4.2.0';\n\nconsole.info(`Pre-request script running`);\n\nfunction getRandomInt(min, max) {\n    return Math.floor(Math.random() * (max - min)) + min;\n}\n\nfunction generateSign(message) {\n    return CryptoJS.SHA1(message).toString();\n}\n\n(async () => {\n    try {\n        const nonce = getRandomInt(1_000_000_000, 9_999_999_999).toString();\n        const curtime = Math.floor((new Date().getTime()) / 1000).toString()\n        const username = hopp.env.get('username');\n        const appkey = hopp.env.get('appkey');\n        const secret = hopp.env.get('secret');\n        const checksum = generateSign(`${username}${secret}${nonce}${curtime}`);\n\n        hopp.request.setHeader('username', username);\n        hopp.request.setHeader('appkey', appkey);\n        hopp.request.setHeader('nonce', nonce);\n        hopp.request.setHeader('curtime', curtime);\n        hopp.request.setHeader('checksum', checksum);\n    } catch (e) {\n        console.error(e);\n    }\n})();\n",
+      "testScript": "export {};\n\r\nconsole.info(`Post-request script running`)\r\nhopp.env.set('access_token', hopp.response.body.asJSON().data.access_token);",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "body": {
+        "contentType": null,
+        "body": null
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "versions",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/scene/versions",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"pageNum\": 1,\n  \"pageSize\": 2\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "with-permission",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/scene/versions/with-permission",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"pageNum\": 1,\n  \"pageSize\": 2\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "metric-instances",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/scene/version/metric-instances",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUid\": \"6dec6b068c4242efa6e1d622c4c195d2\",\n  \"pageNum\": 1,\n  \"pageSize\": 2\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "lineage",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/scene/version/metric-instance/lineage",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUid\": \"6dec6b068c4242efa6e1d622c4c195d2\",\n  \"instanceCodes\": [\"wljkczllslqs\"]\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "measure",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/instance/codes/measure ",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUid\": \"6dec6b068c4242efa6e1d622c4c195d2\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "ids/measure",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/instance/ids/measure",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUid\": \"6dec6b068c4242efa6e1d622c4c195d2\",\n  \"instanceIds\": [801477],\n  \"instances\":[\n    {\n      \"instanceId\": \"801477\"\n    }\n  ]\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "detail",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/instance/detail",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUid\": \"6dec6b068c4242efa6e1d622c4c195d2\",\n  \"instanceId\": 801477,\n  \"pageNo\":1,\n  \"pageSize\":10\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "detail-distinct-field ",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/instance/detail-distinct-field",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUid\": \"6dec6b068c4242efa6e1d622c4c195d2\",\n  \"instanceId\": 801477,\n  \"pageNo\":1,\n  \"pageSize\":10\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "metric-instances-withVersions",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/scene/version/metric-instances-withVersions",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"sceneVersionUids\": [\"6dec6b068c4242efa6e1d622c4c195d2\"]\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    },
+    {
+      "v": "16",
+      "name": "tags/list",
+      "method": "POST",
+      "endpoint": "https://metrics.ynu.edu.cn/open-api/metric/metricmgt/tags/list",
+      "params": [],
+      "headers": [],
+      "preRequestScript": "export {};\n",
+      "testScript": "export {};\n",
+      "auth": {
+        "authType": "bearer",
+        "token": "<<access_token>>",
+        "authActive": true
+      },
+      "body": {
+        "contentType": "application/json",
+        "body": ""
+      },
+      "requestVariables": [],
+      "responses": {},
+      "_ref_id": "req_mhcrbpl8_b65f7f3f-19db-491f-8a8e-20e1fee292e9"
+    }
+  ],
+  "auth": {
+    "authType": "none",
+    "authActive": true
+  },
+  "headers": [],
+  "variables": [],
+  "_ref_id": "coll_mhcy6lco_8c3d0887-bbe6-497b-b404-c06a4df6f8a4"
+}

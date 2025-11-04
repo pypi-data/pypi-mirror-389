@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cqtech-metrics"
+dynamic = ["version"]
+description = "A Python SDK for interacting with the CQTech Metrics OpenAPI"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "liudonghua", email = "liudonghua123@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "requests>=2.25.0",
+    "pydantic>=2.0.0",
+    "typing-extensions>=4.0.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-mock",
+    "black",
+    "flake8",
+]
+
+[project.urls]
+Homepage = "http://github.com/liudonghua123/cqtech-metrics"
+Repository = "http://github.com/liudonghua123/cqtech-metrics"
+"Bug Reports" = "http://github.com/liudonghua123/cqtech-metrics/issues"
+Changelog = "https://github.com/liudonghua123/cqtech-metrics/releases"
+
+[tool.setuptools.packages.find]
+include = ["cqtech_metrics*"]

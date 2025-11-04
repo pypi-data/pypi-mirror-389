@@ -1,0 +1,40 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        source "$HOME/.cargo/env"
+        
+    - name: Install build tools
+      run: |
+        uv pip install --system build twine
+        
+    - name: Build package
+      run: |
+        python -m build
+        
+    - name: Publish to PyPI
+      env:
+        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        uv publish

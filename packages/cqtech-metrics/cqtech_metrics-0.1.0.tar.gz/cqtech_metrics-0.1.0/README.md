@@ -1,0 +1,273 @@
+# CQTech Metrics SDK
+
+A Python SDK for interacting with the CQTech Metrics OpenAPI.
+
+## Table of Contents
+- [Overview](#overview)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [API Endpoints](#api-endpoints)
+- [Usage Examples](#usage-examples)
+- [Models](#models)
+- [Authentication](#authentication)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+CQTech Metrics SDK provides a client for interacting with the CQTech Metrics OpenAPI. This SDK enables developers to authenticate, query scene versions, metric instances, results, and more through a comprehensive set of interfaces that align with the OpenAPI specification.
+
+The SDK includes 12 API endpoints covering:
+- Authentication and token management
+- Scene version management
+- Metric instance definitions and lineage
+- Metric results and assessments
+- Metric detail data
+- Tag management
+- Other auxiliary interfaces
+
+## Installation
+
+```bash
+pip install cqtech-metrics
+```
+
+## Quick Start
+
+```python
+from cqtech_metrics import CQTechClient
+from cqtech_metrics.models.scenes import SceneVersionQuery
+from cqtech_metrics.models.metrics import MetricQuery
+
+# Initialize the client (credentials loaded from environment variables)
+with CQTechClient() as client:
+    # Query all scene versions
+    query = SceneVersionQuery(
+        name="学生",
+        sceneVersionStatus=1,
+        pageNum=1,
+        pageSize=10
+    )
+    
+    response = client.query_all_scene_versions(query)
+    print(response)
+
+    # Query metric results by codes
+    metric_query = MetricQuery(
+        sceneVersionUid=response.data.list[0].uid,
+        instanceCodes=["byxf"]
+    )
+    results = client.query_metric_results_by_codes(metric_query)
+    print(results)
+```
+
+Using environment variables approach:
+
+```bash
+# Set environment variables
+export CQTECH_BASE_URL="https://api.example.com"
+export CQTECH_APP_KEY="your_app_key"
+export CQTECH_SECRET="your_secret"
+export CQTECH_USERNAME="your_username"
+```
+
+```python
+from cqtech_metrics import CQTechClient
+from cqtech_metrics.models.scenes import SceneVersionQuery
+
+# Initialize client with environment variables
+client = CQTechClient()
+
+# Query scene versions with permission
+query = SceneVersionQuery(
+    pageNum=1,
+    pageSize=10
+)
+response = client.query_scene_versions_with_permission(query)
+print(response)
+
+client.close()
+```
+
+## API Endpoints
+
+The SDK provides access to 12 main API endpoints:
+
+1. **Get APP Token** (`POST /open-api/system/oauth2-openapi/token`) - Authenticate and get access token
+2. **Query All Scene Versions** (`POST /open-api/metric/scene/versions`) - Query all scene versions under application (irrespective of user permissions)
+3. **Query Scene Versions with Permission** (`POST /open-api/metric/scene/versions/with-permission`) - Query scene versions by app permission
+4. **Query Metric Instances by Scene Version** (`POST /open-api/metric/scene/version/metric-instances`) - Query metric instances and dependencies by scene version UID
+5. **Query Metric Instance Lineage** (`POST /open-api/metric/scene/version/metric-instance/lineage`) - Query metric lineage by scene version UID including data models
+6. **Query Metric Results by Codes** (`POST /open-api/metric/instance/codes/measure`) - Query metric results and assessments by multiple instance codes
+7. **Query Metric Results by IDs** (`POST /open-api/metric/instance/ids/measure`) - Query metric results and assessments by multiple instance IDs
+8. **Query Metric Instance Detail** (`POST /open-api/metric/instance/detail`) - Query metric instance detail data
+9. **Query Distinct Field Values** (`POST /open-api/metric/instance/detail-distinct-field`) - Query distinct values of a field in detail data
+10. **Query Metric Instances with Versions** (`POST /open-api/metric/scene/version/metric-instances-withVersions`) - Query metric instances by multiple scene version UIDs
+11. **Get Metric Tags** (`POST /open-api/metric/metricmgt/tags/list`) - Get list of tags defined in metric management
+
+## Usage Examples
+
+### Authentication
+
+```python
+from cqtech_metrics import CQTechClient
+
+# The SDK handles authentication automatically. Tokens are refreshed as needed.
+client = CQTechClient(
+    base_url="https://your-api-domain.com",
+    app_key="your_app_key",
+    secret="your_secret",
+    username="your_username"
+)
+```
+
+### Query Scene Versions
+
+```python
+from cqtech_metrics.models.scenes import SceneVersionQuery
+
+# Query all scene versions
+query = SceneVersionQuery(
+    name="学生",
+    sceneVersionStatus=1,  # 0=offline, 1=online
+    pageNum=1,
+    pageSize=10
+)
+
+response = client.query_all_scene_versions(query)
+for scene in response.data.list:
+    print(f"Scene: {scene.name}, UID: {scene.uid}")
+```
+
+### Query Metric Results
+
+```python
+from cqtech_metrics.models.metrics import MetricQuery, GlobalFilter, InstanceFilter
+
+# Query metric results by codes
+query = MetricQuery(
+    sceneVersionUid="7dda43b03da04ef79ca935ac14a1ca60",
+    instanceCodes=["byxf", "xsl"],
+    recalculate=False,
+    globalFilter=GlobalFilter(
+        dims={"学院": "计算机学院"},
+        recalculate=False
+    ),
+    instances=[
+        InstanceFilter(
+            instanceCode="byxf",
+            dims=["商户名称"],
+            id="byxf_max",
+            recalculate=True
+        )
+    ],
+    pageNum=1,
+    pageSize=10
+)
+
+results = client.query_metric_results_by_codes(query)
+print(results)
+```
+
+### Query Metric Detail Data
+
+```python
+# Query detailed metric data
+detail_query = MetricQuery(
+    sceneVersionUid="7dda43b03da04ef79ca935ac14a1ca60",
+    instanceId=4021,
+    pageNum=1,
+    pageSize=20
+)
+
+detail_response = client.query_metric_instance_detail(detail_query)
+print(f"Total records: {detail_response.data.total}")
+for record in detail_response.data.list:
+    print(record)
+```
+
+### Query Distinct Field Values
+
+```python
+# Get unique values for a specific field
+distinct_query = MetricQuery(
+    sceneVersionUid="7dda43b03da04ef79ca935ac14a1ca60",
+    instanceId=4021,
+    columnAlias="商户名称",
+    pageNum=1,
+    pageSize=100
+)
+
+distinct_response = client.query_distinct_field_values(distinct_query)
+print("Available merchants:", distinct_response.data)
+```
+
+## Models
+
+The SDK includes comprehensive Pydantic models for all API responses:
+
+### Authentication Models
+- `TokenResponse`: Response from authentication endpoint
+- `TokenResponseData`: Data part of token response
+- `AuthHeader`: Authentication header parameters
+
+### Scene Models
+- `SceneVersion`: Scene version information
+- `SceneVersionQuery`: Query parameters for scene versions
+- `SceneVersionResponse`: Response for scene version listing
+
+### Metric Models
+- `MetricDefinition`: Definition of a metric
+- `MetricInstance`: A metric instance
+- `MetricQuery`: Query parameters for metric endpoints
+- `MetricResultDimValue`: Dimension value in metric result
+- `MetricDetailResponse`: Response for metric detail data
+
+## Authentication
+
+The SDK handles authentication automatically:
+- Tokens are obtained automatically when making API calls
+- Tokens are refreshed 1 minute before expiration
+- Uses OAuth2 protocol with checksum verification
+- Automatic token refresh when needed
+
+The authentication flow:
+1. Generates a 10-digit random nonce
+2. Gets current timestamp in seconds
+3. Creates checksum using SHA1 encryption of username, secret, nonce, and curtime
+4. Makes POST request to authentication endpoint
+5. Caches the token for future use
+6. Automatically renews tokens before expiration
+
+## Testing
+
+To run tests:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests/
+```
+
+The test suite includes:
+- Unit tests for all models
+- Integration tests for API endpoints
+- Authentication flow tests
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -am 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
+
+Please make sure to update tests as appropriate and follow the existing code style.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, please open an issue in the GitHub repository or contact the development team.
