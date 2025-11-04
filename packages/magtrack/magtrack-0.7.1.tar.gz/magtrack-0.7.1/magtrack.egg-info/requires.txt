@@ -1,0 +1,19 @@
+numpy
+scipy
+
+[cpu]
+
+[docs]
+sphinx>=7
+furo
+myst-parser
+sphinx-autoapi
+sphinx-copybutton
+sphinx-design
+sphinx-autodoc-typehints
+sphinx-book-theme
+
+[gpu]
+
+[gpu:sys_platform != "darwin"]
+cupy-cuda12x>=13.0
