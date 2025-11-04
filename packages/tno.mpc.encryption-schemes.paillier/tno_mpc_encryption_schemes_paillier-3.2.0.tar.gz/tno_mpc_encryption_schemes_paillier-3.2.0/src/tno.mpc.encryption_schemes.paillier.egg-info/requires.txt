@@ -1,0 +1,13 @@
+tno.mpc.encryption_schemes.templates~=4.1
+tno.mpc.encryption_schemes.utils~=0.9
+
+[communication]
+tno.mpc.communication~=4.8
+
+[gmpy]
+tno.mpc.encryption_schemes.utils[gmpy]~=0.9
+
+[tests]
+tno.mpc.encryption_schemes.paillier[communication]
+pytest>=8.1
+pytest-asyncio
