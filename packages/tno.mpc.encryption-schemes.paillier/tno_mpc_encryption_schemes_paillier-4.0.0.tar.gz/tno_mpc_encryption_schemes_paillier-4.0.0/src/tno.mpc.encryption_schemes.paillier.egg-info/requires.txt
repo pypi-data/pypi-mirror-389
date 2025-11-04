@@ -1,0 +1,17 @@
+tno.mpc.encryption_schemes.templates~=5.0
+tno.mpc.encryption_schemes.utils~=0.16
+
+[:python_version < "3.11"]
+typing_extensions~=4.0
+
+[communication]
+tno.mpc.communication~=5.0
+tno.mpc.encryption_schemes.utils[communication]
+
+[gmpy]
+tno.mpc.encryption_schemes.utils[gmpy]
+
+[tests]
+tno.mpc.encryption_schemes.paillier[communication]
+tno.mpc.communication[pytest]
+pytest>=8.1
