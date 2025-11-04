@@ -1,0 +1,172 @@
+Metadata-Version: 2.4
+Name: cratedb-mcp
+Version: 0.0.9
+Summary: CrateDB MCP Server for natural-language Text-to-SQL and documentation retrieval.
+Author: CrateDB engineering
+License-Expression: Apache-2.0
+Keywords: cratedb,documentation retrieval,knowledge base,mcp,mcp server,model context protocol,sql,text-to-sql
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Customer Service
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Manufacturing
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: Telecommunications Industry
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Topic :: Adaptive Technologies
+Classifier: Topic :: Communications
+Classifier: Topic :: Database
+Classifier: Topic :: Documentation
+Classifier: Topic :: Education
+Classifier: Topic :: Internet
+Classifier: Topic :: Office/Business
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Pre-processors
+Classifier: Topic :: System :: Clustering
+Classifier: Topic :: System :: Distributed Computing
+Classifier: Topic :: System :: Logging
+Classifier: Topic :: System :: Monitoring
+Classifier: Topic :: System :: Networking
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Text Processing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: attrs
+Requires-Dist: cachetools<7
+Requires-Dist: click<9
+Requires-Dist: cratedb-about<0.1.0
+Requires-Dist: fastmcp<2.14,>=2.13
+Requires-Dist: hishel<0.2
+Requires-Dist: pueblo==0.0.11
+Requires-Dist: sqlparse<0.6
+Provides-Extra: develop
+Requires-Dist: mypy<1.19; extra == "develop"
+Requires-Dist: poethepoet<1; extra == "develop"
+Requires-Dist: pyproject-fmt<3; extra == "develop"
+Requires-Dist: ruff<0.15; extra == "develop"
+Requires-Dist: validate-pyproject<1; extra == "develop"
+Provides-Extra: docs
+Requires-Dist: furo; extra == "docs"
+Requires-Dist: myst-parser[linkify]<5,>=0.18; extra == "docs"
+Requires-Dist: sphinx-autobuild==2021.3.14; extra == "docs"
+Requires-Dist: sphinx-copybutton; extra == "docs"
+Requires-Dist: sphinx-design-elements<1; extra == "docs"
+Requires-Dist: sphinxcontrib-mermaid<2; extra == "docs"
+Requires-Dist: sphinxext-opengraph<1; extra == "docs"
+Provides-Extra: test
+Requires-Dist: pytest<9; extra == "test"
+Requires-Dist: pytest-cov<8; extra == "test"
+Requires-Dist: pytest-mock<4; extra == "test"
+Dynamic: license-file
+
+# CrateDB MCP Server
+
+[![Status][badge-status]][project-pypi]
+[![CI][badge-ci]][project-ci]
+[![Coverage][badge-coverage]][project-coverage]
+[![Downloads per month][badge-downloads-per-month]][project-downloads]
+
+[![License][badge-license]][project-license]
+[![Release Notes][badge-release-notes]][project-release-notes]
+[![PyPI Version][badge-package-version]][project-pypi]
+[![Python Versions][badge-python-versions]][project-pypi]
+
+» [Documentation]
+| [Issues]
+| [Source code]
+| [License]
+| [CrateDB][CrateDB home]
+| [CrateDB Handbook]
+| [Community Forum]
+
+## About
+
+The CrateDB MCP Server for natural-language Text-to-SQL and documentation
+retrieval specializes in CrateDB database clusters.
+The Model Context Protocol ([MCP][MCP home]) is a protocol that standardizes providing
+context to language models and AI assistants.
+
+The CrateDB Model Context Protocol (MCP) Server connects AI assistants directly
+to your CrateDB clusters and the CrateDB knowledge base, enabling seamless
+interaction through natural language.
+
+It serves as a bridge between AI tools and your analytics database,
+allowing you to analyze data, the cluster state, troubleshoot issues, and
+perform operations using conversational prompts.
+
+## Documentation
+
+The project documentation is available at https://cratedb-mcp.readthedocs.io/.
+It includes information on how to install and operate the package.
+
+
+[development documentation]: https://cratedb-mcp.readthedocs.io/sandbox.html
+[managed on GitHub]: https://github.com/crate/cratedb-mcp
+[MCP home]: https://modelcontextprotocol.io/introduction
+
+[Bluesky]: https://bsky.app/search?q=cratedb
+[Community Forum]: https://community.cratedb.com/
+[CrateDB home]: https://cratedb.com/database
+[CrateDB Handbook]: https://cratedb.com/docs/guide/handbook/
+[Documentation]: https://cratedb-mcp.readthedocs.io/
+[Issues]: https://github.com/crate/cratedb-mcp/issues
+[License]: https://github.com/crate/cratedb-mcp/blob/main/LICENSE
+[Source code]: https://github.com/crate/cratedb-mcp
+[Releases]: https://github.com/surister/cratedb-mcp/releases
+
+[badge-ci]: https://github.com/crate/cratedb-mcp/actions/workflows/tests.yml/badge.svg
+[badge-bluesky]: https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff&label=Follow%20%40CrateDB
+[badge-coverage]: https://codecov.io/gh/crate/cratedb-mcp/branch/main/graph/badge.svg
+[badge-downloads-per-month]: https://pepy.tech/badge/cratedb-mcp/month
+[badge-license]: https://img.shields.io/github/license/crate/cratedb-mcp
+[badge-package-version]: https://img.shields.io/pypi/v/cratedb-mcp.svg
+[badge-python-versions]: https://img.shields.io/pypi/pyversions/cratedb-mcp.svg
+[badge-release-notes]: https://img.shields.io/github/release/crate/cratedb-mcp?label=Release+Notes
+[badge-status]: https://img.shields.io/pypi/status/cratedb-mcp.svg
+[project-ci]: https://github.com/crate/cratedb-mcp/actions/workflows/tests.yml
+[project-coverage]: https://app.codecov.io/gh/crate/cratedb-mcp
+[project-downloads]: https://pepy.tech/project/cratedb-mcp/
+[project-license]: https://github.com/crate/cratedb-mcp/blob/main/LICENSE
+[project-pypi]: https://pypi.org/project/cratedb-mcp
+[project-release-notes]: https://github.com/crate/cratedb-mcp/releases
+
+
+
+
+
+
+
+
+
+## Project information
+
+### Acknowledgements
+Kudos to the authors of all the many software components and technologies
+this project is building upon.
+
+### Contributing
+The `cratedb-mcp` package is an open-source project, and is [managed on
+GitHub]. Contributions of any kind are welcome and appreciated.
+To learn how to set up a development sandbox, please refer to the
+[development documentation].
+
+### Status
+The software is in the beta stage, so breaking changes may happen.
+Version pinning is strongly recommended, especially if you use it as a library.
