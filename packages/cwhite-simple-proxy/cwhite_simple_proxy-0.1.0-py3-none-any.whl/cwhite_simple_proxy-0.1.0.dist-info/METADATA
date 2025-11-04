@@ -1,0 +1,77 @@
+Metadata-Version: 2.4
+Name: cwhite-simple-proxy
+Version: 0.1.0
+Summary: Deploy proxy servers to cloud providers with ease
+Author: Simple Proxy Contributors
+License: MIT
+Project-URL: Homepage, https://github.com/calderwhite/simple-proxy
+Project-URL: Repository, https://github.com/calderwhite/simple-proxy
+Project-URL: Issues, https://github.com/calderwhite/simple-proxy/issues
+Keywords: proxy,aws,fargate,cloud,deployment
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Internet :: Proxy Servers
+Classifier: Topic :: System :: Networking
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: boto3>=1.40.0
+Requires-Dist: requests>=2.32.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=1.0.0; extra == "dev"
+Requires-Dist: aiohttp>=3.13.0; extra == "dev"
+Dynamic: license-file
+
+# Simple Proxy
+
+[write blurb about how proxy services are wildly overpriced]
+
+# Usage
+
+Before you deploy your proxy servers, you must generate a password hash for them
+to use for authentication. This is made simple with the given helper script in Python.
+
+```bash
+$ python3 gen_hash.py
+```
+
+Enter your desired password, and it will output the hash you need to use for deployment.
+
+Here is an example command that will give you 5 proxy servers backed by AWS Fargate behind a load balancer:
+
+```bash
+$ python3 simple_proxy_init.py run --count 5 --env PROXY_USER=default --env PROXY_PASSWORD_SHA256=<your hash> --region us-west-2
+```
+
+This command will:
+- Create an Application Load Balancer (ALB) that's publicly accessible
+- Deploy 5 ECS Fargate tasks protected by security groups (only accept traffic from ALB)
+- Automatically register all tasks with the load balancer
+- Return a **single URL** that distributes requests across all proxy instances
+
+The proxy servers are NOT directly accessible from the internet - all traffic must go through the load balancer URL.
+
+When you are done, run the following to delete all the resources you are consuming:
+```bash
+$ python3 simple_proxy_init.py cleanup
+```
+
+# Testing
+
+There is a short test script to ensure your proxy is both working and sending
+requests from a different ip than your own. You can run this test with:
+
+```bash
+$ pytest
+```
+
+Note that you must first set the value of your remote server in .test.env (see
+the template provided in this repository).
