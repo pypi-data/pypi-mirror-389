@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start Guide &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Authentication Guide" href="authentication.html" />
+    <link rel="prev" title="Apala API - Python SDK" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#first-steps">First Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#your-first-message-processing">Your First Message Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#your-first-message-optimization">Your First Message Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#your-first-feedback-submission">Your First Feedback Submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#complete-example">Complete Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-issues">Common Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quick-start-guide">
+<h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Link to this heading"></a></h1>
+<p>This guide will get you up and running with the Apala API Python SDK in minutes.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>Install the package using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>apala-api
+</pre></div>
+</div>
+<p>Or install from source with development tools:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>&lt;repository-url&gt;
+<span class="nb">cd</span><span class="w"> </span>apala_api
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="first-steps">
+<h2>First Steps<a class="headerlink" href="#first-steps" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>Get Your API Credentials</strong></p>
+<p>Contact your Phoenix Message Analysis service provider to obtain:</p>
+<ul class="simple">
+<li><p>API Key (for authentication)</p></li>
+<li><p>Server URL (e.g., <code class="docutils literal notranslate"><span class="pre">https://api.yourcompany.com</span></code>)</p></li>
+<li><p>Company GUID (your organization’s unique identifier)</p></li>
+</ul>
+</li>
+<li><p><strong>Set Environment Variables</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">APALA_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-api-key-here&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">APALA_BASE_URL</span><span class="o">=</span><span class="s2">&quot;https://your-server.com&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">APALA_COMPANY_GUID</span><span class="o">=</span><span class="s2">&quot;your-company-uuid&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Create Your First Client</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+
+<span class="c1"># Initialize the client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://your-server.com&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Authenticate and get JWT tokens</span>
+<span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected as: </span><span class="si">{</span><span class="n">auth_response</span><span class="p">[</span><span class="s1">&#39;company_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="your-first-message-processing">
+<h2>Your First Message Processing<a class="headerlink" href="#your-first-message-processing" title="Link to this heading"></a></h2>
+<p>Let’s process a simple customer conversation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span>
+
+<span class="c1"># 1. Initialize and authenticate</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="c1"># 2. Create customer message history</span>
+<span class="n">customer_messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Hi, I&#39;m interested in getting a home loan&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+        <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">),</span>
+    <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;What documents do I need to provide?&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+        <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># 3. Create your candidate response</span>
+<span class="n">candidate_response</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Thank you for your interest! For a home loan, you&#39;ll need: proof of income, credit report, and bank statements. Our rates start at 3.2% APR.&quot;</span><span class="p">,</span>
+    <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># 4. Process through the AI system</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">customer_messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate_response</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;your-company-guid&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># 5. Access the results</span>
+<span class="n">processed_message</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message ID: </span><span class="si">{</span><span class="n">processed_message</span><span class="p">[</span><span class="s1">&#39;message_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content: </span><span class="si">{</span><span class="n">processed_message</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel: </span><span class="si">{</span><span class="n">processed_message</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="your-first-message-optimization">
+<h2>Your First Message Optimization<a class="headerlink" href="#your-first-message-optimization" title="Link to this heading"></a></h2>
+<p>Enhance your message for better customer engagement:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optimize the same message for better engagement</span>
+<span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">customer_messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate_response</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;your-company-guid&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Message Optimization Results ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;original_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimized: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;optimized_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recommended Channel: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;recommended_channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="your-first-feedback-submission">
+<h2>Your First Feedback Submission<a class="headerlink" href="#your-first-feedback-submission" title="Link to this heading"></a></h2>
+<p>Track how your messages perform:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">MessageFeedback</span>
+
+<span class="c1"># After sending the message to your customer and getting their response</span>
+<span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+    <span class="n">original_message_id</span><span class="o">=</span><span class="n">processed_message</span><span class="p">[</span><span class="s2">&quot;message_id&quot;</span><span class="p">],</span>
+    <span class="n">sent_message_content</span><span class="o">=</span><span class="n">processed_message</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+    <span class="n">customer_responded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Did the customer respond?</span>
+    <span class="n">quality_score</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span>  <span class="c1"># Your assessment (0-100)</span>
+    <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">1800000</span>  <span class="c1"># 30 minutes in milliseconds</span>
+<span class="p">)</span>
+
+<span class="c1"># Submit the feedback</span>
+<span class="n">feedback_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feedback submitted! ID: </span><span class="si">{</span><span class="n">feedback_result</span><span class="p">[</span><span class="s1">&#39;feedback_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="complete-example">
+<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading"></a></h2>
+<p>Here’s a complete working example that demonstrates the full workflow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Complete Apala API workflow example</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MessageFeedback</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Configuration</span>
+    <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;APALA_API_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+    <span class="n">base_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;APALA_BASE_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;https://your-server.com&quot;</span><span class="p">)</span>
+    <span class="n">company_guid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;APALA_COMPANY_GUID&quot;</span><span class="p">,</span> <span class="s2">&quot;your-company-uuid&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Initialize client</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Step 1: Authenticate</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🔐 Authenticating...&quot;</span><span class="p">)</span>
+        <span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Connected as: </span><span class="si">{</span><span class="n">auth_response</span><span class="p">[</span><span class="s1">&#39;company_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Step 2: Prepare conversation data</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📝 Preparing conversation...&quot;</span><span class="p">)</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Message</span><span class="p">(</span>
+                <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;m having trouble with my account login&quot;</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">,</span>
+                <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">Message</span><span class="p">(</span>
+                <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;ve tried resetting my password twice&quot;</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">,</span>
+                <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I understand your frustration. Let me help you resolve this right away. I&#39;ll send you a direct reset link.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Step 3: Process messages</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📤 Processing messages...&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+            <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Message processed: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;candidate_message&#39;</span><span class="p">][</span><span class="s1">&#39;message_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Step 4: Optimize message</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🎯 Optimizing message...&quot;</span><span class="p">)</span>
+        <span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+            <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Optimization complete&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Recommended channel: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;recommended_channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Step 5: Submit feedback</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📊 Submitting feedback...&quot;</span><span class="p">)</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+            <span class="n">original_message_id</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">],</span>
+            <span class="n">sent_message_content</span><span class="o">=</span><span class="n">optimization</span><span class="p">[</span><span class="s2">&quot;optimized_message&quot;</span><span class="p">],</span>
+            <span class="n">customer_responded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">quality_score</span><span class="o">=</span><span class="mi">88</span><span class="p">,</span>
+            <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">600000</span>  <span class="c1"># 10 minutes</span>
+        <span class="p">)</span>
+
+        <span class="n">feedback_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Feedback submitted: </span><span class="si">{</span><span class="n">feedback_result</span><span class="p">[</span><span class="s1">&#39;feedback_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🎉 Workflow complete!&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># Clean up</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<p>Now that you’ve completed the quick start, explore these topics:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="authentication.html"><span class="doc">Authentication Guide</span></a> - Learn about JWT token management</p></li>
+<li><p><a class="reference internal" href="message_processing.html"><span class="doc">Message Processing</span></a> - Deep dive into message processing features</p></li>
+<li><p><a class="reference internal" href="feedback_tracking.html"><span class="doc">Feedback Tracking</span></a> - Advanced feedback and analytics</p></li>
+<li><p><a class="reference internal" href="examples.html"><span class="doc">Examples and Use Cases</span></a> - More real-world examples and use cases</p></li>
+<li><p><a class="reference internal" href="api/client.html"><span class="doc">ApalaClient</span></a> - Complete API reference</p></li>
+</ul>
+</section>
+<section id="common-issues">
+<h2>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>Authentication Errors</strong></dt><dd><ul class="simple">
+<li><p>Verify your API key is correct</p></li>
+<li><p>Check that the server URL is accessible</p></li>
+<li><p>Ensure your API key has proper permissions</p></li>
+</ul>
+</dd>
+<dt><strong>Network Errors</strong></dt><dd><ul class="simple">
+<li><p>Confirm the server is running and accessible</p></li>
+<li><p>Check firewall settings and network connectivity</p></li>
+<li><p>Verify the base URL format (include <code class="docutils literal notranslate"><span class="pre">https://</span></code>)</p></li>
+</ul>
+</dd>
+<dt><strong>Validation Errors</strong></dt><dd><ul class="simple">
+<li><p>Customer ID and Company GUID must be valid UUIDs</p></li>
+<li><p>Zip code must be exactly 5 digits</p></li>
+<li><p>Message channels must be “SMS”, “EMAIL”, or “OTHER”</p></li>
+</ul>
+</dd>
+<dt><strong>Type Errors (if using mypy)</strong></dt><dd><ul class="simple">
+<li><p>Install type stubs: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">types-requests</span></code></p></li>
+<li><p>Check that you’re using the correct response types</p></li>
+<li><p>Verify import statements include the needed types</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Documentation</strong>: Complete API reference in this documentation</p></li>
+<li><p><strong>Type Safety</strong>: Enable mypy for compile-time error detection</p></li>
+<li><p><strong>Examples</strong>: See <a class="reference internal" href="examples.html"><span class="doc">Examples and Use Cases</span></a> for more use cases</p></li>
+<li><p><strong>GitHub Issues</strong>: Report bugs and request features</p></li>
+</ul>
+<p>Ready to build something amazing? Let’s go! 🚀</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Apala API - Python SDK" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="authentication.html" class="btn btn-neutral float-right" title="Authentication Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

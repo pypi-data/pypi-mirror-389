@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>apala_client.client &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">apala_client.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for apala_client.client</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2025 Apala Cap. All rights reserved.</span>
+<span class="c1"># This software is proprietary and confidential.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Main client for interacting with the Phoenix Message Analysis API.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urljoin</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomerMetadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AuthResponse</span><span class="p">,</span>
+    <span class="n">BulkFeedbackResponse</span><span class="p">,</span>
+    <span class="n">FeedbackResponse</span><span class="p">,</span>
+    <span class="n">Message</span><span class="p">,</span>
+    <span class="n">MessageFeedback</span><span class="p">,</span>
+    <span class="n">MessageHistory</span><span class="p">,</span>
+    <span class="n">MessageOptimizationResponse</span><span class="p">,</span>
+    <span class="n">MessageProcessingResponse</span><span class="p">,</span>
+    <span class="n">RefreshResponse</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="ApalaClient">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ApalaClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Client for Phoenix Message Analysis Services.</span>
+
+<span class="sd">    Provides authentication and methods for message processing and feedback.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ApalaClient.__init__">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:4000&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            api_key: Your API key for authentication</span>
+<span class="sd">            base_url: Base URL of the Phoenix server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.authenticate">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.authenticate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exchange API key for JWT tokens.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Authentication response data</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If authentication fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="s2">&quot;/api/auth/token&quot;</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">AuthResponse</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">access_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">refresh_token</span>
+
+        <span class="c1"># Set expiration time (subtract 60 seconds for safety margin)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">expires_in</span> <span class="o">-</span> <span class="mi">60</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.refresh_access_token">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.refresh_access_token">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_access_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RefreshResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refresh the access token using the refresh token.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Refresh response data</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If token refresh fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No refresh token available. Please authenticate first.&quot;</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="s2">&quot;/api/auth/refresh&quot;</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">RefreshResponse</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">access_token</span>
+
+        <span class="c1"># Update expiration time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">expires_in</span> <span class="o">-</span> <span class="mi">60</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_valid_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure we have a valid access token, refreshing if necessary.&quot;&quot;&quot;</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="ow">and</span> <span class="n">current_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_expires_at</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refresh_access_token</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span><span class="p">:</span>
+                <span class="c1"># If refresh fails, try full authentication</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_auth_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get headers with authentication token.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_valid_token</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+
+<div class="viewcode-block" id="ApalaClient.message_process">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.message_process">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">message_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Message</span><span class="p">],</span>
+        <span class="n">candidate_message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MessageProcessingResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process customer message history and candidate message.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message_history: List of customer messages</span>
+<span class="sd">            candidate_message: The candidate response message</span>
+<span class="sd">            customer_id: Customer UUID</span>
+<span class="sd">            zip_code: Customer&#39;s 5-digit zip code</span>
+<span class="sd">            company_guid: Company UUID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Processing response data</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If the request fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create MessageHistory object for validation</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="n">MessageHistory</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">message_history</span><span class="p">,</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate_message</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="n">customer_id</span><span class="p">,</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="n">zip_code</span><span class="p">,</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="s2">&quot;/api/message_processing&quot;</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_headers</span><span class="p">()</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">to_processing_dict</span><span class="p">()</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">MessageProcessingResponse</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.optimize_message">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.optimize_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">optimize_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">message_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Message</span><span class="p">],</span>
+        <span class="n">candidate_message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CustomerMetadata</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MessageOptimizationResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Optimize a message for maximum customer engagement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message_history: List of customer messages</span>
+<span class="sd">            candidate_message: The candidate message to optimize</span>
+<span class="sd">            customer_id: Customer UUID</span>
+<span class="sd">            zip_code: Customer&#39;s 5-digit zip code</span>
+<span class="sd">            company_guid: Company UUID</span>
+<span class="sd">            metadata: Optional customer metadata for enhanced personalization</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optimization response with optimized_message and recommended_channel</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If the request fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from apala_client import CustomerMetadata, CreditScoreBin, ApplicationReason</span>
+<span class="sd">            &gt;&gt;&gt; metadata = CustomerMetadata(</span>
+<span class="sd">            ...     is_repeat_borrower=1,</span>
+<span class="sd">            ...     credit_score_bin=CreditScoreBin.SCORE_650_700,</span>
+<span class="sd">            ...     application_reason=ApplicationReason.HOME_IMPROVEMENT</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; result = client.optimize_message(</span>
+<span class="sd">            ...     message_history=messages,</span>
+<span class="sd">            ...     candidate_message=candidate,</span>
+<span class="sd">            ...     customer_id=customer_id,</span>
+<span class="sd">            ...     zip_code=&quot;90210&quot;,</span>
+<span class="sd">            ...     company_guid=company_guid,</span>
+<span class="sd">            ...     metadata=metadata</span>
+<span class="sd">            ... )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create MessageHistory object for validation</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="n">MessageHistory</span><span class="p">(</span>
+            <span class="n">messages</span><span class="o">=</span><span class="n">message_history</span><span class="p">,</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate_message</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="n">customer_id</span><span class="p">,</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="n">zip_code</span><span class="p">,</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="s2">&quot;/api/message_optimizer&quot;</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_headers</span><span class="p">()</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">to_optimization_dict</span><span class="p">()</span>
+
+        <span class="c1"># Add metadata if provided</span>
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">MessageOptimizationResponse</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.message_feedback">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.message_feedback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message_feedback</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">feedback_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BulkFeedbackResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Submit feedback for multiple processed messages using bulk endpoint.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feedback_list: List of feedback dictionaries, each containing:</span>
+<span class="sd">                - message_id: str - The message UUID</span>
+<span class="sd">                - customer_responded: bool - Whether customer responded</span>
+<span class="sd">                - score: int - Quality score (0-100)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bulk feedback submission response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If the request fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">submit_feedback_bulk</span><span class="p">(</span><span class="n">feedback_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.submit_single_feedback">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.submit_single_feedback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_single_feedback</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">message_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">customer_responded</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">score</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">actual_sent_message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FeedbackResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Submit feedback for a single processed message.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message_id: The message UUID from optimization response</span>
+<span class="sd">            customer_responded: Whether the customer responded</span>
+<span class="sd">            score: Quality score (0-100)</span>
+<span class="sd">            actual_sent_message: Optional - The actual message content sent to the customer.</span>
+<span class="sd">                Useful if you modified the optimized message before sending.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Feedback submission response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If the request fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="s2">&quot;/api/feedback&quot;</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_headers</span><span class="p">()</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">message_id</span><span class="p">,</span>
+            <span class="s2">&quot;customer_responded&quot;</span><span class="p">:</span> <span class="n">customer_responded</span><span class="p">,</span>
+            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">score</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">actual_sent_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;actual_sent_message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actual_sent_message</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">FeedbackResponse</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.submit_feedback_bulk">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.submit_feedback_bulk">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_feedback_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">BulkFeedbackResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Submit feedback for multiple messages in bulk.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feedback_list: List of feedback dictionaries, each containing:</span>
+<span class="sd">                - message_id: str - The message UUID</span>
+<span class="sd">                - customer_responded: bool - Whether customer responded</span>
+<span class="sd">                - score: int - Quality score (0-100)</span>
+<span class="sd">                - actual_sent_message: str (optional) - The actual message content sent to customer</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bulk feedback submission response with success status, count, and individual feedback items</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            requests.HTTPError: If the request fails</span>
+<span class="sd">            requests.RequestException: For network-related errors</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; feedback_list = [</span>
+<span class="sd">            ...     {</span>
+<span class="sd">            ...         &quot;message_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,</span>
+<span class="sd">            ...         &quot;customer_responded&quot;: True,</span>
+<span class="sd">            ...         &quot;score&quot;: 85,</span>
+<span class="sd">            ...         &quot;actual_sent_message&quot;: &quot;Hi! Ready to help with your loan.&quot;</span>
+<span class="sd">            ...     },</span>
+<span class="sd">            ...     {</span>
+<span class="sd">            ...         &quot;message_id&quot;: &quot;660e8400-e29b-41d4-a716-446655440001&quot;,</span>
+<span class="sd">            ...         &quot;customer_responded&quot;: False,</span>
+<span class="sd">            ...         &quot;score&quot;: 60</span>
+<span class="sd">            ...     }</span>
+<span class="sd">            ... ]</span>
+<span class="sd">            &gt;&gt;&gt; response = client.submit_feedback_bulk(feedback_list)</span>
+<span class="sd">            &gt;&gt;&gt; print(f&quot;Submitted {response[&#39;count&#39;]} feedback items&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span> <span class="s2">&quot;/api/feedback/bulk&quot;</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_headers</span><span class="p">()</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="n">feedback_list</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">BulkFeedbackResponse</span><span class="p">(</span><span class="o">**</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ApalaClient.close">
+<a class="viewcode-back" href="../../api/client.html#apala_client.client.ApalaClient.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the HTTP session.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

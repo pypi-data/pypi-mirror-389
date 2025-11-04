@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Tracking &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples and Use Cases" href="examples.html" />
+    <link rel="prev" title="Message Processing" href="message_processing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="message_processing.html">Message Processing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Feedback Tracking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-feedback-submission">Basic Feedback Submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feedback-metrics">Feedback Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tracking-workflow">Tracking Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batch-feedback-submission">Batch Feedback Submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analytics-and-insights">Analytics and Insights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quality-scoring-guidelines">Quality Scoring Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feedback-best-practices">Feedback Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-patterns">Integration Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Feedback Tracking</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/feedback_tracking.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="feedback-tracking">
+<h1>Feedback Tracking<a class="headerlink" href="#feedback-tracking" title="Link to this heading"></a></h1>
+<p>Feedback tracking allows you to measure the effectiveness of your processed messages and improve the AI system’s performance over time.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The feedback system tracks:</p>
+<ul class="simple">
+<li><p><strong>Response Rate</strong>: Did the customer respond to your message?</p></li>
+<li><p><strong>Response Time</strong>: How quickly did they respond?</p></li>
+<li><p><strong>Message Quality</strong>: Your assessment of the interaction quality</p></li>
+<li><p><strong>Performance Metrics</strong>: Analytics to improve future messages</p></li>
+</ul>
+</section>
+<section id="basic-feedback-submission">
+<h2>Basic Feedback Submission<a class="headerlink" href="#basic-feedback-submission" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">MessageFeedback</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="c1"># After processing a message and sending it to customer</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># Your message processing</span>
+<span class="n">message_id</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span>
+<span class="n">sent_content</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+
+<span class="c1"># Customer responded in 15 minutes</span>
+<span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+    <span class="n">original_message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">,</span>
+    <span class="n">sent_message_content</span><span class="o">=</span><span class="n">sent_content</span><span class="p">,</span>
+    <span class="n">customer_responded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">quality_score</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span>  <span class="c1"># 0-100 scale</span>
+    <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">900000</span>  <span class="c1"># 15 minutes in milliseconds</span>
+<span class="p">)</span>
+
+<span class="c1"># Submit feedback</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feedback recorded with ID: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;feedback_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="feedback-metrics">
+<h2>Feedback Metrics<a class="headerlink" href="#feedback-metrics" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Customer Response</strong> (<code class="docutils literal notranslate"><span class="pre">customer_responded</span></code>)</dt><dd><p>Boolean indicating whether the customer replied to your message.</p>
+</dd>
+<dt><strong>Quality Score</strong> (<code class="docutils literal notranslate"><span class="pre">quality_score</span></code>)</dt><dd><p>Your assessment of the interaction on a 0-100 scale:</p>
+<ul class="simple">
+<li><p>90-100: Excellent - Customer very satisfied, clear resolution</p></li>
+<li><p>80-89: Good - Positive interaction, customer needs met</p></li>
+<li><p>70-79: Satisfactory - Adequate response, some improvement possible</p></li>
+<li><p>60-69: Fair - Customer responded but interaction could be better</p></li>
+<li><p>50-59: Poor - Customer dissatisfied or confused</p></li>
+<li><p>0-49: Very Poor - Negative interaction, customer frustrated</p></li>
+</ul>
+</dd>
+<dt><strong>Response Time</strong> (<code class="docutils literal notranslate"><span class="pre">time_to_respond_ms</span></code>)</dt><dd><p>Time from message sent to customer response, in milliseconds:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Common time conversions</span>
+<span class="n">MINUTE</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span>        <span class="c1"># 60,000 ms</span>
+<span class="n">HOUR</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">MINUTE</span>        <span class="c1"># 3,600,000 ms</span>
+<span class="n">DAY</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="n">HOUR</span>           <span class="c1"># 86,400,000 ms</span>
+
+<span class="c1"># Examples</span>
+<span class="n">feedback_5_min</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">MINUTE</span>  <span class="c1"># 5 minutes</span>
+<span class="p">)</span>
+
+<span class="n">feedback_2_hours</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">HOUR</span>    <span class="c1"># 2 hours</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="tracking-workflow">
+<h2>Tracking Workflow<a class="headerlink" href="#tracking-workflow" title="Link to this heading"></a></h2>
+<p>Here’s a complete workflow for tracking message performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MessageFeedback</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">complete_message_workflow</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">conversation_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete workflow: process, send, track, and provide feedback.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Step 1: Process message</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📤 Processing message...&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">],</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;candidate&quot;</span><span class="p">],</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">],</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;company_guid&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">processed_message</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">]</span>
+    <span class="n">message_id</span> <span class="o">=</span> <span class="n">processed_message</span><span class="p">[</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span>
+    <span class="n">sent_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Message processed: </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Step 2: &quot;Send&quot; message to customer (simulate)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📧 Sending to customer: </span><span class="si">{</span><span class="n">processed_message</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Step 3: Wait for and track customer response</span>
+    <span class="n">customer_response_time</span> <span class="o">=</span> <span class="n">wait_for_customer_response</span><span class="p">(</span>
+        <span class="n">message_id</span><span class="p">,</span>
+        <span class="n">timeout_hours</span><span class="o">=</span><span class="mi">24</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Step 4: Assess interaction quality</span>
+    <span class="n">quality_score</span> <span class="o">=</span> <span class="n">assess_interaction_quality</span><span class="p">(</span>
+        <span class="n">processed_message</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+        <span class="n">customer_response_time</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Step 5: Submit feedback</span>
+    <span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+        <span class="n">original_message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">,</span>
+        <span class="n">sent_message_content</span><span class="o">=</span><span class="n">processed_message</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+        <span class="n">customer_responded</span><span class="o">=</span><span class="n">customer_response_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quality_score</span><span class="o">=</span><span class="n">quality_score</span><span class="p">,</span>
+        <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="n">customer_response_time</span>
+    <span class="p">)</span>
+
+    <span class="n">feedback_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📊 Feedback submitted: </span><span class="si">{</span><span class="n">feedback_result</span><span class="p">[</span><span class="s1">&#39;feedback_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;processing_response&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span>
+        <span class="s2">&quot;feedback_result&quot;</span><span class="p">:</span> <span class="n">feedback_result</span><span class="p">,</span>
+        <span class="s2">&quot;quality_score&quot;</span><span class="p">:</span> <span class="n">quality_score</span>
+    <span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">assess_interaction_quality</span><span class="p">(</span><span class="n">message_content</span><span class="p">,</span> <span class="n">response_time_ms</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assess interaction quality based on content and response time.&quot;&quot;&quot;</span>
+
+    <span class="n">base_score</span> <span class="o">=</span> <span class="mi">75</span>  <span class="c1"># Start with satisfactory</span>
+
+    <span class="c1"># Adjust for response time</span>
+    <span class="k">if</span> <span class="n">response_time_ms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mi">40</span>  <span class="c1"># No response</span>
+    <span class="k">elif</span> <span class="n">response_time_ms</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>  <span class="c1"># &lt; 5 minutes</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">base_score</span> <span class="o">+</span> <span class="mi">15</span>  <span class="c1"># Very quick response</span>
+    <span class="k">elif</span> <span class="n">response_time_ms</span> <span class="o">&lt;</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>  <span class="c1"># &lt; 30 minutes</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">base_score</span> <span class="o">+</span> <span class="mi">10</span>  <span class="c1"># Quick response</span>
+    <span class="k">elif</span> <span class="n">response_time_ms</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>  <span class="c1"># &lt; 2 hours</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">base_score</span> <span class="o">+</span> <span class="mi">5</span>   <span class="c1"># Good response time</span>
+    <span class="k">elif</span> <span class="n">response_time_ms</span> <span class="o">&lt;</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>  <span class="c1"># &lt; 24 hours</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">base_score</span>       <span class="c1"># Acceptable</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">base_score</span> <span class="o">-</span> <span class="mi">10</span>  <span class="c1"># Slow response</span>
+
+    <span class="c1"># Adjust for message quality indicators</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">message_content</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">+=</span> <span class="mi">5</span>  <span class="c1"># Detailed response</span>
+    <span class="k">if</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">message_content</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">+=</span> <span class="mi">3</span>  <span class="c1"># Engaging questions</span>
+
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">score</span><span class="p">))</span>  <span class="c1"># Clamp to 0-100</span>
+</pre></div>
+</div>
+</section>
+<section id="batch-feedback-submission">
+<h2>Batch Feedback Submission<a class="headerlink" href="#batch-feedback-submission" title="Link to this heading"></a></h2>
+<p>Submit feedback for multiple messages efficiently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">submit_batch_feedback</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">feedback_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Submit multiple feedback records efficiently.&quot;&quot;&quot;</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">feedback</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feedback_list</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                <span class="s2">&quot;feedback_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;feedback_id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="p">})</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+                <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">feedback</span><span class="o">.</span><span class="n">original_message_id</span>
+            <span class="p">})</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;successful&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
+        <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="n">errors</span><span class="p">,</span>
+        <span class="s2">&quot;success_rate&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">feedback_list</span><span class="p">)</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="analytics-and-insights">
+<h2>Analytics and Insights<a class="headerlink" href="#analytics-and-insights" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Track Performance Trends</strong></dt><dd><p>Monitor your message effectiveness over time:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analyze_feedback_trends</span><span class="p">(</span><span class="n">feedback_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyze feedback trends and performance metrics.&quot;&quot;&quot;</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">feedback_data</span><span class="p">)</span>
+
+    <span class="c1"># Response rate by channel</span>
+    <span class="n">response_rates</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span>
+        <span class="s1">&#39;customer_responded&#39;</span><span class="p">:</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;quality_score&#39;</span><span class="p">:</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;time_to_respond_ms&#39;</span><span class="p">:</span> <span class="s1">&#39;median&#39;</span>
+    <span class="p">})</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Response Rates by Channel:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response_rates</span><span class="p">)</span>
+
+    <span class="c1"># Quality score trends</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sent_timestamp&#39;</span><span class="p">])</span>
+    <span class="n">daily_quality</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">)[</span><span class="s1">&#39;quality_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Daily Quality Score Trends:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">daily_quality</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>  <span class="c1"># Last 7 days</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;overall_response_rate&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;customer_responded&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;average_quality_score&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;quality_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="s2">&quot;median_response_time_hours&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;time_to_respond_ms&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>A/B Testing with Feedback</strong></dt><dd><p>Compare different message approaches:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ab_test_with_feedback</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">test_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run A/B test and collect feedback for both variants.&quot;&quot;&quot;</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;variant_a&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;variant_b&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">for</span> <span class="n">conversation</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">:</span>
+        <span class="c1"># Randomly assign to variant</span>
+        <span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;variant_a&quot;</span> <span class="k">if</span> <span class="nb">hash</span><span class="p">(</span><span class="n">conversation</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;variant_b&quot;</span>
+
+        <span class="c1"># Use appropriate message for variant</span>
+        <span class="n">candidate_message</span> <span class="o">=</span> <span class="n">conversation</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;candidate_</span><span class="si">{</span><span class="n">variant</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Process message</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+            <span class="n">message_history</span><span class="o">=</span><span class="n">conversation</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">],</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate_message</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="n">conversation</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">],</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="n">conversation</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="n">conversation</span><span class="p">[</span><span class="s2">&quot;company_guid&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Simulate customer interaction and feedback</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="n">simulate_customer_interaction</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">feedback_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+
+        <span class="n">results</span><span class="p">[</span><span class="n">variant</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="n">feedback</span><span class="p">,</span>
+            <span class="s2">&quot;feedback_id&quot;</span><span class="p">:</span> <span class="n">feedback_result</span><span class="p">[</span><span class="s2">&quot;feedback_id&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">response</span>
+        <span class="p">})</span>
+
+    <span class="c1"># Analyze results</span>
+    <span class="k">for</span> <span class="n">variant</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">avg_quality</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;feedback&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">quality_score</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">response_rate</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;feedback&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">customer_responded</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">variant</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Average Quality: </span><span class="si">{</span><span class="n">avg_quality</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Response Rate: </span><span class="si">{</span><span class="n">response_rate</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="quality-scoring-guidelines">
+<h2>Quality Scoring Guidelines<a class="headerlink" href="#quality-scoring-guidelines" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>Excellent (90-100)</strong></dt><dd><ul class="simple">
+<li><p>Customer responds quickly and positively</p></li>
+<li><p>Clear resolution or next steps provided</p></li>
+<li><p>Customer expresses satisfaction</p></li>
+<li><p>No follow-up questions needed</p></li>
+</ul>
+</dd>
+<dt><strong>Good (80-89)</strong></dt><dd><ul class="simple">
+<li><p>Customer responds within reasonable time</p></li>
+<li><p>Information provided is helpful</p></li>
+<li><p>Minor clarification may be needed</p></li>
+<li><p>Generally positive interaction</p></li>
+</ul>
+</dd>
+<dt><strong>Satisfactory (70-79)</strong></dt><dd><ul class="simple">
+<li><p>Customer responds but may need more information</p></li>
+<li><p>Basic needs addressed</p></li>
+<li><p>Some room for improvement in clarity or completeness</p></li>
+</ul>
+</dd>
+<dt><strong>Fair (60-69)</strong></dt><dd><ul class="simple">
+<li><p>Customer responds but seems confused or neutral</p></li>
+<li><p>Information provided but not optimally presented</p></li>
+<li><p>Requires significant follow-up</p></li>
+</ul>
+</dd>
+<dt><strong>Poor (50-59)</strong></dt><dd><ul class="simple">
+<li><p>Customer responds negatively or with frustration</p></li>
+<li><p>Information unclear or incorrect</p></li>
+<li><p>Customer needs are not well addressed</p></li>
+</ul>
+</dd>
+<dt><strong>Very Poor (0-49)</strong></dt><dd><ul class="simple">
+<li><p>No customer response or very negative response</p></li>
+<li><p>Message caused confusion or frustration</p></li>
+<li><p>Significant problems with content or approach</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="feedback-best-practices">
+<h2>Feedback Best Practices<a class="headerlink" href="#feedback-best-practices" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>Timing</strong></dt><dd><ul class="simple">
+<li><p>Submit feedback as soon as you have customer response data</p></li>
+<li><p>Don’t wait too long - feedback is most valuable when recent</p></li>
+<li><p>Set up automated tracking where possible</p></li>
+</ul>
+</dd>
+<dt><strong>Quality Assessment</strong></dt><dd><ul class="simple">
+<li><p>Be consistent in your scoring criteria</p></li>
+<li><p>Consider both customer satisfaction and business outcomes</p></li>
+<li><p>Document your scoring rationale for team consistency</p></li>
+</ul>
+</dd>
+<dt><strong>Data Collection</strong></dt><dd><ul class="simple">
+<li><p>Track all messages, not just successful ones</p></li>
+<li><p>Include context about customer type and situation</p></li>
+<li><p>Monitor trends over time, not just individual scores</p></li>
+</ul>
+</dd>
+<dt><strong>Privacy and Security</strong></dt><dd><ul class="simple">
+<li><p>Don’t include sensitive customer information in feedback</p></li>
+<li><p>Follow data retention policies</p></li>
+<li><p>Ensure feedback data is properly secured</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="integration-patterns">
+<h2>Integration Patterns<a class="headerlink" href="#integration-patterns" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>CRM Integration</strong></dt><dd><p>Track feedback alongside customer records:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_crm_with_feedback</span><span class="p">(</span><span class="n">crm_client</span><span class="p">,</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">feedback_result</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update CRM with message feedback data.&quot;&quot;&quot;</span>
+
+    <span class="n">crm_client</span><span class="o">.</span><span class="n">add_activity</span><span class="p">({</span>
+        <span class="s2">&quot;customer_id&quot;</span><span class="p">:</span> <span class="n">customer_id</span><span class="p">,</span>
+        <span class="s2">&quot;activity_type&quot;</span><span class="p">:</span> <span class="s2">&quot;message_feedback&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;feedback_id&quot;</span><span class="p">:</span> <span class="n">feedback_result</span><span class="p">[</span><span class="s2">&quot;feedback_id&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;quality_score&quot;</span><span class="p">:</span> <span class="n">feedback_result</span><span class="p">[</span><span class="s2">&quot;quality_score&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Analytics Platform Integration</strong></dt><dd><p>Send feedback to analytics systems:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">send_to_analytics</span><span class="p">(</span><span class="n">analytics_client</span><span class="p">,</span> <span class="n">feedback_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Send feedback to analytics platform.&quot;&quot;&quot;</span>
+
+    <span class="n">event</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;event_type&quot;</span><span class="p">:</span> <span class="s2">&quot;message_feedback&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">feedback_data</span><span class="o">.</span><span class="n">original_message_id</span><span class="p">,</span>
+            <span class="s2">&quot;customer_responded&quot;</span><span class="p">:</span> <span class="n">feedback_data</span><span class="o">.</span><span class="n">customer_responded</span><span class="p">,</span>
+            <span class="s2">&quot;quality_score&quot;</span><span class="p">:</span> <span class="n">feedback_data</span><span class="o">.</span><span class="n">quality_score</span><span class="p">,</span>
+            <span class="s2">&quot;response_time_ms&quot;</span><span class="p">:</span> <span class="n">feedback_data</span><span class="o">.</span><span class="n">time_to_respond_ms</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">analytics_client</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>This feedback system helps you continuously improve your customer communications and maximize the effectiveness of the AI-enhanced messaging platform.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="message_processing.html" class="btn btn-neutral float-left" title="Message Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples and Use Cases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,660 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples and Use Cases &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ApalaClient" href="api/client.html" />
+    <link rel="prev" title="Feedback Tracking" href="feedback_tracking.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples and Use Cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#loan-application-inquiry">Loan Application Inquiry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rate-shopping-conversation">Rate Shopping Conversation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#document-collection-process">Document Collection Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batch-processing-multiple-conversations">Batch Processing Multiple Conversations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feedback-tracking-workflow">Feedback Tracking Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-and-retry-logic">Error Handling and Retry Logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-session-configuration">Custom Session Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#production-deployment-example">Production Deployment Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactive-development-with-jupyter">Interactive Development with Jupyter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-and-development">Testing and Development</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples and Use Cases</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples-and-use-cases">
+<h1>Examples and Use Cases<a class="headerlink" href="#examples-and-use-cases" title="Link to this heading"></a></h1>
+<p>This page provides real-world examples of using the Apala API for various loan and financial scenarios.</p>
+<section id="loan-application-inquiry">
+<h2>Loan Application Inquiry<a class="headerlink" href="#loan-application-inquiry" title="Link to this heading"></a></h2>
+<p>Handle customer inquiries about loan applications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MessageFeedback</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_loan_inquiry</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+    <span class="c1"># Customer conversation about loan application</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Hi, I submitted a loan application last week but haven&#39;t heard back. Can you check the status?&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;The application reference number is LA-2024-1234.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Your proposed response</span>
+    <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Thank you for following up on your loan application LA-2024-1234. I&#39;ve checked your status and your application is currently under review. You can expect a decision within 3-5 business days. I&#39;ll send you an email as soon as we have an update.&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Process and optimize</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: </span><span class="si">{</span><span class="n">candidate</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimized: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;optimized_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;recommended_channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">optimization</span>
+</pre></div>
+</div>
+</section>
+<section id="rate-shopping-conversation">
+<h2>Rate Shopping Conversation<a class="headerlink" href="#rate-shopping-conversation" title="Link to this heading"></a></h2>
+<p>Help customers compare loan rates and terms:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">handle_rate_shopping</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+    <span class="c1"># Customer asking about rates</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;m shopping for a mortgage and want to compare your rates with other lenders.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I have excellent credit (790+ score) and 20</span><span class="si">% d</span><span class="s2">own payment.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Looking at a $400K home purchase in California.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Great credit score! For a $400K purchase with 20</span><span class="si">% d</span><span class="s2">own, our current rates start at 3.25% APR for 30-year fixed. With your credit profile, you&#39;d likely qualify for our best rates. Can I schedule a quick call to discuss your specific situation?&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Process the conversation</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+</section>
+<section id="document-collection-process">
+<h2>Document Collection Process<a class="headerlink" href="#document-collection-process" title="Link to this heading"></a></h2>
+<p>Guide customers through document submission:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">handle_document_collection</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+    <span class="c1"># Customer confused about documents</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;m ready to submit my loan documents but I&#39;m not sure what you need exactly.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;m self-employed so my income documentation might be different than usual.&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Perfect timing! For self-employed borrowers, we need: 2 years of tax returns with all schedules, 2 years of profit &amp; loss statements, 3 months of bank statements, and a CPA letter. I&#39;ll email you a secure upload link and checklist right now.&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Get optimized version</span>
+    <span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">optimization</span>
+</pre></div>
+</div>
+</section>
+<section id="batch-processing-multiple-conversations">
+<h2>Batch Processing Multiple Conversations<a class="headerlink" href="#batch-processing-multiple-conversations" title="Link to this heading"></a></h2>
+<p>Process multiple customer conversations efficiently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">batch_process_conversations</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+    <span class="c1"># Multiple customer scenarios</span>
+    <span class="n">conversations</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;customer_id&quot;</span><span class="p">:</span> <span class="s2">&quot;customer-1-uuid&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zip_code&quot;</span><span class="p">:</span> <span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Need refinancing help&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;candidate&quot;</span><span class="p">:</span> <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;d be happy to help with refinancing options.&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;customer_id&quot;</span><span class="p">:</span> <span class="s2">&quot;customer-2-uuid&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;zip_code&quot;</span><span class="p">:</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;First time home buyer questions&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;candidate&quot;</span><span class="p">:</span> <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Congratulations on your first home purchase journey!&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">conv</span> <span class="ow">in</span> <span class="n">conversations</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+            <span class="n">message_history</span><span class="o">=</span><span class="n">conv</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">],</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">conv</span><span class="p">[</span><span class="s2">&quot;candidate&quot;</span><span class="p">],</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="n">conv</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">],</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="n">conv</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+        <span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span>
+</pre></div>
+</div>
+</section>
+<section id="feedback-tracking-workflow">
+<h2>Feedback Tracking Workflow<a class="headerlink" href="#feedback-tracking-workflow" title="Link to this heading"></a></h2>
+<p>Implement comprehensive feedback tracking:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">track_message_performance</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+    <span class="c1"># Simulate message processing</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">process_customer_message</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">message_id</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span>
+    <span class="n">message_content</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Simulate different customer response scenarios</span>
+    <span class="n">scenarios</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Quick Positive Response&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;responded&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;quality_score&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+            <span class="s2">&quot;response_time_minutes&quot;</span><span class="p">:</span> <span class="mi">15</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Delayed Response&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;responded&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;quality_score&quot;</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span>
+            <span class="s2">&quot;response_time_minutes&quot;</span><span class="p">:</span> <span class="mi">240</span>  <span class="c1"># 4 hours</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;No Response&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;responded&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;quality_score&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+            <span class="s2">&quot;response_time_minutes&quot;</span><span class="p">:</span> <span class="kc">None</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="n">feedback_results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">scenario</span> <span class="ow">in</span> <span class="n">scenarios</span><span class="p">:</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+            <span class="n">original_message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">,</span>
+            <span class="n">sent_message_content</span><span class="o">=</span><span class="n">message_content</span><span class="p">,</span>
+            <span class="n">customer_responded</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;responded&quot;</span><span class="p">],</span>
+            <span class="n">quality_score</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;quality_score&quot;</span><span class="p">],</span>
+            <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;response_time_minutes&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span> <span class="k">if</span> <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;response_time_minutes&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+        <span class="n">feedback_results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;scenario&quot;</span><span class="p">:</span> <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;feedback_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;feedback_id&quot;</span><span class="p">]</span>
+        <span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">feedback_results</span>
+</pre></div>
+</div>
+</section>
+<section id="error-handling-and-retry-logic">
+<h2>Error Handling and Retry Logic<a class="headerlink" href="#error-handling-and-retry-logic" title="Link to this heading"></a></h2>
+<p>Implement robust error handling for production use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">robust_message_processing</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">ApalaClient</span><span class="p">,</span>
+    <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">candidate</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process messages with retry logic and comprehensive error handling.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Ensure we have valid authentication</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="o">.</span><span class="n">access_token</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: Refreshing authentication...&quot;</span><span class="p">)</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+            <span class="c1"># Process the messages</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+                <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+                <span class="n">customer_id</span><span class="o">=</span><span class="n">customer_id</span><span class="p">,</span>
+                <span class="n">zip_code</span><span class="o">=</span><span class="n">zip_code</span><span class="p">,</span>
+                <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Success on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ HTTP error on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+                <span class="c1"># Authentication issue - try to re-authenticate</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🔄 Re-authenticating due to 401 error...&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">auth_error</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Re-authentication failed: </span><span class="si">{</span><span class="n">auth_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
+                <span class="c1"># Rate limited - wait before retry</span>
+                <span class="n">wait_time</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span>  <span class="c1"># Exponential backoff</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⏳ Rate limited, waiting </span><span class="si">{</span><span class="n">wait_time</span><span class="si">}</span><span class="s2"> seconds...&quot;</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">500</span><span class="p">:</span>
+                <span class="c1"># Server error - retry might help</span>
+                <span class="n">wait_time</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⏳ Server error, waiting </span><span class="si">{</span><span class="n">wait_time</span><span class="si">}</span><span class="s2"> seconds before retry...&quot;</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Client error - don&#39;t retry</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Client error </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, not retrying&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Connection error on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">wait_time</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⏳ Waiting </span><span class="si">{</span><span class="n">wait_time</span><span class="si">}</span><span class="s2"> seconds before retry...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Validation error - don&#39;t retry</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Validation error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Unexpected error on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">wait_time</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Failed after </span><span class="si">{</span><span class="n">max_retries</span><span class="si">}</span><span class="s2"> attempts&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-session-configuration">
+<h2>Custom Session Configuration<a class="headerlink" href="#custom-session-configuration" title="Link to this heading"></a></h2>
+<p>Configure the HTTP session for specific requirements:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPAdapter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests.packages.urllib3.util.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Retry</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_custom_client</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a client with custom session configuration.&quot;&quot;&quot;</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create custom session with retry strategy</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+    <span class="c1"># Configure retry strategy</span>
+    <span class="n">retry_strategy</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span>
+        <span class="n">total</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">backoff_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">status_forcelist</span><span class="o">=</span><span class="p">[</span><span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">adapter</span> <span class="o">=</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="n">retry_strategy</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+
+    <span class="c1"># Set custom timeout</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">30</span>
+
+    <span class="c1"># Add custom headers</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;MyApp/1.0 ApalaSDK/0.1.0&#39;</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Replace the client&#39;s session</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+    <span class="k">return</span> <span class="n">client</span>
+</pre></div>
+</div>
+</section>
+<section id="production-deployment-example">
+<h2>Production Deployment Example<a class="headerlink" href="#production-deployment-example" title="Link to this heading"></a></h2>
+<p>Example of how to use the SDK in a production environment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+
+<span class="c1"># Configure logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProductionApalaService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Production-ready wrapper for Apala API operations.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APALA_API_KEY&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APALA_BASE_URL&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">company_guid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APALA_COMPANY_GUID&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Context manager for client lifecycle.&quot;&quot;&quot;</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Apala client authenticated successfully&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">client</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Apala client error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Apala client closed&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_customer_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">customer_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process a customer message with full error handling.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+                    <span class="n">message_history</span><span class="o">=</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">],</span>
+                    <span class="n">candidate_message</span><span class="o">=</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;candidate&quot;</span><span class="p">],</span>
+                    <span class="n">customer_id</span><span class="o">=</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">],</span>
+                    <span class="n">zip_code</span><span class="o">=</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+                    <span class="n">company_guid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">company_guid</span>
+                <span class="p">)</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message processed: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;candidate_message&#39;</span><span class="p">][</span><span class="s1">&#39;message_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">response</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message processing failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+<span class="c1"># Usage</span>
+<span class="n">service</span> <span class="o">=</span> <span class="n">ProductionApalaService</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">process_customer_message</span><span class="p">({</span>
+    <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Help needed&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">)],</span>
+    <span class="s2">&quot;candidate&quot;</span><span class="p">:</span> <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Happy to help!&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;customer_id&quot;</span><span class="p">:</span> <span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;zip_code&quot;</span><span class="p">:</span> <span class="s2">&quot;90210&quot;</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="interactive-development-with-jupyter">
+<h2>Interactive Development with Jupyter<a class="headerlink" href="#interactive-development-with-jupyter" title="Link to this heading"></a></h2>
+<p>Use the SDK in Jupyter notebooks for analysis and experimentation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cell 1: Setup</span>
+<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="n">apala</span><span class="o">-</span><span class="n">api</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MessageFeedback</span>
+
+<span class="c1"># Cell 2: Initialize</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">)</span>
+<span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected as: </span><span class="si">{</span><span class="n">auth_response</span><span class="p">[</span><span class="s1">&#39;company_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Cell 3: Process multiple messages and analyze results</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">test_scenarios</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Need loan help&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="s2">&quot;SMS&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Rate inquiry&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="s2">&quot;EMAIL&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Document questions&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="s2">&quot;OTHER&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">scenario</span> <span class="ow">in</span> <span class="n">test_scenarios</span><span class="p">:</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">])]</span>
+    <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;m here to help!&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">])</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;test-customer-uuid&quot;</span><span class="p">,</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;original_channel&quot;</span><span class="p">:</span> <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">scenario</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;processed_content&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+    <span class="p">})</span>
+
+<span class="c1"># Cell 4: Analyze with pandas</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-and-development">
+<h2>Testing and Development<a class="headerlink" href="#testing-and-development" title="Link to this heading"></a></h2>
+<p>Example test patterns for your own applications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestApalaIntegration</span><span class="p">:</span>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mock_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mock client for testing.&quot;&quot;&quot;</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;test-key&quot;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="s2">&quot;mock-token&quot;</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="o">=</span> <span class="mi">9999999999</span>  <span class="c1"># Far future</span>
+        <span class="k">return</span> <span class="n">client</span>
+
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;requests.Session.post&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_message_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_post</span><span class="p">,</span> <span class="n">mock_client</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test message processing with mocked response.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Mock the API response</span>
+        <span class="n">mock_response</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="n">mock_response</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;company&quot;</span><span class="p">:</span> <span class="s2">&quot;test-company&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;customer_id&quot;</span><span class="p">:</span> <span class="s2">&quot;test-customer&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;candidate_message&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Test response&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="s2">&quot;test-msg-123&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">mock_response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">mock_post</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_response</span>
+
+        <span class="c1"># Test the processing</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">)]</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Response&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">mock_client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+            <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;test-customer&quot;</span><span class="p">,</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;test-company&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test-msg-123&quot;</span>
+        <span class="n">mock_post</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>These examples should give you a solid foundation for building production applications with the Apala API. Remember to always handle errors gracefully and implement appropriate retry logic for your use case!</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="feedback_tracking.html" class="btn btn-neutral float-left" title="Feedback Tracking" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/client.html" class="btn btn-neutral float-right" title="ApalaClient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,789 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApalaClient &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Models" href="models.html" />
+    <link rel="prev" title="Examples and Use Cases" href="../examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ApalaClient</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.client.ApalaClient"><code class="docutils literal notranslate"><span class="pre">ApalaClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.__init__"><code class="docutils literal notranslate"><span class="pre">ApalaClient.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.authenticate"><code class="docutils literal notranslate"><span class="pre">ApalaClient.authenticate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.refresh_access_token"><code class="docutils literal notranslate"><span class="pre">ApalaClient.refresh_access_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.message_process"><code class="docutils literal notranslate"><span class="pre">ApalaClient.message_process()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.optimize_message"><code class="docutils literal notranslate"><span class="pre">ApalaClient.optimize_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.message_feedback"><code class="docutils literal notranslate"><span class="pre">ApalaClient.message_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.submit_single_feedback"><code class="docutils literal notranslate"><span class="pre">ApalaClient.submit_single_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.submit_feedback_bulk"><code class="docutils literal notranslate"><span class="pre">ApalaClient.submit_feedback_bulk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.client.ApalaClient.close"><code class="docutils literal notranslate"><span class="pre">ApalaClient.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-usage">Example Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-client-setup">Basic Client Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#message-processing">Message Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#message-optimization">Message Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#feedback-submission">Feedback Submission</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-reference">Class Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">ApalaClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">ApalaClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">ApalaClient.authenticate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ApalaClient.refresh_access_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">ApalaClient.message_process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">ApalaClient.optimize_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">ApalaClient.message_feedback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">ApalaClient.submit_single_feedback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ApalaClient.submit_feedback_bulk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">ApalaClient.close()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ApalaClient</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/client.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-apala_client.client">
+<span id="apalaclient"></span><h1>ApalaClient<a class="headerlink" href="#module-apala_client.client" title="Link to this heading"></a></h1>
+<p>Main client for interacting with the Phoenix Message Analysis API.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.client.</span></span><span class="sig-name descname"><span class="pre">ApalaClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:4000'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Client for Phoenix Message Analysis Services.</p>
+<p>Provides authentication and methods for message processing and feedback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:4000'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Your API key for authentication</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Base URL of the Phoenix server</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.authenticate">
+<span class="sig-name descname"><span class="pre">authenticate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.authenticate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.authenticate" title="Link to this definition"></a></dt>
+<dd><p>Exchange API key for JWT tokens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id0" title="apala_client.models.AuthResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthResponse</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Authentication response data</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If authentication fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.refresh_access_token">
+<span class="sig-name descname"><span class="pre">refresh_access_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.refresh_access_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.refresh_access_token" title="Link to this definition"></a></dt>
+<dd><p>Refresh the access token using the refresh token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id8" title="apala_client.models.RefreshResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefreshResponse</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Refresh response data</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If token refresh fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.message_process">
+<span class="sig-name descname"><span class="pre">message_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">company_guid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.message_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.message_process" title="Link to this definition"></a></dt>
+<dd><p>Process customer message history and candidate message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message_history</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>]</span>) – List of customer messages</p></li>
+<li><p><strong>candidate_message</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a></span>) – The candidate response message</p></li>
+<li><p><strong>customer_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer UUID</p></li>
+<li><p><strong>zip_code</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer’s 5-digit zip code</p></li>
+<li><p><strong>company_guid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Company UUID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id12" title="apala_client.models.MessageProcessingResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">MessageProcessingResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Processing response data</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.optimize_message">
+<span class="sig-name descname"><span class="pre">optimize_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">company_guid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.optimize_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.optimize_message" title="Link to this definition"></a></dt>
+<dd><p>Optimize a message for maximum customer engagement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message_history</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>]</span>) – List of customer messages</p></li>
+<li><p><strong>candidate_message</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a></span>) – The candidate message to optimize</p></li>
+<li><p><strong>customer_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer UUID</p></li>
+<li><p><strong>zip_code</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer’s 5-digit zip code</p></li>
+<li><p><strong>company_guid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Company UUID</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CustomerMetadata</span></code>]</span>) – Optional customer metadata for enhanced personalization</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id22" title="apala_client.models.MessageOptimizationResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">MessageOptimizationResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optimization response with optimized_message and recommended_channel</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomerMetadata</span><span class="p">,</span> <span class="n">CreditScoreBin</span><span class="p">,</span> <span class="n">ApplicationReason</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">CustomerMetadata</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">is_repeat_borrower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">credit_score_bin</span><span class="o">=</span><span class="n">CreditScoreBin</span><span class="o">.</span><span class="n">SCORE_650_700</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">application_reason</span><span class="o">=</span><span class="n">ApplicationReason</span><span class="o">.</span><span class="n">HOME_IMPROVEMENT</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">customer_id</span><span class="o">=</span><span class="n">customer_id</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.message_feedback">
+<span class="sig-name descname"><span class="pre">message_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feedback_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.message_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.message_feedback" title="Link to this definition"></a></dt>
+<dd><p>Submit feedback for multiple processed messages using bulk endpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feedback_list</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">any</span></code>]]</span>) – List of feedback dictionaries, each containing:
+- message_id: str - The message UUID
+- customer_responded: bool - Whether customer responded
+- score: int - Quality score (0-100)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.BulkFeedbackResponse" title="apala_client.models.BulkFeedbackResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bulk feedback submission response</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.submit_single_feedback">
+<span class="sig-name descname"><span class="pre">submit_single_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_responded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_sent_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.submit_single_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.submit_single_feedback" title="Link to this definition"></a></dt>
+<dd><p>Submit feedback for a single processed message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The message UUID from optimization response</p></li>
+<li><p><strong>customer_responded</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether the customer responded</p></li>
+<li><p><strong>score</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Quality score (0-100)</p></li>
+<li><p><strong>actual_sent_message</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Optional - The actual message content sent to the customer.
+Useful if you modified the optimized message before sending.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id28" title="apala_client.models.FeedbackResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeedbackResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Feedback submission response</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.submit_feedback_bulk">
+<span class="sig-name descname"><span class="pre">submit_feedback_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feedback_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.submit_feedback_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.submit_feedback_bulk" title="Link to this definition"></a></dt>
+<dd><p>Submit feedback for multiple messages in bulk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feedback_list</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">any</span></code>]]</span>) – List of feedback dictionaries, each containing:
+- message_id: str - The message UUID
+- customer_responded: bool - Whether customer responded
+- score: int - Quality score (0-100)
+- actual_sent_message: str (optional) - The actual message content sent to customer</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.BulkFeedbackResponse" title="apala_client.models.BulkFeedbackResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bulk feedback submission response with success status, count, and individual feedback items</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feedback_list</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;customer_responded&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;actual_sent_message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hi! Ready to help with your loan.&quot;</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="s2">&quot;660e8400-e29b-41d4-a716-446655440001&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;customer_responded&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">60</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_feedback_bulk</span><span class="p">(</span><span class="n">feedback_list</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submitted </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> feedback items&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.client.ApalaClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.client.ApalaClient.close" title="Link to this definition"></a></dt>
+<dd><p>Close the HTTP session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>The <a class="reference internal" href="#id0" title="apala_client.client.ApalaClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">ApalaClient</span></code></a> is the main interface for interacting with the Phoenix Message Analysis API.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The client provides the following functionality:</p>
+<ul class="simple">
+<li><p><strong>Authentication</strong>: Automatic JWT token management with refresh</p></li>
+<li><p><strong>Message Processing</strong>: Process customer message histories and candidate responses</p></li>
+<li><p><strong>Message Optimization</strong>: Enhance messages for better customer engagement</p></li>
+<li><p><strong>Feedback Tracking</strong>: Submit performance feedback for processed messages</p></li>
+</ul>
+</section>
+<section id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Link to this heading"></a></h2>
+<section id="basic-client-setup">
+<h3>Basic Client Setup<a class="headerlink" href="#basic-client-setup" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+
+<span class="c1"># Initialize the client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://your-server.com&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Authenticate (gets JWT tokens)</span>
+<span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authenticated as: </span><span class="si">{</span><span class="n">auth_response</span><span class="p">[</span><span class="s1">&#39;company_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="message-processing">
+<h3>Message Processing<a class="headerlink" href="#message-processing" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span>
+
+<span class="c1"># Create message history</span>
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;I need help with my loan&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">),</span>
+    <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;What are your rates?&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># Define candidate response</span>
+<span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Our rates start at 3.5% APR. Let me help you!&quot;</span><span class="p">,</span>
+    <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Process through AI system</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid-here&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;12345&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid-here&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Access typed response</span>
+<span class="n">message_id</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processed message ID: </span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="message-optimization">
+<h3>Message Optimization<a class="headerlink" href="#message-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optimize message for better engagement</span>
+<span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;12345&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;original_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimized: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;optimized_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recommended channel: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;recommended_channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="feedback-submission">
+<h3>Feedback Submission<a class="headerlink" href="#feedback-submission" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">MessageFeedback</span>
+
+<span class="c1"># Create feedback after customer interaction</span>
+<span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+    <span class="n">original_message_id</span><span class="o">=</span><span class="s2">&quot;message-id-from-processing&quot;</span><span class="p">,</span>
+    <span class="n">sent_message_content</span><span class="o">=</span><span class="s2">&quot;The actual message sent&quot;</span><span class="p">,</span>
+    <span class="n">customer_responded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">quality_score</span><span class="o">=</span><span class="mi">88</span><span class="p">,</span>
+    <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">1200000</span>  <span class="c1"># 20 minutes</span>
+<span class="p">)</span>
+
+<span class="c1"># Submit feedback</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feedback ID: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;feedback_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p>The client uses standard <code class="docutils literal notranslate"><span class="pre">requests</span></code> library exceptions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="class-reference">
+<h2>Class Reference<a class="headerlink" href="#class-reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.client.</span></span><span class="sig-name descname"><span class="pre">ApalaClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:4000'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Client for Phoenix Message Analysis Services.</p>
+<p>Provides authentication and methods for message processing and feedback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:4000'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Initialize the client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Your API key for authentication</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Base URL of the Phoenix server</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">authenticate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.authenticate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Exchange API key for JWT tokens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id0" title="apala_client.models.AuthResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthResponse</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Authentication response data</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If authentication fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">refresh_access_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.refresh_access_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Refresh the access token using the refresh token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id8" title="apala_client.models.RefreshResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">RefreshResponse</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Refresh response data</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If token refresh fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">message_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">company_guid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.message_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Process customer message history and candidate message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message_history</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>]</span>) – List of customer messages</p></li>
+<li><p><strong>candidate_message</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a></span>) – The candidate response message</p></li>
+<li><p><strong>customer_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer UUID</p></li>
+<li><p><strong>zip_code</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer’s 5-digit zip code</p></li>
+<li><p><strong>company_guid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Company UUID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id12" title="apala_client.models.MessageProcessingResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">MessageProcessingResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Processing response data</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">optimize_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">company_guid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.optimize_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Optimize a message for maximum customer engagement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message_history</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>]</span>) – List of customer messages</p></li>
+<li><p><strong>candidate_message</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a></span>) – The candidate message to optimize</p></li>
+<li><p><strong>customer_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer UUID</p></li>
+<li><p><strong>zip_code</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Customer’s 5-digit zip code</p></li>
+<li><p><strong>company_guid</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Company UUID</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CustomerMetadata</span></code>]</span>) – Optional customer metadata for enhanced personalization</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id22" title="apala_client.models.MessageOptimizationResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">MessageOptimizationResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optimization response with optimized_message and recommended_channel</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomerMetadata</span><span class="p">,</span> <span class="n">CreditScoreBin</span><span class="p">,</span> <span class="n">ApplicationReason</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">CustomerMetadata</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">is_repeat_borrower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">credit_score_bin</span><span class="o">=</span><span class="n">CreditScoreBin</span><span class="o">.</span><span class="n">SCORE_650_700</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">application_reason</span><span class="o">=</span><span class="n">ApplicationReason</span><span class="o">.</span><span class="n">HOME_IMPROVEMENT</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">customer_id</span><span class="o">=</span><span class="n">customer_id</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">company_guid</span><span class="o">=</span><span class="n">company_guid</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">message_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feedback_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.message_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Submit feedback for multiple processed messages using bulk endpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feedback_list</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">any</span></code>]]</span>) – List of feedback dictionaries, each containing:
+- message_id: str - The message UUID
+- customer_responded: bool - Whether customer responded
+- score: int - Quality score (0-100)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.BulkFeedbackResponse" title="apala_client.models.BulkFeedbackResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bulk feedback submission response</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">submit_single_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_responded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_sent_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.submit_single_feedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Submit feedback for a single processed message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The message UUID from optimization response</p></li>
+<li><p><strong>customer_responded</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Whether the customer responded</p></li>
+<li><p><strong>score</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Quality score (0-100)</p></li>
+<li><p><strong>actual_sent_message</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Optional - The actual message content sent to the customer.
+Useful if you modified the optimized message before sending.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#id28" title="apala_client.models.FeedbackResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeedbackResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Feedback submission response</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">submit_feedback_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feedback_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.submit_feedback_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Submit feedback for multiple messages in bulk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feedback_list</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">any</span></code>]]</span>) – List of feedback dictionaries, each containing:
+- message_id: str - The message UUID
+- customer_responded: bool - Whether customer responded
+- score: int - Quality score (0-100)
+- actual_sent_message: str (optional) - The actual message content sent to customer</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#apala_client.models.BulkFeedbackResponse" title="apala_client.models.BulkFeedbackResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bulk feedback submission response with success status, count, and individual feedback items</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.HTTPError" title="(in Requests v2.32.5)"><strong>requests.HTTPError</strong></a> – If the request fails</p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.RequestException" title="(in Requests v2.32.5)"><strong>requests.RequestException</strong></a> – For network-related errors</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feedback_list</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;customer_responded&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;actual_sent_message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hi! Ready to help with your loan.&quot;</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="s2">&quot;660e8400-e29b-41d4-a716-446655440001&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;customer_responded&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mi">60</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_feedback_bulk</span><span class="p">(</span><span class="n">feedback_list</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submitted </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> feedback items&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/client.html#ApalaClient.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd><p>Close the HTTP session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../examples.html" class="btn btn-neutral float-left" title="Examples and Use Cases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models.html" class="btn btn-neutral float-right" title="Data Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

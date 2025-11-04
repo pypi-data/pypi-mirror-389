@@ -1,0 +1,97 @@
+[project]
+name = "apala-api"
+version = "1.1.0"
+description = "Python SDK for Phoenix Message Analysis Services - Loan/Financial AI API Client"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "marimo>=0.16.5",
+    "pydantic>=2.12.3",
+    "requests>=2.28.0",
+]
+authors = [
+    {name = "Apala Cap"},
+]
+keywords = ["api", "ai", "loans", "financial", "messaging", "phoenix"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10", 
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "types-requests>=2.28.0",
+    "tox>=4.0.0",
+]
+notebook = [
+    "marimo>=0.3.0",
+    "jupyter>=1.0.0",
+]
+docs = [
+    "sphinx>=7.4.7",
+    "sphinx-autodoc-typehints>=2.3.0",
+    "sphinx-rtd-theme>=3.0.2",
+    "myst-parser>=3.0.1",
+]
+all = [
+    "apala-api[dev,notebook,docs]",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["apala_client"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90", "I", "N", "UP", "B", "A", "C4", "PIE", "SIM"]
+ignore = ["E501"]  # line too long (handled by formatter)
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "myst-parser>=3.0.1",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+    "ruff>=0.1.0",
+    "sphinx>=7.4.7",
+    "sphinx-autodoc-typehints>=2.3.0",
+    "sphinx-rtd-theme>=3.0.2",
+    "sphinx-autobuild>=2024.10.3",
+    "tox>=4.30.3",
+    "types-requests>=2.32.4.20250913",
+]

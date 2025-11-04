@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authentication Guide &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Message Processing" href="message_processing.html" />
+    <link rel="prev" title="Quick Start Guide" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#authentication-flow">Authentication Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-authentication">Basic Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#token-management">Token Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication-errors">Authentication Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#secure-api-key-storage">Secure API Key Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication-best-practices">Authentication Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#production-authentication-pattern">Production Authentication Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-authentication">Debugging Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Authentication Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/authentication.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="authentication-guide">
+<h1>Authentication Guide<a class="headerlink" href="#authentication-guide" title="Link to this heading"></a></h1>
+<p>The Apala API uses a two-tier authentication system: API keys for initial authentication and JWT tokens for ongoing API requests.</p>
+<section id="authentication-flow">
+<h2>Authentication Flow<a class="headerlink" href="#authentication-flow" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>API Key Exchange</strong>: Your API key is exchanged for JWT access and refresh tokens</p></li>
+<li><p><strong>Token Usage</strong>: All API requests use the JWT access token</p></li>
+<li><p><strong>Automatic Refresh</strong>: The SDK automatically refreshes tokens when they expire</p></li>
+</ol>
+</section>
+<section id="basic-authentication">
+<h2>Basic Authentication<a class="headerlink" href="#basic-authentication" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+
+<span class="c1"># Initialize with API key</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;IjU50unIfiSfO3txKLWpRDugelb9SGbsi6KShkLzeOM=&quot;</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://your-phoenix-server.com&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Authenticate and get JWT tokens</span>
+<span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Company: </span><span class="si">{</span><span class="n">auth_response</span><span class="p">[</span><span class="s1">&#39;company_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Token expires in: </span><span class="si">{</span><span class="n">auth_response</span><span class="p">[</span><span class="s1">&#39;expires_in&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h2>
+<p>For security, store credentials in environment variables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set environment variables</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">APALA_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-api-key-here&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">APALA_BASE_URL</span><span class="o">=</span><span class="s2">&quot;https://your-server.com&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">APALA_COMPANY_GUID</span><span class="o">=</span><span class="s2">&quot;your-company-uuid&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+
+<span class="c1"># Load from environment</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;APALA_API_KEY&quot;</span><span class="p">),</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;APALA_BASE_URL&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="token-management">
+<h2>Token Management<a class="headerlink" href="#token-management" title="Link to this heading"></a></h2>
+<p>The SDK handles token lifecycle automatically:</p>
+<dl>
+<dt><strong>Automatic Refresh</strong></dt><dd><p>Tokens are refreshed 60 seconds before expiration</p>
+</dd>
+<dt><strong>Manual Refresh</strong></dt><dd><p>You can manually refresh if needed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Force token refresh</span>
+<span class="n">refresh_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_access_token</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New token expires in: </span><span class="si">{</span><span class="n">refresh_response</span><span class="p">[</span><span class="s1">&#39;expires_in&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Token Inspection</strong></dt><dd><p>Check current token status:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="c1"># Check if token is valid</span>
+<span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">is_valid</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">access_token</span> <span class="ow">and</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Token expired or missing, re-authenticating...&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="authentication-errors">
+<h2>Authentication Errors<a class="headerlink" href="#authentication-errors" title="Link to this heading"></a></h2>
+<p>Handle common authentication issues:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid API key&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;API key lacks necessary permissions&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">500</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server error - try again later&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication failed: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot connect to server - check URL and network&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="secure-api-key-storage">
+<h2>Secure API Key Storage<a class="headerlink" href="#secure-api-key-storage" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Development</strong></dt><dd><p>Use environment variables or config files (never commit to git):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># .env file (add to .gitignore)</span>
+<span class="n">APALA_API_KEY</span><span class="o">=</span><span class="n">your</span><span class="o">-</span><span class="n">key</span><span class="o">-</span><span class="n">here</span>
+<span class="n">APALA_BASE_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">your</span><span class="o">-</span><span class="n">server</span><span class="o">.</span><span class="n">com</span>
+
+<span class="c1"># Load with python-dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Production</strong></dt><dd><p>Use secure secret management:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># AWS Secrets Manager example</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_api_credentials</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;secretsmanager&#39;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">(</span><span class="n">SecretId</span><span class="o">=</span><span class="s1">&#39;apala-api-credentials&#39;</span><span class="p">)</span>
+    <span class="n">secrets</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;SecretString&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">secrets</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">],</span> <span class="n">secrets</span><span class="p">[</span><span class="s1">&#39;base_url&#39;</span><span class="p">]</span>
+
+<span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span> <span class="o">=</span> <span class="n">get_api_credentials</span><span class="p">()</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="authentication-best-practices">
+<h2>Authentication Best Practices<a class="headerlink" href="#authentication-best-practices" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>Security</strong></dt><dd><ul class="simple">
+<li><p>Never hardcode API keys in source code</p></li>
+<li><p>Use environment variables for local development</p></li>
+<li><p>Use secret management services in production</p></li>
+<li><p>Rotate API keys regularly</p></li>
+</ul>
+</dd>
+<dt><strong>Error Handling</strong></dt><dd><ul class="simple">
+<li><p>Always handle authentication failures gracefully</p></li>
+<li><p>Implement retry logic for temporary failures</p></li>
+<li><p>Log authentication events for monitoring</p></li>
+</ul>
+</dd>
+<dt><strong>Performance</strong></dt><dd><ul class="simple">
+<li><p>Reuse the same client instance across requests</p></li>
+<li><p>Let the SDK handle token refresh automatically</p></li>
+<li><p>Don’t authenticate more frequently than necessary</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="production-authentication-pattern">
+<h2>Production Authentication Pattern<a class="headerlink" href="#production-authentication-pattern" title="Link to this heading"></a></h2>
+<p>Here’s a production-ready authentication pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SecureApalaClient</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APALA_API_KEY&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APALA_BASE_URL&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_auth_attempt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auth_retry_delay</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_authenticated_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Context manager providing authenticated client.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">client</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">client</span><span class="p">:</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create authenticated client.&quot;&quot;&quot;</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Create new client if needed</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check if we need to authenticate</span>
+        <span class="n">needs_auth</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">access_token</span> <span class="ow">or</span>
+            <span class="n">current_time</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">token_expires_at</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">needs_auth</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_authenticate_with_retry</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_authenticate_with_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Authenticate with exponential backoff retry.&quot;&quot;&quot;</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Prevent too frequent retry attempts</span>
+        <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_auth_attempt</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auth_retry_delay</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Authentication retry delay not met&quot;</span><span class="p">)</span>
+
+        <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Authentication successful&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_auth_attempt</span> <span class="o">=</span> <span class="n">current_time</span>
+                <span class="k">return</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Auth attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">401</span><span class="p">,</span> <span class="mi">403</span><span class="p">]:</span>
+                    <span class="c1"># Don&#39;t retry auth errors</span>
+                    <span class="k">raise</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>  <span class="c1"># Exponential backoff</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Auth attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> connection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_auth_attempt</span> <span class="o">=</span> <span class="n">current_time</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication failed after </span><span class="si">{</span><span class="n">max_retries</span><span class="si">}</span><span class="s2"> attempts&quot;</span><span class="p">)</span>
+
+<span class="c1"># Usage</span>
+<span class="n">secure_client</span> <span class="o">=</span> <span class="n">SecureApalaClient</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">secure_client</span><span class="o">.</span><span class="n">get_authenticated_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="debugging-authentication">
+<h2>Debugging Authentication<a class="headerlink" href="#debugging-authentication" title="Link to this heading"></a></h2>
+<p>Enable debug logging to troubleshoot authentication issues:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib3</span>
+
+<span class="c1"># Enable debug logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>  <span class="c1"># Optional: disable SSL warnings</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://server.com&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug: Authentication successful&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Debug: Authentication failed - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will show detailed HTTP request/response information to help diagnose authentication problems.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="message_processing.html" class="btn btn-neutral float-right" title="Message Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

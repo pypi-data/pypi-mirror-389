@@ -1,0 +1,1206 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Response Types &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Data Models" href="models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Data Models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Response Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.AuthResponse"><code class="docutils literal notranslate"><span class="pre">AuthResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.access_token"><code class="docutils literal notranslate"><span class="pre">AuthResponse.access_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.refresh_token"><code class="docutils literal notranslate"><span class="pre">AuthResponse.refresh_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.token_type"><code class="docutils literal notranslate"><span class="pre">AuthResponse.token_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.expires_in"><code class="docutils literal notranslate"><span class="pre">AuthResponse.expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.company_id"><code class="docutils literal notranslate"><span class="pre">AuthResponse.company_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.company_name"><code class="docutils literal notranslate"><span class="pre">AuthResponse.company_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.AuthResponse.model_config"><code class="docutils literal notranslate"><span class="pre">AuthResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.RefreshResponse"><code class="docutils literal notranslate"><span class="pre">RefreshResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.RefreshResponse.access_token"><code class="docutils literal notranslate"><span class="pre">RefreshResponse.access_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.RefreshResponse.expires_in"><code class="docutils literal notranslate"><span class="pre">RefreshResponse.expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.RefreshResponse.model_config"><code class="docutils literal notranslate"><span class="pre">RefreshResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.CandidateMessageResponse"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.CandidateMessageResponse.content"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse.content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.CandidateMessageResponse.channel"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse.channel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.CandidateMessageResponse.message_id"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse.message_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.CandidateMessageResponse.model_config"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.MessageProcessingResponse"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageProcessingResponse.company"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse.company</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageProcessingResponse.customer_id"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse.customer_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageProcessingResponse.candidate_message"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse.candidate_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageProcessingResponse.model_config"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.MessageOptimizationResponse"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageOptimizationResponse.message_id"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse.message_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageOptimizationResponse.optimized_message"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse.optimized_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageOptimizationResponse.recommended_channel"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse.recommended_channel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageOptimizationResponse.original_message"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse.original_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageOptimizationResponse.model_config"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.FeedbackResponse"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.id"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.message_id"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.message_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.customer_responded"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.customer_responded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.score"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.score</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.actual_sent_message"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.actual_sent_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.inserted_at"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.inserted_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackResponse.model_config"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.id"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.message_id"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.message_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.customer_responded"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.customer_responded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.score"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.score</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.actual_sent_message"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.actual_sent_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.inserted_at"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.inserted_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.FeedbackItemResponse.model_config"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.BulkFeedbackResponse"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.BulkFeedbackResponse.success"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse.success</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.BulkFeedbackResponse.count"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse.count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.BulkFeedbackResponse.feedback"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse.feedback</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.BulkFeedbackResponse.model_config"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.Message"><code class="docutils literal notranslate"><span class="pre">Message</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.content"><code class="docutils literal notranslate"><span class="pre">Message.content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.channel"><code class="docutils literal notranslate"><span class="pre">Message.channel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.message_id"><code class="docutils literal notranslate"><span class="pre">Message.message_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.send_timestamp"><code class="docutils literal notranslate"><span class="pre">Message.send_timestamp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.reply_or_not"><code class="docutils literal notranslate"><span class="pre">Message.reply_or_not</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.validate_channel"><code class="docutils literal notranslate"><span class="pre">Message.validate_channel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.model_post_init"><code class="docutils literal notranslate"><span class="pre">Message.model_post_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.to_dict"><code class="docutils literal notranslate"><span class="pre">Message.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.Message.model_config"><code class="docutils literal notranslate"><span class="pre">Message.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.MessageFeedback"><code class="docutils literal notranslate"><span class="pre">MessageFeedback</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.original_message_id"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.original_message_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.sent_message_content"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.sent_message_content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.customer_responded"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.customer_responded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.quality_score"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.quality_score</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.time_to_respond_ms"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.time_to_respond_ms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.to_dict"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageFeedback.model_config"><code class="docutils literal notranslate"><span class="pre">MessageFeedback.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#apala_client.models.MessageHistory"><code class="docutils literal notranslate"><span class="pre">MessageHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.messages"><code class="docutils literal notranslate"><span class="pre">MessageHistory.messages</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.candidate_message"><code class="docutils literal notranslate"><span class="pre">MessageHistory.candidate_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.customer_id"><code class="docutils literal notranslate"><span class="pre">MessageHistory.customer_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.zip_code"><code class="docutils literal notranslate"><span class="pre">MessageHistory.zip_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.company_guid"><code class="docutils literal notranslate"><span class="pre">MessageHistory.company_guid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.validate_uuid"><code class="docutils literal notranslate"><span class="pre">MessageHistory.validate_uuid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.to_processing_dict"><code class="docutils literal notranslate"><span class="pre">MessageHistory.to_processing_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.to_optimization_dict"><code class="docutils literal notranslate"><span class="pre">MessageHistory.to_optimization_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apala_client.models.MessageHistory.model_config"><code class="docutils literal notranslate"><span class="pre">MessageHistory.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication-types">Authentication Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#authresponse">AuthResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">AuthResponse</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#refreshresponse">RefreshResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">RefreshResponse</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#message-processing-types">Message Processing Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#messageprocessingresponse">MessageProcessingResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#candidatemessageresponse">CandidateMessageResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#messageoptimizationresponse">MessageOptimizationResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id22"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#feedback-types">Feedback Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#feedbackresponse">FeedbackResponse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id28"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#type-safety-benefits">Type Safety Benefits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-typed-responses">Working with Typed Responses</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Response Types</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/types.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-apala_client.models">
+<span id="response-types"></span><h1>Response Types<a class="headerlink" href="#module-apala_client.models" title="Link to this heading"></a></h1>
+<p>Data models for Apala API client.</p>
+<p>All models use Pydantic for type safety and validation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">AuthResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#AuthResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.AuthResponse" title="Link to this definition"></a></dt>
+<dd><p>Authentication response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.access_token">
+<span class="sig-name descname"><span class="pre">access_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.AuthResponse.access_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.refresh_token">
+<span class="sig-name descname"><span class="pre">refresh_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.AuthResponse.refresh_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.token_type">
+<span class="sig-name descname"><span class="pre">token_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.AuthResponse.token_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.expires_in">
+<span class="sig-name descname"><span class="pre">expires_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#apala_client.models.AuthResponse.expires_in" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.company_id">
+<span class="sig-name descname"><span class="pre">company_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.AuthResponse.company_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.company_name">
+<span class="sig-name descname"><span class="pre">company_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.AuthResponse.company_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.AuthResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.AuthResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.RefreshResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">RefreshResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#RefreshResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.RefreshResponse" title="Link to this definition"></a></dt>
+<dd><p>Token refresh response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.RefreshResponse.access_token">
+<span class="sig-name descname"><span class="pre">access_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.RefreshResponse.access_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.RefreshResponse.expires_in">
+<span class="sig-name descname"><span class="pre">expires_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#apala_client.models.RefreshResponse.expires_in" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.RefreshResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.RefreshResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.CandidateMessageResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">CandidateMessageResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#CandidateMessageResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.CandidateMessageResponse" title="Link to this definition"></a></dt>
+<dd><p>Candidate message in processing response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.CandidateMessageResponse.content">
+<span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.CandidateMessageResponse.content" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.CandidateMessageResponse.channel">
+<span class="sig-name descname"><span class="pre">channel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.CandidateMessageResponse.channel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.CandidateMessageResponse.message_id">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.CandidateMessageResponse.message_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.CandidateMessageResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.CandidateMessageResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.MessageProcessingResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">MessageProcessingResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageProcessingResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageProcessingResponse" title="Link to this definition"></a></dt>
+<dd><p>Message processing response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageProcessingResponse.company">
+<span class="sig-name descname"><span class="pre">company</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageProcessingResponse.company" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageProcessingResponse.customer_id">
+<span class="sig-name descname"><span class="pre">customer_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageProcessingResponse.customer_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageProcessingResponse.candidate_message">
+<span class="sig-name descname"><span class="pre">candidate_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#id17" title="apala_client.models.CandidateMessageResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">CandidateMessageResponse</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageProcessingResponse.candidate_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageProcessingResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.MessageProcessingResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.MessageOptimizationResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">MessageOptimizationResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageOptimizationResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageOptimizationResponse" title="Link to this definition"></a></dt>
+<dd><p>Message optimization response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageOptimizationResponse.message_id">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageOptimizationResponse.message_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageOptimizationResponse.optimized_message">
+<span class="sig-name descname"><span class="pre">optimized_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageOptimizationResponse.optimized_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageOptimizationResponse.recommended_channel">
+<span class="sig-name descname"><span class="pre">recommended_channel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageOptimizationResponse.recommended_channel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageOptimizationResponse.original_message">
+<span class="sig-name descname"><span class="pre">original_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageOptimizationResponse.original_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageOptimizationResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.MessageOptimizationResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">FeedbackResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#FeedbackResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.FeedbackResponse" title="Link to this definition"></a></dt>
+<dd><p>Feedback submission response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.message_id">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.message_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.customer_responded">
+<span class="sig-name descname"><span class="pre">customer_responded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.customer_responded" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.score">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.score" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.actual_sent_message">
+<span class="sig-name descname"><span class="pre">actual_sent_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.actual_sent_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.inserted_at">
+<span class="sig-name descname"><span class="pre">inserted_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.inserted_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.FeedbackResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">FeedbackItemResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#FeedbackItemResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.FeedbackItemResponse" title="Link to this definition"></a></dt>
+<dd><p>Individual feedback item in bulk response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.message_id">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.message_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.customer_responded">
+<span class="sig-name descname"><span class="pre">customer_responded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.customer_responded" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.score">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.score" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.actual_sent_message">
+<span class="sig-name descname"><span class="pre">actual_sent_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.actual_sent_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.inserted_at">
+<span class="sig-name descname"><span class="pre">inserted_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.inserted_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.FeedbackItemResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.FeedbackItemResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.BulkFeedbackResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">BulkFeedbackResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#BulkFeedbackResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.BulkFeedbackResponse" title="Link to this definition"></a></dt>
+<dd><p>Bulk feedback submission response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.BulkFeedbackResponse.success">
+<span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#apala_client.models.BulkFeedbackResponse.success" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.BulkFeedbackResponse.count">
+<span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#apala_client.models.BulkFeedbackResponse.count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.BulkFeedbackResponse.feedback">
+<span class="sig-name descname"><span class="pre">feedback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a><span class="pre">[</span><a class="reference internal" href="#apala_client.models.FeedbackItemResponse" title="apala_client.models.FeedbackItemResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeedbackItemResponse</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.BulkFeedbackResponse.feedback" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.BulkFeedbackResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.BulkFeedbackResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.Message">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.Message" title="Link to this definition"></a></dt>
+<dd><p>Represents a customer message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.Message.content">
+<span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.Message.content" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.Message.channel">
+<span class="sig-name descname"><span class="pre">channel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.Message.channel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.Message.message_id">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.Message.message_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.Message.send_timestamp">
+<span class="sig-name descname"><span class="pre">send_timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.Message.send_timestamp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.Message.reply_or_not">
+<span class="sig-name descname"><span class="pre">reply_or_not</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#apala_client.models.Message.reply_or_not" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.Message.validate_channel">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#Message.validate_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.Message.validate_channel" title="Link to this definition"></a></dt>
+<dd><p>Validate channel is one of the allowed values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.Message.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_Message__context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#Message.model_post_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.Message.model_post_init" title="Link to this definition"></a></dt>
+<dd><p>Generate message_id and timestamp if not provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_Message__context</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.Message.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#Message.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.Message.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert to dictionary for API requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.Message.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.Message.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">MessageFeedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageFeedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageFeedback" title="Link to this definition"></a></dt>
+<dd><p>Represents feedback for a processed message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.original_message_id">
+<span class="sig-name descname"><span class="pre">original_message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageFeedback.original_message_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.sent_message_content">
+<span class="sig-name descname"><span class="pre">sent_message_content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageFeedback.sent_message_content" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.customer_responded">
+<span class="sig-name descname"><span class="pre">customer_responded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageFeedback.customer_responded" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.quality_score">
+<span class="sig-name descname"><span class="pre">quality_score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageFeedback.quality_score" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.time_to_respond_ms">
+<span class="sig-name descname"><span class="pre">time_to_respond_ms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.MessageFeedback.time_to_respond_ms" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageFeedback.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageFeedback.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert to dictionary for API requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageFeedback.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.MessageFeedback.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">MessageHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageHistory" title="Link to this definition"></a></dt>
+<dd><p>Represents a collection of customer messages and a candidate response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.messages">
+<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a><span class="pre">[</span><a class="reference internal" href="#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#apala_client.models.MessageHistory.messages" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.candidate_message">
+<span class="sig-name descname"><span class="pre">candidate_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#apala_client.models.Message" title="apala_client.models.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageHistory.candidate_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.customer_id">
+<span class="sig-name descname"><span class="pre">customer_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageHistory.customer_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.zip_code">
+<span class="sig-name descname"><span class="pre">zip_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageHistory.zip_code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.company_guid">
+<span class="sig-name descname"><span class="pre">company_guid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#apala_client.models.MessageHistory.company_guid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.validate_uuid">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageHistory.validate_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageHistory.validate_uuid" title="Link to this definition"></a></dt>
+<dd><p>Validate UUID format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.to_processing_dict">
+<span class="sig-name descname"><span class="pre">to_processing_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageHistory.to_processing_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageHistory.to_processing_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert to dictionary for message processing API requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.to_optimization_dict">
+<span class="sig-name descname"><span class="pre">to_optimization_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageHistory.to_optimization_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#apala_client.models.MessageHistory.to_optimization_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert to dictionary for message optimization API requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="apala_client.models.MessageHistory.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#apala_client.models.MessageHistory.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>The Apala API provides fully typed responses using TypedDict for compile-time type safety and IDE autocomplete support.</p>
+<section id="authentication-types">
+<h2>Authentication Types<a class="headerlink" href="#authentication-types" title="Link to this heading"></a></h2>
+<section id="authresponse">
+<h3>AuthResponse<a class="headerlink" href="#authresponse" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">AuthResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#AuthResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Authentication response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">access_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">refresh_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">token_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">expires_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">company_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">company_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Response from the authentication endpoint when exchanging an API key for JWT tokens.</p>
+<p><strong>Fields:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code> (str): JWT access token for API requests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code> (str): JWT refresh token for obtaining new access tokens</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">token_type</span></code> (str): Token type, typically “Bearer”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expires_in</span></code> (int): Access token expiration time in seconds</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">company_id</span></code> (str): Your company’s unique identifier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">company_name</span></code> (str): Your company’s display name</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthResponse</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span><span class="p">)</span>
+<span class="n">auth_response</span><span class="p">:</span> <span class="n">AuthResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="c1"># Type-safe access to response fields</span>
+<span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">auth_response</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+<span class="n">company</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">auth_response</span><span class="p">[</span><span class="s2">&quot;company_name&quot;</span><span class="p">]</span>
+<span class="n">expires</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">auth_response</span><span class="p">[</span><span class="s2">&quot;expires_in&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="refreshresponse">
+<h3>RefreshResponse<a class="headerlink" href="#refreshresponse" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">RefreshResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#RefreshResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Token refresh response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">access_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">expires_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Response from the token refresh endpoint.</p>
+<p><strong>Fields:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code> (str): New JWT access token</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expires_in</span></code> (int): New token expiration time in seconds</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefreshResponse</span>
+
+<span class="n">refresh_response</span><span class="p">:</span> <span class="n">RefreshResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_access_token</span><span class="p">()</span>
+<span class="n">new_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">refresh_response</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="message-processing-types">
+<h2>Message Processing Types<a class="headerlink" href="#message-processing-types" title="Link to this heading"></a></h2>
+<section id="messageprocessingresponse">
+<h3>MessageProcessingResponse<a class="headerlink" href="#messageprocessingresponse" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="id12">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">MessageProcessingResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageProcessingResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd><p>Message processing response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">company</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">customer_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">candidate_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#id17" title="apala_client.models.CandidateMessageResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">CandidateMessageResponse</span></code></a></em><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Response from the message processing endpoint.</p>
+<p><strong>Fields:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">company</span></code> (str): Company GUID that processed the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">customer_id</span></code> (str): Customer UUID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">candidate_message</span></code> (CandidateMessageResponse): Processed message details</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">MessageProcessingResponse</span>
+
+<span class="n">response</span><span class="p">:</span> <span class="n">MessageProcessingResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Type-safe field access</span>
+<span class="n">company_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;company&quot;</span><span class="p">]</span>
+<span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">]</span>
+<span class="n">message_info</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="candidatemessageresponse">
+<h3>CandidateMessageResponse<a class="headerlink" href="#candidatemessageresponse" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="id17">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">CandidateMessageResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#CandidateMessageResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd><p>Candidate message in processing response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">channel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Nested type representing the processed candidate message.</p>
+<p><strong>Fields:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">content</span></code> (str): The message content</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">channel</span></code> (str): Communication channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message_id</span></code> (str): Unique message identifier</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CandidateMessageResponse</span>
+
+<span class="n">candidate</span><span class="p">:</span> <span class="n">CandidateMessageResponse</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">]</span>
+
+<span class="n">message_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span>
+<span class="n">content</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">candidate</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="messageoptimizationresponse">
+<h3>MessageOptimizationResponse<a class="headerlink" href="#messageoptimizationresponse" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="id22">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">MessageOptimizationResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#MessageOptimizationResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dd><p>Message optimization response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">optimized_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">recommended_channel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id25" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">original_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id26" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Response from the message optimization endpoint.</p>
+<p><strong>Fields:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">optimized_message</span></code> (str): AI-enhanced message content</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">recommended_channel</span></code> (str): Optimal communication channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">original_message</span></code> (str): Original message for comparison</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">MessageOptimizationResponse</span>
+
+<span class="n">optimization</span><span class="p">:</span> <span class="n">MessageOptimizationResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">original</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">optimization</span><span class="p">[</span><span class="s2">&quot;original_message&quot;</span><span class="p">]</span>
+<span class="n">improved</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">optimization</span><span class="p">[</span><span class="s2">&quot;optimized_message&quot;</span><span class="p">]</span>
+<span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">optimization</span><span class="p">[</span><span class="s2">&quot;recommended_channel&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="feedback-types">
+<h2>Feedback Types<a class="headerlink" href="#feedback-types" title="Link to this heading"></a></h2>
+<section id="feedbackresponse">
+<h3>FeedbackResponse<a class="headerlink" href="#feedbackresponse" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="id28">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">apala_client.models.</span></span><span class="sig-name descname"><span class="pre">FeedbackResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/apala_client/models.html#FeedbackResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
+<dd><p>Feedback submission response from the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">message_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id30" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">customer_responded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#id31" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">score</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#id32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">actual_sent_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#id33" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">inserted_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#id34" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar[ConfigDict]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#id35" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Response from feedback submission endpoints.</p>
+<p><strong>Fields:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">success</span></code> (bool): Whether feedback was successfully recorded</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> (str): Human-readable status message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">feedback_id</span></code> (int): Unique identifier for the feedback record</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">received_at</span></code> (str): ISO timestamp when feedback was received</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FeedbackResponse</span>
+
+<span class="n">feedback_response</span><span class="p">:</span> <span class="n">FeedbackResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+
+<span class="n">success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">feedback_response</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]</span>
+<span class="n">feedback_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">feedback_response</span><span class="p">[</span><span class="s2">&quot;feedback_id&quot;</span><span class="p">]</span>
+<span class="n">timestamp</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">feedback_response</span><span class="p">[</span><span class="s2">&quot;received_at&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="type-safety-benefits">
+<h2>Type Safety Benefits<a class="headerlink" href="#type-safety-benefits" title="Link to this heading"></a></h2>
+<p>Using TypedDict provides several advantages:</p>
+<dl>
+<dt><strong>IDE Autocomplete</strong></dt><dd><p>Your IDE can provide intelligent autocomplete for response fields:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="c1"># IDE shows: access_token, refresh_token, company_name, etc.</span>
+<span class="n">token</span> <span class="o">=</span> <span class="n">auth_response</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Compile-Time Error Detection</strong></dt><dd><p>mypy catches type errors during development:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will cause a mypy error:</span>
+<span class="n">auth_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="n">invalid_field</span> <span class="o">=</span> <span class="n">auth_response</span><span class="p">[</span><span class="s2">&quot;nonexistent_field&quot;</span><span class="p">]</span>  <span class="c1"># Error!</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Runtime Safety</strong></dt><dd><p>TypedDict prevents accessing non-existent fields:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This raises a KeyError at runtime:</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="n">bad_field</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;missing_key&quot;</span><span class="p">]</span>  <span class="c1"># KeyError!</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Documentation Through Types</strong></dt><dd><p>The types serve as executable documentation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_auth_response</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">AuthResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># Developers know exactly what fields are available</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Company </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;company_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> authenticated&quot;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="working-with-typed-responses">
+<h2>Working with Typed Responses<a class="headerlink" href="#working-with-typed-responses" title="Link to this heading"></a></h2>
+<p><strong>Basic Usage</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthResponse</span><span class="p">,</span> <span class="n">MessageProcessingResponse</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span><span class="p">)</span>
+
+<span class="c1"># Fully typed authentication</span>
+<span class="n">auth</span><span class="p">:</span> <span class="n">AuthResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+<span class="n">company_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">auth</span><span class="p">[</span><span class="s2">&quot;company_name&quot;</span><span class="p">]</span>
+
+<span class="c1"># Fully typed message processing</span>
+<span class="n">result</span><span class="p">:</span> <span class="n">MessageProcessingResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">message_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Error Handling with Types</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">apala_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthResponse</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth_response</span><span class="p">:</span> <span class="n">AuthResponse</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">auth_response</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authentication failed: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected response format: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Type Checking</strong></p>
+<p>Enable mypy in your project to catch type errors:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install mypy</span>
+pip<span class="w"> </span>install<span class="w"> </span>mypy
+
+<span class="c1"># Check your code</span>
+mypy<span class="w"> </span>your_project.py
+</pre></div>
+</div>
+<p><strong>IDE Configuration</strong></p>
+<p>For the best experience, use an IDE that supports Python type hints:</p>
+<ul class="simple">
+<li><p><strong>VS Code</strong>: Install the Python extension</p></li>
+<li><p><strong>PyCharm</strong>: Type hints supported out of the box</p></li>
+<li><p><strong>Vim/Neovim</strong>: Use coc.nvim or similar plugins</p></li>
+</ul>
+<p>This ensures you get full autocomplete and error detection while developing with the Apala API.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="models.html" class="btn btn-neutral float-left" title="Data Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

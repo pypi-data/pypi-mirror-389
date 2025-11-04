@@ -1,0 +1,505 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message Processing &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Feedback Tracking" href="feedback_tracking.html" />
+    <link rel="prev" title="Authentication Guide" href="authentication.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Message Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-concepts">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-message-processing">Basic Message Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#message-types-and-channels">Message Types and Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-processing-workflows">Advanced Processing Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#message-optimization">Message Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#context-and-personalization">Context and Personalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Message Processing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/message_processing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="message-processing">
+<h1>Message Processing<a class="headerlink" href="#message-processing" title="Link to this heading"></a></h1>
+<p>The message processing system analyzes customer conversation history and candidate responses to provide AI-enhanced communication recommendations.</p>
+<section id="core-concepts">
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>Message History</strong></dt><dd><p>A chronological sequence of customer messages leading up to the current interaction.</p>
+</dd>
+<dt><strong>Candidate Message</strong></dt><dd><p>Your proposed response to the customer’s messages.</p>
+</dd>
+<dt><strong>Processing</strong></dt><dd><p>The AI system analyzes context, sentiment, and intent to enhance your response.</p>
+</dd>
+<dt><strong>Optimization</strong></dt><dd><p>Further refinement of messages for maximum customer engagement.</p>
+</dd>
+</dl>
+</section>
+<section id="basic-message-processing">
+<h2>Basic Message Processing<a class="headerlink" href="#basic-message-processing" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="c1"># Customer conversation history</span>
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;I&#39;m looking for a mortgage refinance&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+        <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">),</span>
+    <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;My current rate is 4.5</span><span class="si">% a</span><span class="s2">nd I have excellent credit&quot;</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+        <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># Your candidate response</span>
+<span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;With excellent credit, you could qualify for rates as low as 3.1%. Let me run some numbers for you.&quot;</span><span class="p">,</span>
+    <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Process through AI system</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid-here&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Access results</span>
+<span class="n">processed_msg</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processed message ID: </span><span class="si">{</span><span class="n">processed_msg</span><span class="p">[</span><span class="s1">&#39;message_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Enhanced content: </span><span class="si">{</span><span class="n">processed_msg</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="message-types-and-channels">
+<h2>Message Types and Channels<a class="headerlink" href="#message-types-and-channels" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Supported Channels</strong></dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;SMS&quot;</span></code>: Text message communication</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;EMAIL&quot;</span></code>: Email communication</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;OTHER&quot;</span></code>: Any other communication channel</p></li>
+</ul>
+</dd>
+<dt><strong>Channel-Specific Optimization</strong></dt><dd><p>The AI adjusts message style based on channel:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># SMS - concise and direct</span>
+<span class="n">sms_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Hi! Ready to discuss loan options?&quot;</span><span class="p">,</span>
+    <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># EMAIL - more detailed and formal</span>
+<span class="n">email_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Thank you for your inquiry. I&#39;d be happy to discuss our competitive loan options and help you find the perfect solution.&quot;</span><span class="p">,</span>
+    <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="advanced-processing-workflows">
+<h2>Advanced Processing Workflows<a class="headerlink" href="#advanced-processing-workflows" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Multi-Turn Conversations</strong></dt><dd><p>Handle complex conversation flows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_conversation_chain</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">conversation_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process a multi-turn conversation.&quot;&quot;&quot;</span>
+
+    <span class="n">all_messages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;turns&quot;</span><span class="p">]:</span>
+        <span class="c1"># Add customer messages to history</span>
+        <span class="n">customer_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;customer_content&quot;</span><span class="p">],</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">],</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">all_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">customer_msg</span><span class="p">)</span>
+
+        <span class="c1"># Process with full history</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;candidate_response&quot;</span><span class="p">],</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+            <span class="n">message_history</span><span class="o">=</span><span class="n">all_messages</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+            <span class="n">customer_id</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">],</span>
+            <span class="n">zip_code</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+            <span class="n">company_guid</span><span class="o">=</span><span class="n">conversation_data</span><span class="p">[</span><span class="s2">&quot;company_guid&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="c1"># Add processed response to history for next turn</span>
+        <span class="n">response_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+            <span class="n">content</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;channel&quot;</span><span class="p">],</span>
+            <span class="n">message_id</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">],</span>
+            <span class="n">reply_or_not</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">all_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">responses</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Batch Processing</strong></dt><dd><p>Process multiple conversations efficiently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">batch_process_messages</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">:</span> <span class="n">ApalaClient</span><span class="p">,</span>
+    <span class="n">conversations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process multiple conversations in parallel.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_single</span><span class="p">(</span><span class="n">conv_data</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+                <span class="n">message_history</span><span class="o">=</span><span class="n">conv_data</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">],</span>
+                <span class="n">candidate_message</span><span class="o">=</span><span class="n">conv_data</span><span class="p">[</span><span class="s2">&quot;candidate&quot;</span><span class="p">],</span>
+                <span class="n">customer_id</span><span class="o">=</span><span class="n">conv_data</span><span class="p">[</span><span class="s2">&quot;customer_id&quot;</span><span class="p">],</span>
+                <span class="n">zip_code</span><span class="o">=</span><span class="n">conv_data</span><span class="p">[</span><span class="s2">&quot;zip_code&quot;</span><span class="p">],</span>
+                <span class="n">company_guid</span><span class="o">=</span><span class="n">conv_data</span><span class="p">[</span><span class="s2">&quot;company_guid&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s2">&quot;conversation_id&quot;</span><span class="p">:</span> <span class="n">conv_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)}</span>
+
+    <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">process_single</span><span class="p">,</span> <span class="n">conversations</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">results</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="message-optimization">
+<h2>Message Optimization<a class="headerlink" href="#message-optimization" title="Link to this heading"></a></h2>
+<p>Optimize messages for better customer engagement:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get optimized version of your message</span>
+<span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;customer-uuid&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Optimization Results ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;original_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimized: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;optimized_message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recommended Channel: </span><span class="si">{</span><span class="n">optimization</span><span class="p">[</span><span class="s1">&#39;recommended_channel&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt><strong>A/B Testing with Optimization</strong></dt><dd><p>Compare original vs optimized messages:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ab_test_messages</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">message_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run A/B test comparing original vs optimized messages.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Process original message</span>
+    <span class="n">original_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">message_data</span><span class="p">)</span>
+
+    <span class="c1"># Get optimized version</span>
+    <span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span><span class="o">**</span><span class="n">message_data</span><span class="p">)</span>
+
+    <span class="c1"># Create optimized candidate</span>
+    <span class="n">optimized_candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">optimization</span><span class="p">[</span><span class="s2">&quot;optimized_message&quot;</span><span class="p">],</span>
+        <span class="n">channel</span><span class="o">=</span><span class="n">optimization</span><span class="p">[</span><span class="s2">&quot;recommended_channel&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Process optimized message</span>
+    <span class="n">optimized_data</span> <span class="o">=</span> <span class="n">message_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">optimized_data</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">optimized_candidate</span>
+    <span class="n">optimized_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">optimized_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="n">original_response</span><span class="p">,</span>
+        <span class="s2">&quot;optimized&quot;</span><span class="p">:</span> <span class="n">optimized_response</span><span class="p">,</span>
+        <span class="s2">&quot;optimization_suggestions&quot;</span><span class="p">:</span> <span class="n">optimization</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="context-and-personalization">
+<h2>Context and Personalization<a class="headerlink" href="#context-and-personalization" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Customer Context</strong></dt><dd><p>Use customer data for personalized responses:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_personalized_message</span><span class="p">(</span><span class="n">customer_profile</span><span class="p">,</span> <span class="n">base_message</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create personalized message based on customer profile.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Customize based on customer data</span>
+    <span class="k">if</span> <span class="n">customer_profile</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;credit_score&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">750</span><span class="p">:</span>
+        <span class="n">tone</span> <span class="o">=</span> <span class="s2">&quot;Our premium rates for excellent credit customers&quot;</span>
+    <span class="k">elif</span> <span class="n">customer_profile</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;first_time_buyer&quot;</span><span class="p">):</span>
+        <span class="n">tone</span> <span class="o">=</span> <span class="s2">&quot;First-time buyer programs and guidance&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tone</span> <span class="o">=</span> <span class="s2">&quot;Competitive rates and flexible terms&quot;</span>
+
+    <span class="n">personalized_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_message</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">tone</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">Message</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">personalized_content</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="n">customer_profile</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;preferred_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;EMAIL&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Geographic Personalization</strong></dt><dd><p>Leverage zip code data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ZIP code influences processing</span>
+<span class="n">high_cost_areas</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">,</span> <span class="s2">&quot;94102&quot;</span><span class="p">]</span>  <span class="c1"># CA, NY examples</span>
+
+<span class="k">if</span> <span class="n">zip_code</span> <span class="ow">in</span> <span class="n">high_cost_areas</span><span class="p">:</span>
+    <span class="n">candidate_content</span> <span class="o">=</span> <span class="s2">&quot;Our jumbo loan programs offer competitive rates for high-value properties in your area.&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">candidate_content</span> <span class="o">=</span> <span class="s2">&quot;Our conventional loan programs offer great rates for properties in your market.&quot;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="error-handling-and-validation">
+<h2>Error Handling and Validation<a class="headerlink" href="#error-handling-and-validation" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Input Validation</strong></dt><dd><p>The SDK automatically validates inputs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+        <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+        <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+        <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;invalid-uuid&quot;</span><span class="p">,</span>  <span class="c1"># Will raise ValueError</span>
+        <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">,</span>              <span class="c1"># Will raise ValueError</span>
+        <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;company-uuid&quot;</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Processing Errors</strong></dt><dd><p>Handle API errors gracefully:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">robust_message_processing</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">message_data</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process message with retry logic.&quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">message_data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>  <span class="c1"># Rate limited</span>
+                <span class="n">wait_time</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate limited, waiting </span><span class="si">{</span><span class="n">wait_time</span><span class="si">}</span><span class="s2">s...&quot;</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">500</span><span class="p">:</span>  <span class="c1"># Server error</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server error on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>  <span class="c1"># Don&#39;t retry client errors</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection error on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing failed after </span><span class="si">{</span><span class="n">max_retries</span><span class="si">}</span><span class="s2"> attempts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="performance-optimization">
+<h2>Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h2>
+<dl>
+<dt><strong>Session Reuse</strong></dt><dd><p>Reuse client instances for better performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Good: Reuse client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">conversation</span> <span class="ow">in</span> <span class="n">conversations</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">conversation</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Bad: Create new client each time</span>
+<span class="k">for</span> <span class="n">conversation</span> <span class="ow">in</span> <span class="n">conversations</span><span class="p">:</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>  <span class="c1"># Wasteful</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">conversation</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Request Batching</strong></dt><dd><p>Group related requests when possible:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_customer_workflow</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">customer_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process multiple steps for a single customer efficiently.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Step 1: Process initial message</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;initial&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Step 2: Optimize the same message</span>
+    <span class="n">optimization</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">optimize_message</span><span class="p">(</span><span class="o">**</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;initial&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Step 3: Process follow-up if needed</span>
+    <span class="k">if</span> <span class="n">customer_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;followup&quot;</span><span class="p">):</span>
+        <span class="n">followup_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span><span class="o">**</span><span class="n">customer_data</span><span class="p">[</span><span class="s2">&quot;followup&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">optimization</span><span class="p">,</span> <span class="n">followup_response</span>
+
+    <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">optimization</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>Message Quality</strong></dt><dd><ul class="simple">
+<li><p>Provide clear, natural conversation history</p></li>
+<li><p>Write candidate responses in your authentic voice</p></li>
+<li><p>Include relevant context in message history</p></li>
+<li><p>Use appropriate channels for message types</p></li>
+</ul>
+</dd>
+<dt><strong>Performance</strong></dt><dd><ul class="simple">
+<li><p>Reuse authenticated client instances</p></li>
+<li><p>Implement appropriate retry logic</p></li>
+<li><p>Use batch processing for multiple conversations</p></li>
+<li><p>Cache optimization results when applicable</p></li>
+</ul>
+</dd>
+<dt><strong>Error Handling</strong></dt><dd><ul class="simple">
+<li><p>Always validate inputs before processing</p></li>
+<li><p>Handle network errors gracefully</p></li>
+<li><p>Log processing events for debugging</p></li>
+<li><p>Implement circuit breaker patterns for high-volume usage</p></li>
+</ul>
+</dd>
+<dt><strong>Data Management</strong></dt><dd><ul class="simple">
+<li><p>Store message IDs for feedback tracking</p></li>
+<li><p>Maintain conversation history for context</p></li>
+<li><p>Track processing metrics for optimization</p></li>
+<li><p>Implement data retention policies as needed</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="authentication.html" class="btn btn-neutral float-left" title="Authentication Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="feedback_tracking.html" class="btn btn-neutral float-right" title="Feedback Tracking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

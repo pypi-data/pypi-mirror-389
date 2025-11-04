@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apala API - Python SDK &mdash; Apala API 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start Guide" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Apala API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="message_processing.html">Message Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feedback_tracking.html">Feedback Tracking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples and Use Cases</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Apala API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Apala API - Python SDK</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="apala-api-python-sdk">
+<h1>Apala API - Python SDK<a class="headerlink" href="#apala-api-python-sdk" title="Link to this heading"></a></h1>
+<a class="reference external image-reference" href="https://www.python.org/downloads/"><img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9+-blue.svg" />
+</a>
+<a class="reference external image-reference" href="https://docs.python.org/3/library/typing.html"><img alt="Type Hints" src="https://img.shields.io/badge/type--hints-yes-brightgreen" />
+</a>
+<p>A modern, type-safe Python SDK for interacting with Phoenix Message Analysis Services for loan/financial AI applications.</p>
+<p><strong>Copyright (c) 2025 Apala Cap. All rights reserved. Proprietary and confidential.</strong></p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>✅ <strong>Type-Safe API</strong></dt><dd><ul class="simple">
+<li><p>Full TypedDict responses with IDE autocomplete</p></li>
+<li><p>mypy integration catches errors at development time</p></li>
+<li><p>No runtime surprises - all response fields are typed</p></li>
+</ul>
+</dd>
+<dt>✅ <strong>Complete Functionality</strong></dt><dd><ul class="simple">
+<li><p>Message Processing: Analyze customer conversations and candidate responses</p></li>
+<li><p>Message Optimization: Enhance messages for maximum engagement</p></li>
+<li><p>Feedback Tracking: Monitor message performance and customer responses</p></li>
+<li><p>Authentication: Automatic JWT token management with refresh</p></li>
+</ul>
+</dd>
+<dt>✅ <strong>Production Ready</strong></dt><dd><ul class="simple">
+<li><p>Multi-Python Support: Python 3.9, 3.10, 3.11, 3.12</p></li>
+<li><p>Comprehensive Testing: Unit tests, integration tests, type checking</p></li>
+<li><p>Error Handling: Uses standard <code class="docutils literal notranslate"><span class="pre">requests</span></code> exceptions (no custom exceptions)</p></li>
+<li><p>Validation: Client-side validation of UUIDs, zip codes, channels</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>apala-api
+</pre></div>
+</div>
+</section>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">apala_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApalaClient</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MessageFeedback</span>
+
+<span class="c1"># Initialize client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ApalaClient</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://your-server.com&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Authenticate (automatic JWT token management)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">authenticate</span><span class="p">()</span>
+
+<span class="c1"># Create customer message history</span>
+<span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Hi, I need help with my loan application.&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">),</span>
+    <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;What are the current interest rates?&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;SMS&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c1"># Create your candidate response</span>
+<span class="n">candidate</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Thank you for your inquiry! Our current rates start at 3.5% APR.&quot;</span><span class="p">,</span>
+    <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;EMAIL&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Process messages through the AI system</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">message_process</span><span class="p">(</span>
+    <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+    <span class="n">candidate_message</span><span class="o">=</span><span class="n">candidate</span><span class="p">,</span>
+    <span class="n">customer_id</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="n">zip_code</span><span class="o">=</span><span class="s2">&quot;90210&quot;</span><span class="p">,</span>
+    <span class="n">company_guid</span><span class="o">=</span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440001&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Submit feedback after customer interaction</span>
+<span class="n">feedback</span> <span class="o">=</span> <span class="n">MessageFeedback</span><span class="p">(</span>
+    <span class="n">original_message_id</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;message_id&quot;</span><span class="p">],</span>
+    <span class="n">sent_message_content</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;candidate_message&quot;</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">],</span>
+    <span class="n">customer_responded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">quality_score</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span>
+    <span class="n">time_to_respond_ms</span><span class="o">=</span><span class="mi">1800000</span>  <span class="c1"># 30 minutes</span>
+<span class="p">)</span>
+
+<span class="n">feedback_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit_single_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#first-steps">First Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#your-first-message-processing">Your First Message Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#your-first-message-optimization">Your First Message Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#your-first-feedback-submission">Your First Feedback Submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#complete-example">Complete Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#common-issues">Common Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#authentication-flow">Authentication Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#basic-authentication">Basic Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#environment-variables">Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#token-management">Token Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#authentication-errors">Authentication Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#secure-api-key-storage">Secure API Key Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#authentication-best-practices">Authentication Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#production-authentication-pattern">Production Authentication Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#debugging-authentication">Debugging Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="message_processing.html">Message Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#core-concepts">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#basic-message-processing">Basic Message Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#message-types-and-channels">Message Types and Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#advanced-processing-workflows">Advanced Processing Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#message-optimization">Message Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#context-and-personalization">Context and Personalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#error-handling-and-validation">Error Handling and Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message_processing.html#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="feedback_tracking.html">Feedback Tracking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#basic-feedback-submission">Basic Feedback Submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#feedback-metrics">Feedback Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#tracking-workflow">Tracking Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#batch-feedback-submission">Batch Feedback Submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#analytics-and-insights">Analytics and Insights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#quality-scoring-guidelines">Quality Scoring Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#feedback-best-practices">Feedback Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feedback_tracking.html#integration-patterns">Integration Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples and Use Cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#loan-application-inquiry">Loan Application Inquiry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#rate-shopping-conversation">Rate Shopping Conversation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#document-collection-process">Document Collection Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#batch-processing-multiple-conversations">Batch Processing Multiple Conversations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#feedback-tracking-workflow">Feedback Tracking Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#error-handling-and-retry-logic">Error Handling and Retry Logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#custom-session-configuration">Custom Session Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#production-deployment-example">Production Deployment Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#interactive-development-with-jupyter">Interactive Development with Jupyter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#testing-and-development">Testing and Development</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">ApalaClient</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#apala_client.client.ApalaClient"><code class="docutils literal notranslate"><span class="pre">ApalaClient</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#example-usage">Example Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#class-reference">Class Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Data Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.AuthResponse"><code class="docutils literal notranslate"><span class="pre">AuthResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.RefreshResponse"><code class="docutils literal notranslate"><span class="pre">RefreshResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.CandidateMessageResponse"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.MessageProcessingResponse"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.MessageOptimizationResponse"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.FeedbackResponse"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.FeedbackItemResponse"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.BulkFeedbackResponse"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.Message"><code class="docutils literal notranslate"><span class="pre">Message</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.MessageFeedback"><code class="docutils literal notranslate"><span class="pre">MessageFeedback</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#apala_client.models.MessageHistory"><code class="docutils literal notranslate"><span class="pre">MessageHistory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#message-model">Message Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#messagefeedback-model">MessageFeedback Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#messagehistory-model">MessageHistory Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#model-validation">Model Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Response Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.AuthResponse"><code class="docutils literal notranslate"><span class="pre">AuthResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.RefreshResponse"><code class="docutils literal notranslate"><span class="pre">RefreshResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.CandidateMessageResponse"><code class="docutils literal notranslate"><span class="pre">CandidateMessageResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.MessageProcessingResponse"><code class="docutils literal notranslate"><span class="pre">MessageProcessingResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.MessageOptimizationResponse"><code class="docutils literal notranslate"><span class="pre">MessageOptimizationResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.FeedbackResponse"><code class="docutils literal notranslate"><span class="pre">FeedbackResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.FeedbackItemResponse"><code class="docutils literal notranslate"><span class="pre">FeedbackItemResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.BulkFeedbackResponse"><code class="docutils literal notranslate"><span class="pre">BulkFeedbackResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.Message"><code class="docutils literal notranslate"><span class="pre">Message</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.MessageFeedback"><code class="docutils literal notranslate"><span class="pre">MessageFeedback</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#apala_client.models.MessageHistory"><code class="docutils literal notranslate"><span class="pre">MessageHistory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#authentication-types">Authentication Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#message-processing-types">Message Processing Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#feedback-types">Feedback Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#type-safety-benefits">Type Safety Benefits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html#working-with-typed-responses">Working with Typed Responses</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quick Start Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, MessageAnalysis Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
