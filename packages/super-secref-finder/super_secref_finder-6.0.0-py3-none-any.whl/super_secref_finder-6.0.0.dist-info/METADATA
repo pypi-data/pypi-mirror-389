@@ -1,0 +1,163 @@
+Metadata-Version: 2.4
+Name: super-secref-finder
+Version: 6.0.0
+Summary: A powerful tool designed to perform regex pattern matching to identify sensitive information in various data sources.
+Author-email: ArkhAngelLifeJiggy <Bloomtonjovish@gmail.com>
+Maintainer-email: ArkhAngelLifeJiggy <Bloomtonjovish@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2025 ArkhAngelLifeJiggy 
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/LifeJiggy/Super-Secref-Finder
+Project-URL: Repository, https://github.com/LifeJiggy/Super-Secref-Finder
+Project-URL: Issues, https://github.com/LifeJiggy/Super-Secref-Finder/issues
+Project-URL: Changelog, https://github.com/LifeJiggy/Super-Secref-Finder/blob/main/CHANGELOG.md
+Keywords: security,regex,sensitive-data,scanner
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Security
+Classifier: Topic :: Utilities
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: regex
+Requires-Dist: requests
+Requires-Dist: jsonschema
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Dynamic: license-file
+
+# Super Secref Finder
+
+**Super Secref Finder** is an advanced regex-based security scanner designed to discover sensitive information like API keys, passwords, tokens, and other secrets exposed within web applications and their associated JavaScript files. It leverages a comprehensive collection of regular expressions and employs multi-threading for efficient scanning of large websites.
+
+It can scan a target URL to find and analyze its linked JavaScript files, or scan a specific JavaScript file directly.
+
+## Features
+
+- **Advanced Regex Engine:** Utilizes a powerful regex engine with customizable patterns for precise secret detection. Includes a curated list of common sensitive patterns (e.g., AWS keys, JWT tokens, various API keys).
+- **Multi-threaded Scanning:** Employs multi-threading to significantly speed up the scanning process, allowing for efficient analysis of large websites and numerous JavaScript files.
+- **JavaScript File Analysis:** Can be pointed directly at a `.js` file URL for scanning. When scanning a main URL, it automatically extracts and analyzes linked JavaScript files for exposed secrets.
+- **Interactive Menu:** Provides a user-friendly interactive menu for easy configuration of target URL, thread count, request delay, and verbose output options.
+- **Contextualized Findings:** Presents findings with surrounding context to aid in quick verification and analysis of potential vulnerabilities.
+- **False Positive Filtering:** Includes a mechanism to log and filter potential false positives, improving the accuracy of the results.
+- **JSON Output:** Saves scan results in a structured JSON format for easy integration with other security tools and workflows.
+- **Summary Reporting:** Generates a summary of findings categorized by secret type for a quick overview of discovered vulnerabilities.
+- **Customizable Confidence Threshold:** Allows adjusting the confidence threshold for reported findings, balancing sensitivity and precision.
+- **Rate Limit Handling:** Implements dynamic delay adjustments to handle rate limiting imposed by target servers.
+- **User-Agent Spoofing:** Uses a common user agent to mimic normal browser behavior and avoid detection.
+- **Error Handling and Retries:** Includes robust error handling and retry mechanisms to ensure scan completion even in the face of network issues.
+- **Verbose Output:** Offers a verbose output mode for detailed information on the scanning process.
+- **Cross-Platform Compatibility:** Designed to run on various operating systems.
+
+## Installation
+
+### Option 1: Install from PyPI (Recommended)
+
+```bash
+pip install super-secref-finder
+```
+
+### Option 2: Install from Source
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/LifeJiggy/Super-Secref-Finder.git
+   cd Super-Secref-Finder
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. (Optional) Create a virtual environment: It's recommended to use a virtual environment to manage dependencies.
+
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate # On Linux/macOS
+   .venv\Scripts\activate # On Windows
+   ```
+
+## Usage
+
+### Using the Command Line Interface
+
+After installation, you can run the scanner from anywhere:
+
+```bash
+super-secref-finder https://example.com --threads 10 --delay 2 --verbose
+```
+
+### Using the Interactive Menu
+
+1. Run the scanner:
+
+   ```bash
+   python Regex_patterns.py
+   ```
+
+2. Follow the interactive menu:
+
+   - Enter the target URL (e.g., `https://example.com`) or a direct link to a JavaScript file (e.g., `https://example.com/main.js`).
+   - Specify the number of threads (1-600).
+   - Set the delay between requests (1-100 seconds).
+   - Choose verbose output (y/n).
+
+3. Review the results: The findings will be saved to findings.json and a summary will be displayed in the console.
+
+## Configuration
+
+    The sensitive_patterns.py file contains the regular expressions used for secret detection. You can customize these patterns or add new ones as needed. Ensure that the validate_pattern function in sensitive_patterns.py is updated accordingly to minimize false positives.
+
+## Contributing
+
+    Contributions are welcome! Please feel free to submit pull requests for bug fixes, new features, or improvements to existing patterns.
+
+## License
+
+    This project is licensed under the
+    MIT License
+
+## Disclaimer
+
+    This tool is intended for security testing and research purposes only. Use it responsibly and ethically. Unauthorized access to computer systems is illegal. The developers are not responsible for any misuse of this tool.
+
+## Contact
+
+    ArkhAngelLifeJiggy -
+    GITHUB:
+    https://github.com/LifeJiggy
