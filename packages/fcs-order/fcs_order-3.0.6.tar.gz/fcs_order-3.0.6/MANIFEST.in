@@ -1,0 +1,12 @@
+# Include Cython source files
+include src/fcs_order/core/bin/thirdorder_core.pyx
+include src/fcs_order/core/bin/fourthorder_core.pyx
+include src/fcs_order/core/bin/spglibdataset.pxd
+
+# Include all Python files
+recursive-include src *.py
+
+# Include README and other documentation
+include README.md
+include pyproject.toml
+include setup.py

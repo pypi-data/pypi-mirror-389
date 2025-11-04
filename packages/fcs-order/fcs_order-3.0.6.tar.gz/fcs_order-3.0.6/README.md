@@ -1,0 +1,230 @@
+# FCS-Order
+
+Repository: [https://github.com/gtiders/fcs-order](https://github.com/gtiders/fcs-order)
+
+A comprehensive Python package for calculating third-order and fourth-order force constants using finite displacement methods, with support for machine learning potentials and thermal disorder generation.
+
+## Features
+
+- **Third-order force constants**: Calculate 3-phonon interactions
+- **Fourth-order force constants**: Calculate 4-phonon interactions  
+- **Machine Learning Integration**: Direct calculation using ML potentials (NEP, DeepMD, HiPhive, Polymlp)
+- **VASP Compatibility**: Full integration with VASP DFT calculations
+- **Thermal Disorder Generation**: Create phonon-rattled structures at finite temperatures
+
+## Installation
+
+```bash
+pip install fcs-order
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/your-repo/fcs-order.git
+cd fcs-order
+pip install -e .
+```
+
+## Available Commands
+
+### Core Force Constant Commands
+
+#### 1. Third-order Force Constants (`sow3` & `reap3`)
+
+**Generate displaced structures:**
+```bash
+fcsorder sow3 <na> <nb> <nc> --cutoff <cutoff>
+```
+
+**Extract force constants from VASP results:**
+```bash
+fcsorder reap3 <na> <nb> <nc> --cutoff <cutoff> vasprun.0001.xml vasprun.0002.xml ...
+```
+
+Parameters:
+- `na, nb, nc`: Supercell dimensions (expansion factors in a, b, c directions)
+- `--cutoff`: Interaction cutoff (negative for nearest neighbors like -8, positive for distance in nm like 0.5)
+- `vasprun.xml files`: VASP calculation results in order
+
+#### 2. Fourth-order Force Constants (`sow4` & `reap4`)
+
+**Generate displaced structures:**
+```bash
+fcsorder sow4 <na> <nb> <nc> --cutoff <cutoff>
+```
+
+**Extract force constants from VASP results:**
+```bash
+fcsorder reap4 <na> <nb> <nc> --cutoff <cutoff> vasprun.0001.xml vasprun.0002.xml ...
+```
+
+Parameters: Same as third-order commands
+
+### Machine Learning Potential Commands
+
+#### 3. ML Second-order Force Constants (`mlp2`)
+
+```bash
+fcsorder mlp2 <supercell_matrix> --calc <calculator> --potential <potential_file> --outfile <output_file>
+```
+
+Parameters:
+- `supercell_matrix`: Supercell expansion matrix, either 3 numbers (diagonal) or 9 numbers (3×3 matrix)
+  - Diagonal format: `<na> <nb> <nc>` (e.g., `2 2 2` creates a 2×2×2 diagonal matrix)
+  - Full matrix format: `<m11> <m12> <m13> <m21> <m22> <m23> <m31> <m32> <m33>` (9 numbers for complete 3×3 matrix)
+- `--calc`: Calculator type (`nep`, `dp`, `hiphive`, `polymlp`)
+- `--potential`: Path to potential file (format depends on calculator)
+- `--outfile`: Output file path (default: `FORCECONSTANTS_2ND`)
+
+Examples:
+```bash
+# Diagonal supercell (2×2×2)
+fcsorder mlp2 2 2 2 --calc nep --potential nep.txt
+
+# Full 3×3 matrix (custom supercell)
+fcsorder mlp2 2 0 0 0 2 0 0 0 2 --calc nep --potential nep.txt
+```
+
+#### 4. ML Third-order Force Constants (`mlp3`)
+
+```bash
+fcsorder mlp3 <na> <nb> <nc> --cutoff <cutoff> --calc <calculator> --potential <potential_file>
+```
+
+#### 5. ML Fourth-order Force Constants (`mlp4`)
+
+```bash
+fcsorder mlp4 <na> <nb> <nc> --cutoff <cutoff> --calc <calculator> --potential <potential_file>
+```
+
+Parameters:
+- `--calc`: Calculator type (`nep`, `dp`, `hiphive`, `polymlp`)
+- `--potential`: Path to potential file (format depends on calculator)
+- `--if_write`: Optional flag to save intermediate files
+
+Supported ML Potentials:
+- **NEP**: NEP potential (file: `nep.txt`)
+- **DeepMD**: Deep Potential (file: `model.pb`)  
+- **HiPhive**: HiPhive potential (file: `potential.fcp`)
+- **Polymlp**: Polynomial ML potential (file: `polymlp.yaml`)
+
+#### Sparse Tensor Optimization (Memory Efficient)
+
+For large systems, the `reap3` and `mlp3` commands support sparse tensor methods to significantly reduce memory usage:
+
+```bash
+fcsorder reap3 <na> <nb> <nc> --cutoff <cutoff> --is_sparse vasprun.0001.xml vasprun.0002.xml ...
+fcsorder mlp3 <na> <nb> <nc> --cutoff <cutoff> --calc <calculator> --potential <potential_file> --is_sparse
+```
+
+The `--is_sparse` flag enables sparse tensor storage, which is particularly beneficial for:
+- Large supercells (e.g., 4×4×4 or larger)
+- Systems with many atoms
+- Limited memory environments
+
+**Note**: Sparse tensor optimization is currently only available for `reap3` and `mlp3` commands (third-order force constants). The `mlp2`, `reap4` and `mlp4` commands use dense storage by default.
+
+### Phonon Rattling Command
+
+#### 6. Generate Thermally Disordered Structures (`phonon-rattle`)
+
+```bash
+fcsorder phonon-rattle <SPOSCAR> <fc2_file> [options]
+```
+
+Parameters:
+- `SPOSCAR`: Supercell structure file
+- `fc2_file`: Second-order force constants file (2nd, fc2, or FORCE_CONSTANTS_2ND)
+
+Options:
+- `--temperature, -t`: Temperature in Kelvin (default: 300.0)
+- `--n_structures, -n`: Number of structures to generate (default: 100)
+- `--max_disp`: Maximum displacement in Ångströms (default: 0.5)
+- `--min_distance`: Minimum atomic distance in Ångströms (default: 1.5)
+- `--batch_size`: Batch size for generation (default: 5000)
+- `--if_qm`: Enable quantum statistics (default: True)
+- `--imag_freq_factor`: Imaginary frequency scaling factor (default: 1.0)
+
+Output: Saves valid structures to `structures_phonon_rattle_T<temperature>.xyz`
+
+## Usage Examples
+
+### Basic Third-order Calculation Workflow
+
+1. Generate displaced structures:
+```bash
+fcsorder sow3 2 2 2 --cutoff -8
+```
+
+2. Run VASP calculations on generated 3RD.POSCAR.* files
+
+3. Extract force constants:
+```bash
+fcsorder reap3 2 2 2 --cutoff -8 vasprun.*.xml
+```
+
+### Machine Learning Potential Calculation
+
+```bash
+# Second-order force constants
+fcsorder mlp2 4 4 4 --calc nep --potential nep.txt
+
+# Third-order force constants
+fcsorder mlp3 4 4 4 --cutoff 0.8 --calc nep --potential nep.txt
+```
+
+### Memory-Efficient Calculation with Sparse Tensors
+
+For large systems, use sparse tensor methods to significantly reduce memory usage:
+
+```bash
+# Second-order force constants (dense storage)
+fcsorder mlp2 4 4 4 --calc nep --potential nep.txt
+
+# Third-order with sparse tensors (recommended for large systems)
+fcsorder reap3 4 4 4 --cutoff -8 --is_sparse vasprun.*.xml
+fcsorder mlp3 4 4 4 --cutoff 0.8 --calc nep --potential nep.txt --is_sparse
+
+# Fourth-order (dense storage only)
+fcsorder reap4 3 3 3 --cutoff -8 vasprun.*.xml
+fcsorder mlp4 3 3 3 --cutoff 0.8 --calc nep --potential nep.txt
+```
+
+### Phonon Rattling at High Temperature
+
+```bash
+fcsorder phonon-rattle SPOSCAR FORCE_CONSTANTS_2ND --temperature 800 --n_structures 200 --max_disp 0.8
+```
+
+## File Formats
+
+- **SPOSCAR**: VASP structure format for supercells
+- **FORCECONSTANTS_2ND**: Second-order force constants output (from `mlp2`)
+- **FORCE_CONSTANTS_3RD**: Third-order force constants output
+- **FORCE_CONSTANTS_4TH**: Fourth-order force constants output  
+- **3RD.POSCAR.***: Displaced structures for 3-phonon calculations
+- **4TH.POSCAR.***: Displaced structures for 4-phonon calculations
+- **.xyz files**: Extended XYZ format for rattled structures
+
+## Requirements
+
+- Python 3.9+
+- NumPy
+- Click
+- spglib
+- VASP (for DFT calculations)
+- Machine learning potential packages (optional)
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 or later - see the LICENSE file for details.
+
+## Citation
+
+If you use FCS-Order in your research, please cite:
+
+
+## Support
+
+For issues and questions, please open an issue on GitHub or contact the development team.
