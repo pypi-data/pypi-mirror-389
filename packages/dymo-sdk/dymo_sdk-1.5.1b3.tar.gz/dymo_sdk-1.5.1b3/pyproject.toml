@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dymo_sdk"
+description = "A package that interacts with DYMO Printers."
+authors = [
+    { name = "Dymo Team"},
+]
+license = "MIT"
+readme = {"file" = "README.md", "content-type" = "text/markdown"}
+# Please consult https://pypi.org/classifiers/ for a full list.
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C#",
+]
+dynamic = ["version"]
+# TODO: add keywords
+keywords = []
+# TODO: add dependencies
+dependencies = [
+    "pythonnet",
+    "packaging"
+]
+
+[project.urls]
+Homepage = "https://github.com/dymosoftware/DCD-SDK-Python-Sample"
+Documentation = "https://dymosoftware.github.io/DCD-SDK-Python-Sample/"
+#Download = "https://pypi.org/project/pyospackage/#files"
+
+[tool.hatch.build.targets.wheel]
+packages = ["dymo_sdk"]
+exclude = [
+    "__pycache__",
+]
+ignore-vcs = true
+pure_python = "False"
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+#"Windows" or "Mac"
+platform = "Windows"
+#"x64", "x86", or "arm64"
+arch = "x86"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "tests",
+    "tools",
+    "Python_SDK_Helper",
+    ".vscode",
+    ".venv",
+    "__pycache__",
+    ".pytest_cache",
+]
+
+[tool.hatch.version]
+path = "dymo_sdk/__about__.py"
