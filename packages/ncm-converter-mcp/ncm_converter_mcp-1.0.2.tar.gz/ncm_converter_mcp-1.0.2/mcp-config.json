@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "NCM转换": {
+      "command": "python",
+      "args": [
+        "-m",
+        "ncm_converter_mcp"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\python\\网易云音乐音频转换;${workspaceFolder}\\python\\ncmdump-py-main\\ncmdump-py-main",
+        "PYTHONUNBUFFERED": "1",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}
