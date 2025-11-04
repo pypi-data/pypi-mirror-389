@@ -1,0 +1,49 @@
+version: 1
+
+# Further ideas for jobs to run:
+# - license check
+# - make sure test coverage increases
+# - merge all tox tests into one using pyenv
+# And, once we're sure that the pipeline is working:
+# - integration/performance tests
+# Once we have docs:
+# - documentation coverage
+# - docs build (on master only)
+
+context: sky-identity
+triggering: multibranch
+
+defaultNodes:
+  default: sky-identity-nonprod-mite-slave-buildkit
+
+modules:
+  mite-ci:
+    pipelineShape: simple
+    directory: "/"
+    htmlReports:
+      - name: Coverage Report
+        directory: coverage_html_report
+        files: ["index.html"]
+
+
+  mite-manual-release:
+    pipelineShape: simple
+    defaultTaskExecution: ./cd-scripts/manualRelease.sh
+    phaseLocks:
+      cdBuild:
+        defaultLockEnabled: false
+    parameters:
+      main:
+        - name: VERSION_INCREMENT_TYPE
+          type: choice
+          description: The version segment that you want increment for the release
+          options: [patch, minor, major]
+
+  # TODO find a work around for the issue with combining build and release in one pipeline
+  # mite-ci-and-release:
+  #   pipelineShape: build-release
+  #   directory: "/"
+  #   htmlReports:
+  #     - name: Coverage Report
+  #       directory: coverage_html_report
+  #       files: ["index.html"]
