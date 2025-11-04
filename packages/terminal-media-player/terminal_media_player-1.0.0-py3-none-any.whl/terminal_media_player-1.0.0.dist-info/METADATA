@@ -1,0 +1,95 @@
+Metadata-Version: 2.4
+Name: terminal-media-player
+Version: 1.0.0
+Summary: Play videos and images as ASCII art in your terminal
+Home-page: https://github.com/yourusername/terminal-media-player
+Author: Your Name
+Author-email: Your Name <your.email@example.com>
+Project-URL: Homepage, https://github.com/yourusername/terminal-media-player
+Keywords: terminal,ascii,video,image,media,player
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: opencv-python>=4.5.0
+Requires-Dist: Pillow>=8.0.0
+Requires-Dist: numpy>=1.19.0
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# Terminal Media Player
+
+Play videos and images as colorful ASCII art directly in your terminal!
+
+![Demo](https://via.placeholder.com/800x400.png?text=ASCII+Video+Demo)
+
+## Installation
+
+```bash
+pip install terminal-media-player
+```
+
+## Usage
+
+### Play a video:
+```bash
+tmp play video.mp4
+```
+
+### Play an image:
+```bash
+tmp play image.jpg
+```
+
+### Show animated parrot (like curl parrot.live):
+```bash
+tmp parrot
+```
+
+### Get help:
+```bash
+tmp --help
+```
+
+## Features
+
+- 🎨 Full color ASCII art based on original media colors
+- 📺 Full screen terminal support
+- ⚡ Real-time video playback
+- 🖼️ Image display support
+- 🦜 Fun parrot animation
+- 🎮 Interactive controls during playback
+
+## Controls During Playback
+
+- `Q` - Quit
+- `F` - Toggle info display
+- `P` - Pause
+
+## Supported Formats
+
+- **Video**: MP4, AVI, MOV, MKV, WMV, FLV
+- **Image**: JPG, JPEG, PNG, BMP, GIF
+
+## Requirements
+
+- Python 3.7+
+- OpenCV
+- Pillow
+- NumPy
+
+## License
+
+MIT
