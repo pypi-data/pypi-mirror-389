@@ -1,0 +1,67 @@
+Metadata-Version: 2.4
+Name: cz-benchmarks
+Version: 0.15.0
+Summary: A framework for benchmarking single-cell machine learning models
+Project-URL: Homepage, https://github.com/chanzuckerberg/cz-benchmarks
+Project-URL: Repository, https://github.com/chanzuckerberg/cz-benchmarks
+Author-email: Chan Zuckerberg Initiative <pypi@chanzuckerberg.com>
+License: MIT
+License-File: LICENSE.md
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Requires-Dist: anndata>=0.9.0
+Requires-Dist: boto3-stubs-lite[s3]>=1.38.0
+Requires-Dist: boto3>=1.28.0
+Requires-Dist: click>=8.3.0
+Requires-Dist: dill>=0.3.6
+Requires-Dist: docker>=6.1.0
+Requires-Dist: h5py>=3.8.0
+Requires-Dist: hnswlib>=0.8.0
+Requires-Dist: hydra-core>=1.3.2
+Requires-Dist: igraph>=0.11.8
+Requires-Dist: leidenalg>=0.10.2
+Requires-Dist: omegaconf>=2.3.0
+Requires-Dist: pyarrow>=17.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: scanpy>=1.11.0
+Requires-Dist: scib-metrics>=0.5.1
+Requires-Dist: scikit-learn
+Requires-Dist: scikit-misc>=0.5.1
+Requires-Dist: scipy>=1.15.3
+Requires-Dist: tomli>=2.2.1
+Provides-Extra: interactive
+Requires-Dist: jupyterlab>=4.0.0; extra == 'interactive'
+Description-Content-Type: text/markdown
+
+# CZ Benchmarks
+
+### What is cz-benchmarks?
+cz-benchmarks is a package for standardized evaluation and comparison of machine learning models for biological applications (first, in the single-cell transcriptomics domain, with future plans to expand to additional domains). The package provides a toolkit for running containerized models, executing biologically-relevant tasks, and computing performance metrics. We see this tool as a step towards ensuring that large-scale ML Models can be harnessed to deliver genuine biological insights -- by building trust, accelerating development, and bridging the gap between ML and biology communities.
+
+### Why benchmarking? Why now?
+Last year, CZI hosted a workshop focused on benchmarking and evaluation of ML Models in biology, and the [insights gained](https://virtualcellmodels.cziscience.com/micro-pub/benchmarking-workshop) have reinforced our commitment to supporting the development of a robust benchmarking infrastructure, which we see as critical to achieving our Virtual Cell vision.
+
+### 💬 Community Feedback & Contributions
+We're working to get the alpha version of cz-benchmarks stable to build with the community. In the meantime, for issues you may identify, feel free to open an issue on GitHub or reach out to us at [virtualcellmodels@chanzuckerberg.com](mailto:virtualcellmodels@chanzuckerberg.com).
+
+## Getting Started
+
+To get started with `cz-benchmarks`, refer to the [Quick Start Guide](https://chanzuckerberg.github.io/cz-benchmarks/quick_start.html).
+
+
+### 📚 Additional Resources
+
+- [How To Guides](https://chanzuckerberg.github.io/cz-benchmarks/how_to_guides/index.html)
+    - [Add a Custom Dataset](https://chanzuckerberg.github.io/cz-benchmarks/how_to_guides/add_custom_dataset.html)
+- [Developer Guides](https://chanzuckerberg.github.io/cz-benchmarks/developer_guides/index.html)
+- [API Reference](https://chanzuckerberg.github.io/cz-benchmarks/api_reference.html)
+- [Assets](https://chanzuckerberg.github.io/cz-benchmarks/assets.html)
+
+📖 **Documentation**: The full documentation is available at [cz-benchmarks](https://chanzuckerberg.github.io/cz-benchmarks/)

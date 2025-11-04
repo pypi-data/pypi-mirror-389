@@ -1,0 +1,54 @@
+name: Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+
+      - name: Install dependencies
+        run: |
+          uv sync --group dev
+
+      - name: Run ruff checks
+        run: uv run make ruff-check
+
+      - name: Run tests
+        run: uv run make test
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.txt
+
+      - name: Output full coverage report to GitHub summary
+        if: always()
+        run: |
+          {
+            echo "## Code Coverage Report";
+            echo "";
+            echo '```';
+            cat coverage.txt;
+            echo '```';
+          } >> $GITHUB_STEP_SUMMARY
