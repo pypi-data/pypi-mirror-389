@@ -1,0 +1,406 @@
+import functools
+from operator import itemgetter
+from typing import TYPE_CHECKING, Any, Optional
+
+import rpnpy
+from rpnpy.errors import CalculatorError
+from rpnpy.utils import plural
+
+if TYPE_CHECKING:
+    from rpnpy.calculator import Calculator
+    from rpnpy.modifiers import Modifiers
+
+# IMPORTANT
+#
+# If you add a special functions here:
+#
+#   1. It must have a calc, modifiers, count signature.
+#   2. You must give it a tuple of names (see examples below).
+#   3. You must add it to FUNCTIONS, at bottom.
+#
+# That is all.
+
+
+def quit(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> None:
+    """Quit the calculator.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    raise EOFError()
+
+
+quit.names = ("quit", "q")
+
+
+def functions(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """List all known functions
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    data = sorted(
+        list(calc._functions.items()) + list(calc._special.items()),
+        key=itemgetter(0),
+    )
+
+    width = max(len(name) for name, _ in data)
+
+    for name, func in data:
+        calc.report(f"{name:{width}s}", func)
+
+    return calc.NO_VALUE
+
+
+functions.names = ("functions",)
+
+
+def stack(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Print the stack.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    calc.printStack()
+    return calc.NO_VALUE
+
+
+stack.names = ("stack", "s", "f")
+
+
+def variables(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Show all variables.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    for name, value in sorted(calc._variables.items()):
+        calc.report("%s: %r" % (name, value))
+    return calc.NO_VALUE
+
+
+variables.names = ("variables",)
+
+
+def clear(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    if calc.stack:
+        if modifiers.preserveStack:
+            calc.err("The /= modifier makes no sense with clear")
+        else:
+            calc._finalize(None, nPop=len(calc), modifiers=modifiers, noValue=True)
+    return calc.NO_VALUE
+
+
+clear.names = ("clear", "c")
+
+
+def dup(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Duplicate the top of stack a number of times.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    if calc.stack:
+        if modifiers.preserveStack:
+            raise CalculatorError("The /= modifier makes no sense with dup")
+
+        count = 1 if count is None else count
+        value = calc.stack[-1]
+        calc._finalize(value, modifiers, repeat=count)
+        return value
+
+    raise CalculatorError("Cannot duplicate (stack is empty)")
+
+
+dup.names = ("dup", "d")
+
+
+def undo(calc: "Calculator", modifiers: "Modifiers", _: Optional[int]) -> Any:
+    """Undo the last operation.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    """
+    if calc._previousStack is None:
+        raise CalculatorError("No undo saved")
+
+    if modifiers.preserveStack:
+        raise CalculatorError("The /= modifier makes no sense with undo")
+
+    if modifiers.print:
+        raise CalculatorError("The /p modifier makes no sense with undo")
+
+    calc.stack = calc._previousStack.copy()
+    calc._variables = calc._previousVariables.copy()
+    return calc.NO_VALUE
+
+
+undo.names = ("undo",)
+
+
+def print_(calc: "Calculator", _: "Modifiers", __: Optional[int]) -> None:
+    """Print the top of stack.
+
+    @param calc: A C{Calculator} instance.
+    """
+    calc.printStack(-1)
+
+
+print_.names = ("print", "p")
+
+
+def apply(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Apply a function to some arguments.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    func, args = calc.findCallableAndArgs("apply", modifiers, count)
+    result = func(*args)
+    calc._finalize(result, modifiers, nPop=len(args) + 1)
+    return result
+
+
+apply.names = ("apply",)
+
+
+def join(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> str:
+    """Join some stack items into a single string.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    sep, args = calc.findStringAndArgs("join", modifiers, count)
+    nPop = len(args) + 1
+    if len(args) == 1:
+        # Only one argument from the stack, so run join on the value of
+        # that stack item rather than on a list with just that one stack
+        # item. Of course the stack item will need to be iterable or this
+        # will fail (as it should).
+        args = args[0]
+    result = sep.join(map(str, args))
+    calc._finalize(result, modifiers, nPop=nPop)
+    return result
+
+
+join.names = ("join",)
+
+
+def reduce(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Apply a function to some arguments using reduce.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    func, args = calc.findCallableAndArgs("apply", modifiers, count)
+    nPop = len(args) + 1
+    if len(args) == 1:
+        # Only one argument from the stack, so run reduce on the value of
+        # that stack item rather than on a list with just that one stack
+        # item. Of course the stack item will need to be iterable or this
+        # will fail (as it should).
+        args = args[0]
+    value = functools.reduce(func, args)
+    calc._finalize(value, modifiers, nPop=nPop)
+    return value
+
+
+reduce.names = ("reduce",)
+
+
+def pop(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Pop some number of arguments (default 1) off the stack.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    nArgs = (len(calc) if modifiers.all else 1) if count is None else count
+    if len(calc) >= nArgs:
+        value = calc.stack[-1] if nArgs == 1 else calc.stack[-nArgs:]
+        calc._finalize(value, modifiers, nPop=nArgs, noValue=True)
+        return value
+
+    raise CalculatorError(
+        "Cannot pop %d item%s (stack length is %d)" % (nArgs, plural(nArgs), len(calc))
+    )
+
+
+pop.names = ("pop",)
+
+
+def reverse(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Reverse some number of arguments (default 2) on the stack.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    nArgs = (len(calc) if modifiers.all else 2) if count is None else count
+    if len(calc) >= nArgs:
+        if nArgs > 1:
+            value = calc.stack[-nArgs:][::-1]
+            calc._finalize(value, modifiers, nPop=nArgs, extend=True)
+            return value
+
+    raise CalculatorError(
+        "Cannot reverse %d item%s (stack length is %d)"
+        % (nArgs, plural(nArgs), len(calc))
+    )
+
+
+reverse.names = ("reverse",)
+
+
+def swap(calc: "Calculator", modifiers: "Modifiers", _: Optional[int]) -> Any:
+    """Swap the top two items on the stack.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    """
+    if len(calc) > 1:
+        calc._finalize(calc.stack[-2:][::-1], modifiers=modifiers, nPop=2, extend=True)
+        return calc.NO_VALUE
+
+    raise CalculatorError("Cannot swap (stack needs 2 items)")
+
+
+swap.names = ("swap",)
+
+
+def list_(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Convert some stack items into a list.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of stack items to make into
+        a list.
+    """
+    if modifiers.push:
+        calc._finalize(list, modifiers=modifiers)
+        return list
+
+    if calc.stack:
+        nArgs = (len(calc) if modifiers.all else 1) if count is None else count
+        if nArgs == 1:
+            value = calc.stack[-1]
+            try:
+                iterator = iter(value)
+            except TypeError:
+                value = [value]
+            else:
+                value = list(iterator)
+        else:
+            if len(calc) >= nArgs:
+                value = calc.stack[-nArgs:]
+            else:
+                raise CalculatorError(
+                    "Cannot list %d item%s (stack length is %d)"
+                    % (nArgs, plural(nArgs), len(calc))
+                )
+        calc._finalize(value, modifiers=modifiers, nPop=nArgs)
+        return value
+
+    raise CalculatorError("Cannot run list (stack is empty)")
+
+
+list_.names = ("list",)
+
+
+def store(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Store some stack items into a variable.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    variable, args = calc.findStringAndArgs("store", modifiers, count)
+    if len(args) == 1:
+        # Only one argument from the stack, so we'll set the variable to
+        # have that value.
+        value = args[0]
+    else:
+        value = args
+
+    calc.setVariable(variable, value)
+    calc._finalize(None, nPop=len(args) + 1, modifiers=modifiers, noValue=True)
+    return calc.NO_VALUE
+
+
+store.names = ("store",)
+
+
+def map_(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Map a function over some arguments.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    func, args = calc.findCallableAndArgs("map", modifiers, count)
+    nPop = len(args) + 1
+    if len(args) == 1:
+        # Only one argument from the stack, so run map on the value of
+        # that stack item rather than on a list with just that one stack
+        # item. Of course the stack item will need to be iterable or this
+        # will fail (as it should).
+        args = args[0]
+        extend = False
+    else:
+        extend = True
+    result = map(func, args)
+    calc._finalize(result, modifiers, extend=extend, nPop=nPop)
+    return result
+
+
+map_.names = ("map",)
+
+
+def version(calc: "Calculator", modifiers: "Modifiers", count: Optional[int]) -> Any:
+    """Print the version.
+
+    @param calc: A C{Calculator} instance.
+    @param modifiers: A C{Modifiers} instance.
+    @param count: An C{int} count of the number of arguments to pass.
+    """
+    calc.report(rpnpy.__version__)
+    return calc.NO_VALUE
+
+
+version.names = ("version",)
+
+
+FUNCTIONS: tuple = (
+    apply,
+    clear,
+    dup,
+    functions,
+    join,
+    list_,
+    map_,
+    pop,
+    print_,
+    quit,
+    reduce,
+    reverse,
+    stack,
+    store,
+    swap,
+    undo,
+    variables,
+    version,
+)
