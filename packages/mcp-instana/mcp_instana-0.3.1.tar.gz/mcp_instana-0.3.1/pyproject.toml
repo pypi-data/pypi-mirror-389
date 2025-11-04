@@ -1,0 +1,138 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-instana"
+version = "0.3.1"
+description = "MCP server for Instana"
+authors = [
+    {name = "Elina Priyadarshinee", email = "Elina.priyadarshinee1@ibm.com"},
+    {name = "Guangya Liu", email = "gyliu@ibm.com"},
+    {name = "Isabell Sippli", email = "ischwert@de.ibm.com"},
+    {name = "Jay Sharma", email = "Jay.Sharma3@ibm.com"},
+    {name = "Madhu Tadiparthi", email = "madhu.tadiparthi@ibm.com"},
+    {name = "Riya Kumari", email = "Riya.Kumari3@ibm.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+
+# ONLY dependencies that are actually imported/used in the code
+dependencies = [
+    # Core MCP framework - imported in src/prompts/__init__.py and src/core/server.py
+    "fastmcp==2.10.3",
+    # MCP SDK for types and annotations
+    "mcp",
+    # Instana API client - imported in src/event/events_tools.py
+    "instana-client==1.0.1",
+    # HTTP client - imported in src/core/utils.py
+    "requests==2.32.4",
+    # Environment loading - imported in src/core/server.py
+    "python-dotenv==1.1.0",
+    # Data validation - imported in src/infrastructure/infrastructure_metrics.py
+    "pydantic==2.11.7"
+]
+
+# Development dependencies for testing, linting, and development
+[project.optional-dependencies]
+dev = [
+    # Testing framework - used in tests/e2e/ files
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+    
+    # Code quality
+    "ruff==0.5.0",
+    "coverage>=7.10.1",
+    
+    # Dependency management
+    "uv==0.8.6",
+]
+
+
+
+[project.scripts]
+mcp-instana = "src.core.server:main"
+test = "tests.run_all_tests:main"
+test-coverage = "tests.run_all_tests_with_coverage:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+# Target Python 3.11
+target-version = "py310"
+
+# Same as Black
+line-length = 88
+
+# Exclude a variety of commonly ignored directories
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.lint]
+# Enable pycodestyle (E), Pyflakes (F), isort (I), and more
+select = ["E", "F", "I", "W", "N", "B", "C4", "ARG", "SIM", "ERA", "PL", "RUF"]
+ignore = [
+    "E501",   # Line too long
+    "SIM117", # Use a single with statement with multiple contexts
+    "PLR0912", # Too many branches
+    "E402",   # Module level import not at top of file
+    "ARG001", # Unused function argument
+    "PLR2004", # Magic value comparison
+    "PLR0915", # Too many statements
+    "PLR0911", # Too many return statements
+    "B904",    # Within an except clause, raise exceptions with raise from
+    "ARG002",  # Unused method argument
+    "RUF012",  # Mutable class attributes should be annotated with ClassVar
+    "F401",    # Imported but unused
+    "N803",    # Argument name should be lowercase
+    "N806",    # Variable in function should be lowercase
+    "SIM102",  # Use a single if statement instead of nested if statements
+    "ARG005",  # Unused lambda argument
+    "N818",    # Exception name should be named with Error suffix
+    "F811",    # Redefinition of unused name
+    "PLW2901", # With statement variable overwritten by assignment target
+    "SIM108",  # Use ternary operator instead of if-else-block
+    "PLR0913", # Too many arguments in function definition
+]
+
+# Allow autofix for all enabled rules (when `--fix` is provided)
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.mccabe]
+# Unlike Flake8, default to a complexity level of 10
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+known-third-party = ["fastapi", "pydantic", "starlette"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
