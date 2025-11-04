@@ -1,0 +1,228 @@
+# cocoindex-mcp
+
+Semantic code search for Model Context Protocol clients, powered by cocoindex flows and a Postgres + pgvector backend.
+
+---
+
+## At a glance
+
+- 🔍 **Semantic search** over the embeddings produced by the cocoindex `CodeEmbedding` flow.
+- 🤝 **MCP-native** stdio server that drops straight into Claude Desktop, Cursor, and other MCP hosts.
+- ⚙️ **Zero-surprise configuration** via a single `COCOINDEX_DATABASE_URL` environment variable (with `.env` support).
+- 🚀 **Packaged for uv** – run it instantly with `uvx --from yalattas/cocoindex-mcp cocoindex-mcp`.
+
+## Table of contents
+
+- [At a glance](#at-a-glance)
+- [How it works](#how-it-works)
+- [Prerequisites](#prerequisites)
+- [Quick start](#quick-start)
+- [Configuration](#configuration)
+- [Running the server](#running-the-server)
+- [Available MCP tools](#available-mcp-tools)
+- [Troubleshooting](#troubleshooting)
+- [Local development](#local-development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## How it works
+
+The server wraps a cocoindex flow that embeds local source files into a Postgres table called `code_embeddings`. Every query is transformed with the same SentenceTransformer model and matched against the stored vectors using cosine similarity via `pgvector`. Results are streamed back to the MCP client with file paths, the matched snippet, score, and optional line numbers.
+
+Internally the server is built with:
+
+- [`mcp.server.fastmcp`](https://pypi.org/project/mcp/) to expose stdio-based MCP tools.
+- [`cocoindex`](https://pypi.org/project/cocoindex/) for defining and running the embedding flow.
+- [`psycopg_pool`](https://www.psycopg.org/psycopg3/docs/pool.html) and `pgvector` for high-throughput vector queries.
+- [`python-dotenv`](https://pypi.org/project/python-dotenv/) to honor environment files automatically.
+
+## Prerequisites
+
+1. **Python** ≥ 3.11 (only needed for local installs; `uvx` ships its own runtime).
+2. **PostgreSQL** with the [`pgvector`](https://github.com/pgvector/pgvector) extension enabled.
+3. A `code_embeddings` table populated by running the `CodeEmbedding` cocoindex flow (see [`src/cocoindex_mcp/search.py`](src/cocoindex_mcp/search.py)).
+4. Credentials with _read_ access to the embeddings table.
+
+If you're starting from scratch, run the cocoindex flow once to generate the embeddings. The flow definition lives in this repository and targets the `code_embeddings` table by default.
+
+## Quick start
+
+### Run without installing (recommended)
+
+```bash
+uvx --from yalattas/cocoindex-mcp cocoindex-mcp --help
+```
+
+Pass any CLI options after `cocoindex-mcp`. Use `--env` (or a `.env` file) to supply the Postgres URL when launching via `uvx`.
+
+### Install into an existing environment
+
+```bash
+uv pip install cocoindex-mcp
+```
+
+or with plain `pip`:
+
+```bash
+pip install cocoindex-mcp
+```
+
+Verify the installation:
+
+```bash
+cocoindex-mcp --version
+```
+
+## Configuration
+
+Set the database connection string before starting the server:
+
+```bash
+export COCOINDEX_DATABASE_URL="postgres://user:password@localhost:5432/cocoindex"
+```
+
+Environment variables are loaded from a `.env` file automatically:
+
+```bash
+echo 'COCOINDEX_DATABASE_URL=postgres://user:password@localhost:5432/cocoindex' >> .env
+```
+
+### Minimum database requirements
+
+- `CREATE EXTENSION IF NOT EXISTS vector;`
+- A `code_embeddings` table with columns: `filename`, `code`, `embedding vector`, `start`, `end`.
+- A compatible cocoindex-generated vector index (cosine similarity).
+
+If the connection fails, the CLI surfaces descriptive errors that include the masked Postgres host/DB to help with debugging.
+
+## Running the server
+
+The server communicates over stdio, which is the preferred transport for MCP clients.
+
+Choose the entrypoint that best fits your workflow:
+
+- `uvx --from yalattas/cocoindex-mcp cocoindex-mcp`
+- `cocoindex-mcp` (console script exposed after installation)
+- `python -m cocoindex_mcp`
+- `python main.py`
+
+All of these entrypoints share the same FastMCP runtime configured in [`src/cocoindex_mcp/cli.py`](src/cocoindex_mcp/cli.py).
+
+### Example Claude Desktop configuration
+
+```json
+{
+  "mcpServers": {
+    "cocoindex": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "yalattas/cocoindex-mcp",
+        "cocoindex-mcp"
+      ],
+      "env": {
+        "COCOINDEX_DATABASE_URL": "postgres://user:password@localhost:5432/cocoindex"
+      }
+    }
+  }
+}
+```
+
+### CLI options
+
+```text
+cocoindex-mcp [--log-level LEVEL] [--version]
+
+  --log-level   CRITICAL | ERROR | WARNING | INFO | DEBUG (default: INFO)
+  --version     Print the installed version and exit
+```
+
+Use `--log-level DEBUG` while integrating to see the Postgres readiness checks and tool invocations.
+
+## Available MCP tools
+
+| Tool | Description | Parameters |
+| --- | --- | --- |
+| `cocoindex_search` | Perform a semantic search and return filename, snippet, similarity score, and optional line range. | `query` (str, required) · `limit` (int, default 10, range 1–50) |
+| `cocoindex_info` | Inspect the server's metadata, environment requirements, and exposed tools. | _None_ |
+
+Errors raised by the underlying database connectivity (missing URL, connection refused, etc.) are surfaced as structured error messages in the tool response.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| `COCOINDEX_DATABASE_URL is not set` | Environment variable missing. | Export the variable or add it to `.env` before launching. |
+| `Could not connect to Postgres ...` | Credentials, host, or pgvector extension not available. | Confirm the URL, ensure the database is reachable, enable the `vector` extension. |
+| Empty search results | Embeddings table not populated or query too specific. | Run the cocoindex `CodeEmbedding` flow; try a broader query or higher `limit`. |
+
+Enable debug logging (`--log-level DEBUG`) to display stack traces and raw SQL queries if you need deeper insight.
+
+## Local development
+
+Clone the repository and install dependencies using [`uv`](https://github.com/astral-sh/uv):
+
+```bash
+uv sync
+```
+
+Run the server locally:
+
+```bash
+uv run python -m cocoindex_mcp --no-banner --log-level DEBUG
+```
+
+Useful entrypoints:
+
+- [`src/cocoindex_mcp/search.py`](src/cocoindex_mcp/search.py) – cocoindex flow and search helpers.
+- [`src/cocoindex_mcp/db.py`](src/cocoindex_mcp/db.py) – connection pooling and diagnostics.
+- [`src/cocoindex_mcp/config.py`](src/cocoindex_mcp/config.py) – FastMCP server wiring and tool definitions.
+
+## Publishing to PyPI
+
+PyPI removed password-based uploads in 2023, so you'll need either an API token or a trusted publisher workflow to ship new releases.
+
+### Using a PyPI API token (local uploads)
+
+1. **Create a token:** In your PyPI account, go to _Account settings → API tokens_ and create a token scoped to `cocoindex-mcp` (or scoped to an entire account if you prefer).
+2. **Keep it secret:** Store the issued value (it starts with `pypi-`) in a secure credential store or as an environment variable. For a one-off upload you can export it temporarily:
+
+  ```bash
+  export UV_PUBLISH_TOKEN="pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ```
+
+1. **Build the distribution:**
+
+  ```bash
+  uv build
+  ```
+
+1. **Publish:**
+
+  ```bash
+  uv publish
+  ```
+
+  `uv` will automatically pick up `UV_PUBLISH_TOKEN`. Alternatively, pass it inline with `uv publish --token pypi-…`.
+
+Pro tip: bump the version in [`pyproject.toml`](pyproject.toml) before publishing; PyPI rejects duplicate versions.
+
+### Using trusted publishers (CI uploads)
+
+If you're publishing from GitHub Actions, enable trusted publishing instead of storing long-lived secrets:
+
+```bash
+uv publish --trusted-publishing automatic
+```
+
+This flag only configures the workflow file `uv` will generate; it does **not** allow local uploads without a token. For manual publishes you still need `UV_PUBLISH_TOKEN` as described above.
+
+Follow the [PyPI trusted publisher docs](https://docs.pypi.org/trusted-publishers/) to register your repository. Once activated, the workflow OIDC identity replaces tokens entirely during CI runs on GitHub.
+
+## Contributing
+
+Issues and pull requests are welcome at [yalattas/cocoindex-mcp](https://github.com/yalattas/cocoindex-mcp). If you're proposing a new tool or changing the database schema, please include integration notes and update the README accordingly.
+
+## License
+
+This project is licensed under the terms of the [MIT License](LICENSE).
