@@ -1,0 +1,1335 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-02 14:41+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:37
+msgid "Nerve requires root privileges to run. See --help for more."
+msgstr ""
+
+#: default_profiles/desktops/hyprland.py:50
+msgid ""
+"Hyprland needs access to your seat (collection of hardware devices i.e. "
+"keyboard, mouse, etc)"
+msgstr ""
+
+#: default_profiles/desktops/hyprland.py:51
+msgid "Choose an option to give Hyprland access to your hardware"
+msgstr ""
+
+#: default_profiles/desktops/hyprland.py:59
+#: default_profiles/desktops/labwc.py:54 default_profiles/desktops/niri.py:62
+#: default_profiles/desktops/sway.py:64
+msgid "Seat access"
+msgstr ""
+
+#: default_profiles/desktops/labwc.py:45
+msgid ""
+"labwc needs access to your seat (collection of hardware devices i.e. "
+"keyboard, mouse, etc)"
+msgstr ""
+
+#: default_profiles/desktops/labwc.py:46
+msgid "Choose an option to give labwc access to your hardware"
+msgstr ""
+
+#: default_profiles/desktops/niri.py:53
+msgid ""
+"niri needs access to your seat (collection of hardware devices i.e. "
+"keyboard, mouse, etc)"
+msgstr ""
+
+#: default_profiles/desktops/niri.py:54
+msgid "Choose an option to give niri access to your hardware"
+msgstr ""
+
+#: default_profiles/desktops/sway.py:55
+msgid ""
+"Sway needs access to your seat (collection of hardware devices i.e. "
+"keyboard, mouse, etc)"
+msgstr ""
+
+#: default_profiles/desktops/sway.py:56
+msgid "Choose an option to give Sway access to your hardware"
+msgstr ""
+
+#: default_profiles/profile.py:188 lib/hardware.py:80
+msgid "Installed packages"
+msgstr ""
+
+#: default_profiles/xorg.py:15
+#, python-brace-format
+msgid "Environment type: {env_type}"
+msgstr ""
+
+#: lib/applications/application_menu.py:31
+#: lib/applications/application_menu.py:41 lib/global_menu.py:202
+msgid "Bluetooth"
+msgstr ""
+
+#: lib/applications/application_menu.py:32
+#: lib/applications/application_menu.py:49
+#: lib/applications/application_menu.py:97 lib/global_menu.py:209
+msgid "Audio"
+msgstr ""
+
+#: lib/applications/application_menu.py:33
+#: lib/applications/application_menu.py:119 lib/global_menu.py:213
+msgid "Fonts"
+msgstr ""
+
+#: lib/applications/application_menu.py:34
+#: lib/applications/application_menu.py:65
+#: lib/applications/application_menu.py:141 lib/global_menu.py:219
+msgid "Shell"
+msgstr ""
+
+#: lib/applications/application_menu.py:41
+#: lib/authentication/authentication_menu.py:70 lib/global_menu.py:189
+#: lib/global_menu.py:203 lib/global_menu.py:234 lib/global_menu.py:270
+#: lib/global_menu.py:280
+msgid "Enabled"
+msgstr ""
+
+#: lib/applications/application_menu.py:41
+#: lib/authentication/authentication_menu.py:70 lib/global_menu.py:189
+#: lib/global_menu.py:203 lib/global_menu.py:234 lib/global_menu.py:270
+#: lib/global_menu.py:280
+msgid "Disabled"
+msgstr ""
+
+#: lib/applications/application_menu.py:57
+msgid "Selected fonts"
+msgstr ""
+
+#: lib/applications/application_menu.py:57
+msgid "No fonts selected"
+msgstr ""
+
+#: lib/applications/application_menu.py:76
+msgid "Would you like to configure Bluetooth?"
+msgstr ""
+
+#: lib/args.py:351
+msgid "Credentials file decryption password"
+msgstr ""
+
+#: lib/args.py:351
+msgid "Incorrect password"
+msgstr ""
+
+#: lib/args.py:356
+msgid "Incorrect credentials file decryption password"
+msgstr ""
+
+#: lib/authentication/authentication_handler.py:86
+msgid "Setting up U2F login: "
+msgstr ""
+
+#: lib/authentication/authentication_handler.py:97
+#, python-brace-format
+msgid "Setting up U2F device for user: {user}"
+msgstr ""
+
+#: lib/authentication/authentication_handler.py:98
+msgid ""
+"You may need to enter the PIN and then touch your U2F device to register it"
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:36
+#: lib/authentication/authentication_menu.py:57
+#: lib/authentication/authentication_menu.py:78 lib/global_menu.py:177
+msgid "Root password"
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:37
+msgid "User account"
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:38
+msgid "U2F login setup"
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:67 lib/global_menu.py:186
+msgid "U2F login method: "
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:70 lib/global_menu.py:189
+msgid "Passwordless sudo: "
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:75
+msgid "No U2F devices found"
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:97
+msgid "U2F Login Method"
+msgstr ""
+
+#: lib/authentication/authentication_menu.py:106
+msgid "Enable passwordless sudo?"
+msgstr ""
+
+#: lib/configuration.py:60
+msgid "The specified configuration will be applied"
+msgstr ""
+
+#: lib/configuration.py:61
+msgid "Would you like to continue?"
+msgstr ""
+
+#: lib/configuration.py:68 lib/configuration.py:142 lib/disk/disk_menu.py:136
+#: lib/disk/disk_menu.py:164
+msgid "Configuration"
+msgstr ""
+
+#: lib/configuration.py:120
+msgid "No configuration"
+msgstr ""
+
+#: lib/configuration.py:136
+msgid "Save user configuration (including disk layout)"
+msgstr ""
+
+#: lib/configuration.py:137
+msgid "Save user credentials"
+msgstr ""
+
+#: lib/configuration.py:138
+msgid "Save all"
+msgstr ""
+
+#: lib/configuration.py:157
+msgid "Directory"
+msgstr ""
+
+#: lib/configuration.py:157
+msgid ""
+"Enter a directory for the configuration(s) to be saved (tab completion "
+"enabled)"
+msgstr ""
+
+#: lib/configuration.py:162
+#, python-brace-format
+msgid "Do you want to save the configuration file(s) to {path}?"
+msgstr ""
+
+#: lib/configuration.py:174
+msgid "Do you want to encrypt the user_credentials.json file?"
+msgstr ""
+
+#: lib/configuration.py:185
+msgid "Credentials file encryption password"
+msgstr ""
+
+#: lib/disk/disk_menu.py:36
+msgid "Partitioning"
+msgstr ""
+
+#: lib/disk/disk_menu.py:37
+msgid "LVM"
+msgstr ""
+
+#: lib/disk/disk_menu.py:38 lib/global_menu.py:254
+msgid "Disk encryption"
+msgstr ""
+
+#: lib/disk/disk_menu.py:39
+msgid "Btrfs snapshots"
+msgstr ""
+
+#: lib/disk/disk_menu.py:105
+msgid "Snapshot type"
+msgstr ""
+
+#: lib/disk/disk_menu.py:128
+msgid "Configuration type: "
+msgstr ""
+
+#: lib/disk/disk_menu.py:129 lib/disk/partitioning_menu.py:397
+#: lib/global_menu.py:248
+msgid "Mountpoint"
+msgstr ""
+
+#: lib/disk/disk_menu.py:144 lib/disk/partitioning_menu.py:107
+msgid "Wipe"
+msgstr ""
+
+#: lib/disk/disk_menu.py:169
+msgid "Physical volumes"
+msgstr ""
+
+#: lib/disk/disk_menu.py:173
+msgid "Volumes"
+msgstr ""
+
+#: lib/disk/disk_menu.py:185
+#, python-brace-format
+msgid "Snapshot type: {snapshot_type}"
+msgstr ""
+
+#: lib/disk/disk_menu.py:192
+msgid ""
+"LVM disk encryption with more than 2 partitions is currently not supported"
+msgstr ""
+
+#: lib/disk/disk_menu.py:196 lib/disk/encryption_menu.py:34
+#: lib/disk/encryption_menu.py:107 lib/disk/encryption_menu.py:166
+msgid "Encryption type"
+msgstr ""
+
+#: lib/disk/disk_menu.py:199 lib/interactions/manage_users_conf.py:47
+#: lib/interactions/manage_users_conf.py:82
+#: lib/interactions/manage_users_conf.py:87 lib/utils/util.py:34
+msgid "Password"
+msgstr ""
+
+#: lib/disk/disk_menu.py:202 lib/disk/encryption_menu.py:36
+#: lib/disk/encryption_menu.py:152 lib/disk/encryption_menu.py:282
+msgid "Iteration time"
+msgstr ""
+
+#: lib/disk/disk_menu.py:205
+#, python-brace-format
+msgid "Partitions: {count} selected\n"
+msgstr ""
+
+#: lib/disk/disk_menu.py:207
+#, python-brace-format
+msgid "LVM volumes: {count} selected\n"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:35 lib/disk/encryption_menu.py:113
+msgid "Encryption password"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:37
+msgid "Partitions"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:38
+msgid "LVM volumes"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:39
+msgid "HSM"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:119
+msgid "Partitions to be encrypted"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:130
+msgid "LVM volumes to be encrypted"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:146
+msgid "HSM device"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:182
+msgid "Enter disk encryption password (leave blank for no encryption)"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:183
+msgid "Disk encryption password"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:188
+msgid "Select a FIDO2 device to use for HSM"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:261
+msgid "Enter iteration time for LUKS encryption (in milliseconds)"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:262
+msgid "Higher values increase security but slow down boot time"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:263
+#, python-brace-format
+msgid "Default: {iter_time}ms, Recommended range: 1000-60000"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:273
+msgid "Iteration time must be at least 100ms"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:276
+msgid "Iteration time must be at most 120000ms"
+msgstr ""
+
+#: lib/disk/encryption_menu.py:280
+msgid "Please enter a valid number"
+msgstr ""
+
+#: lib/disk/filesystem.py:291
+msgid "Starting device modifications in "
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:74
+msgid "Create a new partition"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:75
+msgid "Suggest partition layout"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:76
+msgid "Remove all newly added partitions"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:77
+msgid "Assign mountpoint"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:78
+msgid "Mark/Unmark to be formatted (wipes data)"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:83
+msgid "Mark/Unmark as ESP"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:84
+msgid "Mark/Unmark as XBOOTLDR"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:88
+msgid "Mark/Unmark as bootable"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:89
+msgid "Change filesystem"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:90
+msgid "Mark/Unmark as compressed"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:91
+msgid "Mark/Unmark as nodatacow"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:92
+msgid "Set subvolumes"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:93
+msgid "Delete partition"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:98
+#, python-brace-format
+msgid "Partition management: {path}"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:99
+#, python-brace-format
+msgid "Total length: {size}"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:180
+msgid "Partition - New"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:182
+msgid "Partition"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:387
+msgid ""
+"This partition is currently encrypted, to format it a filesystem has to be "
+"specified"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:397
+msgid ""
+"Partition mount-points are relative to inside the installation, the boot "
+"would be /boot as an example."
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:408
+msgid "Filesystem"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:445
+msgid "Invalid size"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:450
+#, python-brace-format
+msgid "Selected free space segment on device {path}:"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:457
+#, python-brace-format
+msgid "Size: {sectors} / {bytes}"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:458
+msgid ""
+"All entered values can be suffixed with a unit: %, B, KB, KiB, MB, MiB..."
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:459
+msgid "If no unit is provided, the value is interpreted as sectors"
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:462
+#, python-brace-format
+msgid "Size (default: {size}): "
+msgstr ""
+
+#: lib/disk/partitioning_menu.py:504
+msgid "This will remove all newly added partitions, continue?"
+msgstr ""
+
+#: lib/disk/subvolume_menu.py:18
+msgid "Add subvolume"
+msgstr ""
+
+#: lib/disk/subvolume_menu.py:19
+msgid "Edit subvolume"
+msgstr ""
+
+#: lib/disk/subvolume_menu.py:20
+msgid "Delete subvolume"
+msgstr ""
+
+#: lib/disk/subvolume_menu.py:32
+msgid "Value cannot be empty"
+msgstr ""
+
+#: lib/disk/subvolume_menu.py:34 lib/disk/subvolume_menu.py:50
+msgid "Subvolume name"
+msgstr ""
+
+#: lib/disk/subvolume_menu.py:51
+msgid "Subvolume mountpoint"
+msgstr ""
+
+#: lib/global_menu.py:50
+msgid "Language"
+msgstr ""
+
+#: lib/global_menu.py:51
+msgid "Locales"
+msgstr ""
+
+#: lib/global_menu.py:52
+msgid "Mirrors and repositories"
+msgstr ""
+
+#: lib/global_menu.py:53
+msgid "Disk configuration"
+msgstr ""
+
+#: lib/global_menu.py:54
+msgid "Swap"
+msgstr ""
+
+#: lib/global_menu.py:55 lib/global_menu.py:304
+#: lib/interactions/system_conf.py:70
+msgid "Bootloader"
+msgstr ""
+
+#: lib/global_menu.py:56 lib/global_menu.py:279
+msgid "Unified kernel images"
+msgstr ""
+
+#: lib/global_menu.py:57 lib/global_menu.py:288
+#: lib/interactions/general_conf.py:51
+msgid "Hostname"
+msgstr ""
+
+#: lib/global_menu.py:58
+msgid "Authentication"
+msgstr ""
+
+#: lib/global_menu.py:59
+msgid "Profile"
+msgstr ""
+
+#: lib/global_menu.py:60
+msgid "Applications"
+msgstr ""
+
+#: lib/global_menu.py:61
+msgid "Kernels"
+msgstr ""
+
+#: lib/global_menu.py:62 lib/global_menu.py:156
+#: lib/interactions/network_menu.py:178
+msgid "Network configuration"
+msgstr ""
+
+#: lib/global_menu.py:63 lib/global_menu.py:292
+msgid "Parallel Downloads"
+msgstr ""
+
+#: lib/global_menu.py:64
+msgid "Additional packages"
+msgstr ""
+
+#: lib/global_menu.py:65 lib/global_menu.py:228
+#: lib/interactions/general_conf.py:79
+msgid "Timezone"
+msgstr ""
+
+#: lib/global_menu.py:66
+msgid "Automatic time sync (NTP)"
+msgstr ""
+
+#: lib/global_menu.py:68
+msgid "Save configuration"
+msgstr ""
+
+#: lib/global_menu.py:69
+msgid "Install"
+msgstr ""
+
+#: lib/global_menu.py:70
+msgid "Abort"
+msgstr ""
+
+#: lib/global_menu.py:91
+msgid ""
+"Either root-password or at least 1 user with sudo privileges must be "
+"specified"
+msgstr ""
+
+#: lib/global_menu.py:233
+msgid "NTP"
+msgstr ""
+
+#: lib/global_menu.py:245
+#, python-brace-format
+msgid "Configuration type: {configuration_type}\n"
+msgstr ""
+
+#: lib/global_menu.py:251 lib/interactions/disk_conf.py:144
+msgid "LVM configuration type"
+msgstr ""
+
+#: lib/global_menu.py:260
+#, python-brace-format
+msgid "Btrfs snapshot type: {snapshot_type}"
+msgstr ""
+
+#: lib/global_menu.py:269
+msgid "Swap on zram"
+msgstr ""
+
+#: lib/global_menu.py:298 lib/interactions/system_conf.py:37
+msgid "Kernel"
+msgstr ""
+
+#: lib/global_menu.py:348
+msgid "Missing configurations:\n"
+msgstr ""
+
+#: lib/global_menu.py:351
+#, python-brace-format
+msgid "Invalid configuration: {error}"
+msgstr ""
+
+#: lib/global_menu.py:358
+msgid "Profiles"
+msgstr ""
+
+#: lib/global_menu.py:362 lib/profile/profile_menu.py:30
+msgid "Graphics driver"
+msgstr ""
+
+#: lib/global_menu.py:365 lib/profile/profile_menu.py:31
+#: lib/profile/profile_menu.py:90 lib/profile/profile_menu.py:123
+msgid "Greeter"
+msgstr ""
+
+#: lib/global_menu.py:426
+msgid "Selected mirror regions"
+msgstr ""
+
+#: lib/global_menu.py:433
+msgid "Custom servers"
+msgstr ""
+
+#: lib/global_menu.py:440 lib/mirrors.py:190
+msgid "Optional repositories"
+msgstr ""
+
+#: lib/global_menu.py:447
+msgid "Custom repositories"
+msgstr ""
+
+#: lib/installer.py:119
+#, python-brace-format
+msgid "[!] A log file has been created here: {log_path}"
+msgstr ""
+
+#: lib/installer.py:120
+msgid "Please submit this issue (and file) to "
+msgstr ""
+
+#: lib/installer.py:145
+msgid "Syncing the system..."
+msgstr ""
+
+#: lib/installer.py:163
+msgid ""
+"Skipping waiting for automatic time sync (this can cause issues if time is "
+"out of sync during installation)"
+msgstr ""
+
+#: lib/installer.py:166
+msgid "Waiting for time sync (timedatectl show) to complete."
+msgstr ""
+
+#: lib/installer.py:174
+msgid "Time synchronization not completing, while you wait"
+msgstr ""
+
+#: lib/installer.py:189
+msgid ""
+"Waiting for Arch Linux keyring sync (archlinux-keyring-wkd-sync) to complete."
+msgstr ""
+
+#: lib/interactions/disk_conf.py:91
+msgid "Disk configuration type"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:107
+msgid "Root mount directory"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:193
+msgid "Would you like to use compression or disable CoW?"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:194
+msgid "Use compression"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:195
+msgid "Disable Copy-on-Write"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:262 lib/interactions/disk_conf.py:422
+msgid "Would you like to use BTRFS subvolumes with a default structure?"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:285
+msgid "Would you like to create a separate partition for /home?"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:348
+msgid ""
+"The selected drives do not have the minimum capacity required for an "
+"automatic suggestion\n"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:349
+#, python-brace-format
+msgid "Minimum capacity for /home partition: {size}GiB\n"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:350
+#, python-brace-format
+msgid "Minimum capacity for {name} partition: {size}GiB"
+msgstr ""
+
+#: lib/interactions/disk_conf.py:352
+msgid "Continue"
+msgstr ""
+
+#: lib/interactions/general_conf.py:22
+msgid "Exit nerve"
+msgstr ""
+
+#: lib/interactions/general_conf.py:23
+msgid "Reboot system"
+msgstr ""
+
+#: lib/interactions/general_conf.py:24
+msgid "chroot into installation for post-installation configurations"
+msgstr ""
+
+#: lib/interactions/general_conf.py:27
+msgid ""
+"Would you like to use automatic time synchronization (NTP) with the default "
+"time servers?\n"
+msgstr ""
+
+#: lib/interactions/general_conf.py:30
+msgid ""
+"Hardware time and other post-configuration steps might be required in order "
+"for NTP to work.\n"
+"For more information, please check the Arch wiki"
+msgstr ""
+
+#: lib/interactions/general_conf.py:107
+msgid "Select language"
+msgstr ""
+
+#: lib/interactions/general_conf.py:135
+#, python-brace-format
+msgid "Repositories: {repositories}"
+msgstr ""
+
+#: lib/interactions/general_conf.py:137
+msgid "Loading packages..."
+msgstr ""
+
+#: lib/interactions/general_conf.py:144
+msgid ""
+"Only packages such as base, base-devel, linux, linux-firmware, efibootmgr "
+"and optional profile packages are installed."
+msgstr ""
+
+#: lib/interactions/general_conf.py:145
+msgid ""
+"Pick any packages from the list below that should be installed additionally."
+msgstr ""
+
+#: lib/interactions/general_conf.py:179
+msgid ""
+"This option enables the number of parallel downloads that can occur during "
+"package downloads"
+msgstr ""
+
+#: lib/interactions/general_conf.py:180
+msgid ""
+"Enter the number of parallel downloads to be enabled.\n"
+"\n"
+"Note:\n"
+msgstr ""
+
+#: lib/interactions/general_conf.py:181
+#, python-brace-format
+msgid ""
+" - Maximum recommended value: {count} ( Allows 5 parallel downloads at a "
+"time )"
+msgstr ""
+
+#: lib/interactions/general_conf.py:182
+msgid ""
+" - Disable/Default : 0 ( Disables parallel downloading, allows only 1 "
+"download at a time )\n"
+msgstr ""
+
+#: lib/interactions/general_conf.py:196
+msgid "Invalid download number"
+msgstr ""
+
+#: lib/interactions/general_conf.py:198
+msgid "Number downloads"
+msgstr ""
+
+#: lib/interactions/general_conf.py:226
+msgid "Installation completed"
+msgstr ""
+
+#: lib/interactions/general_conf.py:227
+msgid "What would you like to do next?"
+msgstr ""
+
+#: lib/interactions/general_conf.py:242
+msgid "Do you really want to abort?"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:22
+msgid "Add a user"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:23
+msgid "Change password"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:24
+msgid "Promote/Demote user"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:25
+msgid "Delete User"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:46
+msgid "User"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:63
+msgid "The username you entered is invalid"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:66
+#: lib/interactions/manage_users_conf.py:81
+msgid "Username"
+msgstr ""
+
+#: lib/interactions/manage_users_conf.py:88
+#, python-brace-format
+msgid "Should \"{username}\" be a superuser (sudo)?\n"
+msgstr ""
+
+#: lib/interactions/network_menu.py:22
+msgid "Add interface"
+msgstr ""
+
+#: lib/interactions/network_menu.py:23
+msgid "Edit interface"
+msgstr ""
+
+#: lib/interactions/network_menu.py:24
+msgid "Delete interface"
+msgstr ""
+
+#: lib/interactions/network_menu.py:68
+msgid "Interfaces"
+msgstr ""
+
+#: lib/interactions/network_menu.py:86
+msgid "You need to enter a valid IP in IP-config mode"
+msgstr ""
+
+#: lib/interactions/network_menu.py:126
+#, python-brace-format
+msgid "Select which mode to configure for \"{name}\""
+msgstr ""
+
+#: lib/interactions/network_menu.py:132
+msgid "Modes"
+msgstr ""
+
+#: lib/interactions/network_menu.py:148
+msgid "Enter the IP and subnet for "
+msgstr ""
+
+#: lib/interactions/network_menu.py:149
+msgid "IP address"
+msgstr ""
+
+#: lib/interactions/network_menu.py:151
+msgid "Enter your gateway (router) IP address (leave blank for none)"
+msgstr ""
+
+#: lib/interactions/network_menu.py:152
+msgid "Gateway address"
+msgstr ""
+
+#: lib/interactions/network_menu.py:155
+msgid "Enter your DNS servers with space separated (leave blank for none)"
+msgstr ""
+
+#: lib/interactions/network_menu.py:157
+msgid "DNS servers"
+msgstr ""
+
+#: lib/interactions/network_menu.py:199
+msgid "Configure interfaces"
+msgstr ""
+
+#: lib/interactions/system_conf.py:62
+msgid "UEFI is not detected and some options are disabled"
+msgstr ""
+
+#: lib/interactions/system_conf.py:86
+msgid "Would you like to use unified kernel images?"
+msgstr ""
+
+#: lib/interactions/system_conf.py:126
+msgid ""
+"For the best compatibility with your AMD hardware, you may want to use "
+"either the all open-source or AMD / ATI options."
+msgstr ""
+
+#: lib/interactions/system_conf.py:129
+msgid ""
+"For the best compatibility with your Intel hardware, you may want to use "
+"either the all open-source or Intel options.\n"
+msgstr ""
+
+#: lib/interactions/system_conf.py:132
+msgid ""
+"For the best compatibility with your Nvidia hardware, you may want to use "
+"the Nvidia proprietary driver.\n"
+msgstr ""
+
+#: lib/interactions/system_conf.py:134
+msgid "Info"
+msgstr ""
+
+#: lib/interactions/system_conf.py:152
+msgid "Would you like to use swap on zram?"
+msgstr ""
+
+#: lib/locale/locale_menu.py:25 lib/locale/locale_menu.py:103
+#: lib/models/locale.py:29
+msgid "Keyboard layout"
+msgstr ""
+
+#: lib/locale/locale_menu.py:26 lib/locale/locale_menu.py:56
+#: lib/models/locale.py:30
+msgid "Locale language"
+msgstr ""
+
+#: lib/locale/locale_menu.py:27 lib/locale/locale_menu.py:76
+#: lib/models/locale.py:31
+msgid "Locale encoding"
+msgstr ""
+
+#: lib/menu/abstract_menu.py:102
+msgid "Back"
+msgstr ""
+
+#: lib/menu/list_manager.py:37
+msgid "Confirm and exit"
+msgstr ""
+
+#: lib/menu/list_manager.py:38
+msgid "Cancel"
+msgstr ""
+
+#: lib/mirrors.py:25
+msgid "Add a custom repository"
+msgstr ""
+
+#: lib/mirrors.py:26
+msgid "Change custom repository"
+msgstr ""
+
+#: lib/mirrors.py:27
+msgid "Delete custom repository"
+msgstr ""
+
+#: lib/mirrors.py:59
+msgid "Repository name"
+msgstr ""
+
+#: lib/mirrors.py:77
+msgid "Name"
+msgstr ""
+
+#: lib/mirrors.py:78 lib/mirrors.py:90
+msgid "Url"
+msgstr ""
+
+#: lib/mirrors.py:91
+msgid "Select signature check"
+msgstr ""
+
+#: lib/mirrors.py:108
+msgid "Signature check"
+msgstr ""
+
+#: lib/mirrors.py:109
+msgid "Select signature option"
+msgstr ""
+
+#: lib/mirrors.py:131
+msgid "Add a custom server"
+msgstr ""
+
+#: lib/mirrors.py:132
+msgid "Change custom server"
+msgstr ""
+
+#: lib/mirrors.py:133
+msgid "Delete custom server"
+msgstr ""
+
+#: lib/mirrors.py:165
+msgid "Server url"
+msgstr ""
+
+#: lib/mirrors.py:188
+msgid "Select regions"
+msgstr ""
+
+#: lib/mirrors.py:189
+msgid "Add custom servers"
+msgstr ""
+
+#: lib/mirrors.py:191
+msgid "Add custom repository"
+msgstr ""
+
+#: lib/mirrors.py:215
+msgid "Additional repositories"
+msgstr ""
+
+#: lib/mirrors.py:245
+msgid "Loading mirror regions..."
+msgstr ""
+
+#: lib/mirrors.py:259
+msgid "Mirror regions"
+msgstr ""
+
+#: lib/models/authentication.py:25
+msgid "Passwordless login"
+msgstr ""
+
+#: lib/models/authentication.py:28
+msgid "Second factor login"
+msgstr ""
+
+#: lib/models/device.py:35
+msgid "Use a best-effort default partition layout"
+msgstr ""
+
+#: lib/models/device.py:38
+msgid "Manual Partitioning"
+msgstr ""
+
+#: lib/models/device.py:41
+msgid "Pre-mounted configuration"
+msgstr ""
+
+#: lib/models/device.py:445
+msgid "Unknown"
+msgstr ""
+
+#: lib/models/device.py:906
+msgid "Default layout"
+msgstr ""
+
+#: lib/models/device.py:1222
+msgid "No Encryption"
+msgstr ""
+
+#: lib/models/device.py:1223
+msgid "LUKS"
+msgstr ""
+
+#: lib/models/device.py:1224
+msgid "LVM on LUKS"
+msgstr ""
+
+#: lib/models/device.py:1225
+msgid "LUKS on LVM"
+msgstr ""
+
+#: lib/models/network.py:25
+msgid "Copy ISO network configuration to installation"
+msgstr ""
+
+#: lib/models/network.py:28
+msgid ""
+"Use NetworkManager (necessary to configure internet graphically in GNOME and "
+"KDE Plasma)"
+msgstr ""
+
+#: lib/models/network.py:31
+msgid "Manual configuration"
+msgstr ""
+
+#: lib/models/packages.py:169
+msgid "Package group:"
+msgstr ""
+
+#: lib/pacman/__init__.py:31
+msgid ""
+"Pacman is already running, waiting maximum 10 minutes for it to terminate."
+msgstr ""
+
+#: lib/pacman/__init__.py:41
+msgid ""
+"Pre-existing pacman lock never exited. Please clean up any existing pacman "
+"sessions before using Nerve."
+msgstr ""
+
+#: lib/profile/profile_menu.py:29
+msgid "Type"
+msgstr ""
+
+#: lib/profile/profile_menu.py:64
+msgid "The proprietary Nvidia driver is not supported by Sway."
+msgstr ""
+
+#: lib/profile/profile_menu.py:65
+msgid "It is likely that you will run into issues, are you okay with that?"
+msgstr ""
+
+#: lib/profile/profile_menu.py:99
+msgid "Selected profiles: "
+msgstr ""
+
+#: lib/profile/profile_menu.py:142
+msgid "This is a list of pre-programmed default_profiles"
+msgstr ""
+
+#: lib/profile/profile_menu.py:148
+msgid "Main profile"
+msgstr ""
+
+#: lib/profile/profiles_handler.py:257
+#, python-brace-format
+msgid "Unable to fetch profile from specified url: {url}"
+msgstr ""
+
+#: lib/profile/profiles_handler.py:293
+#, python-brace-format
+msgid ""
+"Profiles must have unique name, but profile definitions with duplicate name "
+"found: {duplicates}"
+msgstr ""
+
+#: lib/utils/util.py:35
+msgid "Confirm password"
+msgstr ""
+
+#: lib/utils/util.py:40
+msgid "The confirmation password did not match, please try again"
+msgstr ""
+
+#: lib/utils/util.py:44
+msgid "Not a valid directory"
+msgstr ""
+
+#: lib/network/wifi_handler.py:47
+msgid "No network connection found"
+msgstr ""
+
+#: lib/network/wifi_handler.py:48
+msgid "Would you like to connect to a Wifi?"
+msgstr ""
+
+#: lib/network/wifi_handler.py:116
+msgid "No wifi interface found"
+msgstr ""
+
+#: lib/network/wifi_handler.py:133
+msgid "Select wifi network to connect to"
+msgstr ""
+
+#: lib/network/wifi_handler.py:133
+msgid "Scanning wifi networks..."
+msgstr ""
+
+#: lib/network/wifi_handler.py:140
+msgid "No wifi networks found"
+msgstr ""
+
+#: lib/network/wifi_handler.py:195
+msgid "Failed setting up wifi"
+msgstr ""
+
+#: lib/network/wifi_handler.py:241
+msgid "Enter wifi password"
+msgstr ""
+
+#: tui/curses_menu.py:51
+msgid "Nerve help"
+msgstr ""
+
+#: tui/curses_menu.py:67
+msgid "Press Ctrl+h for help"
+msgstr ""
+
+#: tui/curses_menu.py:361 tui/curses_menu.py:571
+msgid "Are you sure you want to reset this setting?"
+msgstr ""
+
+#: tui/curses_menu.py:372
+msgid "Only ASCII characters are supported"
+msgstr ""
+
+#: tui/help.py:39
+msgid "Show help"
+msgstr ""
+
+#: tui/help.py:40
+msgid "Exit help"
+msgstr ""
+
+#: tui/help.py:46
+msgid "Preview scroll up"
+msgstr ""
+
+#: tui/help.py:47
+msgid "Preview scroll down"
+msgstr ""
+
+#: tui/help.py:48
+msgid "Move up"
+msgstr ""
+
+#: tui/help.py:49
+msgid "Move down"
+msgstr ""
+
+#: tui/help.py:50
+msgid "Move right"
+msgstr ""
+
+#: tui/help.py:51
+msgid "Move left"
+msgstr ""
+
+#: tui/help.py:52
+msgid "Jump to entry"
+msgstr ""
+
+#: tui/help.py:58
+msgid "Skip selection (if available)"
+msgstr ""
+
+#: tui/help.py:59
+msgid "Reset selection (if available)"
+msgstr ""
+
+#: tui/help.py:60
+msgid "Select on single select"
+msgstr ""
+
+#: tui/help.py:61
+msgid "Select on multi select"
+msgstr ""
+
+#: tui/help.py:62
+msgid "Reset"
+msgstr ""
+
+#: tui/help.py:63
+msgid "Skip selection menu"
+msgstr ""
+
+#: tui/help.py:69
+msgid "Start search mode"
+msgstr ""
+
+#: tui/help.py:70
+msgid "Exit search mode"
+msgstr ""
+
+#: tui/menu_item.py:38
+msgid "Yes"
+msgstr ""
+
+#: tui/menu_item.py:45
+msgid "No"
+msgstr ""
+
+#: tui/menu_item.py:191
+msgid "(default)"
+msgstr ""
+
+#: tui/ui/components.py:217
+msgid "Ok"
+msgstr ""
