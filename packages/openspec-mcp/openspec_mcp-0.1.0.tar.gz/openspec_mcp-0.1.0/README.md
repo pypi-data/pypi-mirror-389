@@ -1,0 +1,157 @@
+# OpenSpec MCP Server
+
+A Model Context Protocol (MCP) server for [OpenSpec](https://github.com/Fission-AI/OpenSpec) - bringing spec-driven development to AI assistants like Cursor, Claude Desktop, and more.
+
+## What is OpenSpec MCP?
+
+OpenSpec MCP Server exposes OpenSpec's powerful spec-driven development workflow through the standardized MCP protocol. This allows AI assistants to:
+
+- Create and manage change proposals
+- Read and update specification documents
+- Track task progress
+- Validate spec formats
+- Archive completed changes
+
+## Installation
+
+### Using uvx (Recommended)
+
+No installation needed! Just configure your AI tool to use:
+
+```bash
+uvx openspec-mcp
+```
+
+### Using pip
+
+```bash
+pip install openspec-mcp
+```
+
+## Configuration
+
+### Cursor
+
+Add to `.kiro/settings/mcp.json` or `~/.kiro/settings/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "openspec": {
+      "command": "uvx",
+      "args": ["openspec-mcp"],
+      "env": {
+        "OPENSPEC_DEBUG": "false"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "list_changes",
+        "list_specs",
+        "show_change",
+        "read_spec",
+        "read_tasks"
+      ]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "openspec": {
+      "command": "uvx",
+      "args": ["openspec-mcp"],
+      "env": {
+        "OPENSPEC_DEBUG": "false"
+      }
+    }
+  }
+}
+```
+
+## Available Tools
+
+### Project Management
+- `init_openspec` - Initialize OpenSpec project structure
+- `list_changes` - List all active changes with progress
+- `list_specs` - List all specification documents
+
+### Change Management
+- `create_proposal` - Create a new change proposal
+- `show_change` - Show detailed information about a change
+- `archive_change` - Archive a completed change
+
+### Specification Management
+- `read_spec` - Read a specification document
+- `read_tasks` - Read tasks for a change
+- `update_task_status` - Update task completion status
+
+### Validation
+- `validate_change` - Validate change document format
+
+## Usage Examples
+
+### In Cursor
+
+```
+User: Please create a change proposal for adding two-factor authentication
+
+AI: I'll use OpenSpec MCP to create this change proposal.
+    [Calls create_proposal tool]
+    
+    Change proposal created: openspec/changes/add-two-factor-auth
+    
+    Let me help you fill in the details...
+```
+
+### Testing with MCP Inspector
+
+```bash
+npx @modelcontextprotocol/inspector uvx openspec-mcp
+```
+
+## Environment Variables
+
+- `OPENSPEC_WORKING_DIR` - Working directory (default: current directory)
+- `OPENSPEC_DEBUG` - Enable debug logging (default: false)
+- `OPENSPEC_LOG_LEVEL` - Log level: DEBUG, INFO, WARNING, ERROR (default: INFO)
+- `OPENSPEC_STRICT` - Enable strict validation mode (default: true)
+
+## Development
+
+```bash
+# Clone the repository
+git clone https://github.com/Fission-AI/OpenSpec
+cd OpenSpec/openspec-mcp
+
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Run with coverage
+pytest --cov=openspec_mcp --cov-report=html
+
+# Format code
+black src tests
+ruff check src tests
+
+# Type checking
+mypy src
+```
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Links
+
+- [OpenSpec Documentation](https://github.com/Fission-AI/OpenSpec)
+- [Model Context Protocol](https://modelcontextprotocol.io/)
+- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
