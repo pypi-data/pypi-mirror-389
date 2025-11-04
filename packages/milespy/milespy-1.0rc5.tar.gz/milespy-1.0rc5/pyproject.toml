@@ -1,0 +1,59 @@
+[project]
+name = "milespy"
+version = "1.0rc5"
+description = "Wrapper for the MILES spectral library"
+authors = [{ name = "Isaac Alonso Asensio", email = "isaac.alonso.asensio@iac.es" }]
+requires-python = ">=3.10"
+readme = "README.md"
+maintainers = [{ name = "Isaac Alonso Asensio", email = "isaac.alonso.asensio@iac.es" }]
+dependencies = [
+    "h5py>=3.11.0,<4",
+    "scipy>=1.10",
+    "astropy>=6",
+    "specutils>=2.0",
+    "spectres>=2.2.2,<3",
+    "matplotlib~=3.7",
+    "numpy>=1.24",
+    "requests>=2.31.0,<3",
+    "tqdm>=4.66.4,<5",
+    "rcfile>=0.1.4,<0.2",
+]
+
+[dependency-groups]
+dev = [
+    "black>=24.4.2,<25",
+    "pre-commit~=3.5",
+    "pylint>=3.2.0,<4",
+    "pytest>=8.2.0,<9",
+    "pytest-mpl>=0.17.0,<0.18",
+    "pytest-html>=4.1.1,<5",
+    "coverage>=7.5.4,<8",
+    "ruff>=0.12.5",
+]
+docs = [
+    "Sphinx>=7.1.2,<8",
+    "sphinx-rtd-theme>=2.0.0,<3",
+    "sphinxcontrib-napoleon>=0.7,<0.8",
+    "numpydoc>=1.7.0,<2",
+    "nbsphinx>=0.9.4,<0.10",
+    "sphinx-gallery>=0.17.0,<0.18",
+    "jupyterlab>=4.0.0,<5",
+    "sphinx-autodoc-typehints>=2,<3",
+    "sphinxcontrib-bibtex>=2.6.3,<3",
+]
+
+[tool.hatch.build.targets.sdist]
+include = ["milespy"]
+
+[tool.hatch.build.targets.wheel]
+include = ["milespy"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.isort]
+profile = "black"
+
+[tool.coverage.run]
+relative_files = true
