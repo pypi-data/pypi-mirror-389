@@ -1,0 +1,413 @@
+Metadata-Version: 2.4
+Name: django-rick-base
+Version: 0.1.0
+Summary: 一个基于 Django 的基础项目自用项目
+Author-email: li2810081 <276069869@qq.com>
+Requires-Python: >=3.8.6
+Requires-Dist: cryptography>=46.0.3
+Requires-Dist: django-polls>=0.2.1
+Requires-Dist: django==4.2
+Requires-Dist: djangorestframework>=3.15.2
+Requires-Dist: drf-spectacular>=0.29.0
+Requires-Dist: pycryptodome>=3.23.0
+Requires-Dist: pymysql>=1.1.2
+Requires-Dist: requests>=2.32.4
+Description-Content-Type: text/markdown
+
+# Django钉钉基础模块
+
+一个基于Django框架的钉钉集成基础模块，提供用户管理、消息发送、信号通知等核心功能。
+
+## 功能特性
+
+- **用户管理**: 支持从钉钉API获取用户信息，实现三层架构数据获取
+- **部门管理**: 完整的部门信息管理和组织架构同步
+- **消息发送**: 支持单条消息和群消息发送，多种消息类型
+- **信号机制**: 自定义信号通知，支持数据获取和消息接收事件
+- **REST API**: 完整的RESTful API接口，支持健康检查
+- **缓存策略**: 智能缓存机制，提升数据访问性能
+
+## 技术架构
+
+### 三层架构设计
+
+1. **数据层**: Django ORM模型，支持MySQL/PostgreSQL数据库
+2. **业务层**: 管理器类封装业务逻辑，支持缓存和API调用
+3. **API层**: RESTful接口，提供外部访问能力
+
+### 核心组件
+
+- **UserManager**: 用户信息管理，支持按名称/手机号查询
+- **DepartmentManager**: 部门信息管理，支持组织架构同步
+- **BotClient**: 钉钉机器人消息发送客户端
+- **NotificationManager**: 信号通知管理器
+
+## 安装部署
+
+### 环境要求
+
+- Python 3.8+
+- Django 4.2+
+- Django REST Framework 3.14+
+
+### 安装步骤
+
+1. **克隆项目**
+   ```bash
+   git clone https://github.com/your-repo/django-rick-base.git
+   cd django-rick-base
+   ```
+
+2. **安装依赖**
+   ```bash
+   uv add django djangorestframework requests
+   ```
+
+3. **配置数据库**
+   ```python
+   # settings.py
+   DATABASES = {
+       'default': {
+           'ENGINE': 'django.db.backends.sqlite3',
+           'NAME': BASE_DIR / 'db.sqlite3',
+       }
+   }
+   ```
+
+4. **运行迁移**
+   ```bash
+   uv run manage.py makemigrations
+   uv run manage.py migrate
+   ```
+
+5. **启动服务**
+   ```bash
+   uv run manage.py runserver
+   ```
+
+## 配置说明
+
+### 钉钉配置
+
+在项目配置文件中添加钉钉相关配置：
+
+```python
+# settings.py
+DINGTALK_CONFIG = {
+    'app_key': 'your_app_key',
+    'app_secret': 'your_app_secret',
+    'corp_id': 'your_corp_id',
+    'agent_id': 'your_agent_id',
+}
+```
+
+### 机器人配置
+
+在数据库中配置机器人钩子：
+
+```python
+from django_rick_base.models import BotHook
+
+BotHook.objects.create(
+    hook_name='default_bot',
+    webhook='https://oapi.dingtalk.com/robot/send?access_token=your_token',
+    secret='your_secret'
+)
+```
+
+## 使用指南
+
+### 用户管理
+
+```python
+from django_rick_base.manager import UserManager
+
+# 获取用户信息
+user_manager = UserManager()
+user = user_manager.get_user_by_name('张三')
+user = user_manager.get_user_by_mobile('13800138000')
+```
+
+### 部门管理
+
+```python
+from django_rick_base.manager import DepartmentManager
+
+# 获取部门信息
+dept_manager = DepartmentManager()
+dept = dept_manager.get_dept_by_name('技术部')
+```
+
+### 消息发送
+
+#### 单条消息
+
+```python
+import requests
+import json
+
+url = 'http://localhost:8000/api/dingtalk/single-message/'
+data = {
+    "query": "13800138000",
+    "content": {
+        "title": "测试消息",
+        "text": "这是一条测试消息"
+    }
+}
+
+response = requests.post(url, json=data)
+print(response.json())
+```
+
+#### 群消息
+
+```python
+import requests
+import json
+
+url = 'http://localhost:8000/api/dingtalk/group-message/'
+data = {
+    "hook_name": "default_bot",
+    "content": {
+        "msgtype": "markdown",
+        "markdown": {
+            "title": "群通知",
+            "text": "这是一条群消息"
+        }
+    }
+}
+
+response = requests.post(url, json=data)
+print(response.json())
+```
+
+### 信号使用
+
+```python
+from django_rick_base.signals import data_fetched, message_received
+from django.dispatch import receiver
+
+@receiver(data_fetched)
+def handle_data_fetched(sender, **kwargs):
+    """处理数据获取完成信号"""
+    data_type = kwargs.get('data_type')
+    data = kwargs.get('data')
+    print(f"收到 {data_type} 数据: {data}")
+
+@receiver(message_received)
+def handle_message_received(sender, **kwargs):
+    """处理消息接收信号"""
+    message_type = kwargs.get('message_type')
+    message = kwargs.get('message')
+    print(f"收到 {message_type} 消息: {message}")
+```
+
+## API文档
+
+### 健康检查
+
+```http
+GET /api/dingtalk/health-check/
+```
+
+响应示例：
+```json
+{
+    "status": "ok"
+}
+```
+
+### 单条消息发送
+
+```http
+POST /api/dingtalk/single-message/
+Content-Type: application/json
+
+{
+    "query": "13800138000",
+    "content": {
+        "title": "消息标题",
+        "text": "消息内容"
+    }
+}
+```
+
+### 群消息发送
+
+```http
+POST /api/dingtalk/group-message/
+Content-Type: application/json
+
+{
+    "hook_name": "default_bot",
+    "content": {
+        "msgtype": "markdown",
+        "markdown": {
+            "title": "群消息标题",
+            "text": "群消息内容"
+        }
+    }
+}
+```
+
+## 测试
+
+运行测试用例：
+
+```bash
+uv run manage.py test django_rick_base
+```
+
+测试覆盖范围：
+- 用户管理器测试
+- 部门管理器测试  
+- 消息API测试
+- 信号机制测试
+- 数据模型测试
+
+## 开发指南
+
+### 代码结构
+
+```
+django_rick_base/
+├── __init__.py
+├── admin.py          # 管理后台配置
+├── apps.py           # 应用配置
+├── manager.py        # 管理器类
+├── models.py         # 数据模型
+├── signals.py        # 信号定义
+├── tests.py          # 测试用例
+├── urls.py           # URL路由
+└── views.py          # 视图函数
+```
+
+### 扩展开发
+
+#### 添加新的管理器
+
+```python
+from .base import BaseManager
+
+class CustomManager(BaseManager):
+    """自定义管理器"""
+    
+    def get_custom_data(self, query):
+        """获取自定义数据"""
+        # 实现三层架构数据获取逻辑
+        pass
+```
+
+#### 添加新的信号
+
+```python
+from django.dispatch import Signal
+
+custom_signal = Signal()
+
+class CustomNotificationManager:
+    """自定义通知管理器"""
+    
+    @classmethod
+    def send_custom_notification(cls, sender, **kwargs):
+        """发送自定义通知"""
+        custom_signal.send(sender=sender, **kwargs)
+```
+
+## 部署说明
+
+### 生产环境配置
+
+1. **数据库配置**
+   ```python
+   DATABASES = {
+       'default': {
+           'ENGINE': 'django.db.backends.postgresql',
+           'NAME': 'dingtalk_db',
+           'USER': 'dingtalk_user',
+           'PASSWORD': 'your_password',
+           'HOST': 'localhost',
+           'PORT': '5432',
+       }
+   }
+   ```
+
+2. **缓存配置**
+   ```python
+   CACHES = {
+       'default': {
+           'BACKEND': 'django_redis.cache.RedisCache',
+           'LOCATION': 'redis://127.0.0.1:6379/1',
+           'OPTIONS': {
+               'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+           }
+       }
+   }
+   ```
+
+3. **安全配置**
+   ```python
+   DEBUG = False
+   ALLOWED_HOSTS = ['your-domain.com']
+   SECURE_SSL_REDIRECT = True
+   SESSION_COOKIE_SECURE = True
+   CSRF_COOKIE_SECURE = True
+   ```
+
+## 故障排除
+
+### 常见问题
+
+1. **钉钉API调用失败**
+   - 检查app_key和app_secret配置
+   - 验证网络连接和防火墙设置
+   - 查看钉钉开放平台错误码说明
+
+2. **消息发送失败**
+   - 检查机器人webhook配置
+   - 验证消息内容格式
+   - 查看钉钉机器人文档
+
+3. **数据库连接失败**
+   - 检查数据库服务状态
+   - 验证数据库配置参数
+   - 检查数据库用户权限
+
+### 日志查看
+
+```python
+import logging
+
+logger = logging.getLogger('django_rick_base')
+logger.debug('调试信息')
+logger.info('操作信息')
+logger.warning('警告信息')
+logger.error('错误信息')
+```
+
+## 贡献指南
+
+1. Fork项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建Pull Request
+
+## 许可证
+
+本项目采用MIT许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+
+## 联系方式
+
+- 项目主页: https://github.com/your-repo/django-rick-base
+- 问题反馈: https://github.com/your-repo/django-rick-base/issues
+- 邮箱: your-email@example.com
+
+## 更新日志
+
+### v1.0.0 (2024-01-01)
+- 初始版本发布
+- 实现用户管理功能
+- 实现消息发送功能
+- 实现信号通知机制
+- 提供完整的API接口
