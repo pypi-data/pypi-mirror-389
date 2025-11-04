@@ -1,0 +1,178 @@
+{
+  "id": "vrp",
+  "name": "Vehicle Routing Problem",
+  "domain": "logistics",
+  "problem_type": "vehicle_routing",
+  "description": "Optimizes delivery routes, fleet scheduling, and logistics operations to minimize costs while meeting customer time windows and capacity constraints.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Logistics Operations Expert",
+    "profile": "15+ years optimizing last-mile delivery for e-commerce and logistics companies. Expert in fleet management, route optimization, and customer service.",
+    "priorities": [
+      "Minimize total distance/cost",
+      "Meet customer time windows",
+      "Balance vehicle utilization",
+      "Minimize number of vehicles used",
+      "Reduce driver overtime",
+      "Optimize depot assignments"
+    ],
+    "key_metrics": [
+      "Total distance (km)",
+      "Total delivery cost ($)",
+      "Vehicle utilization (%)",
+      "On-time delivery rate (%)"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Transportation Optimization Specialist",
+    "profile": "PhD in Operations Research. Specializes in vehicle routing, network optimization, and combinatorial optimization.",
+    "problem_class": "Capacitated Vehicle Routing Problem with Time Windows (CVRPTW) - NP-hard",
+    "formulation": "Minimize total distance while satisfying vehicle capacity constraints, customer time windows, and route duration limits. Uses combination of nearest-neighbor heuristics and genetic algorithms.",
+    "complexity": "O(n^m) where n = customers, m = vehicles - requires meta-heuristic"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "total_distance",
+        "weight": 0.5,
+        "formula": "sum(distance(stop[i], stop[i+1]) for all routes)",
+        "description": "Minimize total distance traveled"
+      },
+      {
+        "name": "vehicle_count",
+        "weight": 0.2,
+        "formula": "number of vehicles used * vehicle_fixed_cost",
+        "description": "Minimize fleet size"
+      },
+      {
+        "name": "route_balance",
+        "weight": 0.2,
+        "formula": "1.0 - stddev(route_loads) / mean(route_loads)",
+        "description": "Balance workload across vehicles"
+      },
+      {
+        "name": "time_window_satisfaction",
+        "weight": 0.1,
+        "formula": "sum(arrivals within time windows) / total_customers",
+        "description": "Maximize on-time deliveries"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "capacity_violation",
+        "weight": 100.0,
+        "description": "Heavy penalty for exceeding vehicle capacity"
+      },
+      {
+        "name": "time_window_violation",
+        "weight": 50.0,
+        "description": "Penalty for missing customer time windows"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "vehicle_capacity",
+        "formula": "sum(customer.demand for customer in route) <= vehicle.capacity",
+        "description": "Total demand on route must not exceed vehicle capacity"
+      },
+      {
+        "name": "route_duration",
+        "formula": "total_route_time <= vehicle.max_duration",
+        "description": "Route must complete within driver shift"
+      },
+      {
+        "name": "depot_start_end",
+        "formula": "route.start == depot AND route.end == depot",
+        "description": "All routes start and end at depot"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "time_windows",
+        "penalty": 10.0,
+        "formula": "arrival_time within [customer.time_window.start, customer.time_window.end]",
+        "description": "Prefer arrivals within customer time windows"
+      },
+      {
+        "name": "customer_priority",
+        "penalty": 5.0,
+        "formula": "prioritize high-priority customers",
+        "description": "Serve premium customers first"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 100,
+    "max_generations": 200,
+    "crossover_rate": 0.8,
+    "mutation_rate": 0.2,
+    "tournament_size": 5,
+    "elite_size": 10,
+    "crossover_config": {
+      "type": "route_crossover",
+      "description": "Exchanges route segments between solutions while maintaining feasibility"
+    },
+    "mutation_config": {
+      "type": "route_mutation",
+      "description": "2-opt, insertion, and swap mutations for route improvement",
+      "mutation_strength": 0.15
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY - do NOT generate full customer/vehicle arrays**\n\n**Problem Description:**\n{problem_description}\n\n**Task:**\nExtract METADATA about the VRP problem. Return JSON:\n\n```json\n{{\n  \"customer_count\": <number>,\n  \"vehicle_count\": <number>,\n  \"depot_count\": <number, default 1>,\n  \"constraints\": {{\n    \"has_time_windows\": <boolean>,\n    \"has_capacity\": <boolean>,\n    \"max_route_duration\": <minutes or null>\n  }},\n  \"objective\": \"minimize_cost\" | \"minimize_distance\" | \"minimize_time\"\n}}\n```\n\n**Rules:**\n1. Extract COUNTS not arrays: \"100 customers\" → {{\"customer_count\": 100}}\n2. Infer time windows from phrases like \"delivery windows\", \"by 5pm\"\n3. Infer capacity from \"truck capacity\", \"weight limits\"\n4. Extract route duration from \"8-hour shifts\", \"must complete by X\"\n\nReturn ONLY JSON.",
+    "required_fields": ["customer_count", "vehicle_count"],
+    "optional_fields": ["depot_count", "constraints"],
+    "validation_rules": [
+      "customer_count > 0",
+      "vehicle_count > 0",
+      "depot_count >= 1"
+    ],
+    "data_usage_explanation": "Metadata is used to generate synthetic customer locations, vehicle specs, and depot locations. The synthetic generator creates realistic VRP instances based on these counts."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Total Distance",
+        "key": "total_distance",
+        "format": "distance",
+        "target": "minimize"
+      },
+      {
+        "name": "Total Cost",
+        "key": "total_cost",
+        "format": "currency"
+      },
+      {
+        "name": "Vehicles Used",
+        "key": "vehicles_used",
+        "format": "count"
+      },
+      {
+        "name": "On-Time Delivery Rate",
+        "key": "ontime_rate",
+        "format": "percentage",
+        "target": ">95%"
+      }
+    ],
+    "visualization_types": ["route_map_2d", "gantt_chart", "solution_space_3d"],
+    "narrative_template": "Optimized {vehicle_count} vehicle routes serving {customer_count} customers. Total distance: {total_distance} km, Total cost: ${total_cost}. Achieved {ontime_rate}% on-time delivery rate.",
+    "export_formats": ["json", "csv", "kml", "route_manifest"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+
