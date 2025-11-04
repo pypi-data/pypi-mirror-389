@@ -1,0 +1,73 @@
+!pip install transformers -q
+from transformers import pipeline
+
+# Create two simple agents using GPT-style models
+agent1 = pipeline("text-generation", model="distilgpt2")
+agent2 = pipeline("text-generation", model="distilgpt2")
+
+# Define a simple conversation loop
+context = "Topic: The future of artificial intelligence.\n"
+msg = "Agent 1: AI will help humans become more creative."
+
+for i in range(3):  # 3 exchanges
+    reply = agent2(msg, max_new_tokens=40)[0]['generated_text']
+    print(reply, "\n")
+    msg = agent1(reply, max_new_tokens=40)[0]['generated_text']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 🧠 **Theory: Building a Simple Autonomous AI Agent and Multi-Agent Interaction**
+
+1. **Autonomous AI Agent**
+
+   * An autonomous agent is an AI system capable of making decisions or generating responses on its own without continuous human input.
+   * It uses a **language model** (like GPT) to understand prompts and produce relevant text outputs.
+   * Example: A chatbot that can answer questions or continue a conversation logically.
+
+2. **Multi-Agent Interaction**
+
+   * This involves **multiple AI agents** communicating or collaborating with each other.
+   * Each agent receives the other’s response as input, simulating dialogue or problem-solving.
+   * It demonstrates how AI systems can **exchange information, reason collectively, or debate** ideas.
+
+3. **Key Components**
+
+   * **Language Models**: Pre-trained transformers (e.g., GPT-2) that generate human-like text.
+   * **Context Management**: Maintaining conversation flow between agents.
+   * **Autonomy**: Each agent acts based on its own model output rather than external rules.
+
+4. **Applications**
+
+   * AI assistants cooperating on tasks (e.g., summarization + reasoning).
+   * Simulation of debates, negotiations, or brainstorming between virtual agents.
+   * Research in **AI collaboration, communication, and emergent behavior**.
+
+5. **Conclusion**
+
+   * This experiment shows how multiple generative models can form the basis of autonomous multi-agent systems.
+   * Such systems are the foundation for **AI societies, decision-making simulations, and human-AI teamwork** in complex tasks.

@@ -1,0 +1,107 @@
+!pip install transformers torch -q
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Load GPT-2 model
+model = AutoModelForCausalLM.from_pretrained("gpt2")
+tok = AutoTokenizer.from_pretrained("gpt2")
+
+# Biased prompts
+prompts = ["The nurse said that", "The doctor said that", "The programmer said that"]
+
+print(" Original Outputs:\n")
+for p in prompts:
+    out = model.generate(**tok(p, return_tensors="pt"), max_length=20)
+    print(f"{p} → {tok.decode(out[0], skip_special_tokens=True)}")
+
+# Simple bias mitigation (output filtering)
+def neutralize(text):
+    for w in ["he", "she", "him", "her", "his", "hers", "man", "woman"]:
+        text = text.replace(w, "[neutral]")
+    return text
+
+print("\n After Bias Mitigation:\n")
+for p in prompts:
+    out = model.generate(**tok(p, return_tensors="pt"), max_length=20)
+    print(f"{p} → {neutralize(tok.decode(out[0], skip_special_tokens=True))}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Here’s the **theory** for
+🧠 *Analyzing and Mitigating Bias in Outputs of a Pre-trained Generative Model:*
+
+---
+
+### **1️⃣ Concept Overview**
+
+Pre-trained generative models (like GPT-2) learn patterns from large datasets collected from the internet.
+Because real-world data often contains **social, gender, or cultural biases**, these models can reproduce or even amplify them during text generation.
+
+---
+
+### **2️⃣ Bias Analysis**
+
+To **analyze bias**, we test the model using **prompts** that may expose stereotypes, for example:
+
+> “The nurse said that…” or “The programmer said that…”
+
+The model’s continuations might reflect biased assumptions (e.g., associating “nurse” with female pronouns and “programmer” with male pronouns).
+
+---
+
+### **3️⃣ Bias Mitigation**
+
+A **simple mitigation technique** is **output filtering**, where we remove or replace biased terms after generation.
+For example: replacing “he”, “she”, “man”, “woman” with neutral placeholders like `[neutral]`.
+
+Other advanced mitigation methods include:
+
+* **Data balancing:** training on diverse, bias-reduced datasets
+* **Re-weighting / debiasing during training**
+* **Prompt engineering** to encourage fairness
+
+---
+
+### **4️⃣ Evaluation**
+
+Effectiveness can be evaluated by:
+
+* **Qualitative inspection** — checking if biased words are reduced.
+* **Quantitative metrics** — counting gendered terms or using fairness evaluation datasets.
+
+---
+
+### **5️⃣ Summary**
+
+| Step          | Action                                 | Purpose                |
+| ------------- | -------------------------------------- | ---------------------- |
+| Bias Analysis | Generate outputs for sensitive prompts | Identify bias presence |
+| Mitigation    | Filter biased words                    | Reduce bias            |
+| Evaluation    | Compare before & after outputs         | Assess improvement     |
+
+---
+
+**In short:**
+This experiment demonstrates that even simple filtering can visibly reduce biased language, highlighting the importance of bias detection and mitigation in generative AI systems.

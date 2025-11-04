@@ -1,0 +1,104 @@
+!pip install faiss-cpu
+from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
+
+#Load embedding model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+#Sample sentences
+sentences = [
+    "Artificial intelligence is transforming the world.",
+    "Machine learning enables computers to learn from data.",
+    "Deep learning is a subset of machine learning.",
+    "Cooking recipes require ingredients and time.",
+]
+
+#Convert text to embeddings
+embeddings = model.encode(sentences, convert_to_numpy=True)
+
+#Create FAISS index
+dimension = embeddings.shape[1]          # embedding size
+index = faiss.IndexFlatL2(dimension)     # use L2 distance
+index.add(embeddings)                    # add sentence vectors
+
+#Query example
+query = "AI is changing technology."
+query_embedding = model.encode([query])
+
+#Search for top 2 similar sentences
+k = 2
+distances, indices = index.search(query_embedding, k)
+
+#Print results
+print("Query:", query)
+print("\nTop Similar Sentences:")
+for i, idx in enumerate(indices[0]):
+    print(f"{i+1}. {sentences[idx]} (distance: {distances[0][i]:.4f})")
+
+
+
+
+
+
+
+
+
+
+
+
+# Excellent topic 🔥 — here’s a **clear, short explanation + example code** for
+
+# ## 🧠 *Implementing Word Embeddings and Semantic Similarity Search using FAISS*
+
+# ---
+
+# ### **📘 Theory / Concept**
+
+# When working with **Generative AI** (like chatbots, semantic search, or document retrieval), we often need to find how **similar two pieces of text** are — not by exact words, but by **meaning**.
+
+# This is done using:
+
+# 1. **Word Embeddings** → Convert text into dense numeric vectors (capturing meaning).
+
+#    * Example: `"king"` and `"queen"` have similar embeddings.
+# 2. **FAISS (Facebook AI Similarity Search)** → A fast library for **searching similar vectors** in large datasets.
+
+# ---
+
+# ### **⚙️ Steps**
+
+# | Step | Description                                                                                              |
+# | ---- | -------------------------------------------------------------------------------------------------------- |
+# | 1️⃣  | Convert text data into **embeddings** (using a pre-trained model like Sentence Transformers or Word2Vec) |
+# | 2️⃣  | Store embeddings in a **FAISS index**                                                                    |
+# | 3️⃣  | Use FAISS to quickly **find similar texts** (based on cosine or L2 distance)                             |
+
+# ---
+
+# ### **💻 Example Code (Simple & Short)**
+
+# > 🔧 Requirements: `pip install sentence-transformers faiss-cpu`
+
+# ### **📊 Explanation**
+
+# | Step                    | Purpose                                          |
+# | ----------------------- | ------------------------------------------------ |
+# | **SentenceTransformer** | Converts text into embeddings (semantic meaning) |
+# | **FAISS**               | Stores and searches embeddings efficiently       |
+# | **Search**              | Finds semantically similar sentences quickly     |
+
+# ---
+
+# ### **💡 Use Cases in Generative AI**
+
+# * Semantic search engines
+# * Document or FAQ retrieval
+# * Chatbot memory & context search
+# * Content recommendation systems
+
+# ---
+
+# Would you like me to extend this with a **visualization of embeddings (using PCA or t-SNE)** to show how semantically similar sentences cluster together?
+
+

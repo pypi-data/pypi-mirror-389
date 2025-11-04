@@ -1,0 +1,97 @@
+!pip install transformers -q
+from transformers import pipeline
+
+#Load pipelines
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+qa = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")
+
+#Text Summarization with prompt
+text = """Artificial intelligence (AI) is transforming industries by automating tasks,
+analyzing data, and improving decision-making processes."""
+prompt = "Summarize the following text clearly and concisely:\n" + text
+print("📝 Summary:\n", summarizer(prompt, max_length=40, min_length=10)[0]['summary_text'])
+
+#Question Answering with prompt
+context = "The Eiffel Tower is located in Paris and was completed in 1889."
+question = "When was the Eiffel Tower completed?"
+print("\n❓Answer:\n", qa(question=question, context=context)['answer'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Here’s the **theory (concept explanation)** for your code 👇
+
+---
+
+## 🧠 **Prompt Engineering for Text Summarization & Question Answering**
+
+### 🔹 **1. What is Prompt Engineering?**
+
+Prompt engineering means **designing effective input prompts** to guide large language models (LLMs) toward producing better, context-aware, and accurate outputs.
+A well-crafted prompt helps models understand *what* is being asked and *how* to respond.
+
+---
+
+### 🔹 **2. Text Summarization**
+
+* The **summarization pipeline** uses a pre-trained model (here: `facebook/bart-large-cnn`) to condense long text into a concise summary.
+* The **prompt** provides explicit instruction — e.g.,
+  `"Summarize the following text clearly and concisely:"`
+  This improves the model’s understanding of style and length expectations.
+* The model encodes the text → extracts key ideas → generates a shorter version.
+
+🧩 **Example:**
+
+> Prompt: “Summarize the following text clearly and concisely…”
+> Output: Short, human-readable summary.
+
+---
+
+### 🔹 **3. Question Answering (QA)**
+
+* The **QA pipeline** (here: `distilbert-base-uncased-distilled-squad`) takes a *context paragraph* and a *question*.
+* It uses **transformer-based attention** to locate the most relevant span of text that answers the question.
+* Prompt formulation (“When was the Eiffel Tower completed?”) ensures precision.
+
+🧩 **Process:**
+
+1. Encode both the context and question.
+2. Model predicts the start and end positions of the answer.
+3. Decodes and returns the text span.
+
+---
+
+### 🔹 **4. Why Prompt Engineering Matters**
+
+* Prompts control **tone, clarity, and relevance**.
+* Helps models **generalize better** without fine-tuning.
+* Makes pre-trained models useful for downstream tasks (like summarization or QA).
+
+---
+
+### 🧾 **In Short:**
+
+| Task          | Model Used                                | Prompt Role              | Output          |
+| ------------- | ----------------------------------------- | ------------------------ | --------------- |
+| Summarization | `facebook/bart-large-cnn`                 | Guides clarity & brevity | Concise summary |
+| QA            | `distilbert-base-uncased-distilled-squad` | Directs question focus   | Exact answer    |
+
+---
+
+Would you like me to include a **concise theoretical paragraph (for a report or presentation)** version of this next?

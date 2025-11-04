@@ -1,0 +1,68 @@
+!pip install faiss-cpu sentence-transformers transformers -q
+
+from sentence_transformers import SentenceTransformer
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import faiss, numpy as np
+
+#Load embedding model + LLM
+embedder = SentenceTransformer('all-MiniLM-L6-v2')
+tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+llm = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
+
+#Knowledge base (documents)
+docs = [
+    "The Eiffel Tower is located in Paris, France.",
+    "The Great Wall of China is one of the longest structures in the world.",
+    "The Taj Mahal is a mausoleum built by Mughal emperor Shah Jahan in India.",
+]
+
+#Create FAISS index
+doc_embeddings = embedder.encode(docs, convert_to_numpy=True)
+index = faiss.IndexFlatL2(doc_embeddings.shape[1])
+index.add(doc_embeddings)
+
+#Query
+query = "Where is the Eiffel Tower?"
+query_emb = embedder.encode([query])
+_, indices = index.search(query_emb, 1)
+retrieved = docs[indices[0][0]]
+
+#Combine retrieved text with query → generate answer
+prompt = f"Context: {retrieved}\n\nQuestion: {query}\nAnswer:"
+inputs = tokenizer(prompt, return_tensors="pt")
+outputs = llm.generate(**inputs, max_new_tokens=40)
+print("Answer:", tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Here’s a clear, concise **theory explanation** for your code 👇
+
+# ---
+
+# ## 🧠 **Theory: Retrieval-Augmented Generation (RAG) using FAISS and a Pre-trained LLM**
+
+# **Retrieval-Augmented Generation (RAG)** is a hybrid approach that combines **information retrieval** with **language generation** to produce accurate and context-aware responses. Instead of relying solely on a language model’s internal knowledge, RAG retrieves relevant external information (such as documents, facts, or passages) and feeds it as context into the model during generation.
+
+# In this implementation, **SentenceTransformers** creates **semantic embeddings** of the documents — dense numerical vectors that represent the meaning of each sentence. These embeddings are stored in a **FAISS** index, an efficient similarity search library developed by Facebook AI. When a user asks a question, its embedding is compared to the stored vectors to find the most semantically similar document. This retrieved context is then combined with the query and passed to a **pre-trained language model (Flan-T5)**, which generates an informed answer based on both the retrieved text and its own learned knowledge.
+
+# This method enhances accuracy, interpretability, and adaptability, especially for knowledge-intensive tasks like **question answering**, **chatbots**, and **domain-specific assistants**, where direct fine-tuning of large models is costly.
+
+# ---
+
+# Would you like me to add a **small diagram-style summary** (like “Query → Retrieval → Generation → Output”) to include in your report or notebook?
