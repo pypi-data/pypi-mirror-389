@@ -1,0 +1,24 @@
+Metadata-Version: 2.4
+Name: jupyter_cpu_alive
+Version: 0.1.3
+Summary: A Jupyter Server extension that accesses and modifies the settings dictionary.
+Project-URL: homepage, https://example.com/jupyter_cpu_alive
+Project-URL: source, https://github.com/yourusername/jupyter_cpu_alive
+Project-URL: tracker, https://github.com/yourusername/jupyter_cpu_alive/issues
+Author-email: Your Name <your.email@example.com>
+License: MIT
+License-File: LICENSE
+Requires-Dist: jupyter-server>=2.0
+Description-Content-Type: text/markdown
+
+# Content
+`jupyter_cpu_alive` is a jupyter server extension that updates the server's `api_last_activity` based on CPU usage. This is useful to keep the server alive so it is not culled when running inside jupyterhub.
+
+# Install
+Install with `pip install jupyter_cpu_alive`.
+
+Then run jupyterlab.
+
+The extension is configured with two environment variables:
+- `JUPYTER_CPU_ALIVE_PERCENT_MIN` defines the minimum CPU activity, above which the CPU is considered active. The default is 70%.
+- `JUPYTER_CPU_ALIVE_INTERVAL` gives the interval in second for checking for activity and updating the `api_last_activity`. The default is 5 min
