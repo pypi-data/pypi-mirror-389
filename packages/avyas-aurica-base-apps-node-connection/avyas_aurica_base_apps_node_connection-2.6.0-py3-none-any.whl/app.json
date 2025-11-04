@@ -1,0 +1,396 @@
+{
+  "name": "node-connection",
+  "version": "2.6.0",
+  "requires": [
+    "authentication"
+  ],
+  "public_routes": [
+    "/api/node/health",
+    "/api/machines/{machine_id}/heartbeat"
+  ],
+  "routes": [
+    {
+      "path": "/api/machines",
+      "file": "be/api/machines.py",
+      "method": "GET"
+    },
+    {
+      "path": "/api/machines/register",
+      "file": "be/api/machines.py",
+      "method": "POST"
+    },
+    {
+      "path": "/api/machines/{machine_id}",
+      "file": "be/api/machines.py",
+      "method": "GET"
+    },
+    {
+      "path": "/api/machines/{machine_id}",
+      "file": "be/api/machines.py",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/machines/{machine_id}",
+      "file": "be/api/machines.py",
+      "method": "DELETE"
+    },
+    {
+      "path": "/api/machines/{machine_id}/test",
+      "file": "be/api/machines.py",
+      "method": "POST"
+    },
+    {
+      "path": "/api/machines/{machine_id}/heartbeat",
+      "file": "be/api/machines.py",
+      "method": "POST"
+    }
+  ],
+  "description": "Machine and node connection manager. Register and manage multiple machines (local, SSH, tunnel) for user accounts. Integrates with digital-twin discovery service.",
+  "dt_tools": [
+    {
+      "name": "get_node_status",
+      "description": "Get the current status of the node connection including authentication state, connection details, and health metrics",
+      "endpoint": "/api/node/status",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Node connection status with authentication state, uptime, and connection details"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Get current node connection status"
+        }
+      ]
+    },
+    {
+      "name": "reconnect_node",
+      "description": "Reconnect the node to the API domain. Use this when connection is lost or needs to be refreshed",
+      "endpoint": "/api/node/reconnect",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Reconnection status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Reconnect node to API domain"
+        }
+      ]
+    },
+    {
+      "name": "get_connection_details",
+      "description": "Get detailed connection information including API endpoints, authentication tokens, and network configuration",
+      "endpoint": "/api/node/connection-details",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Connection details for the authenticated user"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Get connection details for authenticated user"
+        }
+      ]
+    },
+    {
+      "name": "update_node_config",
+      "description": "Update node configuration settings remotely. This requires confirmation as it modifies node behavior",
+      "endpoint": "/api/node/config",
+      "method": "PUT",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "api_domain": {
+            "type": "string",
+            "description": "API domain URL"
+          },
+          "auto_reconnect": {
+            "type": "boolean",
+            "description": "Enable automatic reconnection"
+          },
+          "heartbeat_interval": {
+            "type": "integer",
+            "description": "Heartbeat interval in seconds"
+          }
+        },
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Updated configuration"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "auto_reconnect": true,
+            "heartbeat_interval": 30
+          },
+          "description": "Enable auto-reconnect with 30 second heartbeat"
+        }
+      ]
+    },
+    {
+      "name": "restart_node",
+      "description": "Restart this specific node's connection (resets connection state and reconnects). Does NOT restart the server process - safe for production use",
+      "endpoint": "/api/node/restart",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Restart status with updated node status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Restart the node connection for this specific node"
+        }
+      ]
+    },
+    {
+      "name": "list_machines",
+      "description": "List all machines registered to the user's account. Shows machine names, types, status, and last seen.",
+      "endpoint": "/api/machines",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "List of user's registered machines"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "List all machines for the authenticated user"
+        }
+      ]
+    },
+    {
+      "name": "register_machine",
+      "description": "Register a new machine (local, SSH, or tunnel) to the user's account. Returns machine_id and connection_token.",
+      "endpoint": "/api/machines/register",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Human-readable machine name"
+          },
+          "connection_type": {
+            "type": "string",
+            "enum": ["local", "ssh", "tunnel"],
+            "description": "Type of connection"
+          },
+          "connection": {
+            "type": "object",
+            "description": "Connection details (url for local, host/port/username/ssh_key for SSH)"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Optional metadata (os, hostname, ip, capabilities)"
+          }
+        },
+        "required": ["name", "connection_type", "connection"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Registered machine with machine_id and connection_token"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "name": "My Laptop",
+            "connection_type": "local",
+            "connection": {
+              "url": "http://localhost:8000"
+            }
+          },
+          "description": "Register local machine"
+        }
+      ]
+    },
+    {
+      "name": "get_machine",
+      "description": "Get detailed information about a specific machine including connection details and metadata.",
+      "endpoint": "/api/machines/{machine_id}",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "description": "Machine ID to retrieve"
+          }
+        },
+        "required": ["machine_id"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Detailed machine information"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "machine_id": "mach_abc123"
+          },
+          "description": "Get details for specific machine"
+        }
+      ]
+    },
+    {
+      "name": "update_machine",
+      "description": "Update machine settings like name, status, access level, or allowed apps.",
+      "endpoint": "/api/machines/{machine_id}",
+      "method": "PUT",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "description": "Machine ID to update"
+          },
+          "name": {
+            "type": "string",
+            "description": "New machine name"
+          },
+          "status": {
+            "type": "string",
+            "description": "New status (active, offline, error)"
+          },
+          "access_level": {
+            "type": "string",
+            "description": "Access level (full, read-only, restricted)"
+          }
+        },
+        "required": ["machine_id"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Updated machine information"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "machine_id": "mach_abc123",
+            "name": "Updated Name"
+          },
+          "description": "Update machine name"
+        }
+      ]
+    },
+    {
+      "name": "delete_machine",
+      "description": "Delete/unregister a machine from the user's account. This is permanent.",
+      "endpoint": "/api/machines/{machine_id}",
+      "method": "DELETE",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "description": "Machine ID to delete"
+          }
+        },
+        "required": ["machine_id"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Deletion status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "machine_id": "mach_abc123"
+          },
+          "description": "Delete a machine"
+        }
+      ]
+    },
+    {
+      "name": "test_machine_connection",
+      "description": "Test connectivity to a registered machine. Returns connection status and latency.",
+      "endpoint": "/api/machines/{machine_id}/test",
+      "method": "POST",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "machine_id": {
+            "type": "string",
+            "description": "Machine ID to test"
+          }
+        },
+        "required": ["machine_id"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Connection test result with status and latency"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "machine_id": "mach_abc123"
+          },
+          "description": "Test machine connection"
+        }
+      ]
+    }
+  ]
+}

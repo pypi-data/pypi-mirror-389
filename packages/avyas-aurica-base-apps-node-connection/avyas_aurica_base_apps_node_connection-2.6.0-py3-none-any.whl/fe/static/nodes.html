@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Manager</title>
+    <script src="/auth-app/static/auth-helper.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #86868b;
+        }
+        
+        .nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        
+        .node-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .node-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        .node-card.current {
+            border-color: #007aff;
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+        }
+        
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .node-id {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1d1d1f;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background: #d1f4e0;
+            color: #00783e;
+        }
+        
+        .status-offline {
+            background: #ffe5e5;
+            color: #c41e3a;
+        }
+        
+        .status-current {
+            background: #007aff;
+            color: white;
+        }
+        
+        .node-info {
+            margin: 12px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f7;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #86868b;
+        }
+        
+        .info-value {
+            color: #1d1d1f;
+            font-weight: 500;
+            text-align: right;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .node-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007aff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0051d5;
+        }
+        
+        .btn-secondary {
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+        
+        .btn-secondary:hover {
+            background: #e8e8ed;
+        }
+        
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            color: #86868b;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 3px solid #f5f5f7;
+            border-top: 3px solid #007aff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .node-type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+            background: #f5f5f7;
+            color: #86868b;
+        }
+        
+        .node-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #f5f5f7;
+            display: none;
+        }
+        
+        .node-details.expanded {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .detail-section {
+            margin-bottom: 16px;
+        }
+        
+        .detail-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .detail-item {
+            background: #f5f5f7;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        
+        .detail-item-label {
+            color: #86868b;
+            display: block;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        
+        .detail-item-value {
+            color: #1d1d1f;
+            font-weight: 500;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        
+        .capability-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e8e8ed;
+            color: #1d1d1f;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 4px 4px 4px 0;
+        }
+        
+        .expand-icon {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Node Manager</h1>
+            <p>Monitor and manage your execution nodes</p>
+        </div>
+        
+        <div id="localNodeBanner" style="display: none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>📍 Running on Local Node</strong>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #856404;">
+                        Register this node with the API domain to make it visible remotely.
+                    </p>
+                </div>
+                <button class="btn btn-primary" onclick="registerWithAPI()" style="white-space: nowrap;">
+                    🔗 Register with API
+                </button>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="color: #86868b;">Loading nodes...</p>
+        </div>
+        
+        <div id="nodesGrid" class="nodes-grid" style="display: none;">
+            <!-- Nodes will be rendered here -->
+        </div>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">🔌</div>
+            <h3>No Nodes Available</h3>
+            <p>Unable to load node information. Please check your authentication and try again.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/aurica-auth-sdk@latest/dist/aurica-auth.min.js"></script>
+    <script>
+        let currentNodeId = null;
+        let nodes = [];
+        
+        async function loadNodes() {
+            try {
+                // Get current node info first
+                const currentResponse = await AuricaAuth.authenticatedFetch('/node-connection/api/node/status');
+                const currentData = await currentResponse.json();
+                currentNodeId = currentData.status?.node_id;
+                const currentNodeUrl = window.location.origin;
+                
+                // Check tunnel status using the new tunnel manager
+                let tunnelConnected = false;
+                try {
+                    // Try the new tunnel-status endpoint first
+                    const tunnelResponse = await AuricaAuth.authenticatedFetch('/node-connection/api/node/tunnel-status');
+                    const tunnelData = await tunnelResponse.json();
+                    tunnelConnected = tunnelData.connected || false;
+                } catch (e) {
+                    // Fallback to old tunnel/status endpoint
+                    try {
+                        const tunnelResponse = await AuricaAuth.authenticatedFetch('/tunnel/status');
+                        const tunnelData = await tunnelResponse.json();
+                        tunnelConnected = tunnelData.connected || false;
+                    } catch (e2) {
+                        console.log('Tunnel status check failed:', e2);
+                    }
+                }
+                
+                // Show banner if this is a local node
+                const isLocal = currentNodeUrl.includes('localhost') || currentNodeUrl.includes('127.0.0.1');
+                const banner = document.getElementById('localNodeBanner');
+                if (isLocal && banner) {
+                    if (tunnelConnected) {
+                        // Update banner to show connected status
+                        banner.style.display = 'block';
+                        banner.style.background = '#d4edda';
+                        banner.style.borderColor = '#28a745';
+                        banner.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>✅ Tunnel Connected</strong>
+                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #155724;">
+                                        Your local node is connected and accessible via api.oneaurica.com
+                                    </p>
+                                </div>
+                                <button class="btn btn-secondary" onclick="location.reload()" style="white-space: nowrap;">
+                                    🔄 Refresh
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        // Show registration banner
+                        banner.style.display = 'block';
+                        banner.style.background = '#fff3cd';
+                        banner.style.borderColor = '#ffc107';
+                        banner.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>📍 Running on Local Node</strong>
+                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #856404;">
+                                        Establish tunnel to make this node accessible via api.oneaurica.com
+                                    </p>
+                                </div>
+                                <button class="btn btn-primary" onclick="registerWithAPI()" style="white-space: nowrap;">
+                                    🔗 Connect Tunnel
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // Get list of all nodes from registry
+                const response = await AuricaAuth.authenticatedFetch('/node-connection/api/node/list');
+                const data = await response.json();
+                
+                nodes = data.nodes || [];
+                
+                // If the current node isn't in the registry, add it manually
+                const currentNodeInRegistry = nodes.find(n => n.node_id === currentNodeId);
+                if (!currentNodeInRegistry && currentNodeId) {
+                    nodes.unshift({
+                        node_id: currentNodeId,
+                        node_url: currentNodeUrl,
+                        connection_type: currentData.status?.connection_type || 'local',
+                        status: tunnelConnected ? 'online' : 'local',
+                        last_seen: new Date().toISOString(),
+                        registered_at: currentData.status?.connected_at || new Date().toISOString(),
+                        capabilities: [],
+                        tunnel_connected: tunnelConnected
+                    });
+                } else if (currentNodeInRegistry) {
+                    // Update the current node's tunnel status
+                    currentNodeInRegistry.tunnel_connected = tunnelConnected;
+                    if (tunnelConnected) {
+                        currentNodeInRegistry.status = 'online';
+                    }
+                }
+                
+                renderNodes();
+                
+            } catch (error) {
+                console.error('Error loading nodes:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+            }
+        }
+        
+        async function registerWithAPI() {
+            try {
+                const banner = document.getElementById('localNodeBanner');
+                const btn = banner.querySelector('button');
+                const originalText = btn.innerHTML;
+                
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Registering...';
+                
+                // Call the new registration endpoint (uses Digital Twin auto-register)
+                const response = await AuricaAuth.authenticatedFetch('/node-connection/api/node/register-execution-node', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    btn.innerHTML = '✅ Registered!';
+                    btn.style.background = '#28a745';
+                    
+                    // Update banner to show success
+                    banner.style.background = '#d4edda';
+                    banner.style.borderColor = '#28a745';
+                    banner.querySelector('p').textContent = 'Successfully registered with API domain! Your node is now discoverable.';
+                    banner.querySelector('p').style.color = '#155724';
+                    
+                    // Reload nodes after 2 seconds
+                    setTimeout(() => {
+                        loadNodes();
+                        banner.style.display = 'none';
+                    }, 2000);
+                } else {
+                    // Show detailed error message
+                    const errorMsg = result.message + '\n\n' + (result.note || '') + '\n' + (result.suggestion || '');
+                    throw new Error(errorMsg);
+                }
+                
+            } catch (error) {
+                console.error('Error registering with API:', error);
+                
+                // Show a more detailed error dialog
+                const errorMessage = error.message || 'Unknown error occurred';
+                
+                if (errorMessage.includes('digital-twin app') || errorMessage.includes('endpoint')) {
+                    alert('⚠️ Registration Failed\n\n' + errorMessage + '\n\n💡 This usually means the cloud API needs to be updated with the latest digital-twin app.');
+                } else {
+                    alert('Failed to register with API domain:\n\n' + errorMessage);
+                }
+                
+                const banner = document.getElementById('localNodeBanner');
+                const btn = banner.querySelector('button');
+                btn.disabled = false;
+                btn.innerHTML = '🔗 Register with API';
+            }
+        }
+        
+        function renderNodes() {
+            const grid = document.getElementById('nodesGrid');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('emptyState');
+            
+            loading.style.display = 'none';
+            
+            if (nodes.length === 0) {
+                emptyState.style.display = 'block';
+                grid.style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            grid.style.display = 'grid';
+            
+            grid.innerHTML = nodes.map(node => {
+                const isCurrent = node.node_id === currentNodeId;
+                const isOnline = node.status === 'online';
+                const hasTunnel = node.tunnel_connected === true;
+                
+                // Determine the best status text
+                let statusText, statusClass;
+                if (hasTunnel) {
+                    statusText = '● Connected';
+                    statusClass = 'status-online';
+                } else if (isOnline) {
+                    statusText = '● Online';
+                    statusClass = 'status-online';
+                } else if (node.status === 'local') {
+                    statusText = '○ Local';
+                    statusClass = 'status-offline';
+                } else {
+                    statusText = '○ Offline';
+                    statusClass = 'status-offline';
+                }
+                
+                return `
+                    <div class="node-card ${isCurrent ? 'current' : ''}">
+                        <div class="node-header">
+                            <div>
+                                <span class="node-id">${node.node_id}</span>
+                                ${isCurrent ? '<span class="node-type-tag">CURRENT</span>' : ''}
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                ${hasTunnel ? '<span class="status-badge" style="background: #007aff; color: white;">🔌 Tunnel</span>' : ''}
+                                <span class="status-badge ${statusClass}">
+                                    ${statusText}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="node-info">
+                            <div class="info-row">
+                                <span class="info-label">URL</span>
+                                <span class="info-value" title="${node.node_url}">${node.node_url}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Type</span>
+                                <span class="info-value">${node.connection_type || 'execution'}</span>
+                            </div>
+                            ${hasTunnel ? `
+                            <div class="info-row">
+                                <span class="info-label">Access</span>
+                                <span class="info-value" style="color: #007aff;">api.oneaurica.com</span>
+                            </div>
+                            ` : ''}
+                            <div class="info-row">
+                                <span class="info-label">Last Seen</span>
+                                <span class="info-value">${formatTime(node.last_seen)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Registered</span>
+                                <span class="info-value">${formatTime(node.registered_at)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="node-details" id="details-${node.node_id}">
+                            <div class="detail-section">
+                                <h4>Node Information</h4>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-item-label">Node ID</span>
+                                        <span class="detail-item-value">${node.node_id}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-item-label">Version</span>
+                                        <span class="detail-item-value">${node.version || '1.0.0'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Connection Details</h4>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-item-label">Full URL</span>
+                                        <span class="detail-item-value" style="word-break: break-all; white-space: normal;">${node.node_url}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-item-label">Connection Type</span>
+                                        <span class="detail-item-value">${node.connection_type || 'execution'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${node.capabilities && node.capabilities.length > 0 ? `
+                                <div class="detail-section">
+                                    <h4>Capabilities</h4>
+                                    <div>
+                                        ${node.capabilities.map(cap => `<span class="capability-tag">${cap}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="detail-section">
+                                <h4>Timestamps</h4>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-item-label">Registered At</span>
+                                        <span class="detail-item-value" style="font-size: 10px;">${new Date(node.registered_at).toLocaleString()}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-item-label">Last Seen</span>
+                                        <span class="detail-item-value" style="font-size: 10px;">${node.last_seen ? new Date(node.last_seen).toLocaleString() : '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="node-actions">
+                            <button class="btn btn-primary" onclick="connectToNode(event, '${node.node_id}', '${node.node_url}')">
+                                Connect
+                            </button>
+                            <button class="btn btn-secondary" onclick="toggleDetails(event, '${node.node_id}')">
+                                <span id="btn-text-${node.node_id}">Show Details</span>
+                                <span class="expand-icon" id="icon-${node.node_id}">▼</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function connectToNode(event, nodeId, nodeUrl) {
+            event.stopPropagation();
+            window.open(nodeUrl + '/node-connection/', '_blank');
+        }
+        
+        function toggleDetails(event, nodeId) {
+            event.stopPropagation();
+            const detailsEl = document.getElementById(`details-${nodeId}`);
+            const iconEl = document.getElementById(`icon-${nodeId}`);
+            const btnTextEl = document.getElementById(`btn-text-${nodeId}`);
+            
+            if (detailsEl.classList.contains('expanded')) {
+                detailsEl.classList.remove('expanded');
+                iconEl.classList.remove('rotated');
+                btnTextEl.textContent = 'Show Details';
+            } else {
+                detailsEl.classList.add('expanded');
+                iconEl.classList.add('rotated');
+                btnTextEl.textContent = 'Hide Details';
+            }
+        }
+        
+        function formatTime(timestamp) {
+            if (!timestamp) return '-';
+            
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await AuricaAuth.requireAuth();
+            if (user) {
+                console.log('Authenticated as:', user.username);
+                await loadNodes();
+                
+                // Auto-refresh every 30 seconds
+                setInterval(loadNodes, 30000);
+            }
+        });
+    </script>
+</body>
+</html>
