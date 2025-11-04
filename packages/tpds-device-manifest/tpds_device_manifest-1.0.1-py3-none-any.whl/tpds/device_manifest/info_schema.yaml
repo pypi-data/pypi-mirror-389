@@ -1,0 +1,26 @@
+%YAML 1.1
+---
+$schema: http://json-schema.org/draft-06/schema#
+$ref: "#/definitions/infoConfig"
+title: TPDS Device Manifest Info YAML Schema
+definitions:
+  infoConfig:
+    title: infoConfig
+    type: object
+    properties:
+      name:
+        title: name
+        type: string
+      class:
+        title: class
+        type: string
+      devices:
+        title: devices
+        type: array
+        items:
+          type: string
+    required:
+    - name
+    - class
+    - devices
+  

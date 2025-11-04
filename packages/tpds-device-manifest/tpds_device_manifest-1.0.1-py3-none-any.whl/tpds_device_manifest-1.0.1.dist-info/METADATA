@@ -1,0 +1,104 @@
+Metadata-Version: 2.4
+Name: tpds-device-manifest
+Version: 1.0.1
+Summary: Microchip Secure Devices Manifest Generation and Decoding Support
+Maintainer-email: Microchip Technology <SPG.Tools@microchip.com>
+License: (c) 2018 to present - Copyright Microchip Technology Inc. and its subsidiaries.
+        
+        Subject to your compliance with these terms, you may use Microchip software
+        and any derivatives exclusively with Microchip products. It is your
+        responsibility to comply with third party license terms applicable to your
+        use of third party software (including open source software) that may
+        accompany Microchip software.
+        
+        THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+        EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+        WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR
+        PURPOSE. IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL,
+        PUNITIVE, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY
+        KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP
+        HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+        FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+        ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+        THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+        
+        
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: python_jose
+Requires-Dist: cryptography~=35.0.0
+Requires-Dist: tpds-certificate-tools
+Requires-Dist: cryptoauthlib>=20241015
+Requires-Dist: PyYAML
+Requires-Dist: jsonschema
+Provides-Extra: dev
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: pytest-integration; extra == "test"
+Dynamic: license-file
+
+Trust Platform Design Suite - Device Manifest
+===============================================================================
+
+This module provides scripts for generating and decoding manifests for Secure Elements.
+
+## Install
+- Installing this package and it's included scripts
+
+```
+    pip install tpds-device-manifest
+```
+
+## Command line help
+
+```
+    mchp_device_manifest --help
+```
+
+```
+    usage: manifest.py [-h] {generate,decode} ...
+
+    Decode or Generate secure element manifest
+
+    positional arguments:
+    {generate,decode}  Available commands
+        generate         Generates Manifest for selected Secure Element
+        decode           Decodes given Manifest using the given CA Certificate
+
+    options:
+    -h, --help         show this help message and exit
+```
+
+### Decode Manifest Example
+
+```
+    mchp_device_manifest decode --manifest manifest.json --cert CA_Certificate.crt
+```
+
+### Generate Manifest Example
+
+```
+    mchp_device_manifest generate --device ATECC608 --interface I2C --address 0x6C --part_number ATECC608C-TFLXTLS
+```
+
+
+## Release Notes
+
+### 1.0.1
+    - Improvement to load the device information in run time
+
+### 1.0.0
+    - Initial release of TPDS-Device-Manifest.
+    - Ability to generate Manifest for Secure Elements.
+    - Ability to Decode Manifest.
+    - Includes command-line functionality for both generating and decoding manifests.
