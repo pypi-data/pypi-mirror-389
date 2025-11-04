@@ -1,0 +1,9 @@
+[console_scripts]
+docker-logs = mcp_server_tribal._scripts:docker_logs
+docker-redeploy = mcp_server_tribal._scripts:docker_redeploy
+docker-start = mcp_server_tribal._scripts:docker_start
+docker-stop = mcp_server_tribal._scripts:docker_stop
+mcp-api = mcp_server_tribal.app:main
+mcp-client = examples.api_client:main
+mcp-server = mcp_server_tribal.mcp_app:main
+tribal = mcp_server_tribal.mcp_app:main
