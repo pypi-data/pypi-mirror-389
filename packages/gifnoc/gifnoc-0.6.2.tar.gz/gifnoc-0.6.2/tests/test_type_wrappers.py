@@ -1,0 +1,45 @@
+from serieux import AllowExtras, TaggedSubclass, deserialize, schema, serialize
+
+from .models import Point, Point3D, Point4D
+
+
+def test_TaggedSubclass():
+    p4d = Point4D(x=1, y=2, z=3, w=4)
+    ser = serialize(TaggedSubclass[Point], p4d)
+    deser = deserialize(TaggedSubclass[Point], ser)
+    assert deser == p4d
+
+
+def test_TaggedSubclass_representation(data_regression):
+    points = [
+        Point(x=1, y=2),
+        Point3D(x=11, y=22, z=33),
+        Point4D(x=111, y=222, z=333, w=444),
+    ]
+    ser = serialize(list[TaggedSubclass[Point]], points)
+    data_regression.check(ser)
+
+
+def test_TaggedSubclass_schema(file_regression):
+    sch = schema(TaggedSubclass[Point])
+    file_regression.check(sch.json(), extension=".json")
+
+
+def test_AllowExtras():
+    ser = {
+        "x": 1,
+        "y": 2,
+        "garbage": 3,
+    }
+    deser = deserialize(AllowExtras[Point], ser)
+    assert deser == Point(x=1, y=2)
+    ser2 = serialize(AllowExtras[Point], deser)
+    assert ser2 == {
+        "x": 1,
+        "y": 2,
+    }
+
+
+def test_AllowExtras_schema(file_regression):
+    sch = schema(AllowExtras[Point])
+    file_regression.check(sch.json(), extension=".json")
