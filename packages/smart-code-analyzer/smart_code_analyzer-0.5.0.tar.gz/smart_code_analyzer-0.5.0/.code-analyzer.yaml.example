@@ -1,0 +1,64 @@
+# Code Analyzer Configuration Example
+# Copy this file to .code-analyzer.yaml in your project root
+
+analysis:
+  # Analysis depth: shallow, medium, deep
+  depth: deep
+  
+  # Include test files in analysis
+  include_tests: true
+  
+  # Patterns to ignore during analysis
+  ignore_patterns:
+    - "*/migrations/*"
+    - "*/build/*"
+    - "*/dist/*"
+    - "*/.venv/*"
+    - "*/node_modules/*"
+
+documentation:
+  # Path to your Logseq graph
+  logseq_graph: ~/logseq
+  
+  # Automatically create index page
+  create_index: true
+  
+  # Group issues by severity in docs
+  group_by_severity: true
+
+tickets:
+  # Enable automatic ticket creation
+  enabled: true
+  
+  # Auto-prioritize based on severity
+  auto_prioritize: true
+  
+  # Create epic for analysis results
+  create_epics: true
+  
+  # Maximum tickets to create per severity
+  max_tickets_per_severity:
+    critical: 999  # All critical issues
+    high: 999      # All high issues
+    medium: 10     # Max 10 medium issues
+    low: 5         # Max 5 low issues
+
+privacy:
+  # Anonymize code before external LLM analysis
+  anonymize_for_llm: true
+  
+  # Keep code structure when anonymizing
+  keep_structure: true
+  
+  # Preserve standard library names
+  preserve_stdlib: true
+
+reporting:
+  # Generate HTML report
+  html_report: true
+  
+  # Include code snippets in reports
+  include_snippets: true
+  
+  # Maximum snippet length
+  max_snippet_lines: 20

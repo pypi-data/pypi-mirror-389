@@ -1,0 +1,321 @@
+# Example Code Library for code-analyzer
+#
+# This file demonstrates how to create a code library with classified examples.
+# Copy and customize this for your team's standards.
+
+examples:
+  # ===========================
+  # EXCELLENT Examples
+  # ===========================
+  
+  - id: "singleton-excellent-001"
+    classification: excellent
+    pattern_type: singleton
+    language: python
+    description: "Thread-safe singleton with double-checked locking"
+    code: |
+      class Singleton:
+          _instance = None
+          _lock = threading.Lock()
+          
+          def __new__(cls):
+              if cls._instance is None:
+                  with cls._lock:
+                      if cls._instance is None:
+                          cls._instance = super().__new__(cls)
+              return cls._instance
+    tags:
+      - design-pattern
+      - thread-safe
+      - singleton
+
+  - id: "error-handling-excellent-001"
+    classification: excellent
+    pattern_type: error_handling
+    language: python
+    description: "Proper error handling with specific exceptions and logging"
+    code: |
+      def read_file(path: str) -> str:
+          try:
+              with open(path, 'r') as f:
+                  return f.read()
+          except FileNotFoundError:
+              logger.error(f"File not found: {path}")
+              raise
+          except PermissionError:
+              logger.error(f"Permission denied: {path}")
+              raise
+          except Exception as e:
+              logger.error(f"Unexpected error reading {path}: {e}")
+              raise
+    tags:
+      - error-handling
+      - logging
+      - best-practice
+
+  - id: "context-manager-excellent-001"
+    classification: excellent
+    pattern_type: general
+    language: python
+    description: "Custom context manager for resource management"
+    code: |
+      from contextlib import contextmanager
+      
+      @contextmanager
+      def database_transaction(connection):
+          try:
+              yield connection
+              connection.commit()
+          except Exception:
+              connection.rollback()
+              raise
+          finally:
+              connection.close()
+    tags:
+      - context-manager
+      - resource-management
+      - best-practice
+
+  # ===========================
+  # GOOD Examples
+  # ===========================
+
+  - id: "validation-good-001"
+    classification: good
+    pattern_type: validation
+    language: python
+    description: "Basic input validation"
+    code: |
+      def process_age(age):
+          if not isinstance(age, int):
+              raise TypeError("Age must be an integer")
+          if age < 0 or age > 150:
+              raise ValueError("Age must be between 0 and 150")
+          return age
+    tags:
+      - validation
+      - type-checking
+
+  # ===========================
+  # SMELLY Examples
+  # ===========================
+
+  - id: "god-class-smelly-001"
+    classification: smelly
+    pattern_type: structure
+    language: python
+    description: "God class doing too many unrelated things"
+    reason: "Violates Single Responsibility Principle - class has too many responsibilities"
+    code: |
+      class Manager:
+          def __init__(self):
+              pass
+          
+          def do_everything(self):
+              self.connect_database()
+              self.send_email()
+              self.process_payment()
+              self.generate_report()
+              self.update_cache()
+    alternative: "Split into separate classes: DatabaseManager, EmailService, PaymentProcessor, ReportGenerator, CacheManager"
+    tags:
+      - solid
+      - structure
+      - god-class
+
+  - id: "long-parameter-list-smelly-001"
+    classification: smelly
+    pattern_type: structure
+    language: python
+    description: "Function with too many parameters"
+    reason: "Long parameter lists are hard to understand and maintain"
+    code: |
+      def create_user(username, email, password, first_name, last_name, 
+                      age, address, city, state, zip_code, country, 
+                      phone, mobile, is_active, role):
+          pass
+    alternative: "Use a dataclass or dictionary to group related parameters"
+    tags:
+      - parameters
+      - structure
+      - code-smell
+
+  - id: "deep-nesting-smelly-001"
+    classification: smelly
+    pattern_type: structure
+    language: python
+    description: "Deeply nested control structures"
+    reason: "Deep nesting makes code hard to read and understand"
+    code: |
+      def process(data):
+          if data:
+              if data.valid:
+                  if data.user:
+                      if data.user.active:
+                          if data.user.permissions:
+                              return process_active_user(data)
+    alternative: "Use early returns or extract methods to reduce nesting"
+    tags:
+      - complexity
+      - nesting
+      - readability
+
+  # ===========================
+  # BAD Examples
+  # ===========================
+
+  - id: "eval-bad-001"
+    classification: bad
+    pattern_type: security
+    language: python
+    description: "Using eval() on user input"
+    reason: "Arbitrary code execution vulnerability - eval allows execution of any Python code"
+    code: |
+      result = eval(user_input)
+    alternative: "Use ast.literal_eval() for safe evaluation or validate/parse input explicitly"
+    tags:
+      - security
+      - injection
+      - eval
+
+  - id: "bare-except-bad-001"
+    classification: bad
+    pattern_type: error_handling
+    language: python
+    description: "Bare except clause that swallows all exceptions"
+    reason: "Silently catches all exceptions including KeyboardInterrupt and SystemExit, making debugging impossible"
+    code: |
+      try:
+          do_something()
+      except:
+          pass
+    alternative: "Catch specific exceptions and handle or log them appropriately"
+    tags:
+      - error-handling
+      - anti-pattern
+
+  - id: "hardcoded-credentials-bad-001"
+    classification: bad
+    pattern_type: security
+    language: python
+    description: "Hard-coded credentials in source code"
+    reason: "Security vulnerability - credentials should never be in source code"
+    code: |
+      DATABASE_PASSWORD = "secret123"
+      API_KEY = "sk-1234567890abcdef"
+    alternative: "Load credentials from environment variables or secure credential management system"
+    tags:
+      - security
+      - credentials
+      - secrets
+
+  - id: "sql-injection-bad-001"
+    classification: bad
+    pattern_type: security
+    language: python
+    description: "SQL query with string concatenation"
+    reason: "SQL injection vulnerability - never concatenate user input into SQL queries"
+    code: |
+      query = "SELECT * FROM users WHERE username = '" + username + "'"
+      cursor.execute(query)
+    alternative: "Use parameterized queries: cursor.execute('SELECT * FROM users WHERE username = ?', (username,))"
+    tags:
+      - security
+      - sql-injection
+      - database
+
+  - id: "mutable-default-bad-001"
+    classification: bad
+    pattern_type: general
+    language: python
+    description: "Mutable default argument"
+    reason: "Mutable defaults are shared between function calls, causing unexpected behavior"
+    code: |
+      def add_item(item, items=[]):
+          items.append(item)
+          return items
+    alternative: "Use None as default and create new list in function: items = items or []"
+    tags:
+      - python-gotcha
+      - mutable-default
+      - bugs
+
+  - id: "global-variables-bad-001"
+    classification: bad
+    pattern_type: structure
+    language: python
+    description: "Using global variables for state management"
+    reason: "Global state makes code hard to test, reason about, and can cause unexpected side effects"
+    code: |
+      user_data = {}
+      
+      def update_user(user_id, data):
+          global user_data
+          user_data[user_id] = data
+    alternative: "Pass state as parameters, return new state, or use a class to encapsulate state"
+    tags:
+      - globals
+      - state
+      - anti-pattern
+
+  - id: "wildcard-import-bad-001"
+    classification: bad
+    pattern_type: structure
+    language: python
+    description: "Wildcard import"
+    reason: "Makes it unclear where names come from and can cause name collisions"
+    code: |
+      from module import *
+    alternative: "Import specific names: from module import foo, bar"
+    tags:
+      - imports
+      - namespace
+      - anti-pattern
+
+  # ===========================
+  # Additional Patterns
+  # ===========================
+
+  - id: "factory-good-001"
+    classification: good
+    pattern_type: factory
+    language: python
+    description: "Simple factory pattern"
+    code: |
+      def create_logger(log_type):
+          if log_type == 'file':
+              return FileLogger()
+          elif log_type == 'console':
+              return ConsoleLogger()
+          else:
+              raise ValueError(f"Unknown logger type: {log_type}")
+    tags:
+      - design-pattern
+      - factory
+
+  - id: "decorator-excellent-001"
+    classification: excellent
+    pattern_type: general
+    language: python
+    description: "Well-structured decorator with functools.wraps"
+    code: |
+      from functools import wraps
+      
+      def retry(max_attempts=3):
+          def decorator(func):
+              @wraps(func)
+              def wrapper(*args, **kwargs):
+                  for attempt in range(max_attempts):
+                      try:
+                          return func(*args, **kwargs)
+                      except Exception as e:
+                          if attempt == max_attempts - 1:
+                              raise
+                          logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                  return None
+              return wrapper
+          return decorator
+    tags:
+      - decorator
+      - best-practice
+      - retry-logic
