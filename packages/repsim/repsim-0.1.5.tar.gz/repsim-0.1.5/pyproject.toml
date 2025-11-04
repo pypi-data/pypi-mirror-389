@@ -1,0 +1,43 @@
+[build-system]
+requires = [
+  "scikit-build-core>=0.10",
+  "pybind11>=2.11",
+  "numpy>=1.23",
+  "packaging>=23.0",
+]
+build-backend = "scikit_build_core.build"
+
+
+[project]
+name = "repsim"
+version = "0.1.5"
+description = "Measures of representational similarity across models"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{ name = "Kisung You", email = "kisung.you@outlook.com"}]
+license = { text = "MIT" }
+dependencies = ["numpy>=1.23"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: C++",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Typing :: Typed"
+]
+
+[tool.scikit-build]
+wheel.expand-macos-universal-tags = true
+wheel.packages = ["repsim"]
+
+[tool.scikit-build.cmake]
+build-type = "Release"
+
+[tool.scikit-build.cmake.define]
+CMAKE_CXX_STANDARD = "17"
+PYBIND11_FINDPYTHON = "ON"

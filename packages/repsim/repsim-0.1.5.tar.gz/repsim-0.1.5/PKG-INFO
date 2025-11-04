@@ -1,0 +1,26 @@
+Metadata-Version: 2.2
+Name: repsim
+Version: 0.1.5
+Summary: Measures of representational similarity across models
+Author-Email: Kisung You <kisung.you@outlook.com>
+License: MIT
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: C++
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Typing :: Typed
+Requires-Python: >=3.8
+Requires-Dist: numpy>=1.23
+Description-Content-Type: text/markdown
+
+# repsim (Python)
+
+**Representational Similarity Metrics for Machine Learning and Neuroscience**
+
+`repsim` provides efficient implementations of representational similarity measures  using a C++17 backend via **pybind11** and  **Eigen**, whose vendored version is included under `third_party/eigen` for reproducible builds. It parallels the R package *repsim*, ensuring consistency across environments.
