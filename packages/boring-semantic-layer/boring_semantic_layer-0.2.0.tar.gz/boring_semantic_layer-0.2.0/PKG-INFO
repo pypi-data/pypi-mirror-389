@@ -1,0 +1,102 @@
+Metadata-Version: 2.4
+Name: boring-semantic-layer
+Version: 0.2.0
+Summary: A boring semantic layer built with ibis
+Project-URL: Homepage, https://github.com/boringdata/boring-semantic-layer/tree/main
+License-Expression: MIT
+License-File: LICENSE
+Requires-Python: >=3.10
+Requires-Dist: attrs>=25.3.0
+Requires-Dist: ibis-framework>=11.0.0
+Requires-Dist: packaging
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: returns>=0.26.0
+Provides-Extra: dev
+Requires-Dist: altair>=5.0.0; extra == 'dev'
+Requires-Dist: duckdb<1.4; extra == 'dev'
+Requires-Dist: fastmcp>=2.12.4; extra == 'dev'
+Requires-Dist: ibis-framework[duckdb]>=10.6.0; extra == 'dev'
+Requires-Dist: kaleido; extra == 'dev'
+Requires-Dist: malloy>=0.1.0; extra == 'dev'
+Requires-Dist: nbformat>=4.2.0; extra == 'dev'
+Requires-Dist: pandas>=2.3.0; extra == 'dev'
+Requires-Dist: plotly>=6.3.0; extra == 'dev'
+Requires-Dist: pre-commit>=4.2.0; extra == 'dev'
+Requires-Dist: pytest; extra == 'dev'
+Requires-Dist: pytest-asyncio; extra == 'dev'
+Requires-Dist: ruff>=0.6.7; extra == 'dev'
+Requires-Dist: urllib3>=2.2.3; extra == 'dev'
+Requires-Dist: vl-convert-python>=1.0.0; extra == 'dev'
+Requires-Dist: xorq; extra == 'dev'
+Provides-Extra: examples
+Requires-Dist: duckdb<1.4; extra == 'examples'
+Requires-Dist: ibis-framework[duckdb]>=10.6.0; extra == 'examples'
+Requires-Dist: xorq; extra == 'examples'
+Provides-Extra: fastmcp
+Requires-Dist: fastmcp>=2.12.4; extra == 'fastmcp'
+Provides-Extra: viz-altair
+Requires-Dist: altair>=5.0.0; extra == 'viz-altair'
+Requires-Dist: vl-convert-python>=1.0.0; extra == 'viz-altair'
+Provides-Extra: viz-plotly
+Requires-Dist: kaleido; extra == 'viz-plotly'
+Requires-Dist: nbformat>=4.2.0; extra == 'viz-plotly'
+Requires-Dist: plotly>=6.3.0; extra == 'viz-plotly'
+Provides-Extra: xorq
+Requires-Dist: xorq; extra == 'xorq'
+Description-Content-Type: text/markdown
+
+# Boring Semantic Layer (BSL)
+
+**A lightweight, Ibis-powered semantic layer that makes your data queryable by both humans and AI.**
+
+BSL lets you define your data model once - dimensions, measures, and relationships - then query it with a simple, fluent API. Built on [Ibis](https://ibis-project.org/), it works with any database that Ibis supports (DuckDB, Snowflake, BigQuery, PostgreSQL, and more).
+
+## Why BSL?
+
+- **Define once, query anywhere**: Create semantic tables that abstract away SQL complexity
+- **Built for AI agents**: Native [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) support lets LLMs query your data directly
+- **Pure Python**: No DSL to learn - just Python and Ibis expressions
+- **Instant visualization**: Built-in charting with Altair and Plotly backends
+
+## Quick Start
+
+```bash
+pip install 'boring-semantic-layer[examples]'
+```
+
+```python
+import ibis
+from boring_semantic_layer import to_semantic_table
+
+# 1. Define your semantic model
+flights = (
+    to_semantic_table(flights_tbl, name="flights")
+    .with_dimensions(origin=lambda t: t.origin)
+    .with_measures(flight_count=lambda t: t.count())
+)
+
+# 2. Query it
+result = flights.group_by("origin").aggregate("flight_count").execute()
+```
+
+## Installation
+
+```bash
+pip install boring-semantic-layer
+```
+
+---
+
+## 📚 Documentation
+
+**[→ View the full documentation](https://boringdata.github.io/boring-semantic-layer/)**
+
+---
+
+*This project is a joint effort by [xorq-labs](https://github.com/xorq-labs/xorq) and [boringdata](https://www.boringdata.io/).*
+
+*We welcome feedback and contributions!*
+
+---
+
+*Freely inspired by the awesome [Malloy](https://github.com/malloydata/malloy) project. We loved the vision, just took the Python route.*
