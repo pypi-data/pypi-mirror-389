@@ -1,0 +1,178 @@
+{
+  "id": "maintenance",
+  "name": "Maintenance Scheduling",
+  "domain": "operations",
+  "problem_type": "maintenance_scheduling",
+  "description": "Optimizes equipment maintenance scheduling and technician allocation to minimize downtime while meeting maintenance requirements and skill constraints.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Maintenance Operations Expert",
+    "profile": "20+ years managing maintenance for manufacturing plants and facilities. Expert in preventive maintenance, failure analysis, and downtime optimization.",
+    "priorities": [
+      "Minimize equipment downtime",
+      "Prioritize critical equipment",
+      "Meet maintenance intervals",
+      "Match technician skills to tasks",
+      "Minimize technician costs",
+      "Handle urgent repairs first"
+    ],
+    "key_metrics": [
+      "Total downtime (hours)",
+      "Maintenance cost ($)",
+      "Tasks completed on-time (%)",
+      "Equipment availability (%)"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Maintenance Scheduling Specialist",
+    "profile": "PhD in Industrial Engineering. Expert in reliability engineering, preventive maintenance optimization, and resource allocation.",
+    "problem_class": "Multi-skill Maintenance Scheduling Problem - NP-hard",
+    "formulation": "Minimize equipment downtime and technician costs while satisfying skill requirements, urgency priorities, and maintenance windows. Modeled as multi-objective assignment problem.",
+    "complexity": "O(n^m * k) where n = tasks, m = technicians, k = time slots"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "equipment_downtime",
+        "weight": 0.5,
+        "formula": "sum(equipment.criticality * downtime_hours)",
+        "description": "Minimize critical equipment downtime"
+      },
+      {
+        "name": "technician_cost",
+        "weight": 0.25,
+        "formula": "sum(technician.hourly_rate * hours_assigned)",
+        "description": "Minimize labor costs"
+      },
+      {
+        "name": "urgency_priority",
+        "weight": 0.15,
+        "formula": "sum(urgent_tasks_completed_first)",
+        "description": "Prioritize urgent/overdue tasks"
+      },
+      {
+        "name": "task_completion",
+        "weight": 0.1,
+        "formula": "tasks_completed / total_tasks",
+        "description": "Maximize number of tasks completed"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "skill_mismatch",
+        "weight": 100.0,
+        "description": "Unqualified technician for task"
+      },
+      {
+        "name": "equipment_dependency_violation",
+        "weight": 50.0,
+        "description": "Dependent equipment not maintained first"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "skill_matching",
+        "formula": "technician.skills includes task.required_skills",
+        "description": "Technicians must have required skills"
+      },
+      {
+        "name": "equipment_availability",
+        "formula": "equipment not in use during maintenance",
+        "description": "Equipment must be taken offline"
+      },
+      {
+        "name": "task_dependencies",
+        "formula": "dependent tasks complete before parent task",
+        "description": "Respect maintenance dependencies"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "urgency_priority",
+        "penalty": 10.0,
+        "formula": "schedule urgent tasks first",
+        "description": "Prioritize urgent and overdue tasks"
+      },
+      {
+        "name": "technician_preferences",
+        "penalty": 2.0,
+        "formula": "match technician specialization to task type",
+        "description": "Assign tasks to specialized technicians"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 80,
+    "max_generations": 150,
+    "crossover_rate": 0.75,
+    "mutation_rate": 0.25,
+    "tournament_size": 4,
+    "elite_size": 8,
+    "crossover_config": {
+      "type": "task_based_crossover",
+      "description": "Exchanges task assignments between solutions"
+    },
+    "mutation_config": {
+      "type": "technician_swap_mutation",
+      "description": "Reassigns tasks or swaps technicians",
+      "mutation_strength": 0.2
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY**\n\n**Problem:**\n{problem_description}\n\n**Return JSON:**\n```json\n{{\n  \"equipment_count\": <number>,\n  \"task_count\": <number>,\n  \"technician_count\": <number, default 5>,\n  \"constraints\": {{\n    \"skill_requirements\": <boolean>,\n    \"urgency\": <boolean>,\n    \"equipment_criticality\": <boolean>\n  }},\n  \"objective\": \"minimize_downtime\" | \"minimize_cost\" | \"maximize_reliability\"\n}}\n```\n\n**Rules:**\n1. Extract counts: \"50 equipment items\" → {{\"equipment_count\": 50}}\n2. Task count from \"100 maintenance tasks\"\n3. Urgency from \"urgent\", \"emergency\", \"overdue\"\n\nReturn ONLY JSON.",
+    "required_fields": ["equipment_count", "task_count"],
+    "optional_fields": ["technician_count", "constraints"],
+    "validation_rules": [
+      "equipment_count > 0",
+      "task_count > 0",
+      "technician_count > 0"
+    ],
+    "data_usage_explanation": "Generates equipment with criticality ratings, tasks with durations and skill requirements, and technicians with skills and costs."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Total Downtime",
+        "key": "total_downtime",
+        "format": "duration",
+        "target": "minimize"
+      },
+      {
+        "name": "Maintenance Cost",
+        "key": "total_cost",
+        "format": "currency"
+      },
+      {
+        "name": "Tasks Completed",
+        "key": "tasks_completed",
+        "format": "count"
+      },
+      {
+        "name": "Equipment Availability",
+        "key": "availability",
+        "format": "percentage",
+        "target": ">95%"
+      }
+    ],
+    "visualization_types": ["maintenance_timeline", "equipment_status", "technician_schedule"],
+    "narrative_template": "Scheduled {task_count} maintenance tasks for {equipment_count} equipment items using {technician_count} technicians. Total downtime: {total_downtime} hours, Cost: ${total_cost}. Achieved {availability}% equipment availability.",
+    "export_formats": ["json", "csv", "maintenance_report", "work_orders"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+
