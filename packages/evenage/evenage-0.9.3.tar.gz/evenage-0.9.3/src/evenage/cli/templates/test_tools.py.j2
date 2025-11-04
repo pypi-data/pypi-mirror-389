@@ -1,0 +1,194 @@
+"""
+Test script for agent tools - verifies setup and basic functionality
+Run this after creating a new project to ensure everything works.
+"""
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+
+def test_environment():
+    """Test environment configuration."""
+    print("=" * 60)
+    print("TESTING ENVIRONMENT SETUP")
+    print("=" * 60)
+    
+    serper_key = os.getenv("SERPER_API_KEY")
+    if not serper_key:
+        print("❌ SERPER_API_KEY not set in .env file")
+        print("   Get a free key at: https://serper.dev")
+        print("   Add to .env: SERPER_API_KEY=your_key_here")
+        return False
+    else:
+        print(f"✅ SERPER_API_KEY configured ({serper_key[:8]}...)")
+    
+    return True
+
+
+def test_imports():
+    """Test that required packages are installed."""
+    print("\n" + "=" * 60)
+    print("TESTING DEPENDENCIES")
+    print("=" * 60)
+    
+    try:
+        import requests
+        print(f"✅ requests {requests.__version__}")
+    except ImportError:
+        print("❌ requests not installed")
+        print("   Run: pip install requests")
+        return False
+    
+    try:
+        import bs4
+        print(f"✅ beautifulsoup4 {bs4.__version__}")
+    except ImportError:
+        print("❌ beautifulsoup4 not installed")
+        print("   Run: pip install beautifulsoup4")
+        return False
+    
+    try:
+        from tools.web_tools import web_search, scrape_url, extract_links
+        print("✅ web_tools module imported successfully")
+    except ImportError as e:
+        print(f"❌ Failed to import web_tools: {e}")
+        return False
+    
+    return True
+
+
+def test_web_search():
+    """Test web search functionality."""
+    print("\n" + "=" * 60)
+    print("TESTING WEB SEARCH")
+    print("=" * 60)
+    
+    try:
+        from tools.web_tools import web_search
+        
+        result = web_search("Python programming language", max_results=3)
+        
+        if result.get("status") == "error":
+            print(f"❌ Search failed: {result.get('error')}")
+            return False
+        
+        if result.get("count", 0) > 0:
+            print(f"✅ Found {result['count']} results")
+            print(f"   First result: {result['results'][0]['title']}")
+            return True
+        else:
+            print("❌ No results returned")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Exception during search: {e}")
+        return False
+
+
+def test_scrape_url():
+    """Test URL scraping functionality."""
+    print("\n" + "=" * 60)
+    print("TESTING URL SCRAPING")
+    print("=" * 60)
+    
+    try:
+        from tools.web_tools import scrape_url
+        
+        # Test with a reliable URL
+        test_url = "https://www.python.org"
+        print(f"   Scraping: {test_url}")
+        
+        result = scrape_url(test_url)
+        
+        if result.get("status") == "failed":
+            print(f"❌ Scraping failed: {result.get('error')}")
+            return False
+        
+        if result.get("length", 0) > 0:
+            content_preview = result["content"][:100]
+            print(f"✅ Scraped {result['length']} characters")
+            print(f"   Title: {result.get('title', 'N/A')}")
+            print(f"   Preview: {content_preview}...")
+            return True
+        else:
+            print("❌ No content extracted")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Exception during scraping: {e}")
+        return False
+
+
+def test_extract_links():
+    """Test link extraction functionality."""
+    print("\n" + "=" * 60)
+    print("TESTING LINK EXTRACTION")
+    print("=" * 60)
+    
+    try:
+        from tools.web_tools import extract_links
+        
+        test_url = "https://www.python.org"
+        print(f"   Extracting links from: {test_url}")
+        
+        result = extract_links(test_url, max_links=10)
+        
+        if result.get("status") == "failed":
+            print(f"❌ Link extraction failed: {result.get('error')}")
+            return False
+        
+        if result.get("count", 0) > 0:
+            print(f"✅ Found {result['count']} links")
+            print(f"   First link: {result['links'][0]}")
+            return True
+        else:
+            print("❌ No links extracted")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Exception during link extraction: {e}")
+        return False
+
+
+def main():
+    """Run all tests."""
+    print("\n" + "=" * 60)
+    print("AGENT TOOLS TEST SUITE")
+    print("=" * 60 + "\n")
+    
+    results = {
+        "Environment": test_environment(),
+        "Imports": test_imports(),
+        "Web Search": test_web_search(),
+        "URL Scraping": test_scrape_url(),
+        "Link Extraction": test_extract_links()
+    }
+    
+    print("\n" + "=" * 60)
+    print("TEST SUMMARY")
+    print("=" * 60)
+    
+    for test_name, passed in results.items():
+        status = "✅ PASS" if passed else "❌ FAIL"
+        print(f"{status} - {test_name}")
+    
+    all_passed = all(results.values())
+    
+    print("\n" + "=" * 60)
+    if all_passed:
+        print("✅ ALL TESTS PASSED - Tools are ready to use!")
+    else:
+        print("❌ SOME TESTS FAILED - Check errors above")
+        print("\nQuick fixes:")
+        print("  1. Install dependencies: pip install requests beautifulsoup4 python-dotenv")
+        print("  2. Set SERPER_API_KEY in .env (get free key from serper.dev)")
+        print("  3. Ensure you're in the correct project directory")
+    print("=" * 60 + "\n")
+    
+    return 0 if all_passed else 1
+
+
+if __name__ == "__main__":
+    exit(main())

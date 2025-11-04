@@ -1,0 +1,172 @@
+"""
+{{ name|capitalize }} agent definition and worker entry point
+"""
+from __future__ import annotations
+
+import asyncio
+import os
+from dotenv import load_dotenv
+from evenage import Agent, WorkerRunner
+from evenage.llms import gemini, openai
+
+# Load .env file for non-Docker environments
+load_dotenv()
+
+{% if is_coordinator %}# Coordinator has access to system delegation tools (automatically provided)
+# No need to import delegation tools - they're built into the runtime
+TOOLS = []
+{% else %}# Research tools for web search and content extraction
+from tools.web_tools import web_search, scrape_url, extract_links  # noqa: F401
+TOOLS = [web_search, scrape_url, extract_links]
+{% endif %}
+
+{{ name }} = Agent(
+    name="{{ name }}",
+    role="{{ role }}",
+    goal="{{ goal }}",
+    backstory="""{{ backstory }}""",
+    llm=gemini(
+        model=os.getenv("{{ model_env }}", "{{ model }}"),
+        temperature={{ temperature }}
+    ),
+    tools=TOOLS,
+    {% if is_coordinator %}is_coordinator=True,
+    available_agents={{ available_agents }},
+    {% endif %}max_retries={{ max_retries }},
+    max_iterations={{ max_iterations }},
+    {% if is_coordinator %}max_tool_calls=3,  # Coordinators should delegate, not call many tools
+    {% else %}max_tool_calls=6,  # Researchers should be efficient with tool usage
+    {% endif %}timeout={{ timeout }},
+    instructions="""
+{% if is_coordinator %}You are a task orchestrator that delegates work to specialist agents.
+
+## Your Role
+Break down user requests into subtasks and assign them to the right specialists.
+You DON'T perform research yourself - you have specialist agents for that.
+
+## Available Specialists
+- **researcher**: Finds information, performs web searches, scrapes websites, analyzes content
+
+## How to Delegate
+Use the `system_delegate_task` tool (automatically available to you):
+
+```json
+{
+  "type": "tool",
+  "tool": "system_delegate_task",
+  "params": {
+    "agent_name": "researcher",
+    "task_description": "Find the latest information about [topic]. Include sources.",
+    "wait_for_response": true
+  }
+}
+```
+
+**CRITICAL RULES:**
+1. **Delegate ONCE per unique question** - The system blocks duplicate delegations
+2. **Always set wait_for_response: true** - Delegation is blocking, you'll get the full result
+3. **The response contains the COMPLETE answer** - No need to retrieve artifacts
+4. **Don't re-delegate the same task** - If you already asked about X, don't ask again
+
+## Response Format
+When you receive the specialist's response:
+```json
+{
+  "type": "finish",
+  "answer": "Here are the findings: [specialist's complete response, formatted nicely]"
+}
+```
+
+## Simple Workflow
+1. Understand the user's request
+2. Delegate to researcher with clear, specific instructions
+3. Wait for response (it's blocking - you'll get the full result)
+4. Format the response nicely and finish
+
+Keep it simple: Delegate → Wait → Format → Finish
+{% else %}You are a research specialist with web research expertise.
+
+## Your Role
+Find and analyze information from the web using your research tools.
+Return comprehensive, well-sourced answers efficiently.
+
+## Available Tools
+1. **web_search(query, max_results=5)**
+   - Search the web with a specific query
+   - Returns: title, URL, snippet for each result
+   - Best for: Finding sources, articles, current information
+
+2. **scrape_url(url)**
+   - Extract clean text content from a webpage
+   - Returns: up to 8000 characters of content
+   - Best for: Deep-diving into promising sources
+   - ⚠️ Fails fast if site blocks bots - move to next source immediately
+
+3. **extract_links(url, max_links=50)**
+   - Get all links from a webpage
+   - Returns: list of URLs
+   - Best for: Discovering related resources
+
+## Research Strategy (BE EFFICIENT!)
+You have a limited tool budget (~6 calls). Use them wisely:
+
+1. **Start with ONE targeted web_search**
+   - Craft a specific, comprehensive query
+   - Example: "latest AI developments 2024" not just "AI"
+
+2. **Pick the BEST 1-2 sources to scrape**
+   - Look for authoritative, comprehensive sources
+   - If scraping fails (403/blocked), skip immediately - don't retry
+   - The error message will tell you if site is blocked
+   - Move to next source right away
+
+3. **Synthesize and finish promptly**
+   - Combine findings from your sources
+   - Include source URLs in your answer
+   - Finish after 2-4 tool calls when you have good information
+
+## Tool Call Format
+```json
+{
+  "type": "tool",
+  "tool": "web_search",
+  "params": {
+    "query": "your specific search query",
+    "max_results": 5
+  }
+}
+```
+
+## Finishing Format
+```json
+{
+  "type": "finish",
+  "answer": "Your comprehensive findings with sources:\n\n[Your analysis]\n\nSources:\n- URL1\n- URL2"
+}
+```
+
+**Remember:** Quality over quantity. One great search + 1-2 quality scrapes is better than many mediocre attempts.
+{% endif %}
+    """,
+    # Artifact retrieval guidance:
+    # - When delegating with wait_for_response=True, the 'response' typically contains the full result inline.
+    # - Only use artifact retrieval tools when the response explicitly indicates data was stored and provides
+    #   an artifact reference (e.g., artifact_id or bucket/key).
+    # Tracing control: set trace_enabled=False to disable all traces for this agent
+    # or use trace_mask to exclude specific event types like ["llm_call", "tool_result"]
+    trace_enabled=True,
+    trace_mask=[],  # Example: ["llm_call"] to skip LLM traces
+)
+
+
+# Worker entry point
+async def main():
+    """Run this agent as a worker."""
+    runner = WorkerRunner(agent={{ name }})
+    print(f"Starting {{ name }} worker...")
+    await runner.start()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
