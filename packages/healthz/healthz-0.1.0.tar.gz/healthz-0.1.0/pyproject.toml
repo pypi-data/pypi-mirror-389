@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "healthz"
+version = "0.1.0"
+description = "Interactive HTTP health monitoring tool with real-time metrics"
+authors = ["Delos Intelligence <contact@delos.so>"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/Delos-Intelligence/healthz"
+repository = "https://github.com/Delos-Intelligence/healthz"
+keywords = ["http", "monitoring", "health-check", "load-testing", "performance", "async", "debugging"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Monitoring",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+packages = [{include = "healthz"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiohttp = "^3.9.0"
+textual = "^0.47.0"
+click = "^8.1.0"
+textual-plotext = "^0.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+pytest-asyncio = "^0.21.0"
+black = "^23.0.0"
+ruff = "^0.1.0"
+
+[tool.poetry.scripts]
+healthz = "healthz.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
