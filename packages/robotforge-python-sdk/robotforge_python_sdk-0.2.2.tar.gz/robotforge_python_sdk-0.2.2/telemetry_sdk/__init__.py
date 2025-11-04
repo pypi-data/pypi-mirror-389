@@ -1,0 +1,235 @@
+"""
+Telemetry SDK - Multi-layered Python SDK for AI/ML telemetry
+Supports context managers, decorators, auto-instrumentation, and logging integration
+"""
+
+from typing import Optional
+
+# Core client imports
+from .client import (
+    TelemetryClient,
+    TelemetryEvent,
+    EventBuilder,
+    ModelCallEventBuilder,
+    ToolExecutionEventBuilder,
+    AgentActionEventBuilder,
+    TraceContext,
+    SyncTraceContext,
+    BatchManager,
+    AutoBatchManager,
+    EventType,
+    EventStatus,
+    TelemetryConfig,
+    APIResponse
+)
+
+# # Auto-instrumentation imports
+# from .instrumentation import (
+#     AutoInstrumentation,
+#     FrameworkIntegrations
+# )
+
+# # Logging integration imports
+# from .logging_integrations import (
+#     TelemetryHandler,
+#     TelemetryLogger,
+#     configure_telemetry_logging,
+#     setup_telemetry_logging
+# )
+
+# Utility imports
+from .utils import (
+    ConfigManager,
+    load_config,
+    create_config_file
+)
+
+# Version
+__version__ = "0.2.2"
+
+# Main exports
+__all__ = [
+    # Core client
+    "TelemetryClient",
+    "TelemetryEvent", 
+    "EventBuilder",
+    "ModelCallEventBuilder",
+    "ToolExecutionEventBuilder", 
+    "AgentActionEventBuilder",
+    "TraceContext",
+    "SyncTraceContext",
+    "BatchManager",
+    "AutoBatchManager",
+    "EventType",
+    "EventStatus",
+    "TelemetryConfig",
+    "APIResponse",
+    
+    # # Auto-instrumentation
+    # "AutoInstrumentation",
+    # "FrameworkIntegrations",
+    
+    # # Logging integration
+    # "TelemetryHandler",
+    # "TelemetryLogger",
+    # "configure_telemetry_logging",
+    # "setup_telemetry_logging",
+    
+    # Utilities
+    "ConfigManager",
+    "load_config",
+    "create_config_file",
+    
+    # Convenience functions
+    "quick_setup",
+    "set_default_client",
+    "get_default_client",
+]
+
+# Global state for default client
+_default_client: Optional[TelemetryClient] = None
+
+
+def quick_setup(
+    api_key: str,
+    tenant_id: str = "default",
+    application_id: str = "default",
+    #enable_auto_instrumentation: bool = True,
+    #enable_logging: bool = True,
+    set_as_default: bool = True,
+    **kwargs
+) -> TelemetryClient:
+    """
+    Quick setup for telemetry with sensible defaults
+    
+    Args:
+        api_key: Your telemetry service API key
+        endpoint: Telemetry service endpoint URL
+        project_id: Your project identifier
+        tenant_id: Tenant identifier (defaults to 'default')
+        user_id: User identifier (defaults to 'default')
+        application_id: Application identifier (defaults to 'default')
+        enable_auto_instrumentation: Enable automatic library instrumentation
+        enable_logging: Enable logging integration
+        set_as_default: Set this client as the default for module-level functions
+        **kwargs: Additional arguments passed to TelemetryClient
+    
+    Returns:
+        Configured TelemetryClient instance
+    
+    Example:
+        >>> import telemetry_sdk
+        >>> client = telemetry_sdk.quick_setup(
+        ...     api_key="your-key",
+        ...     endpoint="https://telemetry.example.com",
+        ...     project_id="my-project"
+        ... )
+        >>> 
+        >>> # Use context managers
+        >>> async with client.trace_model_call() as span:
+        ...     # Your LLM call here
+        ...     pass
+        >>>
+        >>> # Or use decorators
+        >>> @client.trace_model_call_decorator()
+        >>> async def my_function():
+        ...     pass
+    """
+    
+    # Create client
+    client = TelemetryClient(
+        api_key=api_key,
+        application_id=application_id,
+        **kwargs
+    )
+    
+    # # Setup auto-instrumentation if requested
+    # if enable_auto_instrumentation:
+    #     auto_instr = AutoInstrumentation(client)
+    #     auto_instr.instrument_all()
+    
+    # # Setup logging if requested
+    # if enable_logging:
+    #     configure_telemetry_logging(client)
+    
+    # Set as default client if requested
+    if set_as_default:
+        set_default_client(client)
+    
+    return client
+
+
+def set_default_client(client: TelemetryClient) -> None:
+    """Set the default client for module-level functions"""
+    global _default_client
+    _default_client = client
+
+
+def get_default_client() -> TelemetryClient:
+    """Get the default client"""
+    if _default_client is None:
+        raise RuntimeError(
+            "No default telemetry client set. "
+            "Call telemetry_sdk.set_default_client() or telemetry_sdk.quick_setup() first."
+        )
+    return _default_client
+
+
+# Module-level convenience functions (use default client)
+async def trace_model_call(**kwargs):
+    """Module-level model call tracer using default client"""
+    return get_default_client().trace_model_call(**kwargs)
+
+
+async def trace_tool_execution(tool_name: str, **kwargs):
+    """Module-level tool execution tracer using default client"""
+    return get_default_client().trace_tool_execution(tool_name, **kwargs)
+
+
+async def trace_agent_action(action_type: str, **kwargs):
+    """Module-level agent action tracer using default client"""
+    return get_default_client().trace_agent_action(action_type, **kwargs)
+
+
+def trace_model_call_sync(**kwargs):
+    """Module-level sync model call tracer using default client"""
+    return get_default_client().trace_model_call_sync(**kwargs)
+
+
+def trace_tool_execution_sync(tool_name: str, **kwargs):
+    """Module-level sync tool execution tracer using default client"""
+    return get_default_client().trace_tool_execution_sync(tool_name, **kwargs)
+
+
+def trace_agent_action_sync(action_type: str, **kwargs):
+    """Module-level sync agent action tracer using default client"""
+    return get_default_client().trace_agent_action_sync(action_type, **kwargs)
+
+
+def trace_model_call_decorator(**kwargs):
+    """Module-level model call decorator using default client"""
+    return get_default_client().trace_model_call_decorator(**kwargs)
+
+
+def trace_tool_execution_decorator(tool_name: str, **kwargs):
+    """Module-level tool execution decorator using default client"""
+    return get_default_client().trace_tool_execution_decorator(tool_name, **kwargs)
+
+
+def trace_agent_action_decorator(action_type: str, **kwargs):
+    """Module-level agent action decorator using default client"""
+    return get_default_client().trace_agent_action_decorator(action_type, **kwargs)
+
+
+# Add convenience functions to __all__
+__all__.extend([
+    "trace_model_call",
+    "trace_tool_execution", 
+    "trace_agent_action",
+    "trace_model_call_sync",
+    "trace_tool_execution_sync",
+    "trace_agent_action_sync",
+    "trace_model_call_decorator",
+    "trace_tool_execution_decorator",
+    "trace_agent_action_decorator"
+])
