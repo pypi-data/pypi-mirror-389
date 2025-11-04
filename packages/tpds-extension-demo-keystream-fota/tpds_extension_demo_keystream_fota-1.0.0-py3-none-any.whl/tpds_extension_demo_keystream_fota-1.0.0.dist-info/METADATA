@@ -1,0 +1,53 @@
+Metadata-Version: 2.4
+Name: tpds-extension-demo-keystream-fota
+Version: 1.0.0
+Summary: Microchip(SPG) Trust Platform - Keystream FOTA Demo
+Maintainer-email: Microchip Technology <SPG.Tools@microchip.com>
+License: (c) 2025 to present - Copyright Microchip Technology Inc. and its subsidiaries.
+        
+        Subject to your compliance with these terms, you may use Microchip software
+        and any derivatives exclusively with Microchip products. It is your
+        responsibility to comply with third party license terms applicable to your
+        use of third party software (including open source software) that may
+        accompany Microchip software.
+        
+        THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+        EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+        WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR
+        PURPOSE. IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL,
+        PUNITIVE, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY
+        KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP
+        HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+        FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+        ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+        THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+        
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pyserial
+Requires-Dist: pykitinfo
+Requires-Dist: tpds-extension-keystream-connect
+Provides-Extra: dev
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: pytest-integration; extra == "test"
+Dynamic: license-file
+
+# Trust Platform Design Suite - Demo Extension - Kudelski keySTREAM FOTA
+
+This module contains the frontend, backend services and resources required for keySTREAM FOTA Demo extension.
+
+## Release Notes
+
+## Release 1.0.0
+    - Initial Version of FOTA Demo

@@ -1,0 +1,29 @@
+name: keystream_demo
+
+backend:
+  path: backend
+  routers:
+    - fota_demo
+
+frontend:
+  path: ""
+  entrypoints:
+    - name: keystream_fota_demo
+      title: FOTA Demo
+      description:
+        Firmware Over The Air (FoTA) enables remote firmware updates for embedded devices,
+        ensuring security, feature deployment, and bug fixes without physical access.
+        KeySTREAM is a secure, cloud-based platform that streamlines FoTA management for
+        IoT devices. Using KeySTREAM with ECC608-TMNGTLS enhances device reliability and
+        security, reduces operational costs, and allows efficient large-scale fleet
+        management and continuous product improvement."
+      entry: frontend/index.html
+      icon:
+        name: keystream_icon_png
+        path: backend/Images/FOTA-Trust-Manager.jpg
+      applications:
+        - demo
+      devices:
+        - ECC608-TMNGTLS
+      boards:
+        - EV89U05A
