@@ -1,0 +1,22 @@
+{% load minha_lib_tags %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Django Minha Lib</title>
+    </head>
+    <body>
+        <h1>Bem Vindo a Django Minha Lib - Versão {{ versao }}</h1>
+
+        <p>Para saber mais sobre a biblioteca, visite a página no PyPI: <a href="{{ url_pypi }}">{{ url_pypi }}</a></p>
+
+        <p>Este template foi carregado diretamente do pacote da biblioteca!</p>
+
+        <p>Timestamp atual:</p>
+        <p>Tempo Unix: <strong>{% show_today_timestamp %}</strong></p>
+
+        <hr>
+
+        <p>{% saudacao "Meu querido visitante" %}</p>
+    </body>
+</html>
