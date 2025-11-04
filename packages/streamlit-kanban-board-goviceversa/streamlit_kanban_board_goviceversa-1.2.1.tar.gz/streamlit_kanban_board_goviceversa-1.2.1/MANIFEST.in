@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include CHANGELOG.md
+recursive-include streamlit_kanban_board_goviceversa/frontend/build *
+exclude streamlit_kanban_board_goviceversa/frontend/src
+exclude streamlit_kanban_board_goviceversa/frontend/node_modules
+exclude streamlit_kanban_board_goviceversa/frontend/package*.json
+exclude streamlit_kanban_board_goviceversa/frontend/tsconfig.json
+exclude sample*.py
+exclude example*.py
+exclude DEFAULT_VISIBLE_STAGES.md 
