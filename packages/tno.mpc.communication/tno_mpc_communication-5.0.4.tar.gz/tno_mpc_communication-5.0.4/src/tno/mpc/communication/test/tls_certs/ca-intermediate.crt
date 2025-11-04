@@ -1,0 +1,81 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=My Root CA
+        Validity
+            Not Before: Jan 22 13:16:50 2025 GMT
+            Not After : Jun  9 13:16:50 2052 GMT
+        Subject: CN=ca-intermediate
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:b5:f9:0f:d3:0f:0c:81:3e:f7:c3:99:6f:e6:92:
+                    fe:74:48:7c:8c:b6:8c:5c:96:42:60:92:01:a6:e4:
+                    b0:fc:d3:ea:a0:4b:70:77:9d:dc:c8:b2:11:fc:f5:
+                    05:b0:b0:0e:d9:c9:06:aa:c5:25:09:fd:eb:55:78:
+                    75:e1:77:6a:45:28:0d:58:df:b9:12:a9:d8:2c:6c:
+                    ec:83:37:b6:42:55:fe:27:3a:93:f3:85:93:80:8f:
+                    10:76:78:e2:fd:34:f7:1a:d7:13:d7:23:8a:55:16:
+                    42:f1:a1:34:41:99:2b:e4:f2:a3:91:47:59:ec:17:
+                    81:17:6b:d5:32:a3:5b:5b:05:cf:04:e2:72:b2:d2:
+                    f4:39:64:84:8b:d5:c5:ec:b5:07:b8:07:e9:26:93:
+                    25:e2:13:9e:f8:33:0c:1e:14:db:a0:8e:3a:c0:6d:
+                    e9:39:8f:fe:c7:e2:b5:54:4c:30:73:ef:d6:73:c7:
+                    81:26:a4:06:05:86:ed:24:7c:c0:9e:d8:aa:b5:20:
+                    c6:96:d6:5c:fd:45:f1:08:03:ee:78:4a:2e:a3:df:
+                    7a:59:f2:2c:aa:52:4e:d1:21:5b:fe:39:9b:7a:30:
+                    f3:20:35:f4:e9:90:72:9a:a8:cd:67:87:ea:1c:ea:
+                    5c:11:2b:cc:68:2b:da:e2:92:77:f3:bf:5b:4d:f4:
+                    9e:8b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                22:FB:ED:42:93:48:D1:FB:46:29:F0:4C:07:3D:D5:F8:A2:62:E8:A4
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Certificate Sign
+            X509v3 Subject Alternative Name:
+                IP Address:127.0.0.1, IP Address:192.168.73.120, IP Address:192.168.73.121
+            X509v3 Authority Key Identifier:
+                5F:58:E3:84:DD:D4:9C:6D:53:29:F7:AD:7D:F4:07:B6:0F:2F:84:25
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        13:fe:e3:ec:69:f5:be:f5:11:08:15:2d:f3:22:31:06:1d:89:
+        e9:c5:bd:73:9e:59:d2:8d:f0:99:bc:6b:63:1b:9d:43:a3:1b:
+        23:32:4b:b9:bf:e1:f9:11:d5:80:2b:8a:76:ca:7b:ed:c6:24:
+        ad:43:46:a4:96:49:88:19:54:a8:a8:21:ff:2f:57:8c:fe:a0:
+        a5:5f:ff:bc:27:d8:22:5c:6c:d9:8e:0c:86:63:a3:8e:30:f8:
+        be:e0:c6:08:d0:19:ac:23:d6:88:6e:03:53:9b:57:e4:f9:ea:
+        04:20:3e:a8:bc:fd:6e:b5:75:da:d0:56:fc:39:40:f2:1e:c8:
+        99:9a:c4:e1:96:37:57:d6:74:d8:69:23:31:a8:84:60:89:be:
+        ff:d1:f8:4d:99:b1:59:ab:62:dd:a4:4f:58:62:55:d7:b7:3e:
+        09:ad:ab:9b:80:60:36:7a:52:60:25:94:56:d7:46:c2:f5:3e:
+        54:43:d4:2f:d6:5b:6e:0f:ab:7f:17:92:0c:10:72:01:86:61:
+        91:f8:02:29:65:3d:b1:d9:47:48:42:33:94:28:ac:1f:c7:e2:
+        2c:6a:c4:03:d5:b4:14:e3:36:b0:db:b1:3b:12:ef:0f:bb:24:
+        32:b8:81:54:50:24:c0:78:a5:8d:c2:b5:a7:96:71:a3:e1:7f:
+        ba:88:4a:b4
+-----BEGIN CERTIFICATE-----
+MIIDLTCCAhWgAwIBAgIBATANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApNeSBS
+b290IENBMCAXDTI1MDEyMjEzMTY1MFoYDzIwNTIwNjA5MTMxNjUwWjAaMRgwFgYD
+VQQDDA9jYS1pbnRlcm1lZGlhdGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQC1+Q/TDwyBPvfDmW/mkv50SHyMtoxclkJgkgGm5LD80+qgS3B3ndzIshH8
+9QWwsA7ZyQaqxSUJ/etVeHXhd2pFKA1Y37kSqdgsbOyDN7ZCVf4nOpPzhZOAjxB2
+eOL9NPca1xPXI4pVFkLxoTRBmSvk8qORR1nsF4EXa9Uyo1tbBc8E4nKy0vQ5ZISL
+1cXstQe4B+kmkyXiE574MwweFNugjjrAbek5j/7H4rVUTDBz79Zzx4EmpAYFhu0k
+fMCe2Kq1IMaW1lz9RfEIA+54Si6j33pZ8iyqUk7RIVv+OZt6MPMgNfTpkHKaqM1n
+h+oc6lwRK8xoK9riknfzv1tN9J6LAgMBAAGjgYAwfjAdBgNVHQ4EFgQUIvvtQpNI
+0ftGKfBMBz3V+KJi6KQwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAgQw
+GwYDVR0RBBQwEocEfwAAAYcEwKhJeIcEwKhJeTAfBgNVHSMEGDAWgBRfWOOE3dSc
+bVMp96199Ae2Dy+EJTANBgkqhkiG9w0BAQsFAAOCAQEAE/7j7Gn1vvURCBUt8yIx
+Bh2J6cW9c55Z0o3wmbxrYxudQ6MbIzJLub/h+RHVgCuKdsp77cYkrUNGpJZJiBlU
+qKgh/y9XjP6gpV//vCfYIlxs2Y4MhmOjjjD4vuDGCNAZrCPWiG4DU5tX5PnqBCA+
+qLz9brV12tBW/DlA8h7ImZrE4ZY3V9Z02GkjMaiEYIm+/9H4TZmxWati3aRPWGJV
+17c+Ca2rm4BgNnpSYCWUVtdGwvU+VEPUL9Zbbg+rfxeSDBByAYZhkfgCKWU9sdlH
+SEIzlCisH8fiLGrEA9W0FOM2sNuxOxLvD7skMriBVFAkwHiljcK1p5Zxo+F/uohK
+tA==
+-----END CERTIFICATE-----
