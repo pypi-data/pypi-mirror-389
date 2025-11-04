@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: quant-gmsdk
+Version: 1.0.1
+Summary: Pure Python SDK for GM quantitative trading platform with cross-platform support
+Author-email: nirvana0614 <nirvana0614@users.noreply.gitee.com>
+Maintainer-email: nirvana0614 <nirvana0614@users.noreply.gitee.com>
+License: MIT
+Project-URL: Homepage, https://gitee.com/nirvana0614/gm-sdk-platform
+Project-URL: Repository, https://gitee.com/nirvana0614/gm-sdk-platform
+Project-URL: Bug Tracker, https://gitee.com/nirvana0614/gm-sdk-platform/issues
+Project-URL: Documentation, https://gitee.com/nirvana0614/gm-sdk-platform
+Keywords: quantitative,trading,financial,gmsdk,grpc,cross-platform
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Office/Business :: Financial
+Classifier: Topic :: Office/Business :: Financial :: Investment
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: protobuf<4.0.0,>=3.20.3
+Requires-Dist: grpcio==1.47.5
+Requires-Dist: pandas>=1.5.0
+Requires-Dist: numpy>=1.21.0
+Provides-Extra: dev
+Requires-Dist: grpcio-tools==1.47.5; extra == "dev"
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: flake8>=5.0.0; extra == "dev"
+Requires-Dist: mypy>=0.991; extra == "dev"
+Dynamic: license-file
+
+# GMSdk
+
+Pure Python SDK for GM quantitative trading platform with cross-platform support.
+
+## Features
+
+- Cross-platform compatibility (Windows, macOS, Linux)
+- gRPC-based communication with GM server
+- Optimized DataFrame serialization
+- Pure Python implementation
+
+## Installation
+
+```bash
+pip install gmsdk
+```
+
+## Usage
+
+```python
+import gmsdk
+
+# Initialize client
+client = gmsdk.Client()
+
+# Use GM API functions
+# ...
+```
+
+## License
+
+MIT License
+
