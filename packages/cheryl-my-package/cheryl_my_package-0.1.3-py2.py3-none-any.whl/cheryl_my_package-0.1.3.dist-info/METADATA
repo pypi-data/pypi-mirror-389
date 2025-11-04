@@ -1,0 +1,86 @@
+Metadata-Version: 2.4
+Name: cheryl-my-package
+Version: 0.1.3
+Summary: A brief description of my package
+License: MIT
+License-File: LICENSE
+Keywords: example,package,pypi
+Author: Your Name
+Author-email: youremail@example.com
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Project-URL: Homepage, https://github.com/yourusername/my-pypi-package
+Project-URL: Repository, https://github.com/yourusername/my-pypi-package
+Description-Content-Type: text/markdown
+
+# My PyPI Package
+
+My PyPI Package is a Python package that provides core functionality, a command-line interface, and utility functions for various applications. This package is designed to be easy to use and integrate into your projects.
+
+## Features
+
+- Core functionality encapsulated in the `CoreClass`.
+- Command-line interface for easy execution.
+- Utility functions for common tasks.
+
+## Installation
+
+You can install the package using pip:
+
+```
+pip install my-pypi-package
+```
+
+## Usage
+
+### Core Functionality
+
+To use the core functionality, you can import the `CoreClass` from the package:
+
+```python
+from my_package.core import CoreClass
+
+core_instance = CoreClass()
+result_one = core_instance.method_one()
+result_two = core_instance.method_two()
+```
+
+### Command-Line Interface
+
+You can also run the package from the command line:
+
+```
+python -m my_package.cli
+```
+
+### Utility Functions
+
+For utility functions, you can import them as follows:
+
+```python
+from my_package.utils import utility_function_one, utility_function_two
+
+result_one = utility_function_one()
+result_two = utility_function_two()
+```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
