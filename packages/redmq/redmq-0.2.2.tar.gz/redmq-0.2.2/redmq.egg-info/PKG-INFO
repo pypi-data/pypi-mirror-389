@@ -1,0 +1,193 @@
+Metadata-Version: 2.4
+Name: redmq
+Version: 0.2.2
+Summary: Redis message queue utils: a simple distributed lock based on redis, a simple message queue based on redis with ack feature.
+Author: rRR0VrFP
+Maintainer: rRR0VrFP
+License: MIT
+Keywords: redmq
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: redis
+Requires-Dist: bizerror
+Requires-Dist: requests
+Requires-Dist: fastutils
+Requires-Dist: daemon-application
+Requires-Dist: croniter
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: maintainer
+Dynamic: requires-dist
+Dynamic: summary
+
+# redmq
+
+Redis message queue utils: a simple distributed lock based on redis, a simple message queue based on redis with ack feature.
+
+## Install
+
+```
+pip install redmq
+```
+
+## Usage Examples 
+
+### redmq.lock.RedisLock
+
+```
+import redis
+from redmq.lock import RedisLock
+
+conn = redis.Redis()
+lock_name = "test01_lock"
+
+with RedisLock(conn, lock_name) as locked:
+    if locked:
+        pass # do things if acquired the lock
+    else:
+        pass # do things if not acquired the lock
+```
+
+### redmq.message_queue.MessageQueue
+
+*worker.py*
+
+```
+import time
+import redis
+from redmq.message_queue import MessageQueue
+
+conn = redis.Redis()
+mq = MessageQueue(conn)
+while True:
+    task = mq.pop_nowait()
+    if task:
+        message = task["message"]
+        mq.acknowledge(task, result_data=message.upper())
+    else:
+        time.sleep(0.1)
+```
+
+*client.py*
+
+```
+import time
+import redis
+from redmq.message_queue import MessageQueue
+
+conn = redis.Redis()
+mq = MessageQueue(conn)
+task1 = mq.push("task1")
+task_info = None
+for _ in range(100):
+    task_info = mq.get_result_nowait(task1)
+    if task_info:
+        break
+    time.sleep(0.1)
+print(task_info["result"])
+
+```
+
+*start worker*
+
+```
+python3 worker.py
+```
+
+*start client*
+
+```
+python3 client.py
+```
+
+*client output*
+
+```
+test@test redmq % python3.9 client.py 
+{'error_message': 'OK', 'result_data': 'TASK1', 'success': True, 'error_code': 0}
+```
+
+### redmq.message_queue.Consumer
+
+*consumer.py*
+
+```
+import redis
+from redmq import MessageQueue
+from redmq import Consumer
+
+def pingpong_handler(msg):
+    return "pong"
+
+conn = redis.Redis("redis")
+mq = MessageQueue(conn)
+consumer = Consumer(mq)
+consumer.register_handler("debug.pingpong", pingpong_handler)
+consumer.start()
+consumer.wait()
+```
+
+*client.py*
+
+```
+import redis
+from redmq import MessageQueue
+
+conn = redis.Redis("redis")
+mq = MessageQueue(conn)
+task = {
+    "handler": "debug.pingpong",
+}
+response = mq.pushwait(task)
+print(response["result"])
+```
+
+*result*
+
+```
+test@test redmq % python3 examples/client.py
+{'error_message': 'OK', 'result_data': 'pong', 'success': True, 'error_code': 0}
+```
+
+## Why NOT using blpop instead of lpop?
+
+We do pop_nowait via LUA script, but redis is NOT allow us to use blpop in LUA script.
+
+## Releases
+
+### v0.1.0
+
+- First release.
+
+### v0.1.1
+
+- redmq.message_queue.MessageQueue.push takes `high_priority` parameter. Normal message use FIFO rule, and `high_priority` message use LIFO rule.
+
+### v0.2.0
+
+- Add redmq.message_queue.Consumer, redmq.message_queue.RequestsHandler, redmq.message_queue.RequestsConsumer.
+- Add redmq.schedule.Schedule and redmq.schedule.Scheduler.
+- Add redmq.lock.RedisLock.renew method.
+- Extend redmq.lock.RedisLock.acquire to allow the same worker acquire the same lock many times.
+- Add generic async message queue handler server `requests-server`.
+
+### v0.2.1
+
+- redmq.schedule.add_runonce_task, redmq.schedule.add_crontab_task, redmq.schedule.add_interval_task add update paraemter to control if update the schedule by force or not.
+- Fix redmq.schedule.add_crontab_task timezone problem.
+- Fix redmq.schedule.add_interval_task rule change problem.
+
+### v0.2.2
+
+- Doc update.
