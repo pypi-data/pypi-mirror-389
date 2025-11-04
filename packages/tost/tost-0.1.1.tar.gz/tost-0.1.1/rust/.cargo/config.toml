@@ -1,0 +1,11 @@
+[build]
+rustflags = [
+    "-C", "link-arg=-mmacosx-version-min=12.0",
+    "-C", "link-arg=-L/Users/lizhonghan/.local/share/uv/python/cpython-3.13.3-macos-aarch64-none/lib",
+    "-C", "link-arg=-lpython3.13",
+    "-C", "link-arg=-Wl,-rpath,/Users/lizhonghan/.local/share/uv/python/cpython-3.13.3-macos-aarch64-none/lib"
+]
+
+[env]
+MACOSX_DEPLOYMENT_TARGET = "12.0"
+LD_LIBRARY_PATH = "/Users/lizhonghan/.local/share/uv/python/cpython-3.13.3-macos-aarch64-none/lib"
