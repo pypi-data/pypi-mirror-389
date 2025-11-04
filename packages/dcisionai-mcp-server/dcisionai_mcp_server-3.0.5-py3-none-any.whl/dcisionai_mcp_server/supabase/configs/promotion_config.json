@@ -1,0 +1,177 @@
+{
+  "id": "promotion",
+  "name": "Promotion Scheduling",
+  "domain": "retail_marketing",
+  "problem_type": "promotion_scheduling",
+  "description": "Optimizes retail promotion timing, product selection, and channel allocation to maximize incremental profit while respecting budget and inventory constraints.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Retail Marketing Expert",
+    "profile": "15+ years in retail marketing and promotional planning. Expert in promotional effectiveness, cannibalization analysis, and ROI optimization.",
+    "priorities": [
+      "Maximize incremental profit",
+      "Avoid product cannibalization",
+      "Balance category representation",
+      "Optimize channel mix",
+      "Meet budget constraints",
+      "Clear slow-moving inventory"
+    ],
+    "key_metrics": [
+      "Incremental profit ($)",
+      "Promotional ROI (%)",
+      "Reach (customers)",
+      "Inventory turnover"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Marketing Optimization Specialist",
+    "profile": "PhD in Marketing Science. Expert in promotional response modeling, multi-channel attribution, and budget allocation.",
+    "problem_class": "Promotional Scheduling and Budget Allocation - NP-hard",
+    "formulation": "Maximize incremental profit considering promotional uplift, cannibalization effects, and channel reach. Constrained by budget, inventory, and channel capacity.",
+    "complexity": "O(n^m) where n = products, m = promotion slots"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "incremental_profit",
+        "weight": 0.5,
+        "formula": "sum((sales_uplift * margin) - promotion_cost)",
+        "description": "Maximize net profit from promotions"
+      },
+      {
+        "name": "reach",
+        "weight": 0.25,
+        "formula": "sum(promotion_slot.reach * product.base_sales)",
+        "description": "Maximize customer reach"
+      },
+      {
+        "name": "category_balance",
+        "weight": 0.15,
+        "formula": "1.0 - stddev(promotions_per_category) / mean",
+        "description": "Balance promotions across categories"
+      },
+      {
+        "name": "inventory_clearance",
+        "weight": 0.1,
+        "formula": "sum(high_inventory_products_promoted)",
+        "description": "Clear excess inventory"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "budget_violation",
+        "weight": 100.0,
+        "description": "Exceeding promotional budget"
+      },
+      {
+        "name": "cannibalization",
+        "weight": 50.0,
+        "description": "Promoting competing products simultaneously"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "budget_limit",
+        "formula": "sum(promotion_costs) <= total_budget",
+        "description": "Stay within promotional budget"
+      },
+      {
+        "name": "inventory_availability",
+        "formula": "product.inventory >= expected_demand",
+        "description": "Sufficient inventory for promotion"
+      },
+      {
+        "name": "channel_capacity",
+        "formula": "promotions_per_channel <= channel.max_slots",
+        "description": "Respect channel limits"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "avoid_cannibalization",
+        "penalty": 10.0,
+        "formula": "don't promote substitutable products together",
+        "description": "Avoid competing product promotions"
+      },
+      {
+        "name": "category_diversity",
+        "penalty": 5.0,
+        "formula": "spread promotions across categories",
+        "description": "Represent multiple categories"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 80,
+    "max_generations": 150,
+    "crossover_rate": 0.75,
+    "mutation_rate": 0.25,
+    "tournament_size": 4,
+    "elite_size": 8,
+    "crossover_config": {
+      "type": "promotion_based_crossover",
+      "description": "Exchanges product-slot assignments"
+    },
+    "mutation_config": {
+      "type": "product_swap_mutation",
+      "description": "Reassigns products to different slots",
+      "mutation_strength": 0.2
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY**\n\n**Problem:**\n{problem_description}\n\n**Return JSON:**\n```json\n{{\n  \"product_count\": <number>,\n  \"promotion_slot_count\": <number>,\n  \"constraints\": {{\n    \"budget\": <number or null>,\n    \"avoid_cannibalization\": <boolean>,\n    \"category_limits\": <boolean>\n  }},\n  \"objective\": \"maximize_revenue\" | \"maximize_profit\" | \"clear_inventory\"\n}}\n```\n\n**Rules:**\n1. Extract counts: \"100 products\" → {{\"product_count\": 100}}\n2. Extract budget from \"$X budget\", \"spending limit\"\n3. Cannibalization if mentions \"competing products\", \"substitutes\"\n\nReturn ONLY JSON.",
+    "required_fields": ["product_count", "promotion_slot_count"],
+    "optional_fields": ["constraints"],
+    "validation_rules": [
+      "product_count > 0",
+      "promotion_slot_count > 0"
+    ],
+    "data_usage_explanation": "Generates products with sales history, margins, and inventory. Creates promotion slots with reach, cost, and channel info."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Incremental Profit",
+        "key": "incremental_profit",
+        "format": "currency",
+        "target": "maximize"
+      },
+      {
+        "name": "Promotional ROI",
+        "key": "roi",
+        "format": "percentage",
+        "target": ">300%"
+      },
+      {
+        "name": "Total Reach",
+        "key": "total_reach",
+        "format": "count"
+      },
+      {
+        "name": "Products Promoted",
+        "key": "products_promoted",
+        "format": "count"
+      }
+    ],
+    "visualization_types": ["promotion_calendar", "roi_analysis", "category_distribution"],
+    "narrative_template": "Scheduled {products_promoted} products across {promotion_slot_count} promotional slots. Incremental profit: ${incremental_profit}, ROI: {roi}%. Total reach: {total_reach} customers.",
+    "export_formats": ["json", "csv", "promotion_calendar", "campaign_plan"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+

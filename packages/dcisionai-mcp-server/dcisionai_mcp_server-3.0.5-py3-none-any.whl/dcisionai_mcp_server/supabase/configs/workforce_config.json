@@ -1,0 +1,177 @@
+{
+  "id": "workforce",
+  "name": "Workforce Rostering",
+  "domain": "hr_operations",
+  "problem_type": "workforce_scheduling",
+  "description": "Optimizes employee scheduling, shift allocation, and staffing to minimize labor costs while meeting coverage requirements and respecting worker preferences.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Workforce Management Expert",
+    "profile": "15+ years in HR operations for retail and hospitality. Expert in labor law compliance, shift planning, and employee satisfaction.",
+    "priorities": [
+      "Meet shift coverage requirements",
+      "Minimize labor costs",
+      "Balance worker hours fairly",
+      "Match skills to shift needs",
+      "Respect worker availability",
+      "Ensure adequate rest periods"
+    ],
+    "key_metrics": [
+      "Total labor cost ($)",
+      "Coverage percentage (%)",
+      "Worker satisfaction score",
+      "Overtime hours"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Workforce Optimization Specialist",
+    "profile": "PhD in Operations Research. Specializes in shift scheduling, assignment problems, and multi-skilled workforce optimization.",
+    "problem_class": "Multi-skilled Workforce Scheduling Problem - NP-hard",
+    "formulation": "Minimize labor cost while satisfying shift coverage, skill requirements, and worker constraints. Mixed-integer programming formulation solved with genetic algorithms.",
+    "complexity": "O(n^m) where n = workers, m = shifts - requires heuristic approach"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "labor_cost",
+        "weight": 0.5,
+        "formula": "sum(worker.hourly_rate * hours_assigned)",
+        "description": "Minimize total labor cost"
+      },
+      {
+        "name": "coverage",
+        "weight": 0.3,
+        "formula": "sum(shifts_fully_covered) / total_shifts",
+        "description": "Maximize shift coverage"
+      },
+      {
+        "name": "workload_balance",
+        "weight": 0.15,
+        "formula": "1.0 - stddev(hours_per_worker) / mean(hours_per_worker)",
+        "description": "Distribute hours fairly"
+      },
+      {
+        "name": "preference_satisfaction",
+        "weight": 0.05,
+        "formula": "sum(worker_preferences_met) / total_assignments",
+        "description": "Respect worker availability"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "skill_mismatch",
+        "weight": 100.0,
+        "description": "Heavy penalty for unqualified worker assignments"
+      },
+      {
+        "name": "hours_violation",
+        "weight": 50.0,
+        "description": "Penalty for exceeding max weekly hours"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "skill_matching",
+        "formula": "worker.skills includes shift.required_skills",
+        "description": "Workers must have required skills"
+      },
+      {
+        "name": "max_hours_per_week",
+        "formula": "sum(hours_assigned_to_worker) <= worker.max_hours",
+        "description": "Respect maximum weekly hours"
+      },
+      {
+        "name": "rest_periods",
+        "formula": "min_rest_hours between consecutive shifts >= 11 hours",
+        "description": "Legal rest period requirements"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "worker_preferences",
+        "penalty": 5.0,
+        "formula": "assign shifts matching worker availability",
+        "description": "Prefer worker's preferred shifts"
+      },
+      {
+        "name": "shift_continuity",
+        "penalty": 3.0,
+        "formula": "assign consecutive shifts to same worker",
+        "description": "Reduce shift handovers"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 80,
+    "max_generations": 150,
+    "crossover_rate": 0.7,
+    "mutation_rate": 0.3,
+    "tournament_size": 4,
+    "elite_size": 8,
+    "crossover_config": {
+      "type": "shift_based_crossover",
+      "description": "Exchanges entire shift assignments between solutions"
+    },
+    "mutation_config": {
+      "type": "worker_swap_mutation",
+      "description": "Swaps worker assignments or reassigns shifts",
+      "mutation_strength": 0.2
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY**\n\n**Problem:**\n{problem_description}\n\n**Return JSON:**\n```json\n{{\n  \"worker_count\": <number>,\n  \"shift_count\": <number>,\n  \"days\": <number, default 7>,\n  \"constraints\": {{\n    \"skill_requirements\": <boolean>,\n    \"max_hours\": <boolean>,\n    \"availability\": <boolean>\n  }},\n  \"objective\": \"minimize_cost\" | \"maximize_coverage\" | \"balance_workload\"\n}}\n```\n\n**Rules:**\n1. Extract counts: \"100 workers\" → {{\"worker_count\": 100}}\n2. Shift count from \"28 shifts\" or \"7 days × 4 shifts/day\"\n3. Skill requirements if mentions \"skills\", \"qualified\"\n\nReturn ONLY JSON.",
+    "required_fields": ["worker_count", "shift_count"],
+    "optional_fields": ["days", "constraints"],
+    "validation_rules": [
+      "worker_count > 0",
+      "shift_count > 0"
+    ],
+    "data_usage_explanation": "Generates workers with skills, rates, and availability. Creates shifts with requirements across specified days."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Total Labor Cost",
+        "key": "total_cost",
+        "format": "currency"
+      },
+      {
+        "name": "Coverage",
+        "key": "coverage_pct",
+        "format": "percentage",
+        "target": "100%"
+      },
+      {
+        "name": "Worker Utilization",
+        "key": "utilization",
+        "format": "percentage"
+      },
+      {
+        "name": "Satisfaction Score",
+        "key": "satisfaction",
+        "format": "score",
+        "target": ">8.0/10"
+      }
+    ],
+    "visualization_types": ["schedule_calendar", "worker_timeline", "coverage_heatmap"],
+    "narrative_template": "Scheduled {worker_count} workers across {shift_count} shifts. Total cost: ${total_cost}, Coverage: {coverage_pct}%. Achieved {utilization}% worker utilization with {satisfaction}/10 satisfaction score.",
+    "export_formats": ["json", "csv", "schedule_pdf", "ical"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+

@@ -1,0 +1,131 @@
+{
+  "domain_id": "customer_onboarding",
+  "name": "Customer Onboarding & Portfolio Optimization",
+  "description": "Instant portfolio risk analysis and optimization for new wealth management clients. Analyzes current holdings, calculates risk metrics, and recommends optimal allocation based on client risk tolerance.",
+  "version": "1.0.0",
+  "enabled": true,
+  "category": "wealth_management",
+  "tags": ["portfolio", "risk_analysis", "onboarding", "optimization"],
+  
+  "domain_expert": {
+    "title": "Wealth Management Advisor",
+    "profile": "Expert in portfolio construction, risk management, and client asset allocation with 15+ years advising high-net-worth individuals",
+    "priorities": [
+      "Client risk tolerance alignment",
+      "Fee minimization and cost transparency",
+      "Tax-efficient portfolio transitions",
+      "Proper diversification across asset classes and sectors"
+    ],
+    "speaks_about": [
+      "risk-adjusted returns",
+      "Sharpe ratios",
+      "tax-loss harvesting opportunities",
+      "sector concentration risk",
+      "expense ratio optimization",
+      "rebalancing triggers"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Portfolio Optimization Specialist",
+    "profile": "Expert in mean-variance optimization, modern portfolio theory, and multi-objective portfolio construction",
+    "formulation": "Multi-objective optimization balancing risk minimization (40%), return maximization (30%), fee reduction (20%), and tax efficiency (10%)",
+    "problem_class": "Quadratic Programming with Linear Constraints (QP)",
+    "solution_method": "Genetic Algorithm with constraint-aware fitness evaluation",
+    "defensibility": [
+      "Markowitz efficient frontier analysis",
+      "Sharpe ratio optimization",
+      "Correlation matrix validation",
+      "Monte Carlo simulation for risk assessment",
+      "Constraint satisfaction verification (100%)"
+    ]
+  },
+  
+  "objective_config": {
+    "type": "multi_objective",
+    "objectives": [
+      "Minimize portfolio risk (volatility) to match client risk tolerance",
+      "Maximize expected returns given current market conditions",
+      "Minimize fees by suggesting low-cost fund alternatives",
+      "Minimize tax drag from portfolio reallocation"
+    ],
+    "weights": {
+      "risk": 0.40,
+      "return": 0.30,
+      "fees": 0.20,
+      "tax": 0.10
+    },
+    "formula": "0.40 * risk_score + 0.30 * (1 - return_score) + 0.20 * fee_score + 0.10 * tax_score"
+  },
+  
+  "constraints_config": {
+    "constraints": [
+      "Sum of all allocations must equal 1.0 (100% invested)",
+      "Portfolio volatility must not exceed client risk tolerance",
+      "No sector concentration above 20% of portfolio",
+      "No single stock concentration above 10% of portfolio",
+      "All holdings must have average daily volume > $100K (liquidity)",
+      "Maintain ESG scores above minimum if client requires"
+    ],
+    "hard_constraints": ["full_investment", "risk_tolerance", "liquidity"],
+    "soft_constraints": ["sector_concentration", "single_stock_limit", "esg_minimum"]
+  },
+  
+  "data_sources": {
+    "required": ["current_holdings", "risk_tolerance_score", "investment_goals"],
+    "optional": ["tax_rate", "esg_preferences", "concentrated_positions", "time_horizon"],
+    "external_apis": [
+      {
+        "provider": "polygon",
+        "data_type": "stock_prices",
+        "required": true,
+        "purpose": "Get current prices and historical volatility for all holdings"
+      },
+      {
+        "provider": "polygon",
+        "data_type": "correlation_matrix",
+        "required": true,
+        "purpose": "Calculate portfolio diversification and overall risk"
+      },
+      {
+        "provider": "alpha_vantage",
+        "data_type": "economic_indicators",
+        "required": false,
+        "purpose": "Provide macroeconomic context for risk assessment"
+      }
+    ]
+  },
+  
+  "parsing_config": {
+    "llm_model": "claude-3-5-haiku-20241022",
+    "max_tokens": 2048,
+    "temperature": 0.0,
+    "use_synthetic_data": true,
+    "synthetic_data_generator": "customer_onboarding_generator",
+    "prompt_template": "You are a wealth management onboarding specialist. Extract the following from the user's description:\n\n1. Current Holdings:\n   - List of securities (tickers)\n   - Number of shares or dollar amounts\n   - Purchase dates (if mentioned)\n\n2. Client Profile:\n   - Risk tolerance (conservative=1, moderate=5, aggressive=10)\n   - Investment goals (retirement, growth, income, etc.)\n   - Time horizon (years until retirement or goal)\n   - Age (if mentioned)\n\n3. Preferences:\n   - ESG requirements (yes/no)\n   - Concentrated positions to maintain\n   - Tax considerations\n\nReturn JSON with exact counts from the problem description."
+  },
+  
+  "ga_params": {
+    "population_size": 100,
+    "generations": 50,
+    "mutation_rate": 0.15,
+    "crossover_rate": 0.8,
+    "elitism_count": 10,
+    "tournament_size": 5
+  },
+  
+  "output_format": {
+    "sections": [
+      "current_portfolio_analysis",
+      "risk_assessment",
+      "optimization_results",
+      "recommended_allocation",
+      "fee_analysis",
+      "tax_implications",
+      "implementation_roadmap"
+    ],
+    "visualizations": ["risk_heatmap", "allocation_pie", "efficient_frontier"],
+    "export_formats": ["pdf_report", "excel_workbook", "json_api"]
+  }
+}
+
