@@ -1,0 +1,82 @@
+{
+  "Invivo": {
+    "Parenchyma": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/ParenchymaInvivoRabbit/ParenchymaInvivoRabbit.zip",
+      "model_name": "ParenchymaInvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 1,
+      "fold": 0
+    },
+    "Airways": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/AirwaysInvivoRabbit/AirwaysInvivoRabbit.zip",
+      "model_name": "AirwaysInvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 1,
+      "fold": 3
+    },
+    "Vascular": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/VascularInvivoRabbit/VascularInvivoRabbit.zip",
+      "model_name": "VascularInvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 1,
+      "fold": 1
+    },
+    "ParenchymaAirways": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/ParenchymaAirwaysInvivoRabbit/ParenchymaAirwaysInvivoRabbit.zip",
+      "model_name": "ParenchymaAirwaysInvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 2,
+      "fold": 1
+    },
+    "All": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/AllInvivoRabbit/AllInvivoRabbit.zip",
+      "model_name": "AllInvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 3,
+      "fold": 4
+    },
+    "Lobes":{
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/LobesInvivoRabbit/LobesInvivoRabbit.zip",
+      "model_name": "LobesInvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 6,
+      "fold": 2
+    }
+  },
+  "Exvivo": {
+    "ParenchymaAirways": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/ParenchymaAirwaysExvivoRabbit/ParenchymaAirwaysExvivoRabbit.zip",
+      "model_name": "ParenchymaAirwaysExvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 2,
+      "fold": 4
+    },
+    "Airways": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/AirwaysExvivoRabbit/AirwaysExvivoRabbit.zip",
+      "model_name": "AirwaysExvivoRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 1,
+      "fold": 3
+    }
+  },
+  "Axial": {
+    "All": {
+      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/AllAxialRabbit/AllAxialRabbit.zip",
+      "model_name": "AllAxialRabbit",
+      "model_id": "001",
+      "configuration": "3d_fullres",
+      "num_classes": 3,
+      "fold": 2
+    }
+  }
+}
+
+
