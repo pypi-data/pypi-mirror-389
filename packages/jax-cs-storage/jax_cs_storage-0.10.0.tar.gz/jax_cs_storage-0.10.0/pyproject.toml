@@ -1,0 +1,72 @@
+[tool.poetry]
+name = "jax-cs-storage"
+version = "0.10.0"
+description = "A python wrapper to make file backends seamless"
+license = "Apache-2.0"
+authors = ["Alexander Berger <Alexander.Berger@jax.org>"]
+readme = "README.md"
+repository = "https://bitbucket.org/jacksonlaboratory/jax-cs-storage/"
+packages = [{ include = "jax/cs/storage", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.20"
+pydantic = "^2.5.1"
+pydantic-settings = "^2.1.0"
+importlib-metadata = {version = "^1.0", python = "<3.8"}
+google-cloud-storage = "^2.5.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pytest-cov = "^3.0.0"
+requests = "^2.20"
+toml = "^0.10.2"
+GitPython = "^3.1.26"
+pydocstyle = "^6.1.1"
+bandit = "^1.7.1"
+liccheck = "^0.6.5"
+flake8 = "^5.0.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# PyDocStyle
+[tool.pydocstyle]
+inherit = false
+match = '(?!service).*\.py'
+match_dir = '[^(future)].*'
+
+# Dependency License Checking with `liccheck`
+[tool.liccheck]
+authorized_licenses = [
+  "MIT",
+  "MIT LICENSE",
+  "BSD",
+  "BSD 2",
+  "BSD 3",
+  "Apache Software",
+  "Python Software Foundation",
+  "Python Imaging Library Software",
+  "Mozilla Public License 2.0 (MPL 2.0)"
+]
+
+unauthorized_licenses = [
+  "GPL V3",
+  "GPL V2",
+  "GPL V1",
+  "GPLv3",
+  "GPLv2",
+  "GPLv1",
+  "PostgreSQL",
+  "X11",
+  "Microsoft Limited Public",
+  "Microsoft Limited Public License",
+  "ASL",
+  "Amazon Software",
+  "Amazon Software License",
+  "RSAL",
+  "Redis Source Available",
+  "Redis Source Available License",
+  "Redis Source Available License (RSAL)",
+]
