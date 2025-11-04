@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "dataset_load"
+version = "2025.0.2.0"
+description = "Custom package with many functionalities"
+authors = ["Ananya"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "my_krml_25763727", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.2"
+requests = "^2.31.0"
+
+[tool.poetry.urls]
+Homepage = "https://github.com/An-nay/custom_package"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
