@@ -1,0 +1,53 @@
+#########################
+# Project Configuration #
+#########################
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hdx-python-database"
+description = "HDX Python database utilities"
+authors = [{name = "Michael Rans", email = "rans@email.com"}]
+license = {text = "MIT"}
+keywords = ["HDX", "database", "postgresql"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    "sqlalchemy>=2",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://github.com/OCHA-DAP/hdx-python-database"
+
+[project.optional-dependencies]
+sshtunnel = ["sshtunnel"]
+postgresql = ["psycopg[binary]"]
+test = ["sshtunnel", "psycopg[binary]", "pytest", "pytest-cov"]
+dev = ["pre-commit"]
+docs = ["mkapi"]
