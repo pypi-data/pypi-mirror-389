@@ -1,0 +1,44 @@
+from collections.abc import Callable
+from typing import Any, Protocol, runtime_checkable
+
+from sqlalchemy.engine import Connection, Engine
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
+from sqlalchemy.orm import ColumnProperty, InstrumentedAttribute, RelationshipProperty
+from sqlalchemy.sql.expression import Select
+from starlette.requests import Request
+
+MODEL_PROPERTY = ColumnProperty | RelationshipProperty
+ENGINE_TYPE = Engine | AsyncEngine | Connection | AsyncConnection
+ASYNC_ENGINE_TYPE = AsyncEngine | AsyncConnection
+MODEL_ATTR = str | InstrumentedAttribute
+
+
+@runtime_checkable
+class ColumnFilter(Protocol):
+    column: str
+
+    async def lookups(self, request: Request, run_query: Callable[[Select], Any]) -> list[tuple[str, bool, str]]: ...
+
+    async def get_filtered_query(self, query: Select, value: Any) -> Select: ...
+
+    def get_query_values(self, request): ...
+
+    def has_parameter(self, request) -> bool: ...
+
+    @property
+    def parameter_name(self) -> str: ...
+
+    @property
+    def title(self) -> str: ...
+
+    @property
+    def has_multiple_choice(self) -> str: ...
+
+
+@runtime_checkable
+class AdminAction(Protocol):
+    _action: bool
+    _title: str
+    _has_confirmation: bool
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...

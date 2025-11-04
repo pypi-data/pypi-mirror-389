@@ -1,0 +1,152 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fastdaisy-admin"
+description = "Admin for FastAPI and Starlette"
+license = "MIT"
+readme = "README.md"
+keywords = ["sqlalchemy", "fastapi", "starlette", "admin","daisyui"]
+authors = [
+    { name = "Bhuwan Pandey", email = "bhuwan.pandu12345@gmail.com" },
+]
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Environment :: Web Environment",
+    "Topic :: Internet :: WWW/HTTP",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+]
+dependencies = [
+    "bcrypt>=5.0.0",
+    "itsdangerous>=2.2.0",
+    "jinja2>=3.1.6",
+    "python-multipart>=0.0.20",
+    "sqlalchemy>=2.0.43",
+    "starlette>=0.47.3",
+    "typer>=0.19.2",
+    "wtforms>=3.2.1",
+]
+requires-python = ">=3.10"
+
+[project.urls]
+Source = "https://github.com/BhuwanPandey/fastdaisy-admin"
+"Bug Tracker" = "https://github.com/BhuwanPandey/fastdaisy-admin/issues"
+PyPI = "https://pypi.org/project/fastdaisy-admin"
+
+[tool.hatch.version]
+path = "fastdaisy_admin/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+[tool.hatch.build.targets.sdist]
+include = [
+    "/fastdaisy_admin",
+]
+
+[tool.hatch.build]
+exclude = [
+    "tests/*",
+]
+
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.21.0",
+    "arrow>=1.4.0",
+    "asyncpg>=0.30.0",
+    "babel>=2.17.0",
+    "beautifulsoup4>=4.13.5",
+    "colour>=0.1.5",
+    "coverage>=7.10.7",
+    "fastapi-storages>=0.3.0",
+    "httpx>=0.28.1",
+    "mypy>=1.18.1",
+    "phonenumbers>=9.0.17",
+    "psycopg2>=2.9.11",
+    "pytest>=8.4.2",
+    "ruff>=0.13.0",
+    "sqlalchemy-utils>=0.42.0",
+    "sqlmodel>=0.0.27",
+    "uvicorn>=0.35.0",
+]
+
+[project.scripts]
+fastdaisy-admin = "fastdaisy_admin.auth.command:app"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "aiosqlite>=0.21.0",
+    "arrow>=1.4.0",
+    "asyncpg>=0.30.0",
+    "babel>=2.17.0",
+    "beautifulsoup4>=4.13.5",
+    "colour>=0.1.5",
+    "coverage>=7.10.7",
+    "fastapi-storages>=0.3.0",
+    "httpx>=0.28.1",
+    "mypy>=1.18.1",
+    "phonenumbers>=9.0.17",
+    "psycopg2>=2.9.11",
+    "pytest>=8.4.2",
+    "ruff>=0.13.0",
+    "sqlalchemy-utils>=0.42.0",
+    "sqlmodel>=0.0.27"
+]
+
+[tool.hatch.envs.test.scripts]
+test = "coverage run -m pytest -q --tb=short"
+
+report = [
+    "coverage report",
+    "coverage xml"
+]
+
+[tool.coverage.run]
+concurrency = ["thread"]
+source = ["fastdaisy_admin", "tests"]
+
+[tool.coverage.report]
+fail_under = 91
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "except NotImplementedError",
+    "except ImportError"
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+include = ["fastdaisy_admin/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+select = ["F", "I", "UP", "T20", "B039"]
+fixable = ["ALL"]
+ignore = [
+    "F841",  # remove unused variables
+    "UP047"
+
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+files = ["fastdaisy_admin"]
+ignore_missing_imports = true
+skip_cache_mtime_checks = true
+

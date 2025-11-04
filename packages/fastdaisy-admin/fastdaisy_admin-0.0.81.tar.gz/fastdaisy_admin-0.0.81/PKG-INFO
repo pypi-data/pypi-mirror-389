@@ -1,0 +1,208 @@
+Metadata-Version: 2.4
+Name: fastdaisy-admin
+Version: 0.0.81
+Summary: Admin for FastAPI and Starlette
+Project-URL: Source, https://github.com/BhuwanPandey/fastdaisy-admin
+Project-URL: Bug Tracker, https://github.com/BhuwanPandey/fastdaisy-admin/issues
+Project-URL: PyPI, https://pypi.org/project/fastdaisy-admin
+Author-email: Bhuwan Pandey <bhuwan.pandu12345@gmail.com>
+License-Expression: MIT
+License-File: LICENSE.md
+Keywords: admin,daisyui,fastapi,sqlalchemy,starlette
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Framework :: FastAPI
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Internet :: WWW/HTTP
+Requires-Python: >=3.10
+Requires-Dist: bcrypt>=5.0.0
+Requires-Dist: itsdangerous>=2.2.0
+Requires-Dist: jinja2>=3.1.6
+Requires-Dist: python-multipart>=0.0.20
+Requires-Dist: sqlalchemy>=2.0.43
+Requires-Dist: starlette>=0.47.3
+Requires-Dist: typer>=0.19.2
+Requires-Dist: wtforms>=3.2.1
+Description-Content-Type: text/markdown
+
+<h1 align="center">
+  Daisy Admin for Starlette/FastAPI
+</h1>
+
+---
+
+
+**Documentation**: [https://docs.bhuwanpandey.com.np](https://docs.bhuwanpandey.com.np)
+
+**Source Code**: [https://github.com/BhuwanPandey/fastdaisy-admin](https://github.com/BhuwanPandey/fastdaisy-admin)
+
+
+---
+
+Fastdaisy-admin is an admin panel with DaisyUI for managing SQLAlchemy models. It offers a dashboard experience similar to `Django Admin` and combining the design of [**django-daisy**](https://hypy13.github.io/django-daisy-docs) with the same functionality of [**Sqladmin**](https://github.com/aminalaee/sqladmin).
+
+
+## Features
+
+- [**SQLAlchemy**](https://github.com/sqlalchemy/sqlalchemy) sync/async Core Database ORM
+
+- [**Starlette**](https://github.com/Kludex/starlette) sync/async Backend Server
+
+- [**WTForms**](https://github.com/pallets-eco/wtforms) Form Building
+
+- [**SQLModel**](https://github.com/fastapi/sqlmodel) sync/async Database ORM
+
+- [**DaisyUI**](https://github.com/saadeghi/daisyui) Admin UI
+
+- **Django-Admin** Similar Features
+
+
+
+## Installation
+
+Install using `pip`:
+
+```bash
+pip install fastdaisy-admin
+```
+
+Install using [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv add fastdaisy-admin
+```
+
+## Quickstart
+
+
+```python
+import contextlib
+from sqlalchemy import Column, Integer, String, Text, create_engine, ForeignKey
+from sqlalchemy.orm import declarative_base,relationship,sessionmaker
+
+
+Base = declarative_base()
+engine = create_engine(
+    "sqlite:///example.db",
+    connect_args={"check_same_thread": False},
+)
+Session = sessionmaker(bind=engine)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    books = relationship("Book", back_populates="author", cascade="all, delete-orphan")
+
+
+class Book(Base):
+    __tablename__ = 'books'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    description = Column(Text)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship("User", back_populates="books")
+
+
+@contextlib.asynccontextmanager
+async def lifespan(app):
+    Base.metadata.create_all(engine) # create teables 
+    yield
+
+secret_key="secret_key"
+
+```
+
+With `FastAPI`:
+
+```python
+from fastapi import FastAPI
+from fastdaisy_admin import Admin, ModelView
+
+
+app = FastAPI(lifespan=lifespan)
+admin = Admin(
+    app, 
+    secret_key, 
+    engine
+)
+
+
+class UserAdmin(ModelView):
+    model=User
+    column_list = [User.id, User.name]
+
+
+admin.add_view(UserAdmin)
+```
+
+With `Starlette`:
+
+```python
+from fastdaisy_admin import Admin, ModelView
+from starlette.applications import Starlette
+
+
+app = Starlette(lifespan=lifespan)
+admin = Admin(
+    app, 
+    secret_key, 
+    engine
+)
+
+
+class BookAdmin(ModelView):
+    model=Book
+    column_list = ['id', Book.title]
+
+
+admin.add_view(BookAdmin)
+```
+
+Now visiting `/admin` on your browser you can see the `Admin` dashboard.
+
+
+### To active authentication
+```python
+from fastdaisy_admin.auth.models import BaseUser
+
+#override BaseUser [optional]
+class User(Base, BaseUser):
+    __tablename__ = "users"
+    books = relationship("Book", back_populates="author", cascade="all, delete-orphan")
+
+class Book(Base):
+    __tablename__ = 'books'
+    ...
+
+admin = Admin(
+    app, 
+    secret_key, 
+    engine,
+    authentication=True,
+    auth_model=User
+)
+
+```
+
+### create superuser with
+```bash
+
+fastdaisy-admin createsuperuser
+```
+
+
+> [!WARNING]
+> 
+> This project is still under active development.  
+> Current test coverage is around **91%**, and work is ongoing to reach **100%**.
