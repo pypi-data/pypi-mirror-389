@@ -1,0 +1,357 @@
+Metadata-Version: 2.1
+Name: ms-mint-app
+Version: 1.1.2
+Summary: Metabolomics Integrator Interactive Web-Application (Mint)
+Author-email: Soren Wacker <swacker@ucalgary.ca>
+Maintainer-email: Soren Wacker <swacker@ucalgary.ca>
+License: Version 2.0, January 2004
+                                http://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright [2022] [Lewis Research Group]
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               http://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
+        
+Project-URL: Homepage, https://github.com/LewisResearchGroup/ms-mint-app
+Project-URL: Documentation, https://lewisresearchgroup.github.io/ms-mint-app/
+Project-URL: Repository, https://github.com/LewisResearchGroup/ms-mint-app.git
+Project-URL: Bug Tracker, https://github.com/LewisResearchGroup/ms-mint-app/issues
+Keywords: metabolomics,integrator,mint
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ms-mint >=1.1.1
+Requires-Dist: xlsxwriter
+Requires-Dist: waitress
+Requires-Dist: dash
+Requires-Dist: dash[diskcache]
+Requires-Dist: dash-extensions
+Requires-Dist: dash-bootstrap-components
+Requires-Dist: flask-login
+Requires-Dist: flask-migrate
+Requires-Dist: flask-wtf
+Requires-Dist: urllib3
+Requires-Dist: dash-tabulator
+Requires-Dist: dash-uploader ==0.7.0a1
+Requires-Dist: beautifulsoup4
+Requires-Dist: dask[diskcache]
+Requires-Dist: h5py
+Requires-Dist: hdf5plugin
+Requires-Dist: werkzeug ==3.0.6
+Requires-Dist: packaging ==21.3.0
+Requires-Dist: email-validator
+
+[![Python package](https://github.com/LewisResearchGroup/ms-mint-app/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/LewisResearchGroup/ms-mint-app/actions/workflows/pythonpackage.yml)
+[![CodeQL](https://github.com/LewisResearchGroup/ms-mint-app/actions/workflows/codeql.yml/badge.svg)](https://github.com/LewisResearchGroup/ms-mint-app/actions/workflows/codeql.yml)
+[![Docker Image CI](https://github.com/LewisResearchGroup/ms-mint-app/actions/workflows/docker-image.yml/badge.svg)](https://github.com/LewisResearchGroup/ms-mint-app/actions/workflows/docker-image.yml)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5178/badge)](https://bestpractices.coreinfrastructure.org/projects/5178)
+![PyPI](https://img.shields.io/pypi/v/ms-mint-app?label=pypi%20package)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/ms-mint-app)
+[![DOI](https://zenodo.org/badge/491654035.svg)](https://zenodo.org/doi/10.5281/zenodo.13121148)
+
+![](docs/image/MINT-logo.jpg)
+ 
+# MINT (Metabolomics Integrator)
+
+The Metabolomics Integrator (MINT) is a web-based post-processing tool for liquid chromatography-mass spectrometry (LC-MS) based metabolomics. MINT enables researchers to extract, visualize, and analyze targeted metabolomics data with an intuitive browser-based interface.
+
+## Overview
+
+Metabolomics is the comprehensive study of small molecule metabolites in biological samples, such as bacterial cultures or human blood. These metabolites serve as critical biomarkers for:
+- Disease diagnostics and treatment development
+- Pathogen identification (e.g., methicillin-resistant _Staphylococcus aureus_ [MRSA])
+- Drug discovery and pharmacology
+- Environmental and agricultural research
+
+MINT streamlines the processing of LC-MS data by providing:
+- **Targeted peak extraction** with automated and manual retention time optimization
+- **Interactive visualizations** including heatmaps, PCA, and hierarchical clustering
+- **Quality control tools** for assessing data integrity
+- **Flexible data export** for downstream statistical analysis
+- **Plugin architecture** for extending functionality
+
+## Getting Started
+
+- **[Installation Guide](https://lewisresearchgroup.github.io/ms-mint-app/install/)** - Install MINT via pip, conda, Docker, or Windows installer
+- **[Quickstart Tutorial](https://lewisresearchgroup.github.io/ms-mint-app/quickstart/)** - Step-by-step guide with demo data
+- **[Demo Data](https://drive.google.com/drive/folders/1U4xMy5lfETk93sSVXPI79cCWyIMcAjeZ?usp=drive_link)** - Download test data with sample LC-MS files and target lists
+- **[Full Documentation](https://lewisresearchgroup.github.io/ms-mint-app/)** - Comprehensive user guide and reference
+
+![Screenshot](https://lewisresearchgroup.github.io/ms-mint-app/image/hierarchical-clustering.png)
+
+## Key Features
+
+### Data Processing
+- Import LC-MS data in mzML and mzXML formats
+- Define targeted extraction protocols with customizable m/z and retention time windows
+- Automated peak detection and retention time optimization
+- Batch processing for large datasets
+
+### Interactive Analysis
+- Real-time peak shape visualization and quality assessment
+- Principal Component Analysis (PCA) for dimensionality reduction
+- Hierarchical clustering with dendrograms
+- Customizable heatmaps with correlation analysis
+- Statistical visualizations (box plots, violin plots, distributions)
+
+### Quality Control
+- Mass accuracy (m/z drift) monitoring
+- Peak shape evaluation across samples
+- Sample type categorization (biological, QC, standards)
+- Batch effect visualization
+
+### Data Management
+- Workspace-based project organization
+- Comprehensive metadata integration
+- Multiple export formats (CSV, Excel)
+- Support for large-scale studies
+
+## Publications Using MINT
+
+1. Brown K, Thomson CA, Wacker S, et al. [Microbiota alters the metabolome in an age- and sex-dependent manner in mice.](https://pubmed.ncbi.nlm.nih.gov/36906623/) *Nat Commun.* 2023;14:1348.
+
+2. Ponce LF, Bishop SL, Wacker S, Groves RA, Lewis IA. [SCALiR: A Web Application for Automating Absolute Quantification of Mass Spectrometry-Based Metabolomics Data.](https://pubs.acs.org/doi/10.1021/acs.analchem.3c04988) *Anal Chem.* 2024;96:6566–6574.
+
+## Related Software
+
+MINT is developed by the [Lewis Research Group](https://www.lewisresearchgroup.org/). For other metabolomics and computational biology tools, visit [lewisresearchgroup.org/software](https://www.lewisresearchgroup.org/software).
+
+## Development Environment
+
+This project uses the `ms-mint` conda environment. For development and contributing, please refer to the [Installation Guide](https://lewisresearchgroup.github.io/ms-mint-app/install/) for setting up the conda environment.
+
+## Contributing
+
+We welcome contributions of all kinds! Whether you're reporting bugs, suggesting features, improving documentation, or contributing code, your help makes MINT better for everyone.
+
+- **Report Issues**: [GitHub Issues](https://github.com/LewisResearchGroup/ms-mint-app/issues)
+- **Contribution Guidelines**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and workflow
+- **Code Standards**: This project follows PEP 8 and uses Black and Flake8 for code formatting
+
+## Citation
+
+If you use MINT in your research, please cite:
+
+[![DOI](https://zenodo.org/badge/491654035.svg)](https://zenodo.org/doi/10.5281/zenodo.13121148)
+
+Each release is assigned a DOI for proper citation. Visit the DOI link above for version-specific citations.
+
+## Acknowledgements
+
+MINT is built on the shoulders of the open-source community. We are grateful for:
+
+- The Python scientific computing ecosystem (NumPy, Pandas, SciPy, Scikit-learn)
+- [Plotly Dash](https://dash.plotly.com/) for the interactive web framework
+- GitHub, Docker Hub, and PyPI for hosting and distribution
+- The [Plotly Community](https://community.plotly.com/) and [Stack Overflow](https://stackoverflow.com) for invaluable support
+
+**Special thanks to contributors:**
+- [@rokm](https://github.com/rokm) - Refactored PyInstaller spec for Windows packaging
+- [@bucknerns](https://github.com/bucknerns) - Versioneer configuration
+
+We also thank all users and early adopters whose feedback and bug reports drive continuous improvement.
+
+## License
+
+MINT is licensed under the [Apache License 2.0](LICENSE).
+
