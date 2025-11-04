@@ -1,0 +1,32 @@
+[project]
+name = "aioadmin"
+version = "0.0.1"
+description = "Admin panel for aiogram"
+readme = "README.md"
+authors = [
+    { name = "AliakseiYafremau", email = "aleksey.yafremau@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "aiogram==3.22.0",
+    "aiogram-dialog>=2.4.0",
+    "sqlalchemy==2.0.44",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+test = [
+    "aiosqlite==0.21.0",
+    "faker==37.11.0",
+    "pytest==8.4.2",
+    "pytest-asyncio==1.2.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
