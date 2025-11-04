@@ -1,0 +1,50 @@
+Metadata-Version: 2.4
+Name: zapf
+Version: 0.4.17
+Summary: Client library for the PILS specification
+Author-email: Georg Brandl <g.brandl@fz-juelich.de>, Enrico Faulhaber <enrico.faulhaber@frm2.tum.de>
+License: GPL-2.0-or-later
+Project-URL: Repository, https://forge.frm2.tum.de/review/plugins/gitiles/mlz/pils/zapf
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Human Machine Interfaces
+Requires-Python: >=3.9
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: numpy
+Provides-Extra: tango
+Requires-Dist: pytango>=9.3; extra == "tango"
+Dynamic: license-file
+
+PILS? Zapf it!
+==============
+
+This is a client library for the PILS PLC interface specification,
+found here: https://forge.frm2.tum.de/public/doc/plc/master/html/
+
+A minimal example of usage::
+
+    import logging
+    import zapf.scan
+
+    # Connection via different protocols is abstracted via URIs.
+    # Here we connect via Modbus/TCP using slave number 0.
+    URI = 'modbus://my.plc.host:502/0'
+
+    # The Scanner allows reading the PLC's "indexer" which provides
+    # all metadata about the PLC and its devices.
+    scanner = zapf.scan.Scanner(URI, logging.root)
+    plc_data = scanner.get_plc_data()
+    print('connected to PLC:', plc_data.plc_name)
+
+    # For each found device, this will create a client object and
+    # read the most basic property - the current value.
+    for dev in scanner.scan_devices():
+        print('got a device:', dev)
+        print('device value:', device.read_value())

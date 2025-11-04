@@ -1,0 +1,368 @@
+python-zapf (0.4.17) stable; urgency=medium
+
+  * code style fixes
+  * remove coding cookies
+  * fixup for new pylint warnings
+  * testplc: fixup description
+  * move packaging to pyproject
+  * configure and apply ruff checking
+  * fix license for older setuptools
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Tue, 04 Nov 2025 10:30:03 +0100
+
+python-zapf (0.4.16) stable; urgency=medium
+
+  [ Georg Brandl ]
+  * debian: update compat
+
+  [ Enrico Faulhaber ]
+  * add minimal support for deprecated v2014.07
+
+  [ Georg Brandl ]
+  * requires numpy now
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Tue, 13 May 2025 15:03:36 +0200
+
+python-zapf (0.4.15) stable; urgency=medium
+
+  * fixup comment
+  * ADS: on missing NetID, query TwinCAT
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Thu, 12 Sep 2024 13:09:08 +0200
+
+python-zapf (0.4.14) stable; urgency=medium
+
+  * fixup float typed limits for discrete devices
+
+ -- Enrico Faulhaber <jenkins@frm2.tum.de>  Wed, 31 Jul 2024 15:34:48 +0200
+
+python-zapf (0.4.13) stable; urgency=medium
+
+  * UNRELEASED
+
+ -- Enrico Faulhaber <jenkins@frm2.tum.de>  Wed, 10 Jul 2024 16:17:51 +0200
+
+python-zapf (0.4.12) stable; urgency=medium
+
+  [ Enrico Faulhaber ]
+  * fix float32 reads in read_fmt
+
+  [ Georg Brandl ]
+  * device: fix for param-state machine in reset (== 0)
+  * util: add a proper repr() to BitFields
+
+ -- Enrico Faulhaber <jenkins@frm2.tum.de>  Fri, 05 Jul 2024 11:40:40 +0200
+
+python-zapf (0.4.11) stable; urgency=medium
+
+  * Reduce precision of f32 reads
+
+ -- Alexander Zaft <jenkins@frm2.tum.de>  Thu, 23 May 2024 15:04:52 +0200
+
+python-zapf (0.4.10) stable; urgency=medium
+
+  [ Alexander Zaft ]
+  * ads/modbus: add connection timeout
+
+  [ Enrico Faulhaber ]
+  * fix table access context manager for single row tables
+
+ -- Alexander Zaft <jenkins@frm2.tum.de>  Thu, 23 May 2024 12:47:11 +0200
+
+python-zapf (0.4.9) stable; urgency=medium
+
+  * UNRELEASED
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Thu, 30 Nov 2023 14:12:35 +0100
+
+python-zapf (0.4.8) stable; urgency=medium
+
+  [ Georg Brandl ]
+  * all: address pylint
+
+  [ Enrico Faulhaber ]
+  * sanitize limits/enums for (u)int/enum typed devices
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Thu, 30 Nov 2023 14:02:19 +0100
+
+python-zapf (0.4.7) stable; urgency=medium
+
+  [ Georg Brandl ]
+  * scan: add sim:// to valid addresses
+  * io: add disconnect() API
+
+  [ Enrico Faulhaber ]
+  * spec 2021: access is also ro if no target field
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Mon, 03 Jul 2023 18:13:44 +0200
+
+python-zapf (0.4.6) stable; urgency=medium
+
+  * io: fix missing locked access to proto
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Wed, 21 Jun 2023 09:34:30 +0200
+
+python-zapf (0.4.5) stable; urgency=medium
+
+  * adapt to minor spec clarification
+
+ -- Enrico Faulhaber <jenkins@frm2.tum.de>  Wed, 17 May 2023 16:25:01 +0200
+
+python-zapf (0.4.4) stable; urgency=medium
+
+  * fix up limits
+
+ -- Enrico Faulhaber <jenkins@frm2.tum.de>  Wed, 25 Jan 2023 08:57:55 +0100
+
+python-zapf (0.4.3) stable; urgency=medium
+
+  * debian: add missing dependency of setuptools_scm
+
+ -- Georg Brandl <jenkins@jenkins02.admin.frm2.tum.de>  Thu, 19 May 2022 18:41:00 +0200
+
+python-zapf (0.4.2) stable; urgency=medium
+
+  * switch to pyproject.toml/setup.cfg based build
+
+ -- Georg Brandl <jenkins@frm2.tum.de>  Thu, 12 May 2022 13:50:28 +0200
+
+python-zapf (0.4.1) stable; urgency=medium
+
+  * fix bug in reset()
+  * invalidate cache_range in case connection drops
+
+ -- Enrico Faulhaber <jenkins@jenkins01.admin.frm2.tum.de>  Wed, 20 Apr 2022 14:18:41 +0200
+
+python-zapf (0.4.0) stable; urgency=medium
+
+  [ Georg Brandl ]
+  * doc: add master_doc for older Sphinx
+  * Implement reset() for Device
+  * device: implement MessageIO
+
+  [ Enrico Faulhaber ]
+  * remove unused device number
+  * minor fix
+  * impl. typecode 1e04
+  * implement support for descriptors
+  * improve logging for skipped devices
+  * add length field to debug descriptor
+  * cache unrequested descriptors
+  * doc: fix renames from previous patches
+  * move decode_bitfield to spec as it is used in all magics
+  * make error msg from debug descriptor accessible
+  * set_param should not raise
+  * minor fixes
+
+  [ Georg Brandl ]
+  * minor style fixes
+
+  [ Enrico Faulhaber ]
+  * ensure size of DevicesLayout is correct
+  * test table access also for all rows/columns
+  * tests: remove devices with 8 params/values
+  * testplc: separate device structs
+  * minor tweaks and fixes found during pluto test
+
+  [ Georg Brandl ]
+  * testplc: fix MessageIO data lengths and typecodes
+  * simulator: fixup NumProxy to support operations from right side
+  * all: clarify naming ptype -> ptype, subtype, type_info
+  * all: various API changes/fixes made during Pluto upgrade
+
+  [ Enrico Faulhaber ]
+  * fix encode_unit()
+  * add "bit"+"steps" unit
+
+  [ Georg Brandl ]
+  * refactor ptype/type_info stuff
+  * v_2021_09: work on descriptor classes
+  * move table access stuff to its own object
+
+  [ Enrico Faulhaber ]
+  * add valuestore for for params numbits & microstep
+
+  [ Georg Brandl ]
+  * indexer: refactor descriptor query methods
+  * include description in value_info
+  * device: provide raw and not-raw API for params
+
+  [ Enrico Faulhaber ]
+  * messagio: use DevStatus constants
+
+  [ Georg Brandl ]
+  * change debug descriptor length field to indexer size
+
+  [ Enrico Faulhaber ]
+  * testplc: fix table 1d access
+  * make testplc_2021_09 work with 48 byte slots
+  * testplc: add another useful bitfield case to aux
+  * tables may contain enums too
+
+  [ Georg Brandl ]
+  * disallow tables on 16-bit devices
+  * add table _raw APIs, check all limits in non-raw, remove get_limits()
+  * remove irrelevant assert
+
+  [ Enrico Faulhaber ]
+  * check table header chain
+  * improve testplc add_EnumParam
+
+  [ Georg Brandl ]
+  * fix "empty string" descriptors
+  * dont resolve when caching other descrs in set
+
+  [ Enrico Faulhaber ]
+  * fix decode_unit
+
+  [ Georg Brandl ]
+  * testplc: test case without device description
+  * all: replace %-formatting by f-strings
+
+  [ Enrico Faulhaber ]
+  * testplc: add testcase for missing main param descriptor
+  * scanner: skip (older) devices with same name
+
+  [ Georg Brandl ]
+  * all: isort
+  * debian: fix email addresses in changelog
+  * for all descriptor-related errors, include descriptor ID and type
+  * add a few more ADS error codes
+  * fix Tango "invalid address" error message
+  * modbus: split long reads over multiple modbus requests
+  * v2015_02: fix handling of legacy params/funcs
+  * ads: use nodelay, fix conditions for retry-with-route
+  * add a standalone simulator tool
+  * ADS: make packet receiving robust against unwanted packets
+  * add small script to scan a PLC and wait for updates
+  * ads: fix address RE
+  * simulator: update ADS to changes in proto
+  * ads: check for errors before return length
+
+  [ Enrico Faulhaber ]
+  * tables: support contextmanager
+  * rework paramctrlif methods
+
+  [ Georg Brandl ]
+  * all: isort
+
+ -- Georg Brandl <jenkins@jenkins02.admin.frm2.tum.de>  Wed, 13 Apr 2022 17:35:06 +0200
+
+python-zapf (0.3.0) stable; urgency=medium
+
+  [ Enrico Faulhaber ]
+  * device.py: fix read_status / read_extended_status
+
+  [ Georg Brandl ]
+  * First part of the documentation.
+  * device: only provide one method for reading status
+  * add logo for docs
+
+ -- Enrico Faulhaber <jenkins@jenkins02.admin.frm2.tum.de>  Fri, 11 Jun 2021 16:35:49 +0200
+
+python-zapf (0.2.1) stable; urgency=medium
+
+  * setup: do not install "test"
+
+ -- Georg Brandl <jenkins@jenkins02.admin.frm2.tum.de>  Tue, 08 Jun 2021 14:52:36 +0200
+
+python-zapf (0.2.0) stable; urgency=medium
+
+  [ Georg Brandl ]
+  * simulator: speed up memory allocation search
+  * simulator: fix numproxy methods, add some missing ones
+  * testplc: clean up code a little
+
+  [ Enrico Faulhaber ]
+  * tests: add first individual device tests
+
+  [ Georg Brandl ]
+  * simulator: better error messages for partial struct writes
+  * plcio: add missing read_u64* methods
+  * version.py: fix pylint complaint
+  * simulator: allow partial write of struct elements
+
+  [ Enrico Faulhaber ]
+  * testplc: implement param interface
+
+  [ Georg Brandl ]
+  * style fixups
+
+  [ Enrico Faulhaber ]
+  * adapt parameter names to spec
+
+ -- Georg Brandl <jenkins@jenkins01.admin.frm2.tum.de>  Thu, 27 May 2021 15:50:26 +0200
+
+python-zapf (0.1.2) stable; urgency=medium
+
+  [ Georg Brandl ]
+  * modbus: allow not specifying slave number
+  * device: prettify device names a bit
+  * sim proto: log errors in PLC impl and do not abort communication thread
+  * simulator: avoid heap overflow into MB area
+  * sim proto: reduce cycle time
+  * simulator: more debug info for failed writes
+
+  [ Enrico Faulhaber ]
+  * fillup testplc with devices of all kind
+
+  [ Georg Brandl ]
+  * indexer: better attribute names
+
+ -- Georg Brandl <jenkins@jenkins01.admin.frm2.tum.de>  Tue, 27 Apr 2021 18:54:06 +0200
+
+python-zapf (0.1.1) stable; urgency=medium
+
+  * setup.py: fix license and version classifiers
+  * proto: add a callback for connection events
+  * indexer: size >= 22 is guaranteed
+  * indexer: implement number of devices from plc infostruct
+  * tango: support Profibus interface (i.e. Entangle iodev via zapf)
+  * scan: return a namedtuple from scanning, include devnumber
+  * device: allow changing status unconditionally
+  * device: fix setting target of status-less devices
+  * indexer: fix casing of error messages
+  * tango: make PyTango optional
+  * io: add a callback for cache updates
+  * device: make some par-ctrl functions public and unify parameter mapping
+  * device: add "value_fmt" for all devices
+  * move simulator to main package, add protocol
+  * avoid manually calculating sizes/addresses by giving more info in the device table
+  * spec: reason strings for handling REASON like a bitfield
+  * all: isort
+  * proto: do not log connection errors separately
+  * proto: make a full "disconnect" when connection breaks
+  * device: add a function to give a concise typecode description
+  * io: expand cache API
+
+ -- Georg Brandl <jenkins@jenkins01.admin.frm2.tum.de>  Mon, 26 Apr 2021 15:20:50 +0200
+
+python-zapf (0.1.0) stable; urgency=medium
+
+  * bump PyTango requirement
+  * fix/address pylint issues
+  * run isort
+  * simulator: add lword and lreal
+  * debian: add build files
+  * io: add missing write methods
+  * pylint: enable inconsistent-return-statements
+  * fix a bug in the cache impl
+  * device: register cache range on init
+  * io: show byteorder/float after finding magic
+  * ads: allow nonstandard port, fix error translation
+  * fix a few typos
+  * device: add get_limits() API, change_target() needs to set status
+  * device: simplify discrete classes
+  * device: fix status size and param/device number
+  * device: always write target+status atomically
+  * device: fix reading and writing 32-bit statuses
+  * device: implement 64-bit vector devices
+  * ads: fall back to adding a route if connection is closed
+
+ -- Georg Brandl <jenkins@jenkins02.admin.frm2.tum.de>  Fri, 23 Apr 2021 13:05:22 +0200
+
+python-zapf (0.0.0) unstable; urgency=low
+
+  [ Jenkins ]
+
+ -- Jenkins <jenkins@debuild.taco.frm2.tum.de>  Tue, 20 Apr 2021 12:00:00 +0200
