@@ -1,0 +1,131 @@
+[build-system]
+requires = [
+    "hatchling>=1.24.2",
+    "hatch-vcs>=0.4.0"
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "xpytools"
+dynamic = ["version"]
+description = "Python utilities for safe type handling, data manipulation, and runtime validation."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [
+    { name = "Kydoimos97", email = "willemvanderschans97+dev@gmail.com " }  # optional
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent"
+]
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://github.com/Kydoimos97/xpytools"
+"Author GitHub" = "https://github.com/Kydoimos97"
+"Author PyPI" = "https://pypi.org/user/Kydoimos97/"
+"PyPI" = "https://pypi.org/project/xpytools/"
+
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^v(?P<version>\\d+\\.\\d+\\.\\d+)$"
+
+[tool.hatch.build.targets.sdist]
+include = ["xpytools", "pyproject.toml", "README.md", "LICENSE", 'uv.lock']
+
+[tool.hatch.build.targets.wheel]
+packages = ["xpytools"]
+
+[dependency-groups]
+# Development dependencies for testing, linting, typing
+dev = [
+    "mypy>=1.18.2",
+    "mypy-boto3-s3>=1.40.61",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-sugar>=0.9.7",
+    "pytest-xdist>=3.3.0",
+    "ruff>=0.14.3",
+]
+
+mkdocs = [
+
+]
+
+# 🚀 All-in-one utility/data group (runtime helpers + analysis libs)
+all = [
+    # Data processing / analysis
+    "pandas>=2.3.3",
+    "numpy>=1.24.0",
+    "clean-text>=0.6.0",
+
+    # Imaging / text / file helpers
+    "pillow>=12.0.0",
+
+    # Tokenization / LLM utils
+    "tiktoken>=0.12.0",
+
+    # Core runtime deps
+    "requests>=2.32,<3.0",
+    "pydantic>=2.12.3",
+]
+
+[tool.pytest.ini_options]
+# -----------------------------
+# Test discovery and behavior
+# -----------------------------
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+    "--disable-warnings",
+    "-ra",
+    "-s"
+]
+
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests"
+]
+
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning"
+]
+
+import_mode = "importlib"
+
+[tool.coverage.run]
+source = ["xpytools"]
+omit = [
+    "tests/*",
+    "*/__init__.py"
+]
+
+[tool.coverage.report]
+omit = [
+    "tests/*",
+    "*/__init__.py"
+]
+show_missing = true
+skip_empty = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
