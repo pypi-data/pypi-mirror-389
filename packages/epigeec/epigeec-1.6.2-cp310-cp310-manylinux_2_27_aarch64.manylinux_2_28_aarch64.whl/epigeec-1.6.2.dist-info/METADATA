@@ -1,0 +1,29 @@
+Metadata-Version: 2.2
+Name: epigeec
+Version: 1.6.2
+Summary: Tools for fast NxN correlation of whole-genome epigenomic data.
+Author-email: Jonathan Laperle <jonathan.laperle@usherbrooke.ca>
+License: GPL-3.0-or-later
+Requires-Python: >=3.10
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: h5py
+Requires-Dist: future
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pyBigWig; extra == "test"
+Requires-Dist: pytest-json-ctrf; extra == "test"
+Provides-Extra: dev
+Requires-Dist: epigeec[test]; extra == "dev"
+
+============
+epiGeEC
+============
+
+The **epiGenomic Efficient Correlator** tool is designed to efficiently perform pairwise correlations of thousands of epigenomic datasets. It supports a growing number of file formats and offers the possibility to compute correlations at any resolution on custom or predefined filtered regions.
+
+A galaxy implementation including thousands of pre-computed public datasets is available at http://epigeec.genap.ca/galaxy/ and also includes support for the WIG format and Spearman correlation. It also offers tools for further annotation and analysis of the matrix files created by epiGeEC.
+
+For more information see the official repository for the epiGeEC tool at https://github.com/labjacquespe/epigeec. The previous BitBucket repository is still available but will only mirror.
