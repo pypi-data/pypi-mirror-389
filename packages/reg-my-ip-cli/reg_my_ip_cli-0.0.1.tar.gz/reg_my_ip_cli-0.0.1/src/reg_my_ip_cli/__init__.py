@@ -1,0 +1,1 @@
+from reg_my_ip_cli._module_reg_my_ip import exec
