@@ -1,0 +1,60 @@
+[project]
+name = "emblematic"
+version = "4.2.2rc1"
+description = "Generate emblems from an icon and a background"
+authors = [
+    {name = "Stefano Pigozzi", email = "me@steffo.eu"}
+]
+maintainers = [
+    {name = "Stefano Pigozzi", email = "me@steffo.eu"}
+]
+license = "EUPL-1.2"
+license-files = ["LICENSE.txt"]
+readme = "README.md"
+keywords = [
+    "icon",
+    "avatar",
+    "emblem",
+    "logo",
+    "symbol",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
+    "Topic :: Multimedia :: Graphics",
+    "Typing :: Typed",
+]
+
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "click (>=8.1.7,<9.0.0)",
+    "beautifulsoup4 (>=4.12.3,<5.0.0)",
+    "lxml (>=5.2.1,<7.0.0)",
+]
+
+[dependency-groups]
+docs = [
+    "Sphinx (>=8.2.3,<9.0.0)",
+    "sphinx-rtd-theme (>=3.0.2, <4.0.0)",
+]
+test = [
+    "pytest (>=8.4.2,<9.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)"
+]
+
+[project.scripts]
+emblematic = "emblematic.__main__:main"
+
+
+[project.urls]
+Source = "https://forge.steffo.eu/steffo/emblematic"
+Issues = "https://forge.steffo.eu/steffo/emblematic/issues"
+Documentation = "https://artifacts.steffo.eu/steffo/emblematic/"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
