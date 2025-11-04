@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "akscmd"
+version = "0.1.2"
+description = "Natural language → shell command using AI models, with optional <...> Enter interception"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [{ name="Amit Kumar Singh", email="aksmlibts@gmail.com" }]
+dependencies = ["requests>=2.32.3"]
+
+[project.scripts]
+akscmd = "akscmd.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["akscmd"]
