@@ -1,0 +1,199 @@
+# distillseq
+
+**Data distillation methods for genomic sequence-to-function models**
+
+`distillseq` provides state-of-the-art data distillation and dataset condensation methods specifically designed for genomic deep learning models. Reduce your training dataset size while maintaining model performance.
+
+## Features
+
+- 🧬 **Genomic-focused**: Designed for sequence-to-function models (Enformer, etc.)
+- 🎯 **Multiple methods**: Gradient matching, k-mer diversity, gLM diversity, model confidence diversity, and random sampling
+- 🧪 **Teacher distillation**: Self-distillation with soft labels from teacher models
+- ⚡ **Efficient**: Memory-optimized implementations for large genomic datasets
+- 🔧 **Flexible**: Works with any PyTorch dataset and model
+- 📊 **Tracking**: Optional Weights & Biases integration
+
+## Installation
+
+```bash
+pip install distillseq
+```
+
+For additional features:
+```bash
+# Install with genomic language model support
+pip install distillseq[glm]
+
+# Install with W&B tracking
+pip install distillseq[wandb]
+
+# Install all optional dependencies
+pip install distillseq[all]
+```
+
+## Quick Start
+
+```python
+from distillseq import GradientMatching
+import torch
+
+# Your model and dataset
+model = YourGenomicModel()
+dataset = YourGenomicDataset()
+
+# Distill to 10% of original size
+distiller = GradientMatching(
+    model=model,
+    dataset=dataset,
+    ratio=0.1,
+    device='cuda'
+)
+
+# Get distilled dataset
+distilled_dataset = distiller.distill()
+```
+
+## Methods
+
+### 1. Gradient Matching (Data Condensation)
+Creates synthetic sequences that match the gradient distributions of the full dataset.
+
+```python
+from distillseq import GradientMatching
+
+distiller = GradientMatching(
+    model=model,
+    dataset=full_dataset,
+    ratio=0.1,
+    iterations=1000,
+    batch_size=1024
+)
+synthetic_dataset = distiller.distill()
+```
+
+### 2. K-mer Diversity Sampling
+Maximizes sequence diversity using Jensen-Shannon Divergence on k-mer distributions.
+
+```python
+from distillseq import KmerDiversity
+
+distiller = KmerDiversity(
+    dataset=full_dataset,
+    ratio=0.1,
+    kmer_length=6,
+    n_cores=20
+)
+diverse_indices = distiller.distill()
+```
+
+### 3. gLM Diversity Sampling  
+Maximizes diversity using genomic language model (DNABERT-S) embeddings.
+
+```python
+from distillseq import GLMDiversity
+
+distiller = GLMDiversity(
+    dataset=full_dataset,
+    ratio=0.1,
+    model_name="zhihan1996/DNABERT-S",
+    n_clusters=10
+)
+diverse_indices = distiller.distill()
+```
+
+### 4. Model Confidence Diversity
+Stratified sampling across epistemic uncertainty levels using model ensemble or MC dropout.
+
+```python
+from distillseq import ModelConfidenceDiversity
+
+distiller = ModelConfidenceDiversity(
+    dataset=full_dataset,
+    model=trained_model,
+    ratio=0.1,
+    mc_dropout=10,  # Use MC dropout for uncertainty
+    n_bins=100
+)
+diverse_indices = distiller.distill()
+```
+
+### 5. Random Sampling
+Baseline method for comparison.
+
+```python
+from distillseq import RandomSampling
+
+distiller = RandomSampling(
+    dataset=full_dataset,
+    ratio=0.1,
+    seed=42
+)
+random_indices = distiller.distill()
+```
+
+## Teacher Distillation (Self-Distillation)
+
+Apply teacher model predictions to create soft labels **AFTER** distillation selects samples. This is much more efficient than pre-computing predictions for the entire dataset!
+
+```python
+from distillseq import apply_teacher_predictions, KmerDiversity
+
+# Step 1: Distill to select important samples first
+distiller = KmerDiversity(dataset=original_dataset, ratio=0.1)
+indices = distiller.distill()
+
+# Step 2: Apply teacher predictions ONLY to selected samples
+teacher_dataset = apply_teacher_predictions(
+    dataset=original_dataset,
+    indices=indices,
+    teacher_models=trained_model,  # Or [model1, model2, model3] for ensemble
+    device='cuda'
+)
+
+# Step 3: Train on distilled data with soft labels
+train_loader = DataLoader(teacher_dataset, batch_size=32)
+```
+
+**Key advantages:**
+- **Efficient**: Only compute predictions for selected samples (10-20x speedup typical)
+- **Ensemble support**: Automatically averages predictions from multiple teachers
+- **MC dropout**: Incorporate epistemic uncertainty
+- **Compatible**: Works with all 5 distillation methods
+
+See [Teacher Distillation Tutorial](docs/tutorials/teacher_distillation.py) for comprehensive examples.
+
+## Documentation
+
+### Tutorials
+
+- [Basic Usage Tutorial](docs/tutorials/basic_usage.py) - Getting started with distillation methods
+- [Teacher Distillation Tutorial](docs/tutorials/teacher_distillation.py) - Self-distillation with soft labels
+- [Basic Usage Notebook](docs/tutorials/basic_usage.ipynb) - Interactive Jupyter notebook
+
+### Guides
+
+- [Teacher Distillation Guide](docs/teacher_distillation_guide.md) - Comprehensive reference
+- [Quick Start Guide](docs/quickstart.md)
+- [Installation Guide](docs/installation.md)
+
+Full documentation is available at [https://distillseq.readthedocs.io](https://distillseq.readthedocs.io)
+
+## Citation
+
+If you use `distillseq` in your research, please cite:
+
+##TODO: Add when avail
+<!--
+```bibtex
+@software{distillseq2025,
+  title = {distillseq: Data Distillation for Genomic Deep Learning},
+  author = {Your Name},
+  year = {2025},
+  url = {https://github.com/yourusername/distillseq}
+}
+```
+-->
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
