@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dabcli"
+version = "2.1.4"
+description = "DAB CLI — A command-line interface for browsing and downloading music from DAB Music Player."
+readme = "README.md"
+requires-python = ">=3.9"
+
+authors = [
+    { name = "sherlockholmesat221b", email = "sherlockholmesat221b@proton.me" }
+]
+
+license = "MIT"
+license-files = ["LICENSE"]  # optional, keeps LICENSE file in the distribution
+
+keywords = ["music", "DAB", "CLI", "downloader"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+dependencies = [
+    "requests>=2.31",
+    "tqdm>=4.66",
+    "mutagen>=1.47",
+    "tabulate>=0.9",
+    "platformdirs>=4.0",
+]
+
+[project.scripts]
+dabcli = "dabcli.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dabcli*"]
+
+[tool.setuptools.package-data]
+"dabcli.assets" = ["silence.flac"]
+
+[project.urls]
+Homepage = "https://github.com/sherlockholmesat221b/dabcli"
+Issues = "https://github.com/sherlockholmesat221b/dabcli/issues"
