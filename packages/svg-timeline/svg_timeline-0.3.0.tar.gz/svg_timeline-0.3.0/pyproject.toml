@@ -1,0 +1,33 @@
+[project]
+name = "svg-timeline"
+version = "0.3.0"
+requires-python = ">=3.11"
+authors = [
+  { name="Timo Dreyer", email="dev@timodreyer.de" },
+]
+description = "A pure python library to create timeline plots"
+keywords = ["timeline", "svg", "plotting", "graph"]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+homepage = "https://pypi.org/project/svg-timeline"
+repository = "https://github.com/TiDreyer/svg-timeline"
+#documentation = "https://github.com/TiDreyer/svg-timeline"
+"Bug Tracker" = "https://github.com/TiDreyer/svg-timeline/issues"
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "ruff",
+  "ty",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.6,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "svg_timeline"
+module-root = ""
