@@ -1,0 +1,182 @@
+# mxrepo
+
+Helper script for working on multiple git repositories in a specific directory.
+
+This script is useful if you work with [mxdev](https://github.com/mxstack/mxdev) sources for project development or if you want to perform backups of a GitHub account.
+
+The tool operates on all git repositories found in the current directory (those containing a `.git` folder) and executes git commands across them in batch.
+
+## Features
+
+- **Batch Operations**: Execute git commands across multiple repositories at once
+- **GitHub Integration**: Clone or backup all repositories from a GitHub organization or user
+- **Zero Dependencies**: Uses only Python standard library (no external packages required)
+- **Smart API Access**: Automatically tries organization endpoint first, then falls back to user endpoint
+- **Selective Operations**: Target specific repositories or operate on all found repos
+- **Works with mxdev**: Designed for managing mxdev source checkouts during development
+
+## Prerequisites
+
+- **Python 3.9 or higher**
+- **Git** must be installed and available in PATH
+- **GitHub Access**: For `clone` and `backup` commands, repositories must be accessible via GitHub's public API (no authentication is performed)
+
+## Installation
+
+### From PyPI
+
+```bash
+pip install mxrepo
+```
+
+### For Development
+
+```bash
+git clone https://github.com/mxstack/mxrepo
+cd mxrepo
+make install  # Sets up virtual environment and installs dependencies
+```
+
+## Usage
+
+### Parameters
+
+- **`<CONTEXT>`**: GitHub organization or user name (e.g., `mxstack`, `octocat`)
+- **`[<PACKAGE>]`**: Optional repository name(s) to filter operations. When omitted, operates on all repositories found in the current directory
+
+### Commands
+
+| Command | Description | Usage | Example |
+|---------|-------------|-------|---------|
+| `clone` | Clone repositories from GitHub org/user | `mxrepo clone <CONTEXT> [<PACKAGE>...]` | `mxrepo clone mxstack mxdev` |
+| `backup` | Backup all repos from org/user (bare mirrors) | `mxrepo backup <CONTEXT>` | `mxrepo backup myorganization` |
+| `pull` | Pull latest changes from origin | `mxrepo pull [<PACKAGE>...]` | `mxrepo pull` |
+| `status` | Show git status for repositories | `mxrepo status [<PACKAGE>...]` | `mxrepo status myproject` |
+| `branch` | List branches in repositories | `mxrepo branch [<PACKAGE>...]` | `mxrepo branch` |
+| `diff` | Show git diff for repositories | `mxrepo diff [<PACKAGE>...]` | `mxrepo diff` |
+| `commit` | Commit all changes with message | `mxrepo commit "<MESSAGE>" [<PACKAGE>...]` | `mxrepo commit "Fix: update deps"` |
+| `push` | Push committed changes to origin | `mxrepo push [<PACKAGE>...]` | `mxrepo push` |
+| `checkout` | **⚠️ Discard all uncommitted changes** | `mxrepo checkout [<PACKAGE>...]` | `mxrepo checkout` |
+
+**⚠️ Warning**: The `checkout`, `commit`, and `push` commands are destructive operations. Use with caution.
+
+## Examples
+
+### Clone all repositories from an organization
+
+```bash
+mxrepo clone mxstack
+```
+
+This fetches all repositories from the GitHub organization `mxstack` and clones them into the current directory.
+
+### Clone specific repositories only
+
+```bash
+mxrepo clone mxstack mxdev mxmake
+```
+
+Clones only `mxdev` and `mxmake` from the `mxstack` organization.
+
+### Backup all repositories from a user account
+
+```bash
+mkdir backups
+cd backups
+mxrepo backup octocat
+```
+
+Creates bare mirror clones of all repositories belonging to the GitHub user `octocat`. The backup command creates a subfolder named after the context.
+
+### Update all local repositories
+
+```bash
+mxrepo pull
+```
+
+Executes `git pull origin <current-branch>` in all git repositories found in the current directory.
+
+### Check status across all projects
+
+```bash
+mxrepo status
+```
+
+Shows `git status` for each repository, useful for seeing which projects have uncommitted changes.
+
+### Commit changes across multiple repositories
+
+```bash
+mxrepo commit "Update dependencies to latest versions"
+```
+
+Commits all changes in each repository with the same commit message. Equivalent to `git commit -am "message"` in each repo.
+
+### Update only specific repositories
+
+```bash
+mxrepo pull project1 project2
+```
+
+Pulls changes only for `project1` and `project2` repositories.
+
+## How It Works
+
+1. **Repository Discovery**: Scans the current directory for subdirectories containing a `.git` folder
+2. **Batch Execution**: Changes into each repository directory and executes the git command
+3. **GitHub API**: For `clone` and `backup` commands, queries GitHub's REST API to fetch repository lists:
+   - Tries organization endpoint: `https://api.github.com/orgs/{context}/repos`
+   - Falls back to user endpoint: `https://api.github.com/users/{context}/repos`
+   - Handles pagination (50 repos per page)
+4. **Branch Detection**: Automatically detects the current branch for pull and push operations
+
+## Development
+
+This project uses the MXStack tooling ([mxdev](https://github.com/mxstack/mxdev) and [mxmake](https://github.com/mxstack/mxmake)) for development.
+
+### Setup
+
+```bash
+make install      # Set up virtual environment and install dependencies
+```
+
+### Code Quality
+
+```bash
+make check        # Run all checks (ruff + isort)
+make format       # Auto-format code (ruff + isort)
+```
+
+### Cleanup
+
+```bash
+make clean        # Remove virtual environment and generated files
+make runtime-clean # Remove Python cache files (__pycache__, *.pyc)
+```
+
+### Tools Used
+
+- **[ruff](https://github.com/astral-sh/ruff)**: Linting and formatting
+- **[isort](https://pycqa.github.io/isort/)**: Import sorting (black profile, single-line imports)
+- **[uv](https://github.com/astral-sh/uv)**: Fast Python package installer
+
+### Project Structure
+
+- `src/mxrepo/main.py`: Single-module implementation with all functionality
+- No external dependencies (uses only Python stdlib)
+- Simple argparse-based CLI with subcommands
+
+## Related Projects
+
+- **[mxdev](https://github.com/mxstack/mxdev)**: Tools for managing multiple Python packages in development
+- **[githelper](https://github.com/rnixx/githelper)**: Original project that mxrepo was based on
+
+## Copyright
+
+- Copyright (c) 2025 mxstack Contributors
+- BSD 2-clause license (see [LICENSE.md](LICENSE.md))
+
+## Contributors
+
+- Robert Niederreiter
+- Johannes Raggam
