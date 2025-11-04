@@ -1,0 +1,29 @@
+{
+  "devtools": {
+    "type": "svelte",
+    "version": "5",
+    "features": {
+      "componentInspection": true,
+      "storeInspection": true,
+      "performanceMonitoring": true,
+      "runtimeDebugging": true
+    },
+    "extensions": [
+      {
+        "name": "Svelte DevTools",
+        "id": "svelte-devtools",
+        "enabled": true
+      }
+    ],
+    "sourceMap": {
+      "enabled": true,
+      "sourceRoot": "/src"
+    },
+    "project": {
+      "name": "Chatbot",
+      "description": "Consulta tus datos a través de la IA",
+      "framework": "SvelteKit",
+      "version": "5.0.0"
+    }
+  }
+}
