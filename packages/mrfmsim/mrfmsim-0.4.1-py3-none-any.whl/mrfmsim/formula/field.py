@@ -1,0 +1,130 @@
+"""Calculations related to the magnetic field."""
+
+import numpy as np
+import numba as nb
+from .math import as_strided_x
+from operator import sub
+
+
+@nb.jit(nopython=True, parallel=True)
+def B_offset(B_tot, f_rf, Gamma):
+    """Calculate the resonance offset."""
+    return B_tot - 2 * np.pi * f_rf / Gamma
+
+
+def min_abs_offset(ext_B_offset, ext_pts):
+    r"""Minimum absolute value of a matrix in x direction based on the window.
+
+    The function is used to calculate the minimum B_offset during a saturation
+    experiment.
+    For each x-data point in the sample, calculate the resonance offset over
+    the expanded grid. The points to the left and right of each grid point
+    give the resonance offset as the cantilever moves. The algorithm finds the
+    minimum resonance offset over the range of array values corresponding to the
+    cantilever motion and computes the saturation polarization using that
+    minimum offset and the given :math:`B_1` value.
+
+    To calculate the spin polarization profile resulting from the cantilever
+    moving while spin-saturating irradiation is applied, we use the following
+    algorithm:
+
+        If the resonance offset changed sign during the sweep, then the spin
+        must have experienced a zero resonance offset during the sweep, so set
+        the resonance offset to zero manually.
+
+    This procedure mitigates the problem of previous algorithms not finding
+    the true minimum resonance offset (and polarization) due to the finite grid
+    size. While this new procedure will still not capture the shape of the
+    polarization at the edge of the sensitive slice, it should produce a
+    polarization that is properly saturated inside the sensitive slice.
+
+    This is used for calculating :math:`\delta F` of the experiment
+    calculate the corresponding gradient based on the grid array
+    points and tip-sample separation (equation 3 in "Overview").
+    The integral is approximated with Trapezoid summation over
+    :math:`2 \pi` with n points.
+    The summation is over pi to increase the performance since it is
+    symmetric in :math:`[-\pi, 0]` to :math:`[0, \pi]` for the summation.
+
+    .. math::
+        \Delta f = \frac{\sum_j \int_{-\pi}^{\pi} \mu_z(\vec{r}_j,\theta)
+        \frac{\partial B_z^\mathrm{tip}(x - x_\mathrm{pk} \cos{\theta},y,z)}{\partial x}
+        x_\mathrm{pk} \cos{\theta} d\theta}{\pi x_\mathrm{pk}^2}
+
+    :param float ext_B_offset: resonance offset of extended grid [mT]
+    :param int ext_pts: number of grid points used to determine the minimum offset
+    """
+    window = 2 * ext_pts + 1
+    b_offset_strided = as_strided_x(ext_B_offset, window)
+    b_offset_abs_strided = as_strided_x(abs(ext_B_offset), window)
+
+    return b_offset_abs_strided.min(axis=1) * np.logical_or(
+        np.all(b_offset_strided > 0, axis=1),
+        np.all(b_offset_strided < 0, axis=1),
+    )
+
+
+def xtrapz_fxdtheta(method, ogrid, n_pts, xrange, x_0p):
+    r"""Calculate the integral of a function over a range of theta.
+
+    The calculation is done by extend the original ogrid to a new grid
+    by extend the number of points in the x direction.
+
+    .. math::
+        \int_{x_\mathrm{min}}^{x_\mathrm{max}} f(x - x_0\cos\theta)x_0\cos\theta d\theta
+    """
+
+    theta = np.linspace(xrange[0], xrange[1], n_pts)
+    grid_shape = tuple(np.prod(list(map(np.shape, ogrid)), axis=0))
+    grid_shape_x = grid_shape[0]
+    grid_dim = len(grid_shape)
+
+    # calculate the new grid
+    new_ogrid_shape = np.ones(grid_dim)
+    new_ogrid_shape[0] = n_pts * grid_shape_x
+    new_ogrid_shape = new_ogrid_shape.astype(int)
+
+    # expand the dimension to (pts, 1, 1, 1)
+    # expand the x grid dimension to (1, x_shape, 1, 1)
+    # The result of addition is (pts, x_shape, 1, 1)
+    # the final (x, y, z) is (pts * x_shape, 1, 1)
+    grid_x = np.expand_dims(ogrid[0], axis=0)
+    dx = np.expand_dims(x_0p * np.cos(theta), axis=list(range(1, grid_dim + 1)))
+    new_ogrid = [(grid_x - dx).reshape(new_ogrid_shape)] + list(ogrid[1:])
+
+    # calculate the integral
+    # new grid shape is (trapz_pts, x_shape, y_shape, z_shape)
+    # dx has the shape of (trapz_pts, 1, 1, 1)
+    # The multiplication is also an optimization here
+    new_grid_shape = (n_pts,) + grid_shape
+    integrand = method(*new_ogrid).reshape(new_grid_shape) * dx
+    return np.trapz(integrand, x=theta, axis=0)
+
+
+def xtrapz_field_gradient(Bzx_method, grid_array, h, trapz_pts, x_0p):
+    r"""Calculate CERMIT integral using Trapezoidal summation.
+
+    The integrand is an odd function. Therefore, we can approximate the
+    integral from :math:`-\pi` to :math:`\pi` and :math:`-\pi` to 0. Here, we make an important
+    assumption that the magnet is symmetric in the x direction. Therefore,
+    we approximate the integral from :math:`-\pi/2` to 0 and time the final result by 2.
+    The result has the unit of mT/nm^2.
+
+    :param list grid_array: ogrid generated by a numpy ogrid
+        For a one-dimensional grid, the ogrid should be encapsulated in a list
+    :param list h: tip-sample separation
+    :param int trapz_pts: points to integrate across :math: `\pi`.
+        In this particular implementation, the number is divided by 2 for
+        [:math:`-\pi/2`, 0 ] integration.
+    """
+    grid = list(map(sub, grid_array, h))
+    n_pts = int(trapz_pts / 2)
+    integral = 2 * xtrapz_fxdtheta(Bzx_method, grid, n_pts, [-np.pi, 0], x_0p)
+    return integral / x_0p**2 / np.pi
+
+
+def field_func(method, grid_array, h):
+    """Calculate the field value at the given height and grid points."""
+
+    grid = list(map(sub, grid_array, h))
+    return method(*grid)
