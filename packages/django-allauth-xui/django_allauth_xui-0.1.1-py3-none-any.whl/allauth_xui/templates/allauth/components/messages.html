@@ -1,0 +1,81 @@
+{% if messages %}
+<div class="toast toast-top toast-end top-24 z-50">
+  <ol class="grid gap-4 max-w-xl">
+    {% for message in messages %}
+    <!---->
+    {% if 'error' in message.tags %}
+    <li class="alert alert-soft alert-horizontal alert-error">
+      <div
+        class="tooltip tooltip-right tooltip-error rtl:tooltip-left"
+        data-tip="{{ message.tags|upper }}"
+      >
+        <span class="badge badge-sm badge-error lg:badge-md xl:badge-lg">
+          <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+          <span class="sr-only">{{ message.tags|upper }}</span>
+        </span>
+      </div>
+
+      <p>{{ message }}</p>
+    </li>
+    {% elif 'warning' in message.tags %}
+    <li class="alert alert-soft alert-horizontal alert-warning">
+      <div
+        class="tooltip tooltip-right tooltip-warning rtl:tooltip-left"
+        data-tip="{{ message.tags|upper }}"
+      >
+        <span class="badge badge-sm badge-warning lg:badge-md xl:badge-lg">
+          <i data-lucide="triangle-alert" class="size-4 lg:size-6"></i>
+          <span class="sr-only">{{ message.tags|upper }}</span>
+        </span>
+      </div>
+
+      <p>{{ message }}</p>
+    </li>
+    {% elif 'success' in message.tags %}
+    <li class="alert alert-soft alert-horizontal alert-success">
+      <div
+        class="tooltip tooltip-right tooltip-success rtl:tooltip-left"
+        data-tip="{{ message.tags|upper }}"
+      >
+        <span class="badge badge-sm badge-success lg:badge-md xl:badge-lg">
+          <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+          <span class="sr-only">{{ message.tags|upper }}</span>
+        </span>
+      </div>
+
+      <p>{{ message }}</p>
+    </li>
+    {% elif 'info' in message.tags %}
+    <li class="alert alert-soft alert-horizontal alert-info">
+      <div
+        class="tooltip tooltip-right tooltip-info rtl:tooltip-left"
+        data-tip="{{ message.tags|upper }}"
+      >
+        <span class="badge badge-sm badge-info lg:badge-md xl:badge-lg">
+          <i data-lucide="info" class="size-4 lg:size-6"></i>
+          <span class="sr-only">{{ message.tags|upper }}</span>
+        </span>
+      </div>
+
+      <p>{{ message }}</p>
+    </li>
+    {% else %}
+    <li class="alert alert-soft alert-horizontal">
+      <div
+        class="tooltip tooltip-right tooltip-accent rtl:tooltip-left"
+        data-tip="{{ message.tags|upper }}"
+      >
+        <span class="badge badge-sm badge-accent lg:badge-md xl:badge-lg">
+          <i data-lucide="bug" class="size-4 lg:size-6"></i>
+          <span class="sr-only">{{ message.tags|upper }}</span>
+        </span>
+      </div>
+
+      <p>{{ message }}</p>
+    </li>
+    {% endif %}
+    <!---->
+    {% endfor %}
+  </ol>
+</div>
+{% endif %}

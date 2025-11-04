@@ -1,0 +1,24 @@
+{% extends "mfa/webauthn/base.html" %}{% load i18n static allauth %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Edit Security Key" %}</h1>
+
+  <form action="{% url 'mfa_edit_webauthn' %}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button
+      type="submit"
+      id="mfa_webauthn_edit"
+      class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="save" class="size-4 lg:size-6"></i>
+      {% trans "Save" %}
+    </button>
+  </form>
+</div>
+{% endblock %}

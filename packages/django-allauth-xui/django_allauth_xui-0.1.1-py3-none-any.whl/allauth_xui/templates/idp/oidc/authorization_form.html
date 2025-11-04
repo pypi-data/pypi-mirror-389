@@ -1,0 +1,48 @@
+{% extends "allauth/layouts/entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Authorize" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Authorize" %} {{ client.name }}</h1>
+
+  <p>
+    {% blocktrans with client_name=client.name site_name=site.name trimmed %}
+    {{ client_name }} wants to access your {{ site_name }} account.{% endblocktrans %}
+  </p>
+
+  <form
+    method="post"
+    class="grid gap-4"
+    action="{% url 'idp:openid_connect:authorize' %}"
+  >
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <div class="grid gap-4 w-full md:flex md:items-center">
+      <button
+        type="submit"
+        name="action"
+        value="grant"
+        class="grow btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+        {% translate "Authorize" %}
+      </button>
+      <button
+        type="submit"
+        name="action"
+        value="cancel"
+        class="grow btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+        {% translate "Cancel" %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

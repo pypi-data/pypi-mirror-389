@@ -1,0 +1,78 @@
+{% extends "usersessions/base_manage.html" %}{% load i18n humanize allauth %}
+
+<!---->
+{% block head_title %}{% trans "Sessions" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Sessions" %}</h1>
+
+  {% if session_count > 1 %}{% url 'usersessions_list' as action_url %}
+  <!---->
+  {% else %}{% url 'account_logout' as action_url %}{% endif %}
+
+  <form action="{{ action_url }}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans "Started At" %}</th>
+          <th>{% trans "IP Address" %}</th>
+          <th>{% trans "Browser" %}</th>
+          {% if show_last_seen_at %}
+          <th>{% trans "Last seen at" %}</th>
+          {% endif %}
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for session in sessions %}
+        <tr>
+          <td>
+            <time
+              title="{{ session.created_at }}"
+              datetime="{{ session.created_at }}"
+            >
+              {{ session.created_at|naturaltime }}
+            </time>
+          </td>
+          <td>{{ session.ip }}</td>
+          <td>{{ session.user_agent }}</td>
+          {% if show_last_seen_at %}
+          <td>
+            <time
+              title="{{ session.last_seen_at }}"
+              datetime="{{ session.last_seen_at }}"
+            >
+              {{ session.last_seen_at|naturaltime }}
+            </time>
+          </td>
+          {% endif %}
+          <td>
+            {% if session.is_current %}
+            <span class="badge badge-sm badge-primary md:badge-md">
+              {% trans "Current" %}
+            </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if session_count > 1 %}
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="log-out" class="size-4 lg:size-6"></i>
+      {% trans "Sign Out Other Sessions" %}
+    </button>
+    {% else %}
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="log-out" class="size-4 lg:size-6"></i>
+      {% trans "Sign Out" %}
+    </button>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

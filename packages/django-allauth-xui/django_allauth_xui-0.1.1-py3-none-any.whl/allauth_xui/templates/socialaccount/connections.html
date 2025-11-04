@@ -1,0 +1,66 @@
+{% extends "socialaccount/base_manage.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Account Connections" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Account Connections" %}</h1>
+
+  {% if form.accounts %}
+  <p>
+    {% blocktrans trimmed %}You can sign in to your account using any of the
+    following third-party accounts:{% endblocktrans %}
+  </p>
+
+  <form
+    action="{% url 'socialaccount_connections' %}"
+    method="post"
+    class="grid gap-4"
+  >
+    {% csrf_token %}
+
+    <div class="grid gap-2">
+      {% for acc in form.fields.account.choices %}
+      <!---->
+      {% with account=acc.0.instance.get_provider_account %}
+      <fieldset class="fieldset border border-base-300 rounded-box p-4">
+        <legend class="fieldset-legend">{{ account.get_brand.name }}</legend>
+
+        <label class="label">
+          <input
+            type="radio"
+            name="account"
+            value="{{ account.account.pk }}"
+            id="id_account_{{ account.account.pk }}"
+            class="radio radio-sm radio-primary lg:radio-md"
+          />
+
+          <span>{{ account }}</span>
+        </label>
+      </fieldset>
+      {% endwith %}
+      <!---->
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-sm btn-error lg:btn-md 2xl:btn-lg">
+      <i data-lucide="user-minus" class="size-4 lg:size-6"></i>
+      {% trans 'Remove' %}
+    </button>
+  </form>
+  {% else %}
+  <p>
+    {% blocktrans trimmed %}You currently have no third-party accounts connected
+    to this account.{% endblocktrans %}
+  </p>
+  {% endif %}
+
+  <!---->
+  <h2>{% trans 'Add a Third-Party Account' %}</h2>
+  {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
+  <!---->
+  {% include "socialaccount/snippets/login_extra.html" %}
+</div>
+{% endblock %}

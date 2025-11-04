@@ -1,0 +1,22 @@
+{% extends "account/base_reauthenticate.html" %}{% load i18n allauth load %}
+
+<!---->
+{% block reauthenticate_content %}
+<p>{% blocktrans %}Enter your password:{% endblocktrans %}</p>
+
+<form
+  action="{% url 'account_reauthenticate' %}"
+  method="post"
+  class="grid gap-4"
+>
+  {% csrf_token %}{{ redirect_field }}
+
+  <!---->
+  {% include 'allauth/components/form.html' %}
+
+  <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+    <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+    {% trans "Confirm" %}
+  </button>
+</form>
+{% endblock %}

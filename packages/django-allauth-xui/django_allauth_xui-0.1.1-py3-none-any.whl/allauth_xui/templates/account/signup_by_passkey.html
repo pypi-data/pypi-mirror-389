@@ -1,0 +1,45 @@
+{% extends "account/base_entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Passkey Sign Up" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}Already have an account? Then please
+    <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}
+  </p>
+
+  <form
+    method="post"
+    class="grid gap-4"
+    action="{% url 'account_signup_by_passkey' %}"
+  >
+    {% csrf_token %}{{ redirect_field }}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      {% trans "Sign Up" %}
+    </button>
+  </form>
+
+  <div role="separator" class="divider divider-primary text-primary font-bold">
+    {% trans 'OR' %}
+  </div>
+
+  <div class="grid gap-4">
+    <a
+      href="{{ signup_url }}"
+      class="btn btn-sm btn-soft btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="rectangle-ellipsis" class="size-4 lg:size-6"></i>
+      {% trans "Other options" %}
+    </a>
+  </div>
+</div>
+{% endblock %}

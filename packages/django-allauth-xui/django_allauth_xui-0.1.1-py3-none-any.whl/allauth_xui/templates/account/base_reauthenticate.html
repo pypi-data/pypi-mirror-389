@@ -1,0 +1,30 @@
+{% extends "account/base_entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Confirm Access" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Confirm Access" %}</h1>
+
+  <p>{% trans "Please reauthenticate to safeguard your account." %}</p>
+
+  {% block reauthenticate_content %}{% endblock %}
+
+  <!---->
+  {% if reauthentication_alternatives %}
+  <div role="separator" class="divider divider-primary text-primary font-bold">
+    {% trans 'OR' %}
+  </div>
+
+  <ul class="menu menu-sm gap-2 lg:menu-md">
+    {% for alt in reauthentication_alternatives %}
+    <li>
+      <a href="{{ alt.url }}">{{ alt.description }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,855 @@
+{% load i18n static account %}{% user_display request.user as user_display %}
+
+<!DOCTYPE html>
+<html
+  lang="{{ LANGUAGE_CODE }}"
+  dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+  data-theme="{% block theme %}default{% endblock %}"
+>
+  <head>
+    {% block head %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block head_title %}{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{% static 'allauth_xui/css/styles.css' %}" />
+
+    {% block extra_head %}{% endblock %}
+    <!---->
+    {% endblock %}
+  </head>
+
+  <body
+    class="bg-base-300 font-sans h-dvh overflow-hidden md:p-1 lg:p-2 rtl:font-kufi"
+  >
+    <div
+      class="drawer h-dvh bg-base-100 overflow-hidden md:rounded-box md:drawer-open md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+    >
+      <input id="drawer" type="checkbox" class="drawer-toggle" />
+
+      <section
+        class="drawer-content size-full max-h-dvh md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+      >
+        {% block drawer_content %}
+        <div
+          class="drawer max-h-dvh md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)] lg:drawer-open"
+        >
+          <input id="sidebar" type="checkbox" class="drawer-toggle" />
+
+          <section
+            class="drawer-content max-h-dvh md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+          >
+            <div class="relative size-full">
+              <header class="absolute inset-x-0 top-0 z-10 backdrop-blur-3xl">
+                <nav class="navbar p-4">
+                  <ul class="navbar-start gap-4">
+                    {% block navbar_start %}{% endblock %}
+
+                    <li
+                      class="tooltip tooltip-right rtl:tooltip-left tooltip-primary lg:hidden"
+                      data-tip="{% trans 'Open drawer' %}"
+                    >
+                      <label
+                        for="sidebar"
+                        aria-label="{% trans 'close sidebar' %}"
+                        class="btn btn-sm lg:btn-md 2xl:btn-lg btn-square btn-ghost"
+                      >
+                        <i data-lucide="menu" class="size-4 lg:size-6"></i>
+                        <span class="sr-only">{% trans 'Open drawer' %}</span>
+                      </label>
+                    </li>
+
+                    <!---->
+                    {% block branding %}
+                    <li
+                      class="tooltip tooltip-right rtl:tooltip-left tooltip-primary md:hidden"
+                      data-tip="{% trans 'Accounts' %}"
+                    >
+                      <h1 class="relative">
+                        <a
+                          href="{% url 'account_profile' %}"
+                          class="btn btn-square btn-primary lg:btn-lg 2xl:btn-lg"
+                        >
+                          <div
+                            class="btn btn-square btn-primary rotate-45 p-0 shadow-none lg:btn-lg 2xl:btn-lg"
+                          >
+                            <i
+                              data-lucide="shield-user"
+                              class="-rotate-45 lg:size-8 2xl:size-10"
+                            ></i>
+                          </div>
+                          <span class="sr-only">{% trans 'Accounts' %}</span>
+                        </a>
+                      </h1>
+                    </li>
+                    {% endblock %}
+                  </ul>
+
+                  {% block navbar_center %}{% endblock %}
+
+                  <ul class="navbar-end gap-4">
+                    {% block navbar_end %}{% endblock %}
+
+                    <!---->
+                    {% block theme_selector %}
+                    <li
+                      class="tooltip tooltip-left rtl:tooltip-right"
+                      data-tip="{% trans 'Theme' %}"
+                    >
+                      <button
+                        popovertarget="theme"
+                        style="anchor-name: --theme"
+                        class="btn btn-sm lg:btn-md 2xl:btn-lg btn-square btn-ghost"
+                      >
+                        <i
+                          data-lucide="swatch-book"
+                          class="size-4 lg:size-6"
+                        ></i>
+                        <span class="sr-only">{% trans 'Theme' %}</span>
+                      </button>
+
+                      <ul
+                        popover
+                        id="theme"
+                        style="position-anchor: --theme; max-height: 20rem"
+                        class="menu dropdown dropdown-left bg-base-100/50 rounded-box shadow-lg backdrop-blur-3xl rtl:dropdown-right"
+                      >
+                        <li class="menu-title">{% trans 'Select a theme' %}</li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Default"
+                            value="default"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Light"
+                            value="light"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Dark"
+                            value="dark"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Cupcake"
+                            value="cupcake"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Bumblebee"
+                            value="bumblebee"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Emerald"
+                            value="emerald"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Corporate"
+                            value="corporate"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Synthwave"
+                            value="synthwave"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Retro"
+                            value="retro"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Cyberpunk"
+                            value="cyberpunk"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Valentine"
+                            value="valentine"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Halloween"
+                            value="halloween"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Garden"
+                            value="garden"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Forest"
+                            value="forest"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Aqua"
+                            value="aqua"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Lofi"
+                            value="lofi"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Pastel"
+                            value="pastel"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Fantasy"
+                            value="fantasy"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Wireframe"
+                            value="wireframe"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Black"
+                            value="black"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Luxury"
+                            value="luxury"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Dracula"
+                            value="dracula"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Cmyk"
+                            value="cmyk"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Autumn"
+                            value="autumn"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Business"
+                            value="business"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Acid"
+                            value="acid"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Lemonade"
+                            value="lemonade"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Night"
+                            value="night"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Coffee"
+                            value="coffee"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Winter"
+                            value="winter"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Dim"
+                            value="dim"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Nord"
+                            value="nord"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Sunset"
+                            value="sunset"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Caramellatte"
+                            value="caramellatte"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Abyss"
+                            value="abyss"
+                          />
+                        </li>
+                        <li>
+                          <input
+                            type="radio"
+                            name="theme-dropdown"
+                            class="theme-controller btn btn-block btn-ghost justify-start"
+                            aria-label="Silk"
+                            value="silk"
+                          />
+                        </li>
+                      </ul>
+                    </li>
+                    {% endblock %}
+
+                    <!---->
+                    {% block theme_toggle %}
+                    <li
+                      class="tooltip tooltip-left rtl:tooltip-right"
+                      data-tip="{% trans 'Toggle theme' %}"
+                    >
+                      <label
+                        class="swap swap-rotate btn btn-sm lg:btn-md 2xl:btn-lg btn-square btn-ghost"
+                      >
+                        <input
+                          type="checkbox"
+                          class="theme-controller"
+                          value="{% block toggle_theme %}dark{% endblock %}"
+                        />
+                        <i
+                          data-lucide="sun"
+                          class="swap-off size-4 lg:size-6"
+                        ></i>
+                        <i
+                          data-lucide="moon-star"
+                          class="swap-on size-4 lg:size-6"
+                        ></i>
+                        <span class="sr-only">
+                          {% trans 'Toggle theme' %}
+                        </span>
+                      </label>
+                    </li>
+                    {% endblock %}
+                  </ul>
+                </nav>
+              </header>
+
+              <div
+                class="size-full max-h-dvh overflow-y-auto px-4 py-24 md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+              >
+                <main class="container mx-auto grid gap-8">
+                  {% include 'allauth/components/messages.html' %}
+
+                  <nav class="breadcrumbs text-sm">
+                    <ol>
+                      <li>
+                        <a href="{% url 'account_profile' %}">
+                          <i data-lucide="user" class="size-4"></i>
+                          {% trans 'Account' %}
+                        </a>
+                      </li>
+                      {% block breadcrumbs %}{% endblock %}
+                    </ol>
+                  </nav>
+
+                  {% block content %}{% endblock %}
+
+                  <section class="container-prose"></section>
+                </main>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="drawer-side z-50 max-h-dvh md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+          >
+            <label
+              for="sidebar"
+              aria-label="{% trans 'close sidebar' %}"
+              class="drawer-overlay"
+            ></label>
+
+            <div
+              class="bg-base-100 border-base-300 border-y-base-100 relative flex size-full flex-col overflow-hidden overflow-y-auto border lg:min-w-sm lg:max-w-sm 2xl:min-w-md 2xl:max-w-md"
+            >
+              <header
+                class="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-4 p-4 backdrop-blur-3xl"
+              >
+                <div class="flex items-center gap-2 lg:gap-4">
+                  <div
+                    class="tooltip tooltip-right rtl:tooltip-left tooltip-primary md:hidden"
+                    data-tip="{% trans 'Open drawer' %}"
+                  >
+                    <label
+                      for="drawer"
+                      aria-label="{% trans 'close sidebar' %}"
+                      class="btn btn-sm lg:btn-md 2xl:btn-lg btn-square btn-ghost"
+                    >
+                      <i
+                        data-lucide="panel-left-open"
+                        class="size-4 lg:size-6"
+                      ></i>
+                      <span class="sr-only">{% trans 'Open drawer' %}</span>
+                    </label>
+                  </div>
+
+                  <h1
+                    class="text-primary font-bold text-lg md:text-xl xl:text-2xl"
+                  >
+                    {{ user_display }}
+                  </h1>
+                </div>
+
+                <div class="flex items-center gap-2 lg:gap-4">
+                  <div
+                    class="tooltip tooltip-left rtl:tooltip-right lg:hidden"
+                    data-tip="{% trans 'Close' %}"
+                  >
+                    <label
+                      for="sidebar"
+                      aria-label="{% trans 'close sidebar' %}"
+                      class="btn btn-sm lg:btn-md 2xl:btn-lg btn-square btn-ghost"
+                    >
+                      <i data-lucide="x" class="size-4 lg:size-6"></i>
+                      <span class="sr-only">{% trans 'Close' %}</span>
+                    </label>
+                  </div>
+                </div>
+              </header>
+
+              <div
+                class="flex size-full max-h-dvh flex-col gap-4 overflow-y-auto py-20 md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+              >
+                <ul class="menu w-full grow gap-2">
+                  {% block sidebar_start %}{% endblock %}
+
+                  <!---->
+                  {% if user.is_authenticated %}
+                  <!---->
+                  {% url 'account_email' as email_url_ %}
+                  <!---->
+                  {% if email_url_ %}
+                  <li>
+                    <a href="{{ email_url_ }}">
+                      <i data-lucide="mails" class="size-4 lg:size-6"></i>
+                      <span>{% trans 'Email' %}</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  <!---->
+                  {% url 'account_change_password' as change_password_url_ %}
+                  <!---->
+                  {% if change_password_url_ %}
+                  <li>
+                    <a href="{{ change_password_url_ }}">
+                      <i
+                        data-lucide="lock-keyhole"
+                        class="size-4 lg:size-6"
+                      ></i>
+                      <span>{% trans 'Password' %}</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  <!---->
+                  {% url 'socialaccount_connections' as connections_url_ %}
+                  <!---->
+                  {% if connections_url_ %}
+                  <li>
+                    <a href="{{ connections_url_ }}">
+                      <i data-lucide="handshake" class="size-4 lg:size-6"></i>
+                      <span>{% trans 'Account Connections' %}</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  <!---->
+                  {% url 'mfa_index' as mfa_url_ %}
+                  <!---->
+                  {% if mfa_url_ %}
+                  <li>
+                    <a href="{{ mfa_url_ }}">
+                      <i data-lucide="fingerprint" class="size-4 lg:size-6"></i>
+                      <span>{% trans 'Two-Factor Authentication' %}</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  <!---->
+                  {% url 'usersessions_list' as usersessions_list_url_ %}
+                  <!---->
+                  {% if usersessions_list_url_ %}
+                  <li>
+                    <a href="{{ usersessions_list_url_ }}">
+                      <i data-lucide="user-lock" class="size-4 lg:size-6"></i>
+                      <span>{% trans 'Sessions' %}</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                  <!---->
+                  {% endif %}
+                </ul>
+
+                {% block sidebar_end %}{% endblock %}
+              </div>
+            </div>
+          </section>
+        </div>
+        {% endblock %}
+      </section>
+
+      <section
+        class="drawer-side is-drawer-close:overflow-visible z-50 md:z-40 lg:z-50 max-h-dvh md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+      >
+        <label
+          for="drawer"
+          aria-label="close sidebar"
+          class="drawer-overlay"
+        ></label>
+
+        <div
+          class="is-drawer-close:w-18 is-drawer-close:lg:w-20 is-drawer-open:w-full md:is-drawer-open:w-sm bg-base-100 border-base-300 flex h-full flex-col items-center gap-4 p-4 md:border-r lg:border-r-0 md:max-h-[calc(100dvh-0.5rem)] lg:max-h-[calc(100dvh-1rem)]"
+        >
+          <header class="flex w-full items-center justify-between gap-4">
+            {% block drawer_header_start %}{% endblock %}
+
+            <!---->
+            {% block drawer_branding %}
+            <div
+              class="tooltip tooltip-right rtl:tooltip-left tooltip-primary"
+              data-tip="{% trans 'Accounts' %}"
+            >
+              <h1 class="relative">
+                <a
+                  href="{% url 'account_profile' %}"
+                  class="btn btn-square btn-primary lg:btn-lg 2xl:btn-lg"
+                >
+                  <div
+                    class="btn btn-square btn-primary rotate-45 p-0 shadow-none lg:btn-lg 2xl:btn-lg"
+                  >
+                    <i
+                      data-lucide="shield-user"
+                      class="-rotate-45 lg:size-8 2xl:size-10"
+                    ></i>
+                  </div>
+                  <span class="sr-only">{% trans 'Accounts' %}</span>
+                </a>
+              </h1>
+            </div>
+            {% endblock %}
+
+            <div class="is-drawer-close:hidden flex items-center gap-4">
+              {% block drawer_header_end %}{% endblock %}
+
+              <div
+                class="tooltip tooltip-left rtl:tooltip-right"
+                data-tip="{% trans 'Close' %}"
+              >
+                <label
+                  for="drawer"
+                  class="btn btn-sm lg:btn-md 2xl:btn-lg btn-square btn-ghost"
+                >
+                  <i data-lucide="x" class="size-4 lg:size-6"></i>
+                  <span class="sr-only">{% trans 'Close' %}</span>
+                </label>
+              </div>
+            </div>
+          </header>
+
+          <ul class="menu w-full grow gap-2 p-0">
+            {% block drawer_start %}{% endblock %}
+
+            <!---->
+            {% block drawer_center %}
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Home' %}"
+            >
+              <a href="https://allauth.org/">
+                <i data-lucide="home" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Home' %}
+                </span>
+              </a>
+            </li>
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Docs' %}"
+            >
+              <a href="https://docs.allauth.org/">
+                <i data-lucide="book-text" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Docs' %}
+                </span>
+              </a>
+            </li>
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Source' %}"
+            >
+              <a href="https://codeberg.org/allauth/django-allauth">
+                <i data-lucide="code" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Source' %}
+                </span>
+              </a>
+            </li>
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'X-UI' %}"
+            >
+              <a href="https://github.com/youzarsiph/django-allauth-xui">
+                <i data-lucide="swatch-book" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'X-UI' %}
+                </span>
+              </a>
+            </li>
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Package' %}"
+            >
+              <a href="https://pypi.org/project/django-allauth-xui/">
+                <i data-lucide="package-check" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Package' %}
+                </span>
+              </a>
+            </li>
+            {% endblock %}
+          </ul>
+
+          <ul class="menu w-full gap-2 p-0">
+            {% block drawer_end %}{% endblock %}
+
+            <!---->
+            {% if request.user.is_authenticated %}
+            <!---->
+            {% url 'account_logout' as logout_url_ %}
+            <!---->
+            {% if logout_url_ %}
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Log out' %}"
+            >
+              <a href="{{ logout_url_ }}">
+                <i data-lucide="log-out" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Log out' %}
+                </span>
+              </a>
+            </li>
+            {% endif %}
+            <!---->
+            {% else %}
+            <!---->
+            {% url 'account_login' as login_url_ %}
+            <!---->
+            {% if login_url_ %}
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Log in' %}"
+            >
+              <a href="{{ login_url_ }}">
+                <i data-lucide="log-in" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Log in' %}
+                </span>
+              </a>
+            </li>
+            {% endif %}
+            <!---->
+            {% url 'account_signup' as signup_url_ %}
+            <!---->
+            {% if signup_url_ %}
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Sign up' %}"
+            >
+              <a href="{{ signup_url_ }}">
+                <i data-lucide="heart-handshake" class="size-4 lg:size-6"></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Sign up' %}
+                </span>
+              </a>
+            </li>
+            {% endif %}
+            <!---->
+            {% endif %}
+
+            <li
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right rtl:is-drawer-close:tooltip-left"
+              data-tip="{% trans 'Open drawer' %}"
+            >
+              <label for="drawer" class="drawer-button">
+                <i
+                  data-lucide="sidebar-open"
+                  class="is-drawer-open:hidden size-4 lg:size-6 rtl:rotate-180"
+                ></i>
+                <i
+                  data-lucide="sidebar-close"
+                  class="is-drawer-close:hidden size-4 lg:size-6 rtl:rotate-180"
+                ></i>
+                <span class="is-drawer-close:sr-only">
+                  {% trans 'Close' %}
+                </span>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+
+    {% block extra_body %}{% endblock %}
+  </body>
+</html>

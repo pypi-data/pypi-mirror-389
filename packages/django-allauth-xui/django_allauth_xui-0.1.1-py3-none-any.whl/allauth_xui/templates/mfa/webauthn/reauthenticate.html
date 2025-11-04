@@ -1,0 +1,44 @@
+{% extends "account/base_reauthenticate.html" %}{% load i18n allauth %}
+
+<!---->
+{% block reauthenticate_content %}
+
+<form
+  action="{% url 'mfa_reauthenticate_webauthn' %}"
+  method="post"
+  class="grid gap-4"
+>
+  {% csrf_token %}{{ redirect_field }}
+
+  <!---->
+  {% include 'allauth/components/form.html' %}
+
+  <button
+    type="submit"
+    id="mfa_webauthn_reauthenticate"
+    class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+  >
+    <i data-lucide="key-round" class="size-4 lg:size-6"></i>
+    {% trans "Use a security key" %}
+  </button>
+
+  {{ js_data|json_script:"js_data" }}
+
+  <!---->
+  {% include "mfa/webauthn/snippets/scripts.html" %}
+
+  <script
+    data-allauth-onload="allauth.webauthn.forms.authenticateForm"
+    type="application/json"
+  >
+    {
+      "ids": {
+        "authenticate": "mfa_webauthn_reauthenticate",
+        "credential": "{{ form.credential.auto_id }}",
+        "data": "js_data"
+      }
+    }
+  </script>
+</form>
+
+{% endblock %}

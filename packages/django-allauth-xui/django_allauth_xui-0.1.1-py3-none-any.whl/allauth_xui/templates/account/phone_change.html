@@ -1,0 +1,65 @@
+{% extends "account/base_manage_phone.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Change Phone" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Change Phone" %}</h1>
+
+  {% url 'account_change_phone' as action_url %}
+
+  <form action="{{ action_url }}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <!---->
+    {% if phone %}
+    <label>
+      {% trans "Current phone" %}:
+      <input type="tel" id="current_phone" disabled value="{{ phone }}" />
+
+      {% if not phone_verified %}
+      <small>
+        {% blocktrans trimmed %}Your phone number is still pending verification.
+        {% endblocktrans %}
+      </small>
+      <button type="submit" form="verify-phone">
+        {% trans 'Re-send Verification' %}
+      </button>
+      {% endif %}
+    </label>
+    {% endif %}
+
+    <label>
+      {% trans "Change to" %}:
+      <input
+        type="tel"
+        name="phone"
+        id="{{ form.phone.auto_id }}"
+        value="{{ form.phone.value }}"
+      />
+    </label>
+
+    <button
+      type="submit"
+      name="action_add"
+      class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      {% trans "Change Phone" context "action" %}
+    </button>
+  </form>
+
+  {% if not phone_verified %}
+  <form
+    class="hidden"
+    id="verify-phone"
+    method="post"
+    action="{{ action_url }}"
+  >
+    {% csrf_token %}
+    <input type="hidden" name="action" value="verify" />
+  </form>
+  {% endif %}
+</div>
+{% endblock content %}

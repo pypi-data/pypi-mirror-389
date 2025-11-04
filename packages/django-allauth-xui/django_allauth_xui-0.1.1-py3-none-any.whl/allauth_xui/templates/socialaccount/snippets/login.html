@@ -1,0 +1,21 @@
+{% load i18n allauth socialaccount %}
+
+<!---->
+{% get_providers as socialaccount_providers %}
+
+<!---->
+{% if socialaccount_providers %}
+<!---->
+{% if not SOCIALACCOUNT_ONLY %}
+<div role="separator" class="divider divider-primary text-primary font-bold">
+  {% trans 'OR' %}
+</div>
+
+<h2>{% trans 'Or use a third-party' %}</h2>
+{% endif %}
+<!---->
+{% include "socialaccount/snippets/provider_list.html" with process="login" %}
+<!---->
+{% include "socialaccount/snippets/login_extra.html" %}
+<!---->
+{% endif %}

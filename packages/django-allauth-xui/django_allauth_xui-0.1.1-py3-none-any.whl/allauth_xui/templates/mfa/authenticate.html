@@ -1,0 +1,110 @@
+{% extends "mfa/base_entrance.html" %}{% load i18n static allauth %}
+
+<!---->
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Two-Factor Authentication" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}Your account is protected by two-factor
+    authentication. Please enter an authenticator code:{% endblocktrans %}
+  </p>
+
+  {% url 'mfa_authenticate' as action_url %}
+
+  <form action="{{ action_url }}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="log-in" class="size-4 lg:size-6"></i>
+      {% trans "Sign In" %}
+    </button>
+
+    {% if "webauthn" not in MFA_SUPPORTED_TYPES %}
+    <button
+      type="submit"
+      form="logout-from-stage"
+      class="btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+      {% trans "Cancel" %}
+    </button>
+    {% endif %}
+  </form>
+
+  {% if "webauthn" in MFA_SUPPORTED_TYPES %}
+  <div role="separator" class="divider divider-primary text-primary font-bold">
+    {% trans 'OR' %}
+  </div>
+
+  <h2 class="sr-only">{% trans "Alternative options" %}</h2>
+
+  <div class="grid gap-4">
+    <button
+      type="button"
+      form="webauthn_form"
+      id="mfa_webauthn_authenticate"
+      class="btn btn-sm btn-soft btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="key" class="size-4 lg:size-6"></i>
+      {% trans "Use a security key" %}
+    </button>
+    <button
+      type="submit"
+      form="logout-from-stage"
+      class="btn btn-sm btn-soft btn-ghost lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+      {% trans "Cancel" %}
+    </button>
+  </div>
+
+  <form
+    method="post"
+    class="grid gap-4"
+    id="webauthn_form"
+    action="{{ action_url }}"
+  >
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' with form=webauthn_form %}
+
+    <!---->
+    {{ js_data|json_script:"js_data" }}
+    <!---->
+    {% include "mfa/webauthn/snippets/scripts.html" %}
+    <script
+      data-allauth-onload="allauth.webauthn.forms.authenticateForm"
+      type="application/json"
+    >
+      {
+        "ids": {
+          "authenticate": "mfa_webauthn_authenticate",
+          "credential": "{{ webauthn_form.credential.auto_id }}",
+          "data": "js_data"
+        }
+      }
+    </script>
+  </form>
+
+  {% endif %}
+
+  <form
+    id="logout-from-stage"
+    method="post"
+    action="{% url 'account_logout' %}"
+    class="hidden"
+  >
+    <input type="hidden" name="next" value="{% url 'account_login' %}" />
+    {% csrf_token %}
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "account/base_entrance.html" %}{% load i18n allauth account %}
+
+<!---->
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Send me a sign-in code" %}</h1>
+
+  <p>
+    {% blocktrans %}You will receive a special code for a password-free
+    sign-in.{% endblocktrans %}
+  </p>
+
+  {% url 'account_request_login_code' as login_url %}
+
+  <form action="{{ login_url }}" method="post" class="grid gap-4">
+    {% csrf_token %}{{ redirect_field }}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="square-asterisk" class="size-4 lg:size-6"></i>
+      {% trans "Request Code" %}
+    </button>
+  </form>
+
+  <div role="separator" class="divider divider-primary text-primary font-bold">
+    {% trans 'OR' %}
+  </div>
+
+  <div class="grid gap-4">
+    <a
+      href="{% url 'account_login' %}"
+      class="btn btn-sm btn-soft btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="rectangle-ellipsis" class="size-4 lg:size-6"></i>
+      {% trans "Other sign-in options" %}
+    </a>
+  </div>
+</div>
+{% endblock %}

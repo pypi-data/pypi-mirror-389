@@ -1,0 +1,132 @@
+{% extends "account/base_entrance.html" %}{% load i18n allauth account %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  {% setvar title_ %}{% block title %}{% endblock %}{% endsetvar %}
+  <!---->
+  {% setvar action_url %}{% block action_url %}{% endblock %}{% endsetvar %}
+  <!---->
+  {% setvar recipient %}{% block recipient %}{% endblock %}{% endsetvar %}
+  <!---->
+  {% setvar summary_ %}{% block change_title %}{% endblock %}{% endsetvar %}
+
+  <h1>{{ title_ }}</h1>
+
+  <p>
+    {% blocktrans trimmed %}We've sent a code to {{ recipient }}. The code
+    expires shortly, so please enter it soon.{% endblocktrans %}
+  </p>
+
+  <form action="{{ action_url }}" method="post" class="grid gap-4">
+    {% csrf_token %}{{ redirect_field }}
+
+    <!---->
+    {% include "allauth/components/form.html" with form=verify_form %}
+
+    <div class="grid gap-4">
+      <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+        <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+        {% trans "Confirm" %}
+      </button>
+
+      {% if can_resend %}
+      <button
+        type="submit"
+        form="resend"
+        class="btn btn-sm btn-soft btn-primary lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="square-asterisk" class="size-4 lg:size-6"></i>
+        {% trans "Request new code" %}
+      </button>
+      {% endif %}
+
+      <!---->
+      {% if cancel_url %}
+      <a
+        href="{{ cancel_url }}"
+        class="btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+        {% trans "Cancel" %}
+      </a>
+      {% else %}
+      <button
+        type="submit"
+        form="logout-from-stage"
+        class="btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="circle-x" class="size-4 lg:size-6"></i>
+        {% trans "Cancel" %}
+      </button>
+      {% endif %}
+
+      <!---->
+      {% if can_change %}
+      <button
+        type="button"
+        onclick="changeModal.showModal()"
+        class="btn btn-sm btn-ghost lg:btn-md 2xl:btn-lg"
+      >
+        <i data-lucide="pencil-line" class="size-4 lg:size-6"></i>
+        {{ summary_ }}
+      </button>
+
+      <dialog id="changeModal" class="modal not-prose">
+        <section class="relative modal-box grid max-w-xl gap-6 bg-base-200">
+          <header class="flex items-center justify-between gap-4 text-primary">
+            <h2 class="text-lg font-semibold lg:text-2xl">{{ summary_ }}</h2>
+
+            <div
+              class="tooltip tooltip-left rtl:tooltip-right"
+              data-tip="{% trans 'Close' %}"
+            >
+              <button
+                onclick="changeModal.close()"
+                class="btn btn-square btn-sm btn-ghost md:btn-md 2xl:btn-lg"
+              >
+                <i data-lucide="x" class="size-4 lg:size-6"></i>
+
+                <span class="sr-only">{% trans 'Close' %}</span>
+              </button>
+            </div>
+          </header>
+
+          <main>
+            <form action="{{ action_url }}" method="post" class="grid gap-4">
+              {% csrf_token %}{{ redirect_field }}
+
+              <!---->
+              {% include "allauth/components/form.html" with form=change_form %}
+
+              <button
+                name="action"
+                value="change"
+                type="submit"
+                class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+              >
+                <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+                {% trans "Change" %}
+              </button>
+            </form>
+          </main>
+        </section>
+      </dialog>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<form id="resend" method="post" action="{{ action_url }}">
+  {% csrf_token %}{{ redirect_field }}
+  <input type="hidden" name="action" value="resend" />
+</form>
+
+{% if not cancel_url %}
+<form id="logout-from-stage" method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{% url 'account_login' %}" />
+</form>
+{% endif %}
+<!---->
+{% endblock %}

@@ -1,0 +1,15 @@
+{% load i18n %}{% load account allauth %}
+
+<!---->
+{% user_display user as user_display %}
+
+<div role="alert" class="not-prose alert alert-soft alert-info">
+  <strong class="tooltip tooltip-info" data-tip="{% trans 'Note' %}">
+    <i class="size-4 lg:size-6" data-lucide="info"></i>
+    <span class="sr-only">{% trans 'Note' %}:</span>
+  </strong>
+
+  <p>
+    {% blocktrans trimmed %}You are already logged in as {{ user_display }}.{% endblocktrans %}
+  </p>
+</div>

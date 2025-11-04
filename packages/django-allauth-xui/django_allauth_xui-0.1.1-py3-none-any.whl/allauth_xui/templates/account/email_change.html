@@ -1,0 +1,127 @@
+{% extends "account/base_manage_email.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Email Address" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Email Address" %}</h1>
+
+  {% if not emailaddresses %}
+  <!---->
+  {% include "account/snippets/warn_no_email.html" %}
+  <!---->
+  {% endif %}
+
+  <form action="{% url 'account_email' %}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <!---->
+    {% if current_emailaddress %}
+    <fieldset class="fieldset border border-base-300 rounded-box p-4">
+      <legend class="fieldset-legend">{% translate "Current email" %}:</legend>
+
+      <label class="label">
+        <input
+          disabled
+          type="email"
+          id="current_email"
+          class="input input-primary w-full"
+          value="{{ current_emailaddress.email }}"
+        />
+      </label>
+    </fieldset>
+    {% endif %}
+
+    <!---->
+    {% if new_emailaddress %}
+    <fieldset class="fieldset border border-base-300 rounded-box p-4">
+      <legend class="fieldset-legend">
+        {% if not current_emailaddress %}
+        <!---->
+        {% translate "Current email" %}
+        <!---->
+        {% else %}
+        <!---->
+        {% translate "Changing to" %}
+        <!---->
+        {% endif %}:
+      </legend>
+
+      <label class="label">
+        <input
+          disabled
+          type="email"
+          id="new_email"
+          value="{{ new_emailaddress.email }}"
+          class="input input-primary w-full"
+        />
+      </label>
+
+      <small class="label">
+        {% blocktrans trimmed %}Your email address is still pending
+        verification.{% endblocktrans %}
+
+        <button
+          type="submit"
+          name="action_send"
+          form="pending-email"
+          class="link link-hover link-info"
+        >
+          {% trans 'Re-send Verification' %}
+        </button>
+
+        {% if current_emailaddress %}
+        <button
+          type="submit"
+          form="pending-email"
+          name="action_remove"
+          class="link link-hover link-error"
+        >
+          {% trans 'Cancel Change' %}
+        </button>
+        {% endif %}
+      </small>
+    </fieldset>
+    {% endif %}
+
+    <fieldset class="fieldset border border-base-300 rounded-box p-4">
+      <legend class="fieldset-legend">{% translate "Change to" %}:</legend>
+
+      <label class="label">
+        <input
+          required
+          type="email"
+          name="email"
+          id="{{ form.email.auto_id }}"
+          value="{{ form.email.value }}"
+          class="input input-primary w-full"
+        />
+      </label>
+    </fieldset>
+
+    <button
+      type="submit"
+      name="action_add"
+      class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg"
+    >
+      <i data-lucide="circle-check" class="size-4 lg:size-6"></i>
+      {% trans "Change Email" %}
+    </button>
+  </form>
+</div>
+
+{% if new_emailaddress %}
+<form
+  method="post"
+  class="hidden"
+  id="pending-email"
+  action="{% url 'account_email' %}"
+>
+  {% csrf_token %}
+  <input type="hidden" name="email" value="{{ new_emailaddress.email }}" />
+</form>
+{% endif %}
+<!---->
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "account/base_manage.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Verify Your Email Address" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Verify Your Email Address" %}</h1>
+
+  <p>
+    {% blocktrans trimmed %}This part of the site requires us to verify that you
+    are who you claim to be. For this purpose, we require that you verify
+    ownership of your email address.{% endblocktrans %}
+  </p>
+
+  <p>
+    {% blocktrans trimmed %}We have sent an email to you for verification.
+    Please click on the link inside that email. If you do not see the
+    verification email in your main inbox, check your spam folder. Otherwise
+    contact us if you do not receive it within a few minutes.{% endblocktrans %}
+  </p>
+
+  <div role="alert" class="not-prose alert alert-soft alert-info">
+    <strong class="tooltip tooltip-info" data-tip="{% trans 'Note' %}">
+      <i class="size-4 lg:size-6" data-lucide="info"></i>
+      <span class="sr-only">{% trans 'Note' %}:</span>
+    </strong>
+
+    <p>
+      {% blocktrans trimmed %}You can still change your email address.{% endblocktrans %}
+    </p>
+
+    <div class="tooltip tooltip-info" data-tip="{% trans 'Change' %}">
+      <a
+        href="{% url 'account_email' %}"
+        class="btn btn-sm btn-square btn-info lg:btn-md"
+      >
+        <i class="size-4 lg:size-6" data-lucide="square-pen"></i>
+        <span class="sr-only">{% trans 'Change email address' %}</span>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

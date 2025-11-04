@@ -1,0 +1,34 @@
+{% extends "socialaccount/base_entrance.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>{% trans "Sign Up" %}</h1>
+  <p>
+    {% blocktrans with provider_name=account.get_provider.name site_name=site.name trimmed %}
+    You are about to use your {{provider_name}}
+    account to login to {{site_name}}. As a final step, please complete the
+    following form:{% endblocktrans %}
+  </p>
+
+  <form
+    method="post"
+    class="gird gap-4"
+    action="{% url 'socialaccount_signup' %}"
+  >
+    {% csrf_token %}{{ redirect_field }}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="heart-handshake" class="size-4 lg:size-6"></i>
+      {% trans 'Sign Up' %}
+    </button>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "openid/base.html" %}{% load i18n allauth %}
+
+<!---->
+{% block head_title %}OpenID {% trans "Sign In" %}{% endblock %}
+
+<!---->
+{% block content %}
+<div class="container-prose">
+  <h1>OpenID {% trans 'Sign In' %}</h1>
+
+  <form action="{% url 'openid_login' %}" method="post" class="grid gap-4">
+    {% csrf_token %}
+
+    <!---->
+    {% include 'allauth/components/form.html' %}
+
+    <button type="submit" class="btn btn-sm btn-primary lg:btn-md 2xl:btn-lg">
+      <i data-lucide="log-in" class="size-4 lg:size-6"></i>
+      {% trans "Sign In" %}
+    </button>
+  </form>
+</div>
+{% endblock %}
