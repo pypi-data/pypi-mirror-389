@@ -1,0 +1,35 @@
+Metadata-Version: 2.4
+Name: kinematic-tracker
+Version: 15.0.0
+Summary: Tracker using kinematic Kalman filters.
+Author-email: Peter Koval <pkoval@vicomtech.org>
+License-Expression: MIT
+Requires-Python: >=3.10
+Requires-Dist: association-quality-clavia>=0.1.0
+Requires-Dist: binary-classification-ratios>=0.3.0
+Requires-Dist: numpy>=1.26.4
+Requires-Dist: opencv-python>=4.11.0.86
+Requires-Dist: scipy>=1.15.3
+Description-Content-Type: text/markdown
+
+# Kinematic Tracker
+
+This tracker is based on kinematic Kalman filters. The system state can consist of multiple components,
+each defined by its kinematic order and dimensionality. The tracker supports various process noise models,
+including a custom adaptive process noise model based on a white-noise assumption.
+
+## Tutorial Examples
+
+Simple, reusable examples are available in the `test/tutorials` folder.
+
+## Installation
+
+After installing the `uv` package manager, run:
+
+```shell
+uv sync --no-dev
+```
+
+## Development Installation
+
+For development setup instructions, please refer to the maintainers' README.
