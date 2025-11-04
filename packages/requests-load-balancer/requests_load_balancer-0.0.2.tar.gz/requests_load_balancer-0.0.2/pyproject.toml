@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "requests-load-balancer"
+version = "0.0.2"
+description = "A Python library for load balancing HTTP requests across multiple hosts with health checking"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "earthshakira", email = "arawkar.shubham08@gmail.com"}
+]
+keywords = ["requests", "load-balancer", "http", "client", "failover", "health-check"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "requests>=2.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/earthshakira/requests-load-balancer"
+Repository = "https://github.com/earthshakira/requests-load-balancer"
+"Bug Tracker" = "https://github.com/earthshakira/requests-load-balancer/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+requests_load_balancer = ["py.typed"]
