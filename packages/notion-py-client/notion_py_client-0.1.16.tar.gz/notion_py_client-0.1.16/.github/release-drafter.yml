@@ -1,0 +1,71 @@
+name-template: "Release v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+version-resolver:
+  major:
+    labels:
+      - major
+  minor:
+    labels:
+      - minor
+  patch:
+    labels:
+      - patch
+      - bug
+      - fix
+      - bugfix
+      - feature
+      - enhancement
+      - feat
+  default: patch
+prerelease: false
+
+categories:
+  - title: "🚀 Features"
+    labels:
+      - feature
+      - enhancement
+      - feat
+  - title: "🐛 Fixes"
+    labels:
+      - bug
+      - fix
+      - bugfix
+  - title: "🧰 Maintenance"
+    labels:
+      - chore
+      - maintenance
+      - refactor
+  - title: "📝 Documentation"
+    labels:
+      - docs
+
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+no-changes-template: "- No notable changes."
+
+autolabeler:
+  - label: docs
+    files:
+      - "*.md"
+      - "docs/**"
+  - label: maintenance
+    files:
+      - ".github/**"
+      - "test/**"
+  - label: feature
+    branch:
+      - "/feature\\/.*"
+      - "/feat\\/.*"
+  - label: bug
+    branch:
+      - "/fix\\/.*"
+      - "/bugfix\\/.*"
+
+exclude-labels:
+  - skip-changelog
+
+template: |
+  ## ✨ Highlights
+  $CHANGES
+
+  ## ✅ Contributors
+  $CONTRIBUTORS
