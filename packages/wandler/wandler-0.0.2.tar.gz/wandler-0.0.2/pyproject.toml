@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wandler"
+version = "0.0.2"
+authors = [
+  { name="Rosshhun Gadde", email="me@rosshhun.com" },
+]
+description = "A simple, fast, Python-native task runner"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file="LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "PyYAML>=6.0",
+    "pydantic>=2.0,<3.0",
+    "typer>=0.9,<1.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/rosshhun/wandler"
+
+[project.scripts]
+wandler = "wandler.cli:main"
+
