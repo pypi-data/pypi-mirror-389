@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "name": "RDAP Domain Lookup with Fallback",
+  "chain_variables": ["domain", "registry_url"],
+  "steps": [
+    {
+      "name": "try_authoritative",
+      "depends_on_variables": ["domain", "registry_url"],
+      "condition": {
+        "operator": "and",
+        "checks": [
+          {
+            "variable_name": "registry_url",
+            "operator": "not_equals",
+            "value": null
+          }
+        ]
+      },
+      "request": {
+        "request_method": "GET",
+        "request_url": "{{registry_url}}/domain/{{domain}}",
+        "headers": {
+          "accept": "*/*",
+          "accept-language": "en-US,en;q=0.6",
+          "cache-control": "no-cache",
+          "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36"
+        },
+        "extractors": [
+          {
+            "extractor_key": "authoritative_success",
+            "extractor_type": "declarative_check",
+            "declarative_check_extractor": {
+              "path": ["json_body", "ldhName"],
+              "operator": "exists"
+            }
+          },
+          {
+            "extractor_key": "authoritative_data",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": ["json_body"]
+          }
+        ]
+      }
+    },
+    {
+      "name": "try_fallback_1",
+      "depends_on_variables": ["domain", "authoritative_success"],
+      "condition": {
+        "operator": "or",
+        "checks": [
+          {
+            "variable_name": "registry_url",
+            "operator": "equals",
+            "value": null
+          },
+          {
+            "variable_name": "authoritative_success",
+            "operator": "equals",
+            "value": false
+          }
+        ]
+      },
+      "request": {
+        "request_method": "GET",
+        "request_url": "https://rdap.godaddy.com/v1/domain/{{domain}}",
+        "headers": {
+          "accept": "*/*",
+          "accept-language": "en-US,en;q=0.6",
+          "cache-control": "no-cache",
+          "origin": "https://in.godaddy.com",
+          "pragma": "no-cache",
+          "priority": "u=1, i",
+          "sec-ch-ua": "\"\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-site",
+          "sec-gpc": "1",
+          "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36"
+        },
+        "extractors": [
+          {
+            "extractor_key": "fallback_1_success",
+            "extractor_type": "declarative_check",
+            "declarative_check_extractor": {
+              "path": ["json_body", "ldhName"],
+              "operator": "exists"
+            }
+          },
+          {
+            "extractor_key": "fallback_1_data",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": ["json_body"]
+          }
+        ]
+      }
+    }
+  ]
+}
