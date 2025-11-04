@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<script type="text/javascript">
+	function refresh(){
+		$.getJSON("/run/{{sid}}/{{selection}}/list?render=json", function(resp){
+		$('#theTable').DataTable({
+		bDestroy: true,
+		paging: true,
+		pageLength: -1,
+		lengthmenu: [10, 50, 100, -1],
+		data: resp,
+		order: [[0, 'desc']],
+		columns: [
+			{
+				"data": 'count',
+				"render": {
+					"_": function(d, t, r){
+					if (typeof(d) == "number"){
+					return '<div class="progress" data-order="'+d+'">' +
+					'<div class="progress-bar bg-primary" style="width: 100%"></div>' +
+					'</div>'
+					} else {
+						total = Object.values(d).reduce(function(a, b) { return a+b;}, 0)
+					return '<div class="progress" data-order="'+d.failure+'">' +
+					'<div class="progress-bar bg-danger" style="width: '+(100 * (d["FAILURE"]+d["ERR_OTHER"]+d["HARD_TIMEOUT"])/total)+'%"></div>' +
+					'<div class="progress-bar bg-warning" style="width: '+(100 * (d["ERR_DEP"]+d["SOFT_TIMEOUT"])/total)+'%"></div>' +
+					'<div class="progress-bar bg-success" style="width: '+(100 * d["SUCCESS"]/total)+'%"></div>' +
+					'<div class="progress-bar bg-secondary" style="width: '+(100 * d["IN_PROGRESS"]/total)+'%"></div>' +
+					'<div class="progress-bar bg-primary" style="width: '+(100 * d["WAITING"]/total)+'%"></div>' +
+					'</div>';
+					}
+					}
+				}
+			},
+			{"data": 'name', "render": function(d, tr, r){
+				return "<a href='/run/{{sid}}/{{selection}}/detail?name="+d+"'>"+d+"</a>"
+			}},
+			{"data": 'count', "render": function(d, t, r){
+				if(typeof(d) == "number"){
+					return d;
+				} else {
+					return Object.values(d).reduce(function(a, b) { return a+b;}, 0);
+				}},"className": 'detail-control'}
+		]
+		});
+		}).done(function(){
+			page_ready();
+		});
+	}
+	$(document).ready(function() {
+		page_waiting()
+		refresh()
+	});
+	//var timeout = setInterval(refresh, 2000)
+</script>
+
+<h2 id="#page-title" class="container-fluid text-center">{{selection}} View</h2>
+<table id='theTable' class="display" style="width:100%">
+	<thead>
+		<tr>
+			<th>Progress</th>
+			<th>Name</th>
+			<th>Test Count</th>
+		</tr>
+	</thead>
+</table>
+{% endblock %}

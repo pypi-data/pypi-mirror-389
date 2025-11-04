@@ -1,0 +1,42 @@
+.table tbody tr:hover td, .table tbody tr:hover th {
+	background-color: lightblue;
+}
+
+.table tbody tr td, .table tbody tr th {
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+table tr pre
+{
+	border: #2c2c2c 4px solid;
+	border-radius: 5px;
+	background-color:#2c2c2c;
+	color:white;
+	margin:10px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	word-break: break-word;
+	/*white-space: pre-wrap;       /* Since CSS 2.1 */
+	/*white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+	/*white-space: -pre-wrap;      /* Opera 4-6 */
+	/*white-space: -o-pre-wrap;    /* Opera 7 */
+	/*word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+#wait-div {
+	height: 100%;
+}
+
+td.detail-control {
+	cursor: pointer
+}
+
+html, body {
+	height: 100vh;
+}
+
+#page-body
+{
+	min-height: 100%;
+}

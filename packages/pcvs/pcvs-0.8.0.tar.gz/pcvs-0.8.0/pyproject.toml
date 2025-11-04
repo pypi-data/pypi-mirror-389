@@ -1,0 +1,162 @@
+[build-system]
+# sh is needed to add git rev at the end of the version
+requires = ["setuptools", "sh"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pcvs"
+dependencies = [
+  "ruamel.yaml",
+  "Click>=8.0",
+  "requests",
+  "jsonschema>=3.0.0",
+  "flask",
+  "sh",
+  "rich",
+  "rich-click",
+  "pygit2<=1.14.1",
+  "textual>=0.29.0",
+  "matplotlib",
+]
+requires-python = ">=3.10"
+authors = [
+  {name = "Julien Adam", email = "adamj@paratools.com"},
+  {name = "Paul Canat", email = "pcanat@paratools.com"},
+  {name = "Nicolas Marie", email = "nicolas.marie@uvsq.fr"},
+]
+maintainers = [
+# Nobody right now
+]
+description = "A Validation Orchestrator designed by and for software at scale."
+readme = "README.md"
+license = { text = "CeCILL-C"}
+#license-files = ["COPYING"]
+keywords = ["validation", "hpc", "test-suite"]
+classifiers = [
+  'Topic :: Software Development :: Quality Assurance',
+  'Topic :: Software Development :: Testing',
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://pcvs.io"
+Documentation = "https://cea-hpc.github.io/pcvs/"
+Repository = "https://github.com/cea-hpc/pcvs"
+Issues = "https://github.com/cea-hpc/pcvs/issues"
+Changelog = "https://github.com/cea-hpc/pcvs/blob/master/CHANGES"
+
+[project.scripts]
+pcvs = "pcvs.main:cli"
+
+[project.optional-dependencies]
+dev = [
+  "autopep8",
+  "darglint",
+  "pydocstyle",
+  "flake8",
+  "pylint",
+  "pytest",
+  "coverage",
+  "docstr-coverage",
+  "tox",
+  "pre-commit",
+  "isort",
+  "black",
+  "mypy",
+  "sphinx",
+  "sphinx-autodoc-typehints",
+  "sphinx-rtd-theme",
+  "textual-dev",
+  "python-lsp-server",
+  #"furo",
+]
+
+# tell setuptools look for all python packages to include,
+# in addition, files are also included from Manifest.in
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pcvs*"]
+
+#
+# TOX Configuration
+#
+
+[tool.tox]
+env_list = ["3.12.3"]
+skipsdist = true
+skip_missing_interpreters = true
+# TODO: fixe install_commands to disable indexing so we can run that on inti
+#install_commands = ["python -I -m pip install --no-index {opts} {packages}"]
+
+# Base env
+[tool.tox.env_run_base]
+# Gather the dependencies from the fields above.
+# see: https://tox.wiki/en/latest/config.html#references-within-set-env
+#deps = [{ replace = "ref", of = ["project", "dependencies"], extend = true},
+#        { replace = "ref", of = ["project", "optional-dependencies", "dev"], extend = true}]
+passenv = ["HOME", "USER"]
+allowlist_externals = ["coverage", "pre-commit", "mypy", "docstr-coverage", "darglint", "pydocstyle", "make"]
+
+# pcvs coverage
+[tool.tox.env.pcvs-coverage]
+commands = [
+  [
+    'coverage', 'erase'
+  ],
+  [
+    'coverage', 'run', '--source=./pcvs', '-m', 'pytest', './tests/pcvs'
+  ],
+  [
+    'coverage', 'report', '--precision=2', '--fail-under=50', '--sort=-miss'
+  ],
+]
+
+# pcvs linter
+[tool.tox.env.pcvs-lint]
+skip_install = true
+ignore_errors = true
+commands = [
+  [
+    'pre-commit', 'run', '--all-files',
+  ]
+  # TODO: reenable mypy
+  # add strict typing check
+  #[
+  #  'mypy', '--config-file', './mypy.ini', './pcvs'
+  #],
+]
+
+# Documentation coverage
+[tool.tox.env.doc-coverage]
+commands = [
+  [
+    'docstr-coverage', '--skip-file-doc', '--exclude', '.*pcvs/cli/cli.*.py',
+    '--accept-empty', '--verbose=2', 'pcvs', '--fail-under', '70'
+  ],
+]
+
+# Documentation linter
+[tool.tox.env.doc-lint]
+skip_install = true
+ignore_errors = true
+commands = [
+  [
+    'darglint', '--verbosity=2', 'docs', 'pcvs', 'tests'
+  ],
+  [
+    'pydocstyle', 'pcvs/'
+  ],
+]
+
+# Documentation builder
+[tool.tox.env.doc]
+allowlist_externals = ['make']
+changedir = 'docs'
+commands = [
+  [
+    'make', 'clean'
+  ],
+  [
+    'make', 'html'
+  ],
+]
