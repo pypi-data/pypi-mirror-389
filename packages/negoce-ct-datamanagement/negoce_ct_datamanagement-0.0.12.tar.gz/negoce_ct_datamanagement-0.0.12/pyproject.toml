@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "negoce_ct_datamanagement"
+version = "0.0.12"
+authors = [
+    { name="Antoine Leboube", email="antoine.leboube@sig-ge.ch" },
+    { name="Bernard Huynh", email="bernard.huynh@sig-ge.ch" },
+]
+description = "Package to handle Negoce CT data"
+readme = "README.md"
+requires-python = ">=3.12"
+dynamic = ["dependencies"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/sig-negoce/negoce-ct-datamanagement"
+Issues = "https://github.com/sig-negoce/negoce-ct-datamanagement/issues"
