@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "beanpy"
+version = "0.0.1"
+authors = [
+  { name="黑米拌饭", email="heimibanfan@163.com" },
+]
+description = "BeanPy 是一个轻量级的 Python 依赖注入框架，通过控制反转（IoC）模式管理对象的创建与依赖关系，支持单例/非单例模式、懒加载、生命周期管理及循环依赖处理，能有效降低代码耦合度，提升可维护性。"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://gitee.com/luanet/bean-py"
+
+
+[tool.setuptools]
+# 告诉 setuptools 去哪里找源码
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+# 在 src 目录下自动查找包
+where = ["src"]
+include = ["beanpy*"]  # 限制只打包 beanpy 相关模块
+
+
+[tool.setuptools.dynamic]
+# 如果希望自动从 README 获取长描述（PyPI 友好）
+readme = {file = ["README.md"], content-type = "text/markdown"}

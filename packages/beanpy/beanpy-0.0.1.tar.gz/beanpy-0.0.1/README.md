@@ -1,0 +1,208 @@
+# BeanPy 框架使用教程
+
+## 一、框架简介
+
+BeanPy 是一个轻量级的 Python 依赖注入框架，通过控制反转（IoC）模式管理对象的创建与依赖关系，支持单例/非单例模式、懒加载、生命周期管理及循环依赖处理，能有效降低代码耦合度，提升可维护性。
+
+
+## 二、核心概念
+
+1. **Bean**：由框架管理的对象实例，可通过类定义注册为 Bean
+2. **依赖注入**：框架自动将一个 Bean 注入到另一个 Bean 的依赖中
+3. **生命周期**：Bean 从创建到销毁的完整过程，包含初始化和销毁阶段
+4. **后处理器**：用于在 Bean 生命周期的特定阶段扩展功能
+
+
+## 三、快速入门
+
+### 1. 安装框架
+
+（假设已通过合适方式安装，如本地包引用）
+
+### 2. 定义 Bean 类
+
+创建需要被框架管理的类，并通过装饰器声明依赖和生命周期方法：
+
+```python
+# 示例：定义两个相互依赖的 Bean
+class UserService:
+    def __init__(self):
+        self.order_service = None  # 依赖 OrderService
+
+    # 注入 OrderService 依赖
+    @inject(bean_name="order_service")
+    def set_order_service(self, order_service):
+        self.order_service = order_service
+
+    # 初始化方法（依赖注入完成后执行）
+    @post_construct
+    def init(self):
+        print("UserService 初始化完成")
+
+    # 销毁方法（容器停止前执行）
+    @pre_destroy
+    def destroy(self):
+        print("UserService 已销毁")
+
+
+class OrderService:
+    def __init__(self):
+        self.user_service = None  # 依赖 UserService
+
+    # 注入 UserService 依赖
+    @inject(bean_name="user_service")
+    def set_user_service(self, user_service):
+        self.user_service = user_service
+
+    @post_construct
+    def init(self):
+        print("OrderService 初始化完成")
+
+    @pre_destroy
+    def destroy(self):
+        print("OrderService 已销毁")
+```
+
+### 3. 注册与使用 Bean
+
+通过 `BeanFactory` 管理 Bean 的注册、启动和获取：
+
+```python
+from beanpy.factory import BeanFactory
+
+# 1. 创建 Bean 工厂
+factory = BeanFactory()
+
+# 2. 注册 Bean（名称需唯一）
+factory.register_bean(
+    cls=UserService,
+    name="user_service",
+    lazy=False,  # 非懒加载（容器启动时创建）
+    single=True  # 单例模式（默认）
+)
+factory.register_bean(
+    cls=OrderService,
+    name="order_service",
+    lazy=False
+)
+
+# 3. 启动容器（初始化非懒加载 Bean 并完成依赖注入）
+factory.run()
+
+# 4. 获取 Bean 实例
+user_service = factory.get_bean("user_service")
+order_service = factory.get_bean("order_service")
+
+# 验证依赖注入是否成功
+print(user_service.order_service is order_service)  # 输出：True
+print(order_service.user_service is user_service)  # 输出：True
+
+# 5. 停止容器（执行销毁方法）
+factory.stop()
+```
+
+执行结果：
+```
+UserService 初始化完成
+OrderService 初始化完成
+True
+True
+UserService 已销毁
+OrderService 已销毁
+```
+
+
+## 四、高级特性
+
+### 1. 懒加载 Bean
+
+对于资源消耗大或不常用的 Bean，可设置 `lazy=True`，使其在首次获取时才创建：
+
+```python
+class LogService:
+    @post_construct
+    def init(self):
+        print("LogService 初始化（懒加载）")
+
+# 注册懒加载单例 Bean
+factory.register_bean(LogService, "log_service", lazy=True)
+
+factory.run()  # 启动时不会创建 LogService
+log_service = factory.get_bean("log_service")  # 首次获取时创建
+```
+
+
+### 2. 非单例 Bean
+
+通过 `single=False` 注册非单例 Bean，每次获取都会创建新实例：
+
+```python
+class PaymentService:
+    pass
+
+# 注册非单例 Bean
+factory.register_bean(PaymentService, "payment_service", single=False)
+
+factory.run()
+p1 = factory.get_bean("payment_service")
+p2 = factory.get_bean("payment_service")
+print(p1 is p2)  # 输出：False（非单例）
+```
+
+
+### 3. 后处理器扩展
+
+#### （1）BeanFactoryPostProcessor：修改 Bean 定义
+
+```python
+from beanpy.processor import BeanFactoryPostProcessor
+
+class CustomFactoryProcessor(BeanFactoryPostProcessor):
+    def handle(self, container):
+        # 动态修改已注册的 Bean 定义（例如将懒加载改为非懒加载）
+        log_def = container.get_definition("log_service")
+        if log_def:
+            # 注意：实际需通过自定义 BeanDefinition 子类实现修改逻辑
+            pass
+
+# 注册后处理器
+factory.register_bean_factory_post_processor(CustomFactoryProcessor())
+```
+
+#### （2）BeanPostProcessor：增强 Bean 实例
+
+```python
+from beanpy.processor import BeanPostProcessor
+
+class CustomBeanProcessor(BeanPostProcessor):
+    def post_before_init(self, bean):
+        # 初始化前执行（如打印日志）
+        print(f"初始化前：{bean.__class__.__name__}")
+
+    def post_after_init(self, bean):
+        # 初始化后执行（如代理增强）
+        print(f"初始化后：{bean.__class__.__name__}")
+        return bean
+
+# 注册后处理器
+factory.register_bean_post_processor(CustomBeanProcessor())
+```
+
+
+### 4. 循环依赖处理
+
+框架通过二级缓存自动解决单例 Bean 的循环依赖（如入门示例中的 `UserService` 和 `OrderService`）：
+- 一级缓存（`__single_objects`）：存储完全初始化的单例 Bean
+- 二级缓存（`__early_single_objects`）：存储未完成依赖注入的早期实例，供循环依赖时临时引用
+
+
+## 五、使用注意事项
+
+1. **Bean 名称唯一性**：注册时需保证 `name` 唯一，否则会抛出 `BeanPyException`
+2. **依赖注入方法**：被 `@inject` 装饰的方法需接收一个参数（注入的 Bean 实例）
+3. **容器状态**：必须先调用 `run()` 启动容器，才能通过 `get_bean()` 获取实例
+4. **循环依赖限制**：仅支持单例 Bean 的循环依赖，非单例 Bean 不支持
+5. **生命周期方法**：`@post_construct` 和 `@pre_destroy` 装饰的方法需为无参实例方法
+
+
+通过以上步骤，即可利用 BeanPy 框架实现对象的自动化管理和依赖注入，简化代码结构并提升可维护性。
