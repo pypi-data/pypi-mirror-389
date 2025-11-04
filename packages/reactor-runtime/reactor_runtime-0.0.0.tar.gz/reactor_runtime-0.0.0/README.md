@@ -1,0 +1,105 @@
+# Reactor Runtime
+
+A Python runtime for building real-time video processing models. This runtime abstracts all the techincal implementations of real-time networking, allowing
+researchers and models developers to run their model focusing only on the ML code.
+
+You can think of this similarly to the way you write Telegram/Discord applications or bots using SDKs. You don't have to worry about the networking and the protocols of the medium. Instead, you can put all your effort in writing your application code, which in this case is ML code.
+
+## Installation
+
+```bash
+pip install reactor-runtime
+```
+
+## CLI Reference
+
+The reactor-runtime library offers a set of commands that help you getting started with development.
+
+### `reactor init <name>`
+
+Initialize a new model workspace from a template.
+
+```bash
+reactor init my-model
+```
+
+Creates a directory `my-model/` with:
+
+- `model_template.py` - Example VideoModel implementation
+- `manifest.json` - Model configuration
+- `requirements.txt` - Python dependencies
+- `README.md` - Documentation Template
+
+Once you have created your workspace, you're ready to start implementing your model.
+
+---
+
+### `reactor run`
+
+Run your model with the Reactor runtime.
+
+```bash
+reactor run [--host HOST] [--port PORT] [--log-level LEVEL]
+```
+
+**Arguments:**
+
+- `--host` - Server host (default: `0.0.0.0`)
+- `--port` - Server port (default: `8081`)
+- `--log-level` - Log level: `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG` (default: `INFO`)
+
+The `reactor run` command, will use the `manifest.json` file to infer the basic information and properties of your model.
+Read the next section in order to understand what the `manifest.json` is, and how to customize it for your needs.
+
+After running `reactor run`, you might encounter an error if you don't have the livekit local server installed. Follow
+this link (which is also shown in the error) to install livekit on your OS: https://docs.livekit.io/home/self-hosting/local/
+
+**Example:**
+
+```bash
+reactor run
+```
+
+---
+
+### `reactor capabilities`
+
+Print the command capabilities of a VideoModel.
+
+```bash
+reactor capabilities
+```
+
+Outputs JSON schema of all available commands defined in your model (via `@command` decorators). When implementing your model, you will be able
+to specify specific messages you want to "react" to, in real-time.
+
+After these messages have been defined in your code, the runtime will generate a schema automatically, that clients will be able to use to infer what messages to send to the model.
+
+---
+
+## Manifest Format
+
+```json
+{
+  "reactor-runtime": "0.0.0",
+  "model_name": "my-model",
+  "model_version": "1.0.0",
+  "class": "model_file:ModelClass",
+  "args": {
+    "fps": 30,
+    "size": [480, 640]
+  },
+  "weights": ["sam2_hiera_large", "dinov2_vitl14"],
+  "video_input": false
+}
+```
+
+The manifest is what defines your model. It defines the entrypoint, the version, the arguments, and so on. It is basically as the ID card of the model.
+
+- reactor-runtime -> the version of the runtime used for development, so that it can be used for deployments and guarantee compatibility
+- model_name -> the name of the model. This will identify the model on the Reactor ecosystem. (Multiple versions of the models should be specified using the version parameter.)
+- model_version -> the version of the model.
+- class -> Really important, it should be a pointer to the VideoModel class your model implements. For example, if you have implemented VideoModel in a file called `magic-model`, calling the model `MyMagicModel`, the value should be ``magic-model:MyMagicModel`
+- args: the arguments with which the model will be started. You'll be able to access these arguments in the **init** call of the VideoModel, through the `kwargs`
+- weights: not needed for local development (for now). Specify your weights as you normally would, when deploying the Reactor Team will manually optimize the weights path.
+- video_input: if enabled, your model will be able to accept video input during a session. This means that whenever a user will stream their own video stream, you'll receive each frame call on a method called `on_frame`. You'll receive frames as numpy ndarrays.
