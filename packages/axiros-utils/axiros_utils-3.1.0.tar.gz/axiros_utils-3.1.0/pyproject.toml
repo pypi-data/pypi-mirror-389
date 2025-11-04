@@ -1,0 +1,183 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "axiros_utils"
+version = "3.1.0"
+description = "Standalone ax_utils package with C/C++ extensions for high-performance utilities"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "BSD-3-Clause"
+authors = [{ name = "axiros", email = "gklessinger@gmx.de" }]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: C",
+  "Programming Language :: C++",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["utilities", "performance", "tree", "queue", "unicode"]
+dependencies = ["setuptools"]
+
+
+[project.urls]
+Homepage = "https://github.com/axgkl/ax_utils"
+Documentation = "https://github.com/axgkl/ax_utils#readme"
+Repository = "https://github.com/axgkl/ax_utils.git"
+"Bug Tracker" = "https://github.com/axgkl/ax_utils/issues"
+
+[project.entry-points."gevent.plugins.monkey.did_patch_all"]
+ax_queue = "ax_utils.ax_queue.gevent_patch:patch"
+
+[tool.setuptools]
+packages = { find = { where = [
+  ".",
+], include = [
+  "ax_utils*",
+], exclude = [
+  "*.tests*",
+  "tests*",
+] } }
+include-package-data = true
+
+[tool.setuptools.package-data]
+ax_utils = ["**/*.c", "**/*.cpp", "**/*.h", "**/*.so"]
+
+[tool.setuptools.exclude-package-data]
+"*" = [
+  "*.pyc",
+  "*.pyo",
+  "*~",
+  "__pycache__",
+  ".coverage",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  "tests/*",
+  "*/tests/*",
+]
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = ["-ra", "--strict-markers", "--strict-config", "--tb=short"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "integration: marks tests as integration tests",
+  "benchmark: marks tests as benchmarks",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+  "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["ax_utils"]
+omit = ["*/tests/*", "*/test_*", "setup.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+exclude = [
+  ".eggs",
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".tox",
+  ".venv",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+  "E", # pycodestyle errors
+  "W", # pycodestyle warnings
+  "F", # Pyflakes
+  "I", # isort
+]
+ignore = [
+  "F821", # Undefined name (for Python 2/3 compatibility in six.py)
+  "E722", # Do not use bare except (intentional in fallback imports)
+  "F401", # Imported but unused (for re-exports and fallback imports)
+  "E402", # Module level import not at top (for conditional imports)
+  "E731", # Do not assign lambda (legacy code)
+  "E501", # Line too long (for specific long strings)
+  "F841", # Local variable assigned but never used (in benchmarks)
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = true
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "ax_utils.*"
+ignore_errors = true
+
+[tool.cibuildwheel]
+# Build wheels for Python 3.9-3.12
+build = ["cp39-*", "cp310-*", "cp311-*", "cp312-*"]
+
+# Skip 32-bit builds and musllinux
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_*"]
+
+# Build for multiple architectures
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
+
+# Test that the wheels work
+test-command = "python -c \"from ax_utils.ax_queue import AXQueue; from ax_utils.ax_tree import AXTree; from ax_utils.props_to_tree import props_to_tree; print('Wheel test passed')\""
+
+[dependency-groups]
+dev = [
+  "ruff>=0.1.0",
+  "mypy>=1.14.1",
+  "pytest>=8.3.5",
+  "pytest-benchmark>=4.0.0",
+  "pytest-cov>=5.0.0",
+  "pytest-xdist>=3.6.1",
+  "twine>=4.0",
+  "nh3>=0.3.0",
+  "cibuildwheel>=2.21.0",
+]
+test = ["pytest>=7.0", "pytest-cov>=4.0"]
