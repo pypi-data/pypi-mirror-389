@@ -1,0 +1,37 @@
+---
+
+- hosts: '*'
+  gather_facts: false
+  tasks:
+  - name: Install python for ansible to work
+    register: bigsudo_bootstrap
+    changed_when: bigsudo_bootstrap.stdout_lines|length > 1
+    raw: |
+      #!/bin/sh -x
+      sudo=""
+      [ "$USER" = "root" ] || sudo=sudo
+
+      if type python3; then
+          if ! type python &> /dev/null; then
+              $sudo ln -sfn $(type python3 | grep '/.*$') /usr/bin/python
+          fi
+          exit 0
+      fi
+
+      if type yum; then
+          $sudo yum-config-manager --enable cr
+          $sudo yum makecache fast
+          $sudo yum install -y dnf python3 libselinux-python3
+      elif type zypper; then
+          $sudo zypper refresh
+          $sudo zypper install -y python3
+      elif type apt; then
+          $sudo apt update -y
+          $sudo apt install -y python3
+      elif type pacman; then
+          $sudo pacman -Sy --noconfirm
+          $sudo pacman -S --noconfirm python
+      elif type apk; then
+          $sudo apk update
+          $sudo apk add python
+      fi

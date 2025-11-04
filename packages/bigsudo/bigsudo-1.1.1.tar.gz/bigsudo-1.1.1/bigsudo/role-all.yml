@@ -1,0 +1,15 @@
+---
+
+- import_playbook: bootstrap.yml
+
+- hosts: '*'
+  vars:
+    apply_tasks: '{{ apply_tasks|default("main") }}'
+  tasks:
+  - name: Applying {{ apply_role }}
+    include_role:
+      name: '{{ apply_role }}'
+      tasks_from: '{{ current_task }}.yml'
+    loop: '{{ apply_tasks.split(",") }}'
+    loop_control:
+      loop_var: current_task
