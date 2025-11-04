@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "runexp"
+version = "0.1.4"
+authors = [
+  { name="Maxime Amodei", email="maxime.amodei@gmail.com" },
+]
+description = "Library to run experiment from argparse or config file with slurm"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+  "psutil~=7.1.1",
+  "pydantic~=2.4",
+  "pyyaml~=6.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/maxime915/runexp"
+"Bug Tracker" = "https://github.com/maxime915/runexp/issues"
+
+[tool.hatch.build]
+exclude = [
+	"/.vscode",
+	"/.gitignore",
+	"/Makefile",
+	"/examples",  # for now: wip
+]
