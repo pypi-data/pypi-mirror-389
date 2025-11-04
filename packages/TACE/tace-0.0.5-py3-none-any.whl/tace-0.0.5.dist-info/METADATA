@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: TACE
+Version: 0.0.5
+Summary: TACE - Cartesian Tensor based E(3) equivariant interatomic potentials.
+Author-email: Zemin Xu <xvzemin@smail.nju.edu.cn>
+Project-URL: Homepage, https://github.com/xvzemin/tace
+Requires-Python: >=3.10
+License-File: LICENSE.md
+Requires-Dist: torch<2.10
+Requires-Dist: lightning
+Requires-Dist: omegaconf
+Requires-Dist: hydra-core>=1.3
+Requires-Dist: matscipy
+Requires-Dist: ase
+Requires-Dist: numpy
+Requires-Dist: e3nn
+Requires-Dist: wandb
+Requires-Dist: torch_geometric
+Requires-Dist: scipy
+Requires-Dist: configargparse
+Requires-Dist: lmdb
+Requires-Dist: pandas
+Provides-Extra: lammps
+Requires-Dist: cython; extra == "lammps"
+Requires-Dist: cupy-cuda12x; extra == "lammps"
+Provides-Extra: dev
+Requires-Dist: sphinx; extra == "dev"
+Requires-Dist: myst-parser; extra == "dev"
+Requires-Dist: sphinx-copybutton; extra == "dev"
+Requires-Dist: pydata-sphinx-theme; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: MDAnalysis; extra == "dev"
+Requires-Dist: tidynamics; extra == "dev"
+Requires-Dist: mdtraj; extra == "dev"
+Requires-Dist: scikit-learn; extra == "dev"
+Requires-Dist: umap-learn; extra == "dev"
+Requires-Dist: cotengra; extra == "dev"
+Requires-Dist: optuna; extra == "dev"
+Requires-Dist: cmaes; extra == "dev"
+Requires-Dist: nevergrad; extra == "dev"
+Requires-Dist: configargparse; extra == "dev"
+Requires-Dist: ase_db_backends; extra == "dev"
+Requires-Dist: tomli; extra == "dev"
+Requires-Dist: matcalc; extra == "dev"
+Requires-Dist: pandas; extra == "dev"
+Requires-Dist: matminer; extra == "dev"
+Requires-Dist: vtk; extra == "dev"
+Requires-Dist: pymatgen; extra == "dev"
+Requires-Dist: pymatviz==0.15.1; extra == "dev"
+Dynamic: license-file
