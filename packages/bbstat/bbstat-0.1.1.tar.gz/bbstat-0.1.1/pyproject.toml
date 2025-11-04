@@ -1,0 +1,77 @@
+[project]
+name = "bbstat"
+dynamic = ["version"]
+authors = [{ name="Chris Wehmeyer", email="wehmeyer.chris@gmail.com" }]
+description = "A lightweight library for Bayesian bootstrapping and statistical evaluation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["bayesian", "bootstrap", "statistics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "matplotlib",
+    "numpy >= 1.21",
+    "scipy >= 1.11",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest >= 7.0",
+    "pytest-cov",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-autorefs",
+    "mkdocs-get-deps",
+    "mkdocs-include-markdown-plugin",
+    "mkdocstrings[python]",
+]
+lint = [
+    "black",
+    "ruff",
+]
+typecheck = [
+    "mypy",
+    "scipy-stubs",
+]
+dev = [
+    "build",
+    "pre-commit",
+    "tox",
+    "twine",
+]
+
+[project.urls]
+Homepage = "https://github.com/cwehmeyer/bbstat"
+Documentation = "https://cwehmeyer.github.io/bbstat/"
+Repository = "https://github.com/cwehmeyer/bbstat.git"
+Issues = "https://github.com/cwehmeyer/bbstat/issues"
+Changelog = "https://github.com/cwehmeyer/bbstat/blob/main/CHANGELOG.md"
+
+[build-system]
+requires = [
+    "setuptools >= 77.0.3",
+    "setuptools-scm",
+    "wheel",
+]
+
+[tool.setuptools]
+packages = ["bbstat"]
+include-package-data = true
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
+write_to = "bbstat/_version.py"
+
+[tool.mypy]
+check_untyped_defs = true
+
+[tool.mkdocs]
+config_file = "mkdocs.yml"
+build-backend = "setuptools.build_meta"
