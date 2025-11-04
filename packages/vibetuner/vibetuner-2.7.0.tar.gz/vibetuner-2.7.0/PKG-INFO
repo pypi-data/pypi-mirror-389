@@ -1,0 +1,48 @@
+Metadata-Version: 2.3
+Name: vibetuner
+Version: 2.7.0
+Summary: Blessed Python dependencies for Vibetuner projects
+Requires-Dist: aioboto3>=15.5.0
+Requires-Dist: arel>=0.4.0
+Requires-Dist: asyncer>=0.0.10
+Requires-Dist: authlib>=1.6.5
+Requires-Dist: beanie[zstd]>=2.0.0
+Requires-Dist: click>=8.3.0
+Requires-Dist: email-validator>=2.3.0
+Requires-Dist: fastapi[standard-no-fastapi-cloud-cli]>=0.120.4
+Requires-Dist: granian[pname]>=2.5.6
+Requires-Dist: httpx[http2]>=0.28.1
+Requires-Dist: itsdangerous>=2.2.0
+Requires-Dist: loguru>=0.7.3
+Requires-Dist: pydantic[email]>=2.12.3
+Requires-Dist: pydantic-extra-types[pycountry]>=2.10.6
+Requires-Dist: pydantic-settings>=2.11.0
+Requires-Dist: pyyaml>=6.0.3
+Requires-Dist: redis[hiredis]>=7.0.1
+Requires-Dist: rich>=14.2.0
+Requires-Dist: sse-starlette>=3.0.3
+Requires-Dist: starlette-babel>=1.0.3
+Requires-Dist: starlette-htmx>=0.1.1
+Requires-Dist: streaq[web]<6.0.0
+Requires-Dist: typer-slim[standard]>=0.20.0
+Requires-Dist: babel>=2.17.0 ; extra == 'dev'
+Requires-Dist: cloudflare>=4.3.1 ; extra == 'dev'
+Requires-Dist: copier>=9.9.0,<9.9.1 ; extra == 'dev'
+Requires-Dist: djlint>=1.36.4 ; extra == 'dev'
+Requires-Dist: dunamai>=1.25.0 ; extra == 'dev'
+Requires-Dist: gh-bin>=2.81.0 ; extra == 'dev'
+Requires-Dist: granian[pname,reload]>=2.5.6 ; extra == 'dev'
+Requires-Dist: just-bin>=1.43.0 ; extra == 'dev'
+Requires-Dist: pre-commit>=4.3.0 ; extra == 'dev'
+Requires-Dist: pysemver>=0.5.0 ; extra == 'dev'
+Requires-Dist: ruff>=0.14.3 ; extra == 'dev'
+Requires-Dist: rumdl>=0.0.170 ; extra == 'dev'
+Requires-Dist: semver>=3.0.4 ; extra == 'dev'
+Requires-Dist: taplo>=0.9.3 ; extra == 'dev'
+Requires-Dist: ty>=0.0.1a25 ; extra == 'dev'
+Requires-Dist: types-aioboto3[s3,ses]>=15.5.0 ; extra == 'dev'
+Requires-Dist: types-authlib>=1.6.5.20251005 ; extra == 'dev'
+Requires-Dist: types-pyyaml>=6.0.12.20250915 ; extra == 'dev'
+Requires-Dist: uv-bump>=0.3.1 ; extra == 'dev'
+Requires-Python: >=3.10
+Provides-Extra: dev
