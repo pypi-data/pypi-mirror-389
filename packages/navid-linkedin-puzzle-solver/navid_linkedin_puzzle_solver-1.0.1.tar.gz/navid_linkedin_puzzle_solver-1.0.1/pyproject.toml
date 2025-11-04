@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "navid-linkedin-puzzle-solver"
+version = "1.0.1"
+description = "Automates solving LinkedIn mini games (Queens, Tango, Zip)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "Navid Mirzaaghazadeh", email = "mirzaaghazadeh@icloud.com" }
+]
+keywords = ["linkedin", "games", "solver", "selenium", "puzzle"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "selenium>=4.12",
+  "webdriver-manager>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mirzaaghazadeh/navid-linkedin-puzzle-solver"
+Repository = "https://github.com/mirzaaghazadeh/navid-linkedin-puzzle-solver"
+
+[project.scripts]
+navid-linkedin-puzzle-solver = "linkedin_games_solver.cli:main"
+
+[tool.setuptools]
+packages = ["linkedin_games_solver"]
+package-dir = { linkedin_games_solver = "." }
+
