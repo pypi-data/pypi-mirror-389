@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "packagedata"
+version = "1.0.0"
+description = "A custom pkg_resources to importlib.resources/metadata migration helper."
+authors = [
+    { name="KuraLabs S.R.L", email="info@kuralabs.io" }
+]
+
+readme = "README.rst"
+license = "Apache-2.0"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+requires-python = ">=3.8"
+dependencies = [
+    "importlib-resources; python_version < '3.9'",
+    "importlib-metadata; python_version < '3.9'",
+]
+
+[tool.setuptools]
+py-modules = ["packagedata"]

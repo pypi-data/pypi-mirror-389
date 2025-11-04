@@ -1,0 +1,212 @@
+Metadata-Version: 2.4
+Name: packagedata
+Version: 1.0.0
+Summary: A custom pkg_resources to importlib.resources/metadata migration helper.
+Author-email: "KuraLabs S.R.L" <info@kuralabs.io>
+License-Expression: Apache-2.0
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: >=3.8
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: importlib-resources; python_version < "3.9"
+Requires-Dist: importlib-metadata; python_version < "3.9"
+Dynamic: license-file
+
+===========
+PackageData
+===========
+
+A ``pkg_resources`` to ``importlib.resources`` and ``importlib.metadata``
+migration helper.
+
+About
+=====
+
+``packagedata`` is a migration helper library designed to ease the transition
+from the deprecated ``pkg_resources`` API to the modern ``importlib.resources``
+and ``importlib.metadata`` APIs.
+
+The ``pkg_resources`` package is deprecated and scheduled for removal on
+2025-11-30. This library provides a replacement specially tailored for
+maintainers of packages that fall in an impossible position of needing to
+support both older Python versions while migrating to the new APIs.
+
+If you are maintaining for Python >=3.9, please use the standard library
+``importlib.resources``. If you need entry points and maintaining for
+Python >=3.12, please use ``importlib.metadata`` directly. If you don't fall
+in those categories this library may help you migrate and maintain your code.
+
+So, to reiterate: if you are maintaining for a modern Python version, this
+package is not for you.
+
+Installation
+============
+
+.. code-block:: bash
+
+   pip install packagedata
+
+The package automatically handles the installation of required backports for
+older Python versions:
+
+- ``importlib-resources`` for Python < 3.9
+- ``importlib-metadata`` for Python < 3.9
+
+Migration Guide
+===============
+
+Reading Text Files
+------------------
+
+Change:
+
+.. code-block:: python
+
+   from pkg_resources import resource_string
+   text = resource_string(__package__, 'data/README.txt').decode('utf-8')
+
+To:
+
+.. code-block:: python
+
+   import packagedata as pkgdata
+   text = pkgdata.read_text(__package__, 'data/README.txt', encoding='utf-8')
+
+Then, eventually, when you can, change it to:
+
+.. code-block:: python
+
+   from importlib import resources
+   text = resources.read_text(__package__, 'data/README.txt', encoding='utf-8')
+
+
+Reading Binary Files
+--------------------
+
+Change:
+
+.. code-block:: python
+
+   from pkg_resources import resource_string
+   data = resource_string(__package__, 'assets/icon.ico')
+
+To:
+
+.. code-block:: python
+
+   import packagedata as pkgdata
+   data = pkgdata.read_bytes(__package__, 'assets/icon.ico')
+
+Then, eventually, when you can, change it to:
+
+.. code-block:: python
+
+   from importlib import resources
+   data = resources.read_binary(__package__, 'assets/icon.ico')
+
+Getting File Paths
+------------------
+
+Change:
+
+.. code-block:: python
+
+   import os
+   import os.path
+   from pkg_resources import resource_filename
+   templates_path = resource_filename(__package__, 'templates')
+   for filename in os.listdir(templates_path):
+       filepath = os.path.join(templates_path, filename)
+       print(filepath)
+
+To:
+
+.. code-block:: python
+
+   import packagedata as pkgdata
+   with pkgdata.as_path(__package__, 'templates') as templates_path:
+       for filepath in templates_path.iterdir():
+           print(filepath)
+
+Then, eventually, when you can, change it to:
+
+.. code-block:: python
+
+   from importlib import resources
+   with resources.as_file(
+       resources.files(__package__).joinpath('templates')
+   ) as templates_path:
+       for filepath in templates_path.iterdir():
+           print(filepath)
+
+Entry Points
+------------
+
+Change:
+
+.. code-block:: python
+
+   from pkg_resources import iter_entry_points
+   for ep in iter_entry_points('my_entry_point_group'):
+       print(f"{ep.name}: {ep.module_name}:{ep.attrs}")
+       plugin = ep.load()
+
+To:
+
+.. code-block:: python
+
+   import packagedata as pkgdata
+   for ep in pkgdata.entry_points('my_entry_point_group'):
+       print(f"{ep.name}: {ep.value}")
+       plugin = ep.load()
+
+Then, eventually, when you can, change it to:
+
+.. code-block:: python
+
+   from importlib import metadata
+   for ep in metadata.entry_points().select(group='my_entry_point_group'):
+       print(f"{ep.name}: {ep.value}")
+       plugin = ep.load()
+
+Note on compatibility:
+
+The ``packagedata.entry_points()`` function handles API differences between
+Python versions:
+
+- **Python 3.10+**: Uses the new ``EntryPoints.select()`` method.
+- **Python 3.8-3.9**: Uses the legacy dict-like interface.
+
+So while no "selectable" entry points are exposed, the same code works across
+all supported Python versions and mimics the ``pkg_resources`` behavior.
+
+License
+=======
+
+::
+
+   Copyright (C) 2025 KuraLabs S.R.L
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
