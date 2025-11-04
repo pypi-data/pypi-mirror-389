@@ -1,0 +1,52 @@
+[project]
+name = "ischemist"
+version = "0.2.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+authors = [{ name = "Anton Morgunov", email = "anton@ischemist.com" }]
+license = { text = "MIT" }
+
+[project.urls]
+Homepage = "https://github.com/ischemist/py-style"
+Issues = "https://github.com/ischemist/py-style/issues"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "ty>=0.0.1a25",
+]
+
+[project.optional-dependencies]
+plotly = [
+    "coloraide>=5.1",
+    "numpy>=2.2.6",
+    "plotly>=6.1.2",
+]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+exclude = ["tests"]
+disable_error_code = ["unused-ignore"]
+
+
+[tool.ruff]
+line-length = 120
+lint.select = [
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+]
+lint.ignore = ["SIM108"]
