@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: explainable-ai-tf
+Version: 0.1.2
+Summary: Lightweight TensorFlow explainability API (per-method thin wrappers).
+Author: Nechami Noyfeld
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/nechaminoy
+Project-URL: Source, https://github.com/nechaminoy/XAI
+Project-URL: Issues, https://github.com/nechaminoy/XAI/issues
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: tensorflow>=2.10
+Requires-Dist: numpy>=1.24
+Requires-Dist: saliency>=0.2.1
+Requires-Dist: matplotlib>=3.8
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+
+# XAI
