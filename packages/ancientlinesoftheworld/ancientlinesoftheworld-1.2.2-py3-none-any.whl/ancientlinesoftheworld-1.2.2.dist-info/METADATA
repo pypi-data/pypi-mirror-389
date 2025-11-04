@@ -1,0 +1,82 @@
+Metadata-Version: 2.4
+Name: ancientlinesoftheworld
+Version: 1.2.2
+Summary: تبدیل متن به خطوط باستانی مانند پهلوی و میخی
+Home-page: https://github.com/amirhossinpython/ancient-scripts
+Author: Amir Hossein Khazaei
+Author-email: amirhossinpython03@gmail.com
+License: MIT
+Keywords: ancient scripts persian pahlavi cuneiform
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: deep-translator>=1.11.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: twine>=4.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Ancient Scripts Converter
+
+📜 A Python package for converting text to ancient writing systems
+
+## Installation
+```bash
+pip install --upgrade  ancientlinesoftheworld
+```
+
+## Usage
+```python
+from   ancient import AncientScripts
+
+converter = AncientScripts()
+
+#  تبدیل  متن به خط باستانی میخی
+cuneiform_text = converter.cuneiform("سلام")
+
+print(cuneiform_text)
+
+# تبدیل متن به خط باستانی مصری 
+hieroglyph_text = converter.hieroglyph("خدا")
+
+print(hieroglyph_text)
+
+# تبدیل متن  تاریخی اوستایی
+
+avesta = converter.avestan("hiسلام")
+print(avesta)
+
+print(c.get_supported_scripts())
+```
+
+## Supported Scripts
+- Cuneiform
+- Egyptian Hieroglyphs
+- Pahlavi script
+- Manichaean script
+- Linear B
+-avestan
+
+- And more...
+
