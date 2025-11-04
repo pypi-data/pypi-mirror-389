@@ -1,0 +1,13 @@
+prefix=${pcfiledir}/../..
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+bindir=${prefix}/bin
+with_dataframes=false
+
+Name: hipo4
+Description: High Performance Output Data format for experimental physics
+Version: 4.2.0
+Requires: liblz4 >=  1.9
+Libs: -L${libdir} -lhipo4
+Cflags: -I${includedir}
