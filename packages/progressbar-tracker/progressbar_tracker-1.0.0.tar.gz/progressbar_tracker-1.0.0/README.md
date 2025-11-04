@@ -1,0 +1,285 @@
+# Progress Bar Tracker SDK
+
+[![PyPI version](https://badge.fury.io/py/progressbar-tracker.svg)](https://badge.fury.io/py/progressbar-tracker)
+[![Python Support](https://img.shields.io/pypi/pyversions/progressbar-tracker.svg)](https://pypi.org/project/progressbar-tracker/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A powerful Python SDK for tracking and managing progress bars with granular permission control.
+
+## Features
+
+- 🔐 **Three-tier Permission System**: Read, Write, and Admin keys
+- 📊 **Easy Progress Tracking**: Simple API for creating and updating progress items
+- 🔄 **Real-time Updates**: Monitor long-running tasks with live progress updates
+- 🎯 **Ownership Control**: Write keys can only modify their own items
+- 🚀 **Auto-detection**: Automatically detects API key permissions
+- 💪 **Type Safe**: Full type hints support
+
+## Installation
+
+```bash
+pip install progressbar-tracker
+```
+
+## Quick Start
+
+```python
+from progressbar_tracker import ProgressBar
+
+# Initialize with your API endpoint and key
+pb = ProgressBar(
+    api_url="http://your-server:8989",
+    api_key="your-api-key"
+)
+
+# Create a new progress item
+pb.create(
+    item_id="video-encoding-001",
+    title="Encoding Video",
+    description="Processing 4K video file",
+    value=0.0,
+    weight=100  # Higher weight = higher priority in display
+)
+
+# Update progress
+pb.update(
+    item_id="video-encoding-001",
+    title="Encoding Video",
+    description="50% complete",
+    value=0.5,
+    weight=100
+)
+
+# Get all items
+items = pb.get_all()
+for item in items:
+    print(f"{item['title']}: {item['value']*100:.0f}%")
+
+# Delete when done
+pb.delete("video-encoding-001")
+```
+
+## API Key Types
+
+### Read Key
+
+- ✅ View all progress items
+- ❌ Cannot create, update, or delete
+
+```python
+pb = ProgressBar(api_url="http://server:8989", api_key="readonly-key-123")
+items = pb.get_all()  # Works
+pb.create(...)  # Raises PermissionError
+```
+
+### Write Key
+
+- ✅ View all progress items
+- ✅ Create new items
+- ✅ Update own items only
+- ✅ Delete own items only
+
+```python
+pb = ProgressBar(api_url="http://server:8989", api_key="write-key-456")
+pb.create("my-task", "Task", "Processing...", 0.5)  # Works
+pb.update("my-task", "Task", "Almost done", 0.9)    # Works
+pb.update("other-task", ...)  # Raises PermissionError
+```
+
+### Admin Key
+
+- ✅ Full access to all operations
+- ✅ Can modify any item
+- ✅ Can delete any item
+
+```python
+pb = ProgressBar(api_url="http://server:8989", api_key="admin-key-789")
+pb.update("any-task", ...)  # Works on any item
+pb.delete("any-task")       # Can delete any item
+```
+
+## Advanced Usage
+
+### Check Permissions
+
+```python
+pb = ProgressBar(api_url="http://server:8989", api_key="your-key")
+
+if pb.is_admin():
+    print("You have full admin access")
+elif pb.can_write():
+    print("You can create and modify items")
+elif pb.is_read_only():
+    print("You can only view items")
+```
+
+### Error Handling
+
+```python
+from progressbar_tracker import ProgressBar, PermissionError
+
+pb = ProgressBar(api_url="http://server:8989", api_key="write-key")
+
+try:
+    pb.create("task-1", "Task 1", "Running", 0.5)
+except PermissionError as e:
+    print(f"Permission denied: {e}")
+except ValueError as e:
+    print(f"Validation error: {e}")
+```
+
+### Disable Auto-detection
+
+```python
+# Skip permission detection on initialization (faster)
+pb = ProgressBar(
+    api_url="http://server:8989",
+    api_key="your-key",
+    auto_detect=False
+)
+```
+
+## API Reference
+
+### `ProgressBar(api_url, api_key, auto_detect=True)`
+
+Initialize the SDK client.
+
+**Parameters:**
+
+- `api_url` (str): Base URL of the progress bar server
+- `api_key` (str): Your API key
+- `auto_detect` (bool): Auto-detect key permissions (default: True)
+
+### `get_all() -> List[Dict]`
+
+Retrieve all progress items.
+
+**Returns:** List of progress item dictionaries
+
+**Raises:** `PermissionError` if key lacks read permission
+
+### `create(item_id, title, description, value, weight=0)`
+
+Create a new progress item.
+
+**Parameters:**
+
+- `item_id` (str): Unique identifier
+- `title` (str): Display title
+- `description` (str): Status description
+- `value` (float): Progress value (0.0 to 1.0)
+- `weight` (int): Sort priority (default: 0)
+
+**Raises:**
+
+- `PermissionError` if key lacks create permission
+- `ValueError` if item already exists
+
+### `update(item_id, title, description, value, weight=0)`
+
+Update an existing progress item.
+
+**Parameters:** Same as `create()`
+
+**Raises:**
+
+- `PermissionError` if key lacks update permission
+- `ValueError` if item doesn't exist
+
+### `delete(item_id)`
+
+Delete a progress item.
+
+**Parameters:**
+
+- `item_id` (str): ID of item to delete
+
+**Raises:** `PermissionError` if key lacks delete permission
+
+### Permission Helpers
+
+- `is_admin() -> bool`: Check if key is admin
+- `is_read_only() -> bool`: Check if key is read-only
+- `can_write() -> bool`: Check if key can create/update
+- `can_delete() -> bool`: Check if key can delete
+
+## Real-world Examples
+
+### Video Encoding Pipeline
+
+```python
+from progressbar_tracker import ProgressBar
+import time
+
+pb = ProgressBar(api_url="http://server:8989", api_key="write-key")
+
+# Start encoding
+pb.create("video-001", "Encoding: movie.mp4", "Initializing...", 0.0, weight=100)
+
+for progress in range(0, 101, 10):
+    time.sleep(1)
+    pb.update(
+        "video-001",
+        "Encoding: movie.mp4",
+        f"Processing frame {progress*10}/1000",
+        progress / 100.0,
+        weight=100
+    )
+
+pb.delete("video-001")
+print("✓ Encoding complete!")
+```
+
+### Batch Processing
+
+```python
+from progressbar_tracker import ProgressBar
+
+pb = ProgressBar(api_url="http://server:8989", api_key="write-key")
+
+files = ["file1.txt", "file2.txt", "file3.txt"]
+
+for i, filename in enumerate(files):
+    pb.create(
+        f"process-{i}",
+        f"Processing {filename}",
+        "In queue",
+        0.0,
+        weight=len(files) - i  # Higher weight for earlier files
+    )
+
+# Process and update
+for i, filename in enumerate(files):
+    # ... do work ...
+    pb.update(f"process-{i}", f"Processing {filename}", "Complete", 1.0)
+    pb.delete(f"process-{i}")
+```
+
+## Server Setup
+
+This SDK requires a Progress Bar Tracker server. You can deploy one using Docker:
+
+```bash
+docker run -d \
+  -p 8989:8080 \
+  -e ADMIN_USERNAME=admin \
+  -e ADMIN_PASSWORD=your-password \
+  progressbar-server:latest
+```
+
+Or see the [full documentation](https://github.com/yht0511/progressbar) for setup instructions.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Links
+
+- **GitHub**: https://github.com/yht0511/progressbar
+- **PyPI**: https://pypi.org/project/progressbar-tracker/
+- **Issues**: https://github.com/yht0511/progressbar/issues
