@@ -1,0 +1,48 @@
+dataset:
+  dataset_id: sagecontinuum/INQUIRE-Benchmark-small
+  splits: "validation[0:128]"
+  directory: data/inquire_benchmark/raw
+  export_images: true
+
+embedding:
+  model_id: openai/clip-vit-base-patch32
+  batch_size: 64
+  directory: data/inquire_benchmark/emb
+
+containers:
+  - image: "qdrant/qdrant"
+    name: "qdrant"
+    hostname: "localhost"
+    ports:
+      4000: 4000
+    # environment:
+    # volumes:
+    # command:
+    healthcheck:
+      test: "healthcheck test"
+      interval: 30000000000
+      timeout: 20000000000
+      retries: 3
+
+container_network: ""
+
+vectordb:
+  type: faiss
+  params:
+    url: localhost
+    port: "8080"
+    metric: ip
+    index_type: IVFPQ
+    nlist: 32768
+    m: 64
+    nbits: 2
+    nprobe: 32
+    batch_size: 1000
+
+search:
+  topk: 10
+  queries_file: "benchmark/queries.txt"
+
+update:
+  add_count: 50
+  delete_count: 30
