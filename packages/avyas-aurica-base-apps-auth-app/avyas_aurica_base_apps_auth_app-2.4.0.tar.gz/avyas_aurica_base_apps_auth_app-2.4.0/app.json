@@ -1,0 +1,84 @@
+{
+  "name": "auth-app",
+  "version": "2.4.0",
+  "provides": [
+    "authentication"
+  ],
+  "auth_method": "passkey-jwt-centralized",
+  "session_backend": "s3",
+  "public_routes": [
+    "/api/register/*",
+    "/api/authenticate/*",
+    "/api/centralized_auth/*",
+    "/api/test_creds",
+    "/api/debug/*",
+    "/static/*",
+    "/"
+  ],
+  "description": "Centralized passkey authentication with JWT tokens, QR code login, and JWKS verification",
+  "dt_tools": [
+    {
+      "name": "get_user_profile",
+      "description": "Get the current user's profile information including username, email, display name, role, and credentials. The Digital Twin can use this freely to answer questions about the user's account and identity.",
+      "endpoint": "/api/profile",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "User profile with user_id, username, email, display_name, role, and credentials list"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Get current user's profile"
+        }
+      ]
+    },
+    {
+      "name": "update_user_profile",
+      "description": "Update the user's profile information such as display name, email, or mobile number. This modifies user data so the Digital Twin should ask for confirmation before using this.",
+      "endpoint": "/api/profile",
+      "method": "PUT",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "description": "New display name (optional)"
+          },
+          "email": {
+            "type": "string",
+            "description": "New email address (optional)"
+          },
+          "mobile_number": {
+            "type": "string",
+            "description": "New mobile number (optional)"
+          }
+        },
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Update result with success status and updated user profile"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "display_name": "John Doe"
+          },
+          "description": "Update user's display name"
+        }
+      ]
+    }
+  ]
+}
