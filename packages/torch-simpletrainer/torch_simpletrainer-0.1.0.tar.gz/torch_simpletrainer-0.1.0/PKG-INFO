@@ -1,0 +1,101 @@
+Metadata-Version: 2.4
+Name: torch-simpletrainer
+Version: 0.1.0
+Summary: A simple, flexible training framework for PyTorch models.
+Author: Raha Ahmadi
+License: MIT
+Project-URL: Homepage, https://github.com/rahaahmadi/simpletrainer.git
+Project-URL: Repository, https://github.com/rahaahmadi/simpletrainer.git
+Project-URL: Issues, https://github.com/rahaahmadi/simpletrainer/issues
+Keywords: pytorch,trainer,training,deep-learning,machine-learning
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: scikit-learn
+Provides-Extra: torch
+Requires-Dist: torch>=2.0; extra == "torch"
+Provides-Extra: wandb
+Requires-Dist: wandb>=0.13; extra == "wandb"
+
+# simpletrainer
+
+## 🚀 Overview
+**simpletrainer** keeps your PyTorch training tidy: metrics, early stopping, LR schedules, checkpoints, and optional W&B. Supports binary, multiclass, multilabel **classification** and **regression**.
+
+---
+
+## 🧩 Installation
+
+### From PyPI
+> Install the correct **PyTorch** build for your platform first
+```bash
+
+pip install simpletrainer
+```
+
+### From source
+```bash
+git clone https://github.com/rahaahmadi/simpletrainer.git
+cd simpletrainer
+pip install -e .
+```
+
+---
+
+## ⚙️ Quickstart Example
+
+```python
+import torch
+from torch import nn, optim
+from torch.utils.data import DataLoader, TensorDataset
+from simpletrainer import BaseTrainer
+
+X = torch.randn(512, 16)
+y = (torch.randn(512) > 0).float()
+ds = TensorDataset(X, y)
+train_loader = DataLoader(ds, batch_size=64, shuffle=True)
+test_loader  = DataLoader(ds, batch_size=128)
+
+model = nn.Sequential(nn.Linear(16, 32), nn.ReLU(), nn.Linear(32, 1))
+criterion = nn.BCEWithLogitsLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", patience=2)
+
+trainer = BaseTrainer(
+    model=model,
+    train_loader=train_loader,
+    test_loader=test_loader,
+    criterion=criterion,
+    optimizer=optimizer,
+    scheduler=scheduler,
+    task_type="binary",
+    early_stopping_patience=5,
+    grad_clip=1.0,
+    wandb_project="my-project", # optional
+)
+
+best_epoch, best_metrics = trainer.fit(num_epochs=25, save_path="checkpoints/run/model")
+print("Best epoch:", best_epoch)
+print("Best metrics:", best_metrics)
+```
+
+---
+
+## ✨ Features
+
+- **Tasks:** `binary classification`, `multiclass classification`, `multilabel classification`, `regression`
+- **Metrics:** AUC / F1 / Accuracy (classification), MSE / MAE / R² (regression)
+- **Training features:** early stopping, gradient clipping, LR schedulers
+- **Checkpointing:**  `save_model` / `load_model` utilities
+- **Logging:** optional Weights & Biases (auto-skips if not installed)
+
+---
+
+## 🤝 Contributing
+
+Issues and PRs are welcome.
