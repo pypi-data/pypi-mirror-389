@@ -1,0 +1,105 @@
+Metadata-Version: 2.4
+Name: koshey
+Version: 0.1.1
+Summary: Internal immortal PyPI index — a standards-compliant mirror and package host with quarantine, provenance (PEP 710), and JSON API (PEP 691).
+Project-URL: Homepage, https://pypi.org/project/koshey/
+Project-URL: Repository, https://github.com/yourusername/koshey
+Project-URL: Issues, https://github.com/yourusername/koshey/issues
+Author-email: Alexander Vasin <hi@alvass.in>
+License: Apache License 2.0
+License-File: LICENSE
+Keywords: index,internal,kadex,koshey,mirror,packages,pypi
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: BSD
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: System :: Archiving :: Packaging
+Classifier: Topic :: System :: Software Distribution
+Requires-Python: >=3.12
+Description-Content-Type: text/x-rst
+
+Koshey
+======
+
+Internal immortal PyPI index — Koshey, the package keeper.
+
+``Koshey`` is a corporate PyPI index and package quarantine system.
+It is designed to provide reliability, transparency, and control
+over internal Python packages.
+
+Why “Koshey”
+------------
+
+The name comes from Koschey the Deathless — a figure from Russian folklore
+who hid his soul inside an egg. ``Koshey`` likewise protects the soul of
+each package — and keeps a close eye on Python eggs. 🥚🐍
+
+.. code-block:: bash
+
+    pip install koshey
+
+Features
+--------
+
+``Koshey`` can act both as a transparent proxy to public Python repositories
+and as a secure host for proprietary packages. It provides a unified, standards-compliant
+and reliable internal index for engineering teams.
+
+* **Mirror and cache.** Acts as a proxy to external repositories while keeping
+  local copies of downloaded packages for reliability and auditability.
+  Implements ``last-serial`` support for incremental sync and minimal traffic.
+* **Private package hosting.** Supports direct upload and storage of proprietary
+  distributions inside your organization.
+* **Quarantine layer.** Packages mirrored from external sources are first placed
+  in quarantine: they are downloaded and stored locally, but remain hidden from
+  the ``simple`` API for a configured number of days. This allows time for
+  automated checks or manual review. Individual versions can be approved
+  explicitly, or entire projects can be marked as *trusted* to skip quarantine.
+* **Administrative panel.** Provides a web interface with multiple permission
+  levels and flexible ACL integration. Custom authentication or access control
+  can be added through a Python extension.
+* **Configurable networking.** Outgoing traffic for mirrors can be routed
+  through custom proxy logic, also extendable via Python.
+* **Standards compliance.** Implements key packaging standards:
+  PEP 658 (wheel metadata), PEP 691 (JSON Simple API),
+  and PEP 710 (provenance records).
+* **Simple API.** Provides both the classic ``simple`` (HTML/XML) interface
+  and JSON endpoints, compatible with ``pip``, ``uv`` and other tooling.
+* **High traversal efficiency.** Optimized to walk and synchronize large
+  package sets with minimal latency and bandwidth usage.
+
+Architecture
+------------
+
+Koshey is built with reliability and transparency in mind.
+It uses **PostgreSQL** as the primary database for package metadata,
+state tracking, and audit logs, and an **S3-compatible object storage**
+for package files and signatures.
+The system consists of several independent components — API, Worker,
+and Admin Panel — communicating through shared storage and the database.
+
+Requirements
+------------
+
+* Python >= 3.12
+* POSIX-compatible system
+
+License
+-------
+
+Apache License 2.0 — see the ``LICENSE`` file for details.
+
+Project links
+-------------
+
+* PyPI: https://pypi.org/project/koshey/
+* Source: https://github.com/yourusername/koshey
+* Issues: https://github.com/yourusername/koshey/issues

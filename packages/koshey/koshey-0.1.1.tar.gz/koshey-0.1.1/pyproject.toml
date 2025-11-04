@@ -1,0 +1,61 @@
+[project]
+name = "koshey"
+version = "0.1.1"
+description = """
+Internal immortal PyPI index — a standards-compliant mirror and package host
+with quarantine, provenance (PEP 710), and JSON API (PEP 691).
+"""
+readme = "README.rst"
+license = { text = "Apache License 2.0" }
+
+requires-python = ">=3.12"
+
+authors = [
+  { name = "Alexander Vasin", email = "hi@alvass.in" },
+]
+
+keywords = [
+  "pypi",
+  "mirror",
+  "index",
+  "packages",
+  "internal",
+  "koshey",
+  "kadex",
+]
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: System :: Archiving :: Packaging",
+    "Topic :: System :: Software Distribution",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+
+    "License :: OSI Approved :: Apache Software License",
+
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: BSD",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+]
+
+dependencies = []
+
+[project.scripts]
+koshey = "koshey:main"
+
+[project.urls]
+Homepage = "https://pypi.org/project/koshey/"
+Repository = "https://github.com/yourusername/koshey"
+Issues = "https://github.com/yourusername/koshey/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
