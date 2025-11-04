@@ -1,0 +1,97 @@
+[build-system]
+requires = [
+    "setuptools>=68",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas-orchestrator"
+version = "0.2.1"
+description = "Foundational scaffolding for the Atlas Orchestrator workflow platform"
+readme = "README.md"
+authors = [
+    { name = "Atlas Orchestrator Team" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+    "typer>=0.9",
+    "rich>=13.7",
+    "fastapi>=0.111",
+    "uvicorn>=0.30",
+    "argon2-cffi>=23.1",
+    "redis>=5.0",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "mypy>=1.8",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+atlas-orchestrator = "atlas_orchestrator.cli:main"
+atlas-orchestrator-premium-api = "atlas_orchestrator.premium_api.server:main"
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+strict = true
+packages = [
+    "atlas_orchestrator",
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "yaml",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "fastapi.*",
+    "redis.*",
+    "uvicorn.*",
+    "httpx.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "B",
+    "I",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = [
+    "tests",
+]
+
+[tool.setuptools.packages.find]
+include = [
+    "atlas_orchestrator*",
+]
+exclude = [
+    "docs*",
+    "infra*",
+    "ops*",
+    "artifacts*",
+    "scripts*",
+    "tests*",
+    "release*",
+]
