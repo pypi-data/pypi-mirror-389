@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools<60", "wheel<0.38"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "missalpha"
+version = "0.1.0"
+description = "Lower/upper bounds of Cronbach's alpha with missing data."
+readme = "README.md"
+requires-python = ">=3.9,<3.12"
+license = { file = "LICENSE" }
+author = Feng Ji, Biying Zhou
+author_email = f.ji@utoronto.ca, biying.zhou@psu.edu
+maintainer = Biying Zhou
+maintainer_email = biying.zhou@psu.edu
+keywords = ["cronbach", "reliability", "psychometrics", "missing-data"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Information Analysis"
+]
+dependencies = [
+  "numpy<2.0,>=1.23",
+  "pandas>=1.5",
+  "cvxpy>=1.4,<1.8",
+  "qcqp>=0.8.2,<0.9"
+]
+
+[project.urls]
+Homepage = "https://github.com/BiyingZhou/missalpha"
+Issues = "https://github.com/BiyingZhou/missalpha/issues"
+
+[project.scripts]
+missalpha = "missalpha.cli:main"
