@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pynuttx"
+version = "0.0.4"
+description = "Comprehensive Python debugging and analysis toolkit for NuttX RTOS - includes GDB extensions, memory analysis, crash diagnostics, trace parsing, and remote debugging capabilities"
+requires-python = ">=3.10"
+keywords = ["nuttx", "rtos", "embedded", "gdb", "debugging", "memory-analysis", "crash-analysis", "trace", "profiling"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Debuggers",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: System :: Operating System Kernels",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+dependencies = [
+    "angr>=0.0.0",
+    "capstone>=0.0.0",
+    "cloudpickle>=0.0.0",
+    "construct>=0.0.0",
+    "debugpy>=0.0.0",
+    "lauterbach-trace32-rcl>=0.0.0",
+    "lief>=0.0.0",
+    "matplotlib>=0.0.0",
+    "mcp>=0.0.0",
+    "numpy>=0.0.0",
+    "pandas>=0.0.0",
+    "pillow>=0.0.0",
+    "plotly>=0.0.0",
+    "prettytable>=0.0.0",
+    "pyelftools>=0.0.0",
+    "pylink-square>=0.0.0",
+    "viztracer>=0.0.0",
+]
+
+[project.urls]
+Homepage = "https://nuttx.apache.org/"
+Documentation = "https://nuttx.apache.org/docs/latest/"
+Repository = "https://github.com/apache/nuttx"
+Issues = "https://github.com/apache/nuttx/issues"
+Changelog = "https://github.com/apache/nuttx/tags"
+
+[tool.setuptools]
+package-dir = { "gdbrpc" = "gdbrpc", "nxgdb" = "nxgdb", "nxelf" = "nxelf", "nxreg" = "nxreg", "nxstub" = "nxstub", "nxtrace" = "nxtrace", "nxgdbmcp" = "nxgdbmcp" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nxgdb*", "nxelf*", "nxreg*", "nxstub*", "nxtrace*", "nxgdbmcp*"]
