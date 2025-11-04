@@ -1,0 +1,59 @@
+[project]
+name = "pixtreme-aces"
+version = "0.8.6"
+description = "ACES color management for pixtreme (OCIO ACES 1.2 compliant)"
+authors = [
+    { name = "minamik", email = "mia@sync.dev" },
+]
+readme = "README.md"
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: GPU :: NVIDIA CUDA :: 12",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Software Development :: Libraries",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pixtreme-core>=0.8.6",
+]
+
+[project.urls]
+repository = "https://github.com/sync-dev-org/pixtreme"
+issues = "https://github.com/sync-dev-org/pixtreme/issues"
+
+[build-system]
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/pixtreme_aces",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "README.md",
+    "LICENSE",
+]
+exclude = [
+    "/.pytest_cache",
+    "/__pycache__",
+]
+
+[tool.uv.sources.pixtreme-core]
+workspace = true
