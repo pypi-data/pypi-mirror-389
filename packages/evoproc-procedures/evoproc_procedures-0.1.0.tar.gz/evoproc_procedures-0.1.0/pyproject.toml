@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evoproc-procedures"
+version = "0.1.0"
+description = "Domain procedures, schemas, prompts, runners, and backends for EvoProc"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Malia Barker" }]
+dependencies = [
+  "pydantic>=2",
+  "jsonschema>=4",
+  "evoproc>=0.1.0",
+]
+
+[project.optional-dependencies]
+llm = ["ollama>=0.2", "httpx>=0.24"]
+dev = ["pytest>=7", "ruff", "mypy"]
+
+[project.urls]
+Homepage = "https://github.com/<you>/<repo>"
+Documentation = "https://<your-docs-site>"
+Source = "https://github.com/<you>/<repo>"
+Issues = "https://github.com/<you>/<repo>/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests*", "testing*"]
+
+[tool.setuptools.package-data]
+"evoproc_procedures" = ["examples/*.ipynb"]
