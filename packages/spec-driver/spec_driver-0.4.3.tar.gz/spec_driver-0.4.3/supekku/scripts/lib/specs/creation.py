@@ -1,0 +1,377 @@
+"""Utilities for creating and managing specification files."""
+
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass
+from datetime import date
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from jinja2 import Template
+
+from supekku.scripts.lib.blocks.relationships import (
+  render_spec_capabilities_block,
+  render_spec_relationships_block,
+)
+from supekku.scripts.lib.blocks.verification import render_verification_coverage_block
+from supekku.scripts.lib.core.paths import SPEC_DRIVER_DIR, get_templates_dir
+from supekku.scripts.lib.core.spec_utils import dump_markdown_file
+from supekku.scripts.lib.core.templates import (
+  extract_template_body as extract_template_body_fallback,
+)
+from supekku.scripts.lib.core.templates import (
+  get_package_templates_dir,
+)
+
+if TYPE_CHECKING:
+  from collections.abc import MutableMapping
+
+
+@dataclass(frozen=True)
+class CreateSpecOptions:
+  """Configuration options for creating specifications."""
+
+  spec_type: str = "tech"
+  include_testing: bool = True
+  emit_json: bool = False
+
+
+@dataclass(frozen=True)
+class CreateSpecResult:
+  """Result information from creating a specification."""
+
+  spec_id: str
+  directory: Path
+  spec_path: Path
+  test_path: Path | None
+
+  def to_json(self) -> str:
+    """Serialize result to JSON format.
+
+    Returns:
+      JSON string representation of the result.
+    """
+    payload = {
+      "id": self.spec_id,
+      "dir": str(self.directory),
+      "spec_file": str(self.spec_path),
+    }
+    if self.test_path is not None:
+      payload["test_file"] = str(self.test_path)
+    return json.dumps(payload)
+
+
+class SpecCreationError(RuntimeError):
+  """Raised when creation fails due to invalid configuration."""
+
+
+class TemplateNotFoundError(SpecCreationError):
+  """Raised when a specification template cannot be found."""
+
+
+class RepositoryRootNotFoundError(SpecCreationError):
+  """Raised when the repository root cannot be located."""
+
+
+@dataclass
+class SpecTemplateConfig:
+  """Configuration for specification template processing."""
+
+  base_dir: Path
+  prefix: str
+  kind: str
+  template_path: Path
+  testing_template_path: Path | None = None
+
+
+def create_spec(spec_name: str, options: CreateSpecOptions) -> CreateSpecResult:
+  """Create a new spec, generating necessary files from templates."""
+  spec_name = spec_name.strip()
+  if not spec_name:
+    msg = "spec name must be provided"
+    raise SpecCreationError(msg)
+
+  repo_root = find_repository_root(Path.cwd())
+  today = date.today().isoformat()
+
+  config = build_template_config(repo_root, options.spec_type)
+
+  config.base_dir.mkdir(parents=True, exist_ok=True)
+
+  next_id = determine_next_identifier(config.base_dir, config.prefix)
+  slug = slugify(spec_name) or config.kind
+  spec_dir = config.base_dir / next_id
+  spec_dir.mkdir(parents=True, exist_ok=True)
+
+  spec_path = spec_dir / f"{next_id}.md"
+
+  # Render YAML blocks
+  spec_relationships_block = render_spec_relationships_block(
+    next_id,
+    primary_requirements=["<FR/NF codes owned by this spec>"],
+  )
+  spec_capabilities_block = render_spec_capabilities_block(
+    next_id,
+    capabilities=[
+      {
+        "id": "<kebab-case-id>",
+        "name": "<Human-readable capability>",
+        "responsibilities": [],
+        "requirements": [],
+        "summary": "<Short paragraph describing what this capability ensures.>",
+        "success_criteria": ["<How you know this capability is upheld.>"],
+      }
+    ],
+  )
+  spec_verification_block = render_verification_coverage_block(
+    next_id,
+    entries=[
+      {
+        "artefact": "VT-XXX",
+        "kind": "VT",
+        "requirement": f"{next_id}.FR-001",
+        "status": "planned",
+        "notes": (
+          "Optional context or evidence pointer (link to CI job, audit finding, etc.)."
+        ),
+      }
+    ],
+  )
+
+  # Render template
+  template_body = extract_template_body(config.template_path)
+  template = Template(template_body)
+  spec_body = template.render(
+    spec_id=next_id,
+    name=spec_name,
+    kind=config.kind,
+    spec_relationships_block=spec_relationships_block,
+    spec_capabilities_block=spec_capabilities_block,
+    spec_verification_block=spec_verification_block,
+  )
+  frontmatter = build_frontmatter(
+    spec_id=next_id,
+    slug=slug,
+    name=spec_name,
+    kind=config.kind,
+    created=today,
+  )
+  dump_markdown_file(spec_path, frontmatter, spec_body)
+
+  test_path: Path | None = None
+  if (
+    options.spec_type == "tech"
+    and options.include_testing
+    and config.testing_template_path is not None
+  ):
+    test_template_body = extract_template_body(config.testing_template_path)
+    test_template = Template(test_template_body)
+    test_body = test_template.render(spec_id=next_id, name=spec_name)
+    test_path = spec_dir / f"{next_id}.tests.md"
+    test_frontmatter = build_frontmatter(
+      spec_id=f"{next_id}.TESTS",
+      slug=f"{slug}-tests",
+      name=f"{spec_name} Testing Guide",
+      kind="guidance",
+      created=today,
+    )
+    dump_markdown_file(test_path, test_frontmatter, test_body)
+
+  slug_dir = config.base_dir / "by-slug"
+  slug_dir.mkdir(exist_ok=True)
+  slug_target = slug_dir / slug
+  if slug_target.exists() or slug_target.is_symlink():
+    slug_target.unlink()
+  slug_target.symlink_to(Path("..") / spec_dir.name)
+
+  package_dir = config.base_dir / "by-package"
+  package_dir.mkdir(exist_ok=True)
+  packages = frontmatter.get("packages") or []
+  for package in packages:
+    package_path = package_dir / Path(package) / "spec"
+    package_path.parent.mkdir(parents=True, exist_ok=True)
+    if package_path.exists() or package_path.is_symlink():
+      package_path.unlink()
+    package_path.symlink_to(Path("..") / ".." / spec_dir.name)
+
+  return CreateSpecResult(
+    spec_id=next_id,
+    directory=spec_dir,
+    spec_path=spec_path,
+    test_path=test_path,
+  )
+
+
+def find_repository_root(start: Path) -> Path:
+  """Find repository root by searching for .git or spec-driver templates.
+
+  Args:
+    start: Path to start searching from.
+
+  Returns:
+    Repository root path.
+
+  Raises:
+    RepositoryRootNotFoundError: If repository root cannot be found.
+  """
+  for path in [start, *start.parents]:
+    # Check for .git or spec-driver templates directory
+    if (path / ".git").exists():
+      return path
+    if (path / SPEC_DRIVER_DIR / "templates").exists():
+      return path
+  msg = "Could not determine repository root (missing .git or spec-driver templates)"
+  raise RepositoryRootNotFoundError(
+    msg,
+  )
+
+
+def build_template_config(repo_root: Path, spec_type: str) -> SpecTemplateConfig:
+  """Build template configuration for the specified spec type.
+
+  Args:
+    repo_root: Repository root path.
+    spec_type: Type of spec ("tech" or "product").
+
+  Returns:
+    SpecTemplateConfig with paths and settings.
+
+  Raises:
+    SpecCreationError: If spec type is not supported.
+  """
+  spec_type = spec_type.lower()
+  templates_dir = get_templates_dir(repo_root)
+  if spec_type == "tech":
+    return SpecTemplateConfig(
+      base_dir=repo_root / "specify" / "tech",
+      prefix="SPEC",
+      kind="spec",
+      template_path=templates_dir / "spec.md",
+      testing_template_path=templates_dir / "tech-spec.testing.md",
+    )
+  if spec_type == "product":
+    return SpecTemplateConfig(
+      base_dir=repo_root / "specify" / "product",
+      prefix="PROD",
+      kind="prod",
+      template_path=templates_dir / "spec.md",
+      testing_template_path=None,
+    )
+  msg = f"Unsupported spec type: {spec_type}"
+  raise SpecCreationError(msg)
+
+
+def determine_next_identifier(base_dir: Path, prefix: str) -> str:
+  """Determine next sequential spec identifier.
+
+  Args:
+    base_dir: Directory containing existing specs.
+    prefix: Identifier prefix (e.g., "SPEC", "PROD").
+
+  Returns:
+    Next available identifier (e.g., "SPEC-042").
+  """
+  highest = 0
+  if base_dir.exists():
+    for entry in base_dir.iterdir():
+      if not entry.is_dir():
+        continue
+      match = re.search(r"(\d{3,})", entry.name)
+      if not match:
+        continue
+      try:
+        highest = max(highest, int(match.group(1)))
+      except ValueError:
+        continue
+  return f"{prefix}-{highest + 1:03d}"
+
+
+def slugify(name: str) -> str:
+  """Convert name to URL-friendly slug.
+
+  Args:
+    name: Human-readable name.
+
+  Returns:
+    Lowercase slug with hyphens.
+  """
+  return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def extract_template_body(path: Path) -> str:
+  """Extract markdown body from template file after frontmatter.
+
+  Falls back to package templates if local template is missing.
+
+  Args:
+    path: Path to template file.
+
+  Returns:
+    Extracted markdown content (body after frontmatter).
+
+  Raises:
+    TemplateNotFoundError: If template file doesn't exist in both locations.
+  """
+  if not path.exists():
+    # Try fallback to package templates
+    package_templates_dir = get_package_templates_dir()
+    fallback_path = package_templates_dir / path.name
+    if fallback_path.exists():
+      return extract_template_body_fallback(fallback_path)
+    msg = f"Template not found: {path} (also checked package templates)"
+    raise TemplateNotFoundError(msg)
+  content = path.read_text(encoding="utf-8")
+
+  # If template has frontmatter, extract body after it
+  if content.startswith("---"):
+    parts = content.split("---", 2)
+    return parts[2].lstrip("\n") if len(parts) >= 3 else content
+
+  return content
+
+
+def build_frontmatter(
+  *,
+  spec_id: str,
+  slug: str,
+  name: str,
+  kind: str,
+  created: str,
+) -> MutableMapping[str, object]:
+  """Build YAML frontmatter dictionary for spec file.
+
+  Args:
+    spec_id: Unique spec identifier.
+    slug: URL-friendly slug.
+    name: Human-readable spec name.
+    kind: Spec kind/type.
+    created: Creation date (ISO format).
+
+  Returns:
+    Frontmatter dictionary.
+  """
+  return {
+    "id": spec_id,
+    "slug": slug,
+    "name": name,
+    "created": created,
+    "updated": created,
+    "status": "draft",
+    "kind": kind,
+    "aliases": [],
+    "relations": [],
+    "guiding_principles": [],
+    "assumptions": [],
+  }
+
+
+__all__ = [
+  "CreateSpecOptions",
+  "CreateSpecResult",
+  "RepositoryRootNotFoundError",
+  "SpecCreationError",
+  "TemplateNotFoundError",
+  "create_spec",
+]
