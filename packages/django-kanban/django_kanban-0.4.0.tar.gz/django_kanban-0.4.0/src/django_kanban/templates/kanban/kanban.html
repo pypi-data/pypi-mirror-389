@@ -1,0 +1,91 @@
+{% extends "kanban/base.html" %}
+{% load static %}
+{% load custom_tags %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'kanban.css' %}">
+{% endblock style %}
+
+{% block body_style %}
+    {% if board.image %}
+        style="background-image: url('{{ board.image.url }}');"
+    {% else %}
+        style="background-color:{{board.color}};"
+    {% endif %}
+{% endblock body_style %}
+
+{% block body %}
+    <div class="board-modal-container">
+        {% url_search 'index' as bookmark_url %}
+        {% if bookmark_url %}
+            <a href="{{ bookmark_url }}">
+                <img src="{% static "images/3d-house.png" %}" alt="">
+            </a>
+        {% endif %}
+        <button onclick="openBoardModal()">☰</button>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{boardForm.name}}
+            <div id="board-modal" class="board-modal">
+                {{boardForm.color.label_tag}}
+                {{boardForm.color}}
+                {{boardForm.image.label_tag}}
+                {{boardForm.image}}
+                <input type="hidden" id="board_id" name="board_id" value="{{ board.id }}">
+                <button type="submit">submit</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="board" class="board">
+        {% for category in categories %}
+            <div class="category-container" data-category-id="{{ category.id }}" style="background-color: {{category.color}}">
+                <h2 class="category-name" contenteditable="true">{{ category.name }}</h2>
+                <button onclick="openColorModal(this)" class="color-button">&#8943;</button>
+                <form method="post" id="{{ category.id }}-color-form" class="color-container">
+                    {% csrf_token %}
+                    <label for="color">Pick a color:</label>
+                    <input type="color" id="color" name="color" value="{{category.color}}">
+                    <input type="hidden" id="category_id" name="category_id" value="{{ category.id }}">
+                    <button type="submit">Submit</button>
+                    <button type="submit" name="category-delete" value="delete" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+                <ul class="category-inner-container" data-category-id="{{ category.id }}">
+                    {% for card in category.cards.all %}
+                        <li class="card" data-card-id="{{ card.id }}" style="display:flex;flex-direction:column;">
+                            {% if "http" in card.title or "https" in card.title or "www" in card.title %}
+                                <a href="{{ card.title }}" target="_blank" rel="noopener noreferrer">{{ card.title }}</a>
+                            {% else %}
+                            <p class="card-title">{{ card.title }}</p>
+                            {% endif %}
+                            {% if card.image %}
+                                <img src="{{card.image.url}}" alt="" style="width:100%;">
+                            {% endif %}
+                            <button class="edit-card" onclick="editCard(this)">&#9998;</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+                    <div class="add-card-container">
+                    <input type="text" style="background-color:{{category.color}}" id="{{category.id}}-new-card" placeholder="Add New Card">
+                      <input type="file" id="{{category.id}}-file" accept="image/*" style="display: none;">
+                   <button onclick="triggerFileInput({{category.id}})">📎</button>
+                    <button id="{{category.id}}-button" style="background-color:{{category.color}}" onclick="addCard(event)">+</button>
+                </div>
+            </div>
+        {% endfor %}
+        <div class = "add-category">
+            <input type="text" id="new-category" placeholder="New category name">
+            <button onclick="addCategory()">Add Category</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js "></script>
+    <script type="text/javascript" src="{% static 'update-position.js' %}"></script>
+    <script type="text/javascript" src="{% static 'add-category.js' %}"></script>
+    <script type="text/javascript" src="{% static 'add-card.js' %}"></script>
+    <script type="text/javascript" src="{% static 'edit-card.js' %}"></script>
+    <script type="text/javascript" src="{% static 'edit-category.js' %}"></script>
+    <script type="text/javascript" src="{% static 'kanban.js' %}"></script>
+{% endblock body %}
+

@@ -1,0 +1,6 @@
+{% block body %}
+    {% for board in boards %}
+        <a href="{% url "kanban" board.id %}">{{board.name}}</a>
+        <br> 
+    {% endfor %}
+{% endblock body %}
