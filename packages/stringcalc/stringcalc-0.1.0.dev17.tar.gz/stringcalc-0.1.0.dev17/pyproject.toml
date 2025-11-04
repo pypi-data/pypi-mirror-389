@@ -1,0 +1,73 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "stringcalc"
+authors = [{name = "zmoon", email = "zmoon92@gmail.com"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+requires-python = "~=3.9"
+dependencies = [
+    "numpy >=1.21",
+    "pandas",
+    "pint >=0.22",
+    "pyabc2",
+]
+
+[project.urls]
+Home = "https://github.com/zmoon/stringcalc"
+Source = "https://github.com/zmoon/stringcalc"
+Documentation = "https://stringcalc.readthedocs.io"
+
+[project.optional-dependencies]
+test = [
+    "mypy",
+    "pandas-stubs",
+    "pytest",
+    "pytest-codeblocks",
+]
+dev = [
+    "ipython",
+]
+cli = [
+    "rich",
+    "typer",
+]
+doc = [
+    "matplotlib",
+    "myst-nb",
+    "myst-parser",
+    "sphinx",
+    "sphinx-book-theme",
+    "sphinx-click",
+    "sphinx-copybutton",
+]
+
+[project.scripts]
+stringcalc = "stringcalc.cli:app"
+
+[tool.flit.sdist]
+exclude = ["data/", ".github/", "panel/", ".gitignore"]
+
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pytest.ini_options]
+addopts = ["--ignore=docs/_build"]
+
+[tool.mypy]
+exclude = [
+    "^venv/",
+    "^data/",
+    "^panel/",
+]
+install_types = true
+ignore_missing_imports = true
