@@ -1,0 +1,32 @@
+Metadata-Version: 2.4
+Name: pyFIS
+Version: 1.14.2
+Summary: A library for controlling devices in the passenger information realm
+Home-page: https://github.com/Mezgrman/pyFIS
+Author: Julian Metzler
+Author-email: git@mezgr.de
+License: GPLv3
+Keywords: led sign message board effect library wrapper serial text display ibis vdv300 bus next stop train mono lawo splitflap industrial factory
+License-File: LICENSE
+Requires-Dist: pyserial
+Requires-Dist: crccheck
+Requires-Dist: crcmod
+Provides-Extra: full
+Requires-Dist: pillow; extra == "full"
+Requires-Dist: requests; extra == "full"
+Requires-Dist: RPi.GPIO; extra == "full"
+Provides-Extra: http
+Requires-Dist: requests; extra == "http"
+Provides-Extra: graphics
+Requires-Dist: pillow; extra == "graphics"
+Provides-Extra: raspberrypi
+Requires-Dist: RPi.GPIO; extra == "raspberrypi"
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: summary
