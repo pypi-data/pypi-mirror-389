@@ -1,0 +1,62 @@
+Metadata-Version: 2.4
+Name: atlas-orchestrator
+Version: 0.2.1
+Summary: Foundational scaffolding for the Atlas Orchestrator workflow platform
+Author: Atlas Orchestrator Team
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic>=2.5
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: typer>=0.9
+Requires-Dist: rich>=13.7
+Requires-Dist: fastapi>=0.111
+Requires-Dist: uvicorn>=0.30
+Requires-Dist: argon2-cffi>=23.1
+Requires-Dist: redis>=5.0
+Requires-Dist: httpx>=0.27
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4; extra == "dev"
+Requires-Dist: pytest-cov>=4.1; extra == "dev"
+Requires-Dist: mypy>=1.8; extra == "dev"
+Requires-Dist: ruff>=0.4; extra == "dev"
+
+# Atlas Orchestrator
+
+Foundational scaffolding for the Atlas Orchestrator workflow platform. This repository hosts the CLI and SDK skeleton along with shared infrastructure (configuration, dependency injection, logging) that other phases will extend.
+
+## Getting Started
+
+1. Create a virtual environment with Python 3.10+.
+2. Install the package in editable mode:
+   ```bash
+   pip install -e .[dev]
+   ```
+3. Run diagnostics:
+   ```bash
+   atlas-orchestrator --health
+   atlas-orchestrator --version
+   ```
+
+## Highlights
+
+- **Provider Fallbacks**: Configure multiple AI providers with automatic failover in `atlas_orchestrator.yaml` (`ai.fallback_providers`).
+- **Resumable Drafting**: Retry interrupted drafting runs with `atlas-orchestrator draft generate --resume`; progress is checkpointed under `.atlas_orchestrator/state/`.
+- **Usage Analytics**: Telemetry-aware logging writes to `.atlas_orchestrator/metrics/`. Inspect summaries with `atlas-orchestrator observe usage` or disable tracking via `features.telemetry=false`.
+
+## Project Structure
+
+- `atlas_orchestrator/` - Python package with CLI, configuration loader, and core utilities.
+- `.atlas_orchestrator/` - Workspace artifacts generated at runtime (plans, specs, drafts, validation).
+- `docs/` - Architectural, product, and delivery documentation.
+- `tests/` - Automated tests covering core scaffolding.
+
+See `docs/` for detailed design and roadmap information.
+
+## Documentation
+
+- docs/CLI_HANDBOOK.md - CLI usage guide with full command reference.
+- docs/SDK_QUICKSTART.md - Programmatic examples for integrating the SDK.
+- docs/ACCEPTANCE_REPORT.md - Pilot testing summary and sign-off details.
+- docs/POST_LAUNCH_SUPPORT.md - Support rotation and telemetry hand-off plan.
+- docs/SYSTEM_ARCHITECTURE.md - Architecture blueprint with release and operations view.
+
