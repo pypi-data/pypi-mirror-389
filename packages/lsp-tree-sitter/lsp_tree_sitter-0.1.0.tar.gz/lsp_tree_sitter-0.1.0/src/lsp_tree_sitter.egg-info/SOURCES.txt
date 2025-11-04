@@ -1,0 +1,79 @@
+.gitignore
+.gitlint
+.pre-commit-config.yaml
+.readthedocs.yaml
+.yamllint.yaml
+LICENSE
+README.md
+copier.yml
+pyproject.toml
+requirements.txt
+.github/FUNDING.yml
+.github/workflows/main.yml
+docs/conf.py
+docs/index.md
+docs/requirements.txt
+docs/api/lsp-tree-sitter.md
+docs/resources/install.md
+docs/resources/requirements.md
+requirements/colorize.txt
+requirements/dev.txt
+requirements/misc.txt
+requirements/toml.txt
+requirements/yaml.txt
+src/lsp_tree_sitter/__init__.py
+src/lsp_tree_sitter/_metainfo.py
+src/lsp_tree_sitter/_version.py
+src/lsp_tree_sitter/complete.py
+src/lsp_tree_sitter/diagnose.py
+src/lsp_tree_sitter/finders.py
+src/lsp_tree_sitter/format.py
+src/lsp_tree_sitter/misc.py
+src/lsp_tree_sitter/schema.py
+src/lsp_tree_sitter/utils.py
+src/lsp_tree_sitter.egg-info/PKG-INFO
+src/lsp_tree_sitter.egg-info/SOURCES.txt
+src/lsp_tree_sitter.egg-info/dependency_links.txt
+src/lsp_tree_sitter.egg-info/requires.txt
+src/lsp_tree_sitter.egg-info/top_level.txt
+template/.gitignore
+template/.gitlint
+template/.pre-commit-config.yaml
+template/.readthedocs.yaml
+template/.yamllint.yaml
+template/LICENSE
+template/README.md
+template/pyproject.toml
+template/requirements.txt
+template/.github/workflows/main.yml
+template/docs/conf.py
+template/docs/index.md
+template/docs/requirements.txt
+template/docs/api/{{ project }}.md
+template/docs/resources/configure.md
+template/docs/resources/install.md
+template/docs/resources/requirements.md
+template/requirements/colorize.txt
+template/requirements/dev.txt
+template/requirements/misc.txt
+template/src/{{ module }}/__init__.py
+template/src/{{ module }}/__main__.py
+template/src/{{ module }}/_shtab.py
+template/src/{{ module }}/finders.py
+template/src/{{ module }}/py.typed
+template/src/{{ module }}/schema.py
+template/src/{{ module }}/server.py
+template/src/{{ module }}/utils.py
+template/src/{{ module }}/assets/json/{{ language }}.json
+template/src/{{ module }}/assets/queries/import.scm
+template/src/{{ module }}/misc/__init__.py
+template/src/{{ module }}/misc/{{ language }}.py
+template/templates/class.txt
+template/templates/def.txt
+template/templates/metainfo.py.j2
+template/templates/noarg.txt
+template/tests/{{ 'test' }}_utils.py
+templates/class.txt
+templates/def.txt
+templates/noarg.txt
+tests/test_utils.py
