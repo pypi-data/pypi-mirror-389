@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: kiwixstorage
+Version: 0.10.0
+Summary: Kiwix S3 Cache wrapper to use within Kiwix/OpenZIM projects
+Project-URL: Homepage, https://github.com/openzim/python-storagelib
+Project-URL: Donate, https://www.kiwix.org/en/support-us/
+Author-email: Kiwix <dev@kiwix.org>
+License: GPLv3+
+License-File: LICENSE
+Keywords: aws,kiwix,offline,s3,zim
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: <3.15,>=3.10
+Requires-Dist: aws-requests-auth<0.5,>=0.4.2
+Requires-Dist: boto3<1.38.0,>=1.12.39
+Requires-Dist: humanfriendly<11,>=10.0
+Requires-Dist: requests<2.32.4,>=2.23
+Provides-Extra: check
+Requires-Dist: aws-requests-auth-stubs==0.4.3.2; extra == 'check'
+Requires-Dist: pyright==1.1.407; extra == 'check'
+Requires-Dist: types-boto3[essential]<1.38.0,>=1.12.39; extra == 'check'
+Requires-Dist: types-humanfriendly==10.0.0; extra == 'check'
+Provides-Extra: dev
+Requires-Dist: aws-requests-auth-stubs==0.4.3.2; extra == 'dev'
+Requires-Dist: black==24.8.0; extra == 'dev'
+Requires-Dist: coverage==7.6.1; extra == 'dev'
+Requires-Dist: invoke==2.2.0; extra == 'dev'
+Requires-Dist: pre-commit==3.5.0; extra == 'dev'
+Requires-Dist: progressbar2==4.5.0; extra == 'dev'
+Requires-Dist: pyright==1.1.407; extra == 'dev'
+Requires-Dist: pytest==8.3.5; extra == 'dev'
+Requires-Dist: ruff==0.11.10; extra == 'dev'
+Requires-Dist: types-boto3[essential]<1.38.0,>=1.12.39; extra == 'dev'
+Requires-Dist: types-humanfriendly==10.0.0; extra == 'dev'
+Provides-Extra: lint
+Requires-Dist: black==24.8.0; extra == 'lint'
+Requires-Dist: ruff==0.11.10; extra == 'lint'
+Provides-Extra: progress
+Requires-Dist: progressbar2==4.5.0; extra == 'progress'
+Provides-Extra: scripts
+Requires-Dist: invoke==2.2.0; extra == 'scripts'
+Provides-Extra: test
+Requires-Dist: coverage==7.6.1; extra == 'test'
+Requires-Dist: pytest==8.3.5; extra == 'test'
