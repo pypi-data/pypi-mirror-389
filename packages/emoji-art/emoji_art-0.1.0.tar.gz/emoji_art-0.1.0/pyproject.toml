@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emoji_art"
+version = "0.1.0"
+description = "A simple emoji art generator by Eldar"
+authors = [{name = "Eldar", email = "eldar@example.com"}]
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+keywords = ["emoji", "art", "ascii", "fun"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["emoji_art*"]
