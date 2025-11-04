@@ -1,0 +1,234 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tfkit-py"
+dynamic = ["version"]
+description = "Advanced Terraform Intelligence & Analysis Suite"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "MIT"}
+authors = [
+    {name = "Ivan Kovtun", email = "kovtun.ivan@proton.me"},
+]
+maintainers = [
+    {name = "Ivan Kovtun", email = "kovtun.ivan@proton.me"},
+]
+keywords = [
+    "terraform", 
+    "iac", 
+    "infrastructure-as-code", 
+    "analysis", 
+    "visualization", 
+    "security", 
+    "cost-optimization",
+    "devops",
+    "cli"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+    "Environment :: Console",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.1.0",
+    "jinja2>=3.1.0",
+    "python-hcl2>=4.3.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0.0",
+    "toml>=0.10.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "build>=1.0.0",
+    "twine>=4.0.0",
+]
+
+[project.scripts]
+tfkit = "tfkit.cli:main"
+
+[project.urls]
+Homepage = "https://tfkit.netlify.app"
+Documentation = "https://tfkit.netlify.app/docs"
+Repository = "https://github.com/ivasik-k7/tfkit"
+Issues = "https://github.com/ivasik-k7/tfkit/issues"
+
+[tool.hatch.version]
+path = "src/tfkit/__init__.py"
+
+[tool.hatch.build]
+include = [
+    "src/tfkit/**/*",
+    "README.md",
+    "LICENSE",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tfkit"]
+
+exclude = [
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/*.pyo",
+    "**/*.pyd",
+    "**/.DS_Store",
+    "**/tests",
+    "**/test_*.py",
+    "**/*.log",
+    "**/*.tmp",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/tfkit",
+    "src/tfkit/templates",
+    "pyproject.toml", 
+    "README.md",
+    "LICENSE",
+    "INSTALLATION.md",
+]
+exclude = [
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/*.pyo",
+    "dist",
+    "build", 
+    ".venv",
+    "venv",
+    "*.egg-info",
+    ".git",
+    ".github",
+    "install.sh",
+    "publish.sh",
+    "graph_data.json",
+    "uv.lock",
+]
+
+[tool.black]
+target-version = ['py38']
+line-length = 88
+extend-exclude = '''
+/(
+  # directories
+  | \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | __pycache__
+  | \.pyc
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+known_first_party = ["tfkit"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "hcl2.*",
+    "rich.*",
+    "jinja2.*",
+    "yaml.*",
+    "toml.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",
+    "B008",
+    "C901",
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"cli.py" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = [
+    "--verbose",
+    "--color=yes",
+    "--cov=tfkit",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--import-mode=importlib",
+]
+
+[tool.coverage.run]
+source = ["src/tfkit"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.7.10",
+    "black>=24.8.0",
+    "isort>=5.13.2",
+    "mypy>=1.14.1",
+    "pip-licenses>=4.5.1",
+    "pytest>=8.3.5",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.14.2",
+    "safety>=3.6.2",
+]
