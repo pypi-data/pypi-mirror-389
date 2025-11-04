@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yardstiq-compass"
+version = "0.1.0"
+description = "Yardstiq default implementations for local usages"
+requires-python = ">=3.12"
+
+dependencies = [
+    "yardstiq>=0.1.0",
+    "qiskit>=2.1.1",
+    "qiskit-aer>=0.17.1"
+]
+
+[project.urls]
+Repository = "https://github.com/QuantumCommons/yardstiq-compass"
+
+[project.entry-points."yardstiq.plugins"]
+local = "yardstiq_compass.plugin_loader"
