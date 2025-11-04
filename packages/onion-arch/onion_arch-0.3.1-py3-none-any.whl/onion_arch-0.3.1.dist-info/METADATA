@@ -1,0 +1,319 @@
+Metadata-Version: 2.4
+Name: onion-arch
+Version: 0.3.1
+Summary: Decouple your package-project with Onion-Mode.
+Author-email: 2229066748@qq.com
+Maintainer: Eagle'sBaby
+Maintainer-email: 2229066748@qq.com
+License: Apache Licence 2.0
+Keywords: python
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: license
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-python
+Dynamic: summary
+
+# OnionMeta: A Python Metaclass for Dynamic Abstract Method Resolution
+
+## 1. Core Concepts: The Onion Architecture Metaclass
+
+The `OnionMeta` metaclass is a sophisticated Python construct designed to facilitate a unique architectural pattern often referred to as the "Onion Architecture." This pattern is characterized by a clear separation of concerns, where the core business logic classes are defined using abstract interfaces, and their concrete implementations are provided in separate, decoupled modules. The `OnionMeta` metaclass is the engine that makes this dynamic assembly possible, especially by deferring the execution of abstract method implementations until runtime.
+
+This approach allows for the creation of a highly modular and extensible system where the core class remains stable and unaware of its concrete implementations, while the implementations can be developed, maintained, and even loaded independently. The metaclass achieves this by intercepting the attempt to instantiate the core abstract class for the first time, triggering a "Construction & Binding" (C&B) phase. During this phase, it dynamically discovers and integrates all available method implementations from designated submodules, effectively "completing" the class before allowing instantiation to proceed.
+
+This mechanism ensures that the end user interacts with a single, unified interface (the core class) while benefiting from a rich set of functionalities aggregated from various parts of the project.
+
+### 1.1. Design Philosophy
+
+The design philosophy of `OnionMeta` is rooted in principles of decoupling, modularity, and dynamic behavior, which are highly valued in modern software engineering. It addresses the challenge of creating a stable core application logic that can be extended with functionality without modifying the core itself. This is akin to the layers of an onion, where the core represents the essential business rules, and each outer layer represents a specific implementation or set of functionalities.
+
+The metaclass provides the mechanism to seamlessly wrap these layers around the core at runtime. This design is particularly useful in large applications, plugin systems, or frameworks where a clear contract (the abstract class) needs to be established, but the fulfillment of that contract (the implementation) may vary or be developed by different teams. By centralizing the logic for discovering and applying these implementations in the metaclass, the system maintains a clear separation between the "what" (the interface) and the "how" (the implementation), resulting in a more maintainable and flexible codebase.
+
+#### 1.1.1. Decoupling Core Business Logic from Implementations
+
+A fundamental goal of the `OnionMeta` design is to achieve a strict decoupling between the core business logic (represented by the abstract base class) and its concrete implementations. In typical object-oriented design, a class that defines abstract methods must be subclassed, and all abstract methods must be implemented in that subclass before instantiation. This creates a tight coupling between the interface and its implementation.
+
+`OnionMeta` inverts this relationship. The core class, which uses `OnionMeta` as its metaclass, defines the necessary abstract methods but remains unaware of how or where these methods will be implemented. The implementations are provided in separate modules or classes, which may or may not directly inherit from the core class in the traditional sense. The metaclass acts as a bridge, dynamically collecting these disparate implementations at runtime and binding them to the core class upon its first instantiation.
+
+This decoupling means that the core class can be defined, documented, and even distributed independently of any specific implementation. Developers working on implementations do not need to modify the core class, reducing the risk of introducing bugs into the central logic. This separation of concerns is a cornerstone of maintainable software, allowing for parallel development, easier testing, and the ability to swap or add new functionalities without altering the foundational code.
+
+#### 1.1.2. The "Onion" Metaphor: Layered Implementations
+
+The "onion" metaphor aptly describes the architectural pattern enabled by `OnionMeta`. Imagine the core abstract class as the heart of the onion. This core defines the essential, non-negotiable business rules and interfaces. Each layer of the onion, wrapped around the core, represents a set of concrete implementations for the abstract methods defined by the core.
+
+These layers are independent of each other and of the core's internal structure. Their sole purpose is to provide the "flesh" to the abstract "skeleton." The `OnionMeta` metaclass is the force that assembles these layers. When the core class is instantiated for the first time, the metaclass initiates the "Construction & Binding" (C&B) process, which can be thought of as the act of wrapping all available implementation layers around the core.
+
+It scans the project's ecosystem for any code that provides implementations for the core's abstract methods. It then dynamically attaches these implementations to the core class. From the end user's perspective, they only see and interact with the final, fully formed onion (the core class), which now possesses all the functionalities provided by its layers. The user is unaware of the individual layers or the dynamic assembly process; they simply see a cohesive, functional object.
+
+This metaphor highlights the core principle of the architecture: a stable, hidden core and a flexible, layered set of implementations that can be added or modified without affecting the core.
+
+#### 1.1.3. Interacting Only with the Core Class
+
+A key aspect of the `OnionMeta` design is to simplify the user-facing API. The end user of a library or framework built using this pattern interacts only with the core abstract class. They do not need to know about the existence of the various implementation submodules or the classes within them (e.g., `A_foo`, `A_bar`). Their code will simply import the core class `A` and instantiate it directly.
+
+The complexity of discovering and integrating the necessary implementations is completely abstracted away by the `OnionMeta` metaclass. The user's workflow is as follows: `from impls import A` followed by `my_a = A()`. Upon the first call to `A()`, the metaclass silently performs the "Construction & Binding" (C&B) process in the background. It loads the `impls` module, which in turn imports all implementation submodules. It then collects the required methods and binds them to the `A` class. Once this is done, instantiation proceeds, and the user receives a fully functional object.
+
+All subsequent instantiations of `A` will skip the C&B phase and proceed directly to object creation, as the class has already been "compiled" and marked as ready. This design provides the user with a clean and intuitive experience, benefiting from a powerful, dynamically assembled object without being burdened by the details of its construction. This approach is particularly powerful in plugin architectures, where the user might install new plugins (implementations) that are automatically picked up and integrated into the core application without requiring any changes to the user's code.
+
+### 1.2. Key Responsibilities of `OnionMeta`
+
+The `OnionMeta` metaclass shoulders several critical responsibilities to orchestrate the dynamic assembly of the abstract core class. It acts as the central controller, managing the entire lifecycle from the initial class definition to its final, usable state. Its primary duties revolve around intercepting the instantiation process, managing a one-time initialization phase, and ensuring that the resulting class adheres to its abstract method definitions, albeit in a deferred manner.
+
+These responsibilities are closely tied to Python's object creation mechanisms and the behavior of the `abc` (Abstract Base Classes) module. By carefully overriding specific methods within its own definition, `OnionMeta` can insert custom logic at crucial points in the class and object creation process, enabling the unique "onion" architecture. The successful execution of these responsibilities ensures that the core class is both extensible and robust, providing a stable interface to the user while maintaining enough flexibility to dynamically incorporate new implementations.
+
+#### 1.2.1. Intercepting the First Instantiation
+
+The first and most critical responsibility of `OnionMeta` is to intercept the initial attempt to instantiate the core class (e.g., `A`). In Python, object creation is a two-step process handled by the metaclass's `__call__` method. When you write `A()`, you are effectively calling `OnionMeta.__call__(A, ...)`. This provides a perfect hook for the metaclass to execute its custom logic before the actual object creation.
+
+The `OnionMeta` metaclass overrides the `__call__` method to perform this interception. Within this overridden method, it checks for a special flag on the class itself, typically named `__onion_built__`. If this flag is not present or is `False`, the metaclass knows that this is the first time the class is being instantiated and that the "Construction & Binding" (C&B) process has not yet occurred.
+
+This interception is the trigger for the entire dynamic assembly mechanism. It allows the metaclass to pause the standard instantiation process, collect the necessary components, modify the class, and only then allow instantiation to proceed. This ensures that the class is fully prepared and has all its required methods implemented before any objects are created, preventing the `TypeError` exception that would typically be raised by `ABCMeta` upon attempting to instantiate a class with unimplemented abstract methods.
+
+#### 1.2.2. Triggering the "Construction & Binding" (C&B) Process
+
+Once the `OnionMeta` metaclass has intercepted the first instantiation, its next responsibility is to trigger the "Construction & Binding" (C&B) process. This is the heart of the dynamic assembly mechanism. The C&B process is a custom routine defined within the overridden `__call__` method of the metaclass. It is responsible for several key tasks: discovering implementation submodules, collecting concrete method implementations, and binding them to the core abstract class.
+
+The process begins by examining all loaded modules to look for classes or functions that provide implementations for the abstract methods defined in the core class. Since the metaclass no longer automatically loads implementation modules, the user must ensure that all necessary implementation modules are loaded into memory before using the core class. This discovery phase is crucial as it gathers all the onion "layers" that need to be wrapped around the core. The entire C&B process is encapsulated within an `if not getattr(cls, '__onion_built__', False):` block, ensuring it runs only once, making the class modification a one-time, atomic operation.
+
+#### 1.2.3. Dynamically Modifying the Abstract Base Class
+
+After the "Construction & Binding" (C&B) process has collected all the necessary method implementations, the next responsibility of the `OnionMeta` metaclass is to dynamically modify the core abstract class. This is achieved by adding the collected methods directly to the class's namespace. In Python, a class is a mutable object, and its attributes (including methods) can be added or modified at runtime.
+
+The metaclass iterates over the collected implementations dictionary (e.g., `{'foo': <function foo_impl>, 'bar': <function bar_impl>}`) and uses the built-in `setattr` function to bind each implementation to the core class. For example, `setattr(cls, 'foo', foo_impl)` would add the `foo_impl` function as a method named `foo` to the class `cls` (which is the core class `A`). This step effectively "completes" the class by providing concrete definitions for the previously abstract methods.
+
+The dynamic nature of Python is key here, as it allows the class structure to be altered after its initial definition but before it's used to create instances. This modification is permanent for the duration of the program's execution; once a method is added, it becomes part of the class definition, accessible to all subsequent instances. This responsibility is what makes the decoupling of interface from implementation possible, as the core class is transformed into a concrete, instantiable class at runtime.
+
+#### 1.2.4. Deferring and Managing Abstract Method Execution
+
+A critical responsibility of `OnionMeta` is to manage the execution of abstract methods, effectively deferring the check that would normally be performed by `ABCMeta`. The standard `ABCMeta` metaclass prevents the instantiation of any class with unimplemented abstract methods. However, in the "onion" architecture, the core class is intentionally abstract at definition time, with the expectation that its methods will be provided later.
+
+If the standard `ABCMeta` behavior were allowed to proceed, the first attempt to instantiate the core class would immediately fail. `OnionMeta` resolves this by first executing the "Construction & Binding" (C&B) process to dynamically add the required methods, and then explicitly updating the abstract methods registry.
+
+In Python 3.10 and later, the `abc` module provides a crucial function: `update_abstractmethods(cls)`. This function recalculates the set of abstract methods for a given class `cls`. After `OnionMeta` has dynamically added all the necessary implementations to the core class, it calls `update_abstractmethods(cls)`. This call forces the `abc` machinery to re-examine the class. If all previously abstract methods now have concrete implementations, the class's `__abstractmethods__` attribute is updated to an empty set, and the class is no longer considered abstract.
+
+Only after this update does `OnionMeta` proceed to call the parent `ABCMeta.__call__` method to complete the instantiation. This sequence ensures that the abstract method check is performed only after the class is fully assembled, preventing premature `TypeError` exceptions and enabling the desired dynamic behavior.
+
+## 2. The "Construction & Binding" (C&B) Process
+
+The "Construction & Binding" (C&B) process is the central mechanism by which the `OnionMeta` metaclass brings the abstract core class to life. It is a one-time, automated procedure that occurs upon the first instantiation of the core class. This process is responsible for discovering, collecting, and integrating all the disparate method implementations scattered across the project's submodules. The C&B process can be broken down into several distinct phases, each with a specific function.
+
+It begins with the interception of the first instantiation, which acts as the trigger. Following this, it enters the discovery phase, where it examines all loaded modules for implementation submodules. Since the metaclass no longer automatically loads implementation modules, the user must ensure that all necessary implementation modules are loaded into memory before using the core class. Once the submodules are discovered, it moves to the collection phase, where it systematically searches for and gathers the concrete methods that fulfill the core class's abstract requirements. The final phase involves the dynamic modification of the core class itself, where the collected methods are bound to the class, and the abstract method registry is updated to reflect the class's new, complete state. The entire process is designed to be transparent to the end user, who simply interacts with the final, fully formed class.
+
+### 2.1. Triggering C&B on First Instantiation
+
+The trigger for the "Construction & Binding" (C&B) process is the first call to the core abstract class. This is a deliberate design choice to ensure that the class is fully prepared before any objects are created, while also avoiding the overhead of this preparation process for subsequent instantiations. The mechanism for this trigger relies on the `__call__` method of the `OnionMeta` metaclass and a simple state management flag. This approach is effective because it relies on the standard Python object creation protocol and does not require explicit initialization calls from the user. The entire process is initiated implicitly, resulting in a clean and intuitive API. The use of the flag ensures that the potentially expensive operations of loading modules and modifying the class are performed only once, no matter how many times the class is instantiated throughout the application's lifetime.
+
+#### 2.1.1. Overriding the `__call__` Method in the Metaclass
+
+The `__call__` method in a Python metaclass is a special method that is called when an instance of a class created by that metaclass is called. In the context of `OnionMeta`, when the user writes `a = A()`, Python internally translates this to `OnionMeta.__call__(A, *args, **kwargs)`. By overriding this method, `OnionMeta` gains the ability to insert its custom logic at the very beginning of the object creation process. This is the ideal place to trigger the "Construction & Binding" (C&B) process.
+
+The overridden `__call__` method first checks whether the C&B process has already been completed. If not, it executes the C&B routine, which involves loading the implementation modules and dynamically adding methods to the class `A`. After the C&B process is complete, the method then calls `super().__call__(*args, **kwargs)`, which invokes the `__call__` method of the parent metaclass, `ABCMeta`. This call proceeds with the standard object creation process using the newly modified, fully realized version of class `A`. This technique of overriding `__call__` is a powerful metaprogramming pattern in Python, allowing for fine-grained control over class instantiation.
+
+#### 2.1.2. Using an Internal State Flag (`__onion_built__`) to Ensure Single Execution
+
+To ensure that the "Construction & Binding" (C&B) process is executed only once, `OnionMeta` employs a simple but effective state management technique using an internal class-level flag, typically named `__onion_built__`. This flag is stored as an attribute on the class itself (e.g., `A.__onion_built__`). When the overridden `__call__` method is invoked, its first operation is to check the state of this flag using `getattr(cls, '__onion_built__', False)`.
+
+On the first instantiation, this attribute will not exist on the class, so `getattr` will return the default value `False`. This condition triggers the C&B process. Upon successful completion of the C&B process, the metaclass sets this flag to `True` on the class using `setattr(cls, '__onion_built__', True)`. Now, any subsequent calls to instantiate the class will find `__onion_built__` to be `True`, and the `if` condition in the `__call__` method will evaluate to `False`. Consequently, the C&B code block will be skipped, and the method will proceed directly to the `super().__call__(*args, **kwargs)` call, resulting in a faster instantiation process. This flag-based mechanism is a common pattern in Python for achieving singleton-like behavior or one-time initialization, and it is perfectly suited to `OnionMeta`'s needs.
+
+### 2.2. Collecting Method Implementations
+
+The collection of method implementations is the core part of the "Construction & Binding" (C&B) process. This stage is responsible for finding and gathering all the concrete methods that will be used to fulfill the abstract contract of the core class. The design relies on a convention-based approach where implementations are located in specific, discoverable places within the project structure. This process involves loading a central manifest file, which in turn loads all implementation submodules. The design relies on a convention-based approach where implementations are located in specific, discoverable places within the project structure.
+
+After the first instance of `A` is created, all subsequent instantiations will follow the normal, fast Python object creation flow. The internal `__onion_built__` flag of the `OnionMeta` metaclass will be set, causing it to skip the C&B process on all future calls. This means that creating new instances of `A` will perform just as fast as instantiating any other class, ensuring that the dynamic assembly mechanism does not impose a performance burden on the application after the initial setup cost.
+
+#### 2.2.1. Mechanism for Loading Implementation Submodules
+
+During the C&B process, the metaclass examines all loaded modules to discover implementation submodules. Since the metaclass no longer automatically loads implementation modules, the user must ensure that all necessary implementation modules are loaded into memory before using the core class. If critical implementation modules are not loaded, the corresponding functionalities will not be available.
+
+The metaclass checks the loaded modules to discover implementation submodules, requiring that all implementation modules are loaded before using the core class. This design makes module dependencies more explicit and controllable.
+
+#### 2.2.2. Responsibility for Loading Implementation Modules
+
+The `OnionMeta` metaclass discovers implementation submodules by examining the loaded modules and does not automatically load any implementation modules. This design places the loading responsibility on the user, making module dependencies more explicit and controllable.
+
+As a module developer, you need to implicitly load all necessary implementations in the package's `__init__.py` to ensure that the functionality is fully available when the user imports it:
+
+```python
+# In the package's __init__.py
+from .core import DataProcessor, Calculator  # Export the core classes
+from . import basic_calculator  # Implicitly load the basic implementation
+from . import advanced_calculator  # Implicitly load the advanced implementation
+# When the user executes "from your_package import Calculator", all implementations are ready
+```
+
+If the user imports the core class individually, they must manually load the required implementation modules; otherwise, the metaclass cannot discover the unloaded modules, and the corresponding functionalities will not be available.
+
+### 2.3. Dynamic Class Modification and Abstract Method Updates
+
+During the C&B process, the metaclass examines all loaded modules to discover implementation submodules. Since the metaclass no longer automatically loads implementation modules, the user must ensure that all necessary implementation modules are loaded into memory before using the core class. If critical implementation modules are not loaded, the corresponding functionalities will not be available.
+
+The metaclass checks the loaded modules to discover implementation submodules, requiring that all implementation modules are loaded before using the core class. This design makes module dependencies more explicit and controllable.
+
+## 3. Simplifying Onion Architecture with the Onion Base Class
+
+To simplify the use of the onion architecture, we provide the `Onion` base class, which is an abstract base class that uses the `OnionMeta` metaclass. Users only need to inherit from the `Onion` class to obtain the full onion architecture functionality without having to deal with the complexities of the metaclass directly.
+
+### 3.1. Design of the Onion Base Class
+
+The `Onion` base class provides a concise API, similar to the standard `abc.ABC`:
+
+```python
+from onion import Onion
+import abc
+
+class MyCore(Onion):
+    @abc.abstractmethod
+    def my_method(self):
+        pass
+```
+
+### 3.2. Usage Flow
+
+The complete flow for using the `Onion` base class is as follows:
+
+The usage flow includes defining the core abstract class (inheriting from `Onion` and defining abstract methods), defining implementation classes (inheriting from the core class and implementing abstract methods), loading implementation modules (must be done before using the core class, otherwise the functionality will be incomplete), compilation (manually calling `onionCompile()` or relying on automatic compilation upon first instantiation), and creating instances and calling methods.
+
+### 3.3. Example Code
+
+```python
+import abc
+from onion import Onion
+
+# 1. Define the core abstract class
+class CalculatorCore(Onion):
+    @abc.abstractmethod
+    def add(self, a: float, b: float) -> float:
+        """Addition operation"""
+        pass
+    
+    @abc.abstractmethod
+    def multiply(self, a: float, b: float) -> float:
+        """Multiplication operation"""
+        pass
+
+# 2. Define implementation classes (usually in separate modules)
+class CalculatorImpl(CalculatorCore):
+    def add(self, a: float, b: float) -> float:
+        return a + b
+    
+    def multiply(self, a: float, b: float) -> float:
+        return a * b
+
+# 3. Usage flow
+def main():
+    # Important: The user must load the implementation modules before using the core class
+    # Method 1: Via package import (recommended)
+    # from your_package import CalculatorCore  # The package has implicitly loaded the implementations
+    # 
+    # Method 2: Explicitly load the implementation modules
+    # import impls  # Manually load all implementations
+    # Or import individually
+    # from calculator_impl import CalculatorImpl
+    
+    print("✓ Implementation modules loaded")
+    
+    # 4. Manual compilation (optional)
+    CalculatorCore.onionCompile()
+    print("✓ Manual compilation completed")
+    
+    # 5. Create instance and use
+    calc = CalculatorCore()
+    print("✓ Instance created successfully")
+    
+    # 6. Call methods
+    result1 = calc.add(5, 3)
+    result2 = calc.multiply(4, 6)
+    
+    print(f"5 + 3 = {result1}")
+    print(f"4 * 6 = {result2}")
+
+if __name__ == "__main__":
+    main()
+```
+
+**Important Reminder**: If the implementation modules are not loaded before using the core class, the functionality will be incomplete, and the metaclass can only discover the loaded modules.
+
+### 3.4. Key Changes and Improvements
+
+Compared to earlier versions, the new `Onion` base class implementation brings significant improvements. Method naming has been standardized, the `compile()` method has been renamed to the more descriptive `onionCompile()`, effectively avoiding conflicts with Python built-in methods or methods from other libraries. All internal methods now use the `__onion_` prefix, such as `__onion_compile()`, `__onion_get__onion_subs__()`, etc., ensuring a clean and consistent namespace.
+
+User responsibilities have also become more explicit. Since the metaclass no longer automatically loads the `impls.py` module, the responsibility for loading the impls module now lies entirely with the user, providing a more flexible control method. Users must ensure that all necessary implementation modules are loaded into memory before using the core class; otherwise, the corresponding functionalities will not be available. Users can choose to manually call `onionCompile()` for explicit compilation or rely on the automatic compilation mechanism upon first instantiation. This design makes the usage more flexible and diverse.
+
+Debugging and error handling have also been significantly enhanced. Detailed debug output is provided during the compilation process, greatly facilitating development and debugging efforts. Error messages have become clearer and more specific, with accurate guidance for compilation errors and warning messages. The system can also automatically detect and report method implementation conflicts, helping developers identify and resolve issues promptly.
+
+In terms of performance optimization, the new implementation ensures that the C&B process is executed only once, avoiding repeated overhead. After the initial compilation is completed, the performance of subsequent instantiations is exactly the same as that of a regular class. This design ensures that the dynamic assembly mechanism does not impose a performance burden on the application.
+
+## 4. Implementation Details and Technical Points
+
+### 4.1. Subclass Registration Mechanism
+
+`OnionMeta` uses an internal list `__onion_subs__` to maintain a registry of all non-abstract subclasses. In the `__init__` method, when a non-abstract subclass is detected inheriting from the core class, it is automatically added to the registry. This mechanism ensures that all possible implementations can be tracked and managed by the system, providing a foundation for subsequent method collection and validation.
+
+### 4.2. Method Collection Strategy
+
+The `__onion_get_meths()` method is responsible for collecting method implementations from the registered subclasses. It iterates over all registered subclasses, checking whether each subclass implements the abstract methods of the core class. The validation process confirms whether the method is defined in that subclass (via `__qualname__` check) and handles method conflicts, usually adopting a strategy where later definitions override earlier ones. Finally, it returns a mapping dictionary from method names to implementation functions, providing all the method implementations required for the compilation process.
+
+### 4.3. Compilation Process Validation
+
+The `__onion_compile()` method performs a strict validation流程. First, it conducts a subclass existence check to ensure that at least one implementation subclass is available for use. Then, it performs a method completeness check to verify that all abstract methods have corresponding implementations. Next, it executes a method merge operation, correctly binding the collected methods to the core class. Finally, it handles various warning messages, reporting issues such as method conflicts that need attention.
+
+### 4.4. Abstract Method Updates
+
+Using Python 3.10+'s `abc.update_abstractmethods()` function to update the abstract method registry, ensuring that the class is correctly recognized as a concrete class after the compilation is completed. This function recalculates the collection of abstract methods of the class and updates the internal state accordingly, allowing the originally abstract class to be instantiated normally.
+
+## 5. Best Practices and Usage Recommendations
+
+### 5.1. Project Structure Recommendations
+
+```
+project/
+├── __init__.py      # Package initialization, responsible for implicitly loading implementations
+├── core.py          # Core abstract class definitions
+├── feature_a.py     # Specific implementation module
+├── feature_b.py     # Another implementation module
+└── main.py          # Main program entry point
+```
+
+**Important**: As a module developer, you need to ensure in `__init__.py` that all necessary files are implicitly loaded when the user imports. If the import is omitted, the functionality will be incomplete.
+
+### 5.2. Implementation Module Loading Example
+
+```python
+# Implicit loading via package import (recommended)
+from your_package import CalculatorCore  # The package's __init__.py has loaded the implementations
+
+# Or load specific implementations separately
+from basic_calculator import BasicCalculatorImpl
+from advanced_calculator import AdvancedCalculatorImpl
+
+# Important: Before using the core class, you must ensure that all required implementation modules have been loaded
+CalculatorCore.onionCompile()  # Now you can compile
+```
+
+### 5.3. Usage Pattern Recommendations
+
+The explicit loading mode is suitable for scenarios where there are precise requirements for the timing of compilation. The user first imports the implementation modules, then manually calls the compilation method, and finally creates an instance. This method allows the user to have complete control over the entire initialization流程, facilitating the execution of additional setup operations before and after compilation. The automatic compilation mode is more concise and suitable for most regular usage scenarios. The user only needs to import the implementation modules and then directly create an instance. The system will automatically complete the compilation process upon the first instantiation. This method reduces the amount of code and makes the usage process more intuitive and simple. Regardless of which mode is chosen, the user must ensure that all necessary implementation modules have been loaded into memory before using the core class; otherwise, the corresponding functionalities will not be available.
+
+### 5.4. Debugging Tips
+
+When debugging an onion architecture application, enabling the debug output feature can view detailed information about the compilation process, including key data such as collected subclasses, method implementations, and conflict resolution. Checking the `.__onion_built__` attribute can confirm the compilation status, ensuring that the C&B process has been completed. Using the `.__abstractmethods__` attribute can view the remaining abstract methods, helping to identify which methods do not yet have corresponding implementations. Monitoring method conflict warnings can timely detect situations where multiple implementation classes provide the same method, facilitating appropriate adjustments. This debugging information not only cooperates with IDEs but also correctly directs to the relevant code locations, significantly improving debugging efficiency.
+
+## 6. Summary
+
+The `OnionMeta` metaclass and `Onion` base class provide a powerful and flexible implementation of the onion architecture. By decoupling the core business logic from the concrete implementations, it supports:
+
+- **Modular Development**: Core and implementations can be developed and maintained independently
+- **Dynamic Extension**: New implementations can be added at runtime
+- **Clear Architecture**: Maintains a separation between the "what" and the "how"
+- **Simplicity**: Provides an intuitive API that hides complex metaprogramming details
+
+The new implementation makes the onion architecture pattern more robust and easier to use through standardized method naming, explicit user responsibilities, and enhanced debugging support.
