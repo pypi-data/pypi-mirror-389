@@ -1,0 +1,427 @@
+# WS Frappe CLI
+
+A command-line tool for ### 1. Setup Development Environment
+
+Create a new Frappe development environment:
+
+```bash
+ws setup my-erp-project
+```
+
+This command will:
+- Create a new project directory wi### `ws setup`
+
+Initialize Frappe development environment.
+
+**Arguments:**
+- `PROJECT_NAME`: Name of the project (required)
+
+**Options:**
+- `--frappe-version TEXT`: Frappe version to install (default: v15.78.1)
+- `--python-path TEXT`: Path to Python executable (default: python3)
+- `--force`: Force setup even if directory exists
+
+**Example:**
+```bash
+ws setup myproject --frappe-version v15.78.1
+```
+
+### `ws create-site`
+- Create a Python virtual environment
+- Install frappe-bench
+- Initialize a new bench with Frappext development environment management.
+
+[![PyPI version](https://badge.fury.io/py/ws-frappe-cli.svg)](https://badge.fury.io/py/ws-frappe-cli)
+[![Python Support](https://img.shields.io/pypi/pyversions/ws-frappe-cli.svg)](https://pypi.org/project/ws-frappe-cli/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Overview
+
+WS Frappe CLI simplifies the setup, configuration, and management of Frappe/ERPNext development environments. It provides an intuitive command-line interface for common development tasks.
+
+## 🚀 Features
+
+- **🔧 Environment Setup**: Automatically set up Frappe/ERPNext development environment with virtual environment management
+- **🏗️ Site Creation**: Interactive site creation with validation and configuration
+- **📦 App Management**: Fetch and install apps from predefined list or custom GitHub repositories
+- **📝 Template System**: Install project documentation templates for tracking app versions and customizations
+- **🔗 Git Integration**: Optional Git repository initialization during setup
+- **⚡ Productivity Shortcuts**: Create system-wide shortcuts for common bench commands
+- **🎨 Rich CLI**: Colored output and interactive prompts for better user experience
+- **🔄 Cross-platform**: Works on Linux, macOS, and Windows
+
+## Installation
+
+### From PyPI (Recommended)
+
+```bash
+pip install ws-frappe-cli
+```
+
+### From Source
+
+```bash
+git clone https://github.com/whitestork-erp/ws-frappe-cli.git
+cd ws-frappe-cli
+pip install -e .
+```
+
+## Quick Start
+
+### 1. Setup Development Environment
+
+Initialize a new Frappe development environment:
+
+# Quick Start
+
+```bash
+ws setup
+```
+
+This command will:
+- Create a Python virtual environment
+- Install frappe-bench
+- Initialize a new bench with Frappe
+
+### 2. Create a Site
+
+Create a new Frappe site:
+
+```bash
+ws create-site
+```
+
+Follow the interactive prompts to configure your site.
+
+### 3. Install Apps
+
+Install Frappe apps on your site:
+
+```bash
+# List predefined apps
+ws fetch-app --list-predefined
+
+# Install a specific app
+ws fetch-app --app-name erpnext
+
+# Install app from custom GitHub repository
+ws fetch-app --app-name custom_app --git-repo https://github.com/user/custom_app.git
+```
+
+## 🎯 Get Apps Command
+
+Install multiple apps from a GitHub repository's `apps.json` configuration file automatically.
+
+Supports both **public** and **private** repositories with multiple authentication methods.
+
+### Required Arguments
+
+- `GITHUB_URL`: GitHub repository URL (HTTPS or SSH)
+  - HTTPS: `https://github.com/user/repo`
+  - SSH: `git@github.com:user/repo.git`
+- `PROJECT_NAME`: Project name within the repository's projects directory
+
+### Available Options
+
+- `--dry-run`: Preview what would be installed without installing
+- `--force`: Skip confirmation prompt
+- `--app TEXT`: Install only a specific app from the config
+- `--exclude TEXT`: Exclude apps from installation (can be repeated)
+
+### Usage Examples
+
+```bash
+# Install all apps from GitHub repository project
+ws get-apps https://github.com/user/repo whitestork
+
+# Preview what would be installed
+ws get-apps https://github.com/user/repo medis --dry-run
+
+# Install only ERPNext
+ws get-apps https://github.com/user/repo dbouk --app erpnext
+
+# Install all except HRMS and Payments
+ws get-apps https://github.com/user/repo nvox --exclude hrms --exclude payments
+
+# Skip confirmation prompt
+ws get-apps https://github.com/user/repo whitestork --force
+```
+
+### Apps.json Format
+
+The command fetches an `apps.json` file from `docker-images/projects/{PROJECT_NAME}/apps.json` in the GitHub repository with the following array structure:
+
+```json
+[
+  {
+    "name": "erpnext",
+    "url": "https://github.com/frappe/erpnext",
+    "branch": "version-15"
+  },
+  {
+    "name": "hrms",
+    "url": "https://github.com/frappe/hrms",
+    "branch": "version-15"
+  },
+  {
+    "name": "custom_app",
+    "url": "https://github.com/user/custom_app",
+    "branch": "main"
+  }
+]
+```
+
+### How It Works
+
+1. **GitHub Fetching**: Downloads `apps.json` from the specified GitHub repository
+2. **Smart Filtering**: Automatically excludes the `frappe` app from installation
+3. **Branch Support**: Handles specific branches and commit references
+4. **Error Handling**: Provides detailed feedback on installation success/failure
+5. **Batch Processing**: Installs multiple apps in sequence with summary report
+
+## 🎯 Shortcuts Command
+
+Create system-wide shortcuts for common bench commands to boost your productivity!
+
+### Available Options
+
+- `--list`: List available shortcuts
+- `--remove`: Remove existing shortcuts
+
+### Available Shortcuts
+
+- `bs` - bench start
+- `bm` - bench migrate
+- `bcc` - bench clear-cache
+- `br` - bench restart
+- `bef` - bench export-fixtures
+
+### Usage Examples
+
+```bash
+# List available shortcuts
+ws shortcuts --list
+
+# Create shortcuts (must be run from a bench directory)
+ws shortcuts
+
+# Remove all shortcuts
+ws shortcuts --remove
+```
+
+### How It Works
+
+1. **Cross-platform Support**: Creates executable scripts on Windows (`.cmd`) and Unix systems (shell scripts)
+2. **Smart Directory Detection**: Automatically detects bench directory and activates virtual environment
+3. **PATH Integration**: Scripts are placed in `~/.local/bin` (Unix) or Windows equivalent
+4. **Error Handling**: Validates bench directory existence and virtual environment
+
+### Example Usage After Setup
+
+Once shortcuts are created, you can use them from anywhere:
+
+```bash
+# Instead of: cd /path/to/bench && source env/bin/activate && bench start
+bs
+
+# Instead of: cd /path/to/bench && source env/bin/activate && bench migrate
+bm
+
+# Instead of: cd /path/to/bench && source env/bin/activate && bench clear-cache
+bcc
+```
+
+## Command Reference
+
+### `ws setup`
+
+Initialize Frappe development environment.
+
+**Arguments:**
+- `PROJECT_NAME`: Name of the project (required)
+
+**Options:**
+- `--frappe-version TEXT`: Frappe version to install (default: v15.78.1)
+- `--python-path TEXT`: Path to Python executable (default: python3)
+- `--force`: Force setup even if virtual environment exists
+
+**Example:**
+```bash
+ws setup myproject --frappe-version v15.78.1
+```
+
+### `ws create-site`
+
+Create a new Frappe site.
+
+**Options:**
+- `--site-name TEXT`: Name of the site to create
+- `--admin-password TEXT`: Administrator password
+- `--db-name TEXT`: Database name
+- `--db-port TEXT`: Database port (default: 3306)
+- `--db-root-username TEXT`: Database root username (default: root)
+- `--db-root-password TEXT`: Database root password
+- `--set-default`: Set this site as the default site
+- `--install-apps`: Install apps after site creation
+- `--apps TEXT`: Specific apps to install (can be used multiple times)
+- `--no-interactive`: Skip interactive prompts
+
+**Example:**
+```bash
+ws create-site \
+  --site-name mysite.localhost \
+  --admin-password mypassword \
+  --set-default \
+  --install-apps \
+  --apps erpnext
+```
+
+### `ws fetch-app`
+
+Fetch and install Frappe apps.
+
+**Options:**
+- `--app-name TEXT`: Name of the app to install
+- `--github-url TEXT`: GitHub URL of the app
+- `--branch TEXT`: Branch to install (default: develop)
+- `--site TEXT`: Site to install the app on
+- `--list-predefined`: List predefined apps available for installation
+- `--no-install`: Only fetch the app, do not install on any site
+- `--force`: Reinstall if app already exists
+
+**Examples:**
+```bash
+# List predefined apps
+ws-frappe-cli fetch-app --list-predefined
+
+# Install ERPNext
+ws-frappe-cli fetch-app --app-name erpnext
+
+# Install custom app
+ws-frappe-cli fetch-app \\
+  --app-name custom-app \\
+  --github-url https://github.com/user/custom-app \\
+  --branch main \\
+  --site mysite.localhost
+```
+
+## Predefined Apps
+
+The CLI comes with several predefined apps that can be installed easily:
+
+- **ERPNext**: Enterprise Resource Planning
+- **HRMS**: Human Resource Management System
+- **Payments**: Payment Gateway Integration
+- **E-commerce Integrations**: E-commerce Platform Integrations
+
+## Development Workflow
+
+A typical development workflow with WS Frappe CLI:
+
+1. **Initialize Environment**:
+   ```bash
+   mkdir my-frappe-project
+   cd my-frappe-project
+   ws-frappe-cli setup
+   ```
+
+2. **Create Development Site**:
+   ```bash
+   source env/bin/activate
+   ws-frappe-cli create-site --site-name dev.localhost --set-default
+   ```
+
+3. **Install Required Apps**:
+   ```bash
+   ws-frappe-cli fetch-app --app-name erpnext
+   ws-frappe-cli fetch-app --app-name hrms
+   ```
+
+4. **Start Development Server**:
+   ```bash
+   bench start
+   ```
+
+## Configuration
+
+### Environment Variables
+
+- `FRAPPE_CLI_DEFAULT_BRANCH`: Default branch for Frappe (default: v15.78.1)
+- `FRAPPE_CLI_DEFAULT_PYTHON`: Default Python executable (default: python3)
+
+### Config File
+
+You can create a `.frappe-cli.yaml` file in your project root:
+
+```yaml
+default_frappe_version: "v15.78.1"
+default_python: "python3"
+default_apps:
+  - erpnext
+  - hrms
+```
+
+## Requirements
+
+- Python 3.8+
+- Git
+- MariaDB/MySQL
+- Redis
+- Node.js (for building assets)
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Permission Errors**: Ensure you have proper permissions for the directory
+2. **Database Connection**: Verify MariaDB/MySQL is running and accessible
+3. **Python Version**: Ensure you're using Python 3.8 or higher
+
+### Getting Help
+
+- Check the [documentation](https://github.com/whitestork-erp/ws-frappe-cli#readme)
+- Report issues on [GitHub](https://github.com/whitestork-erp/ws-frappe-cli/issues)
+- Use `ws-frappe-cli --help` for command-specific help
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/whitestork-erp/ws-frappe-cli.git
+   cd ws-frappe-cli
+   ```
+
+2. Install in development mode:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+
+3. Run tests:
+   ```bash
+   pytest
+   ```
+
+4. Run linting:
+   ```bash
+   black src tests
+   isort src tests
+   flake8 src tests
+   ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes and releases.
+
+## Credits
+
+- Built for the [Frappe Framework](https://frappeframework.com/)
+- Inspired by the official [bench](https://github.com/frappe/bench) tool
+- Uses [Click](https://click.palletsprojects.com/) for the CLI interface
