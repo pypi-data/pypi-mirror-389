@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ffpipe"
+version = "0.1.6rc1"
+authors = [
+    {name = "Aryan Shekarlaban", email = "arxyzan@gmail.com"},
+]
+description = "FFPipe: A Python tool to apply image processing in any FFmpeg pipeline with automatic video/audio sync!"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "ffmpeg-python",
+    "tqdm",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ty.rules]
+invalid-parameter-default = "ignore"
+invalid-return-type = "ignore"
