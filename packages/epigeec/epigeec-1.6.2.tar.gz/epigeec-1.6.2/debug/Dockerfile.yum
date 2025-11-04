@@ -1,0 +1,14 @@
+# syntax=docker/dockerfile:1
+FROM quay.io/pypa/manylinux_2_28_x86_64:latest
+
+LABEL description="Custom manylinux_2_28 image with HDF5 and Boost preinstalled for cibuildwheel builds."
+
+# Enable EPEL and install dependencies
+RUN yum install -y epel-release && \
+    yum install -y hdf5-devel boost-devel && \
+    yum install -y tree && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
+# Default entrypoint (standard for manylinux)
+CMD ["/bin/bash"]

@@ -1,0 +1,248 @@
+# .github/workflows/build_wheels.yml
+name: Build and Test Wheels
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  release:
+    types: [published]
+  push:
+    branches:
+      - test-publish # Push here for quick build and publish to TestPyPI
+      - test-build-full # Push here for full build tests
+      - test-build-quick # Push here for quick build tests
+
+# Set default permissions to be read-only for security.
+permissions: read-all
+
+jobs:
+
+  # Prepare PR Information for Reporting Tests
+  prepare:
+    name: Prepare PR Information
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    outputs:
+      pr_number: ${{ steps.pr_info.outputs.pr_number }}
+    steps:
+      - name: Save PR Number for reporting workflow
+        id: pr_info
+        run: |
+          echo "${{ github.event.pull_request.number }}" > pr_number.txt
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
+      - name: Upload PR Number Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr_number
+          path: pr_number.txt
+
+  # Explicitly checks branch names and event types
+  # to correctly determine if a full or quick build is needed.
+  determine_build_type:
+    name: Determine Build Strategy
+    runs-on: ubuntu-latest
+    outputs:
+      full_build: ${{ steps.check.outputs.full_build }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if full build needed
+        id: check
+        run: |
+          full_build=false
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "Release event detected. Forcing full build."
+            full_build=true
+          elif [[ "${{ github.ref_name }}" == "test-build-full" ]]; then
+            echo "Push to '${{ github.ref_name }}' branch. Forcing full build."
+            full_build=true
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Pull request detected. Checking for C++ file changes."
+            git fetch origin ${{ github.base_ref }} --depth=1
+            if git diff --name-only FETCH_HEAD...HEAD | grep -qE '^(third_party/|epigeec/cc/)'; then
+              echo "C++ files were modified. Forcing full build."
+              full_build=true
+            else
+              echo "No C++ files modified. Using quick build."
+            fi
+          else
+            echo "Defaulting to quick build for branch '${{ github.ref_name }}'."
+          fi
+          echo "full_build=$full_build" >> $GITHUB_OUTPUT
+
+  # Build wheels for multiple platforms, and test them, uploading results for reporting.
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: determine_build_type
+    env:
+      CI_MATRIX_OS: ${{ matrix.os }} # Unique identifier for test reporting
+    strategy:
+      fail-fast: false # Continue building other platforms if one fails
+      matrix:
+        include:
+          - os: ubuntu-22.04 # x86_64
+
+          - os: ubuntu-22.04-arm
+
+          - os: macos-15-intel # x86_64
+          # Python3.12 rust toolchain minimum is macOS 10.12
+          # But when using macos-15 runner, one has to set 15.0 since libhdf5 and co. are build against 15.0
+            deployment_target: "15.0"
+
+          - os: macos-15 # arm
+            deployment_target: "15.0"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history with tags for setuptools_scm
+
+      # Do not set CIBW_BUILD here, let pyproject.toml handle it
+      - name: Build wheels (full build)
+        if: needs.determine_build_type.outputs.full_build == 'true'
+        uses: pypa/cibuildwheel@v3.2.1
+        with:
+          output-dir: dist
+          config-file: pyproject.toml
+        env:
+          # '>' allows multi-line env var for better readability, it will be joined with spaces ('|' joins with newlines, not suitable here)
+          CIBW_ENVIRONMENT: >
+            CI_MATRIX_OS=${{ matrix.os }}
+            GITHUB_RUN_ID=${{ github.run_id }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
+
+      # Set CIBW_BUILD for quick builds (Python 3.11 only)
+      # Only build for one ubuntu and macOS architecture each
+      - name: Build wheels (quick build)
+        if: |
+          needs.determine_build_type.outputs.full_build == 'false' &&
+          (matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-15')
+        uses: pypa/cibuildwheel@v3.2.1
+        with:
+          output-dir: dist
+          config-file: pyproject.toml
+        env:
+          CIBW_BUILD: cp311-*
+          CIBW_ENVIRONMENT: >
+            CI_MATRIX_OS=${{ matrix.os }}
+            GITHUB_RUN_ID=${{ github.run_id }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
+
+      # Upload built wheels
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        if: "!env.ACT"
+        with:
+          name: wheels-${{ matrix.os }}
+          path: dist/*.whl
+          if-no-files-found: ignore  # Don't fail if no wheels were built
+
+      # Upload test results.
+      # cibuildwheel writes tests to `reports` directory, this grabs all reports.
+      - name: Upload Test Report Artifact
+        if: "!env.ACT"
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          # Look for reports in both possible locations
+          path: |
+            reports/
+            dist/reports/
+          if-no-files-found: ignore  # Don't fail if no reports were generated
+
+
+  # Build source distribution for publishing
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    needs: determine_build_type
+    if: needs.determine_build_type.outputs.full_build == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build sdist
+        run: pipx run build --sdist --outdir dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  # This job exists to provide a confirmation step as a rule to protect the master branch
+  # It can only run if all build_wheels complete successfully
+  confirmation:
+    name: Confirmation Step
+    runs-on: ubuntu-latest
+    needs: [build_wheels]
+    steps:
+      - name: Confirmation of Build Completion
+        run: echo "Build and Test Wheels workflow completed successfully."
+
+
+  # Publish to TestPyPI on test-publish branch, PyPI on release
+  publish_testpypi:
+    name: Publish to TestPyPI
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/test-publish' # Only run on test-publish
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/epigeec
+    permissions:
+      id-token: write # For trusted publishing
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+
+  # Publish to PyPI on release
+  publish_pypi:
+    name: Publish to PyPI
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/epigeec
+    permissions:
+      id-token: write # For trusted publishing
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true

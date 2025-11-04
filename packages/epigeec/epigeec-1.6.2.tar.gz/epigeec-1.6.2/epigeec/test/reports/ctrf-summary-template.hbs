@@ -1,0 +1,69 @@
+# Test Results 🧪
+
+{{!-- Display overall test statistics from the merged report --}}
+📊 **Test Statistics (Overall)**
+- Total Tests: {{ctrf.summary.tests}}
+- ✅ Passed: {{ctrf.summary.passed}}
+- ❌ Failed: {{ctrf.summary.failed}}
+- ⏭️ Skipped: {{ctrf.summary.skipped}}
+
+{{!--
+Display test stats for each build
+
+It would seem `ctrf-io/github-test-reporter` does not provide an array of individual report objects to the template.
+Instead, when it finds multiple report files (e.g., via a glob pattern like ctrf-reports/*.json),
+it merges them into a single, consolidated ctrf object, so `{{#each reports}}` would not work here.
+We have have to use the extra parameters of the reporter to store per-build info, specifically `group-by` set to 'suite' or 'fileName',
+and the suite value can be set manually in add_build_info_to_ctrf.py).
+
+As a proof, we can save the internal merged report to a file using `write-ctrf-to-file` option in the workflow,
+and inspect its structure to see how the individual reports are merged under `ctrf.extra.suites`. We see each suite contains the results of one build,
+and the "ctrf" handle in this template corresponds to 'results' dict in the json structure (we are already one level deep).
+--}}
+| Python | Arch | OS | Tests | ✅ Pass | ❌ Fail | ⏭️ Skip |
+|--------|------|----|----|---------|---------|---------|
+{{#each ctrf.extra.suites}}
+| {{this.results.extra.groupKey}} | {{this.results.summary.tests}} | {{this.results.summary.passed}} | {{this.results.summary.failed}} | {{this.results.summary.skipped}} |
+{{/each}}
+
+{{!-- List failed tests if any --}}
+{{#if (gt ctrf.summary.failed 0)}}
+<table>
+    <thead>
+      <tr>
+        <th>Failed Tests {{getCtrfEmoji "failed"}}</th>
+        <th>Fail Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each ctrf.tests}}
+        {{#if (eq status "failed")}}
+        <tr>
+          <td>{{getCtrfEmoji "failed"}} {{name}}</td>
+          <td>{{#if message}}{{~{formatTestMessage message}}}{{else}}No failure message{{/if}}</td>
+        </tr>
+        {{/if}}
+      {{/each}}
+    </tbody>
+  </table>
+{{else}}
+<p>No failed tests in this run ✨</p>
+{{/if}}
+
+{{!--
+Links to workflows and branch. Access the first test for common metadata.
+
+To access full github context, use 'github.context', since 'github' handle is simplified.
+
+Full github context reference SHOULD be here: https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
+BUT github.context.repository renders as /[object Object] in this template, which is not what is expected.
+It is likely that ctrf-io/github-test-reporter gets the repository object from the REST API, which does not match 'github.context' property at all.
+See: https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28&versionId=free-pro-team%40latest&restPage=getting-started-with-the-rest-api#get-a-repository
+Indeed, the 'full_name' property of the repository object from REST API matches what we want here, and does not exist in github.context.
+That is, with `ctrf-io/github-test-reporter@v1` (SHA:024bc4b64d997ca9da86833c6b9548c55c620e40).
+
+Simplified context is provided here: https://github.com/ctrf-io/github-test-reporter/blob/main/templates/custom-report.hbs
+--}}
+---
+**Test Workflow**: [Build and Test Wheels]({{github.baseUrl}}/{{github.context.repository.full_name}}/actions/runs/{{ctrf.extra.build.run_id}}#summary)
+**Report Workflow**: [{{github.workflowName}} #{{github.runNumber}}]({{github.buildUrl}}) | **Branch**: {{github.branchName}}

@@ -1,0 +1,127 @@
+# --- PYTHON BUILD SYSTEM CONFIGURATION ---
+
+[build-system]
+requires = [
+    "setuptools>=64,<77", # Setuptools>=77.0.0 requires "packaging>=24.2", which breaks cibuildwheel builds on macos.
+    "setuptools-scm>=8",
+    ]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epigeec"
+dynamic = ["version"]
+authors = [
+    {name = "Jonathan Laperle", email = "jonathan.laperle@usherbrooke.ca"}
+]
+description = "Tools for fast NxN correlation of whole-genome epigenomic data."
+readme = "README.rst"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+    "numpy",
+    "h5py",
+    "future",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pyBigWig",
+    "pytest-json-ctrf",
+]
+dev = ["epigeec[test]"] # alias for test
+
+[project.scripts]
+epigeec = "epigeec.python.core.main:cli"
+
+[tool.setuptools_scm]
+write_to = "epigeec/_version.py"
+version_scheme = "guess-next-dev" # default
+local_scheme = "no-local-version" # default
+git_describe_command = "git describe --tags --match '[0-9]*.[0-9]*.[0-9]*'"
+
+[tool.setuptools]
+include-package-data = false  # Don't auto-include everything
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["epigeec*"]
+exclude = ["epigeec.test*", "epigeec.cc*"]  # Exclude test and C++ source from wheels
+
+[tool.setuptools.package-data]
+epigeec = [
+    "bin/*",
+    "lib/*.so",
+    "lib/*.so.*",
+    # "resource/**", # Removing resource files for now, to minimize wheel size. They are tracked by git anyway.
+]
+
+
+# ---  CIBUILDWHEEL CONFIGURATION ---
+# Build wheels for multiple platforms and Python versions using cibuildwheel.
+# Depends on setup.py being properly configured for compiling the C++ programs.
+# 'before-all' installs system dependencies required for building the C++ extensions.
+# Then cibuildwheel calls the build backend (setuptools.build_meta) which triggers setup.py's CustomBuild class.
+
+[tool.cibuildwheel]
+# To test locally, run: cibuildwheel --only cp311-manylinux_x86_64
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
+skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
+
+test-extras = "test" # installs epigeec[test]
+
+[tool.cibuildwheel.linux]
+archs = ["auto"] # handled in build matrix in GitHub Actions
+manylinux-x86_64-image = "manylinux_2_28"  # manylinux2014 is deprecated since 2024
+manylinux-aarch64-image = "manylinux_2_28"
+
+before-all = [
+    "yum install -y epel-release",  # Enable EPEL repository first, package names changed with manylinux_2_28
+    "yum install -y hdf5-devel boost-devel",
+]
+
+# Linux-specific: Use /output to persist files from Docker container to host.
+test-command = [
+    "WHEEL_NAME=$(basename {wheel} .whl)",
+    "ARCH=$(echo $WHEEL_NAME | grep -oE 'x86_64|aarch64' | head -1)",
+    "PY_VER=$(echo $WHEEL_NAME | grep -oE 'cp[0-9]+' | head -1)",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
+    "python {project}/epigeec/test/reports/add_build_info_to_ctrf.py \"{project}/reports/ctrf-report-$WHEEL_NAME.json\" \"$PY_VER\" \"$ARCH\" \"$CI_MATRIX_OS\"",
+    "mkdir -p /output/reports && cp -r {project}/reports/* /output/reports/",
+]
+
+
+[tool.cibuildwheel.macos]
+archs = ["auto"]  # handled in build matrix in GitHub Actions
+environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
+
+before-all = [
+    "brew install hdf5 boost libomp",
+]
+
+# macOS-specific: Write directly to project directory since no container is used.
+test-command = [
+    "WHEEL_NAME=$(basename {wheel} .whl)",
+    "ARCH=$(echo $WHEEL_NAME | grep -oE '(x86_64|arm64|universal2)' | head -1)",
+    "PY_VER=$(echo $WHEEL_NAME | grep -oE 'cp[0-9]+' | head -1)",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
+    "python {project}/epigeec/test/reports/add_build_info_to_ctrf.py \"{project}/reports/ctrf-report-$WHEEL_NAME.json\" \"$PY_VER\" \"$ARCH\" \"$CI_MATRIX_OS\"",
+]
+
+# ---  OTHER CONFIGURATION ---
+
+[tool.pylint.main]
+extension-pkg-allow-list = [
+    "pyBigWig",
+]
+
+[tool.pytest.ini_options]
+# Add the project root to the Python path.
+# This makes the 'epigeec' package importable.
+pythonpath = "."
+
+# Tell pytest where to find tests, which is more explicit.
+testpaths = [
+    "epigeec/test"
+]

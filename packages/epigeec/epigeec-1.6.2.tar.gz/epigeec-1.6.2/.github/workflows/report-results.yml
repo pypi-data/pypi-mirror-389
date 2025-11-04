@@ -1,0 +1,89 @@
+# .github/workflows/report-results.yml
+name: Report Test Results
+on:
+  workflow_run:
+    workflows: ["Build and Test Wheels"] # Match the 'name:' of the first workflow
+    types:
+      - completed
+  workflow_dispatch:  # Manual trigger for testing
+    inputs:
+      run_id:
+        description: 'Workflow run ID from build_wheels.yml'
+        required: true
+        type: string
+
+jobs:
+  report:
+    name: Publish Test Report
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine associated workflow ID
+        id: run_id
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "id=${{ inputs.run_id }}" >> $GITHUB_OUTPUT
+          else
+            echo "id=${{ github.event.workflow_run.id }}" >> $GITHUB_OUTPUT
+          fi
+
+      # Download PR number artifact if it exists.
+      - name: Download PR Number artifact
+        id: download_pr
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          name: pr_number
+          run_id: ${{ steps.run_id.outputs.id }}
+        continue-on-error: true
+
+      # This step will only run if the artifact was successfully downloaded.
+      - name: Read PR number from file
+        id: pr_number
+        if: steps.download_pr.outcome == 'success'
+        run: echo "number=$(cat pr_number.txt)" >> $GITHUB_OUTPUT
+
+      # Download all test result artifacts. This step always runs.
+      - name: Download all test result artifacts
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          name: test-results-*
+          name_is_regexp: true
+          run_id: ${{ steps.run_id.outputs.id }}
+          path: all-test-results
+        if: always()
+
+      - name: Create Merged Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        if: always() # Ensure this runs even if PR number download failed.
+        with:
+          # Report creation inputs
+          report-path: 'all-test-results/**/*.json'
+          custom-report: true
+          template-path: 'epigeec/test/reports/ctrf-summary-template.hbs'
+          group-by: 'suite'
+          always-group-by: true
+          write-ctrf-to-file: 'final-merged-report.json' # Save the merged report to a file for debugging
+          # Comment action specific inputs, empty `issue` value disables commenting here
+          update-comment: ${{ steps.download_pr.outcome == 'success' }}
+          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+          issue: ${{ steps.pr_number.outputs.number || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Debug - Print Merged Report
+        if: always()
+        run: |
+          echo "--- Contents of final-merged-report.json ---"
+          # This might fail if the report creation step failed, so we add a check.
+          if [ -f "final-merged-report.json" ]; then
+            cat final-merged-report.json
+          else
+            echo "final-merged-report.json not found."
+          fi
+          echo "--------------------------------------------"
