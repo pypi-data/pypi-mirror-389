@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="sparc_custom_tabs"
+version="1.0.0"
+dependencies = [
+  "streamlit >= 1.40.1"
+]
+authors=[
+    { name="Nick Fitzhugh", email="nicholas.j.fitzhugh@gmail.com" },
+]
+description="custom tabs component for sparc app derived from github: Mohamed-512's tab bar component"
+readme = "README.md"
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+keywords=["Python", "Streamlit", "React", "JavaScript"]
+requires-python=">=3.6"
+
+[project.urls]
+Repository = "https://github.com/nfitzhugh-us/sparc_custom_tabs"
+
+

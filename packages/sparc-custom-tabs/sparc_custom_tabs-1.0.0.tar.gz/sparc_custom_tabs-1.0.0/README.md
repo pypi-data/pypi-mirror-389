@@ -1,0 +1,1 @@
+Custom tab bar component for sparc app derived from github: Mohamed-512's tab bar component. Returns the id of the selected tab.
