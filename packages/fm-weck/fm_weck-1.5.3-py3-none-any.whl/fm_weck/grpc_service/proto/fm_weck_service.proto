@@ -1,0 +1,139 @@
+// This file is part of fm-weck: executing fm-tools in containerized environments.
+// https://gitlab.com/sosy-lab/software/fm-weck
+//
+// SPDX-FileCopyrightText: 2024 Dirk Beyer <https://www.sosy-lab.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+// This service runs fm-weck remotely.
+
+service FmWeckRemote {
+    // Runs a verification task for a given C program.
+    rpc startRun(RunRequest) returns (RunID) {}
+
+    // Runs a tool in expert mode
+    rpc startExpertRun(ExpertRunRequest) returns (RunID) {}
+
+    // Cancels a previously started run.
+    rpc cancelRun(CancelRunRequest) returns (CancelRunResult) {}
+
+    // Cleans up files of a finished run.
+    rpc cleanupRun(RunID) returns (CleanUpResponse) {}
+
+    // Gets the result of a previously started run using its unique ID.
+    rpc waitOnRun(WaitParameters) returns (WaitRunResult) {}
+
+    // Query for a number of result files.
+    rpc queryFiles(FileQuery) returns (stream File) {}
+}
+
+message ToolType {
+  optional string tool_version = 1;
+  oneof tool_data {
+    File tool_file = 2;
+    string tool_id = 3;
+  }
+}
+
+message Property {
+  oneof property {
+    string property_id = 1;
+    File property_file = 2;
+  }
+}
+
+message RunRequest {
+  ToolType tool = 1;
+  Property property = 2;
+  bytes c_program = 4;
+  string data_model = 5;
+}
+
+message ExpertRunRequest{
+  ToolType tool = 1;
+  repeated string command = 2;
+  }
+
+message RunResult {
+  RunID run_id = 1;
+  // Whether the run was successful or terminated with an error
+  bool success = 2;
+  // The output produced by fm-weck
+  string output = 3;
+  // List of files produced by the run; may be empty
+  repeated string filenames = 4;
+}
+
+message WaitRunResult {
+  // Whether the request has timed out or not
+  oneof result {
+    bool timeout = 1;
+    ErrorCode error = 2;
+    RunResult run_result = 3;
+  }
+}
+
+message CancelRunRequest {
+  RunID run_id = 1;
+  // Timeout in seconds to wait for completion of the cancellation
+  uint32 timeout = 2;
+  // If true, the run is cleaned up on the server side
+  optional bool cleanup_on_success = 3;
+}
+
+message CancelRunResult {
+  oneof result {
+    // Whether the could be canceled completely
+    // or is still shutting down. 
+    // If True, then the run is canceled on the server side, but complete shutdown may take some time.
+    // Call waitOnRun if the termination must be confirmed.
+    bool timeout = 1;
+    ErrorCode error = 2;
+    RunResult run_result = 3;
+  }
+}
+
+enum ErrorCode {
+  // The run is not terminated yet
+  EC_RUN_NOT_TERMINATED = 0;
+  EC_RUN_NOT_FOUND = 1;
+  EC_RUN_CANCELLED = 2;
+  EC_RUN_FAILED = 3;
+  EC_UNKNOWN_ERROR = 4;
+}
+
+message CleanUpResponse {
+  // If cleanup was successful, this field is true
+  // Then no errors are reported.
+  bool success = 1;
+  // If success is false, this field contains the error code
+  optional ErrorCode error = 2;
+}
+
+message RunID {
+  string run_id = 1;
+}
+
+message WaitParameters {
+  //Timeout in seconds to wait for the run to finish
+  uint32 timeout = 1;
+  RunID run_id = 2;
+}
+
+message FileQuery {
+  // If the run_id does not exist, the server will return an empty stream.
+  RunID run_id = 3;
+  
+  // Non existent files are ignored.
+  repeated string filenames = 1;
+  repeated string name_patterns = 2;
+}
+
+message File {
+  string name = 1;
+  bytes file = 2;
+}
+
+message Empty {}
