@@ -1,0 +1,116 @@
+# file_delete_manager
+
+Library to manage and delete files according to configurable rules.
+
+This package provides a small CLI and a programmatic API to:
+- delete files older than a given age
+- keep only the most recent N files in a directory
+- ensure total directory size stays below a cap by deleting files
+- move selected files to a trash directory
+
+Requires Python 3.8+
+
+## Installation
+
+Install locally from the project root:
+
+```powershell
+pip install .
+```
+
+Or, if published to PyPI in the future:
+
+```powershell
+pip install libtpz
+```
+
+## CLI Usage
+
+An entry point `file_delete_manager` is provided. Run `file_delete_manager --help` for top-level options.
+
+Main subcommands:
+
+- delete-by-age (alias: age)
+	- Delete files older than a specified age. Use `--older-than` with units, e.g. `7d`, `30m`, `3600s`.
+- delete-by-count (alias: count)
+	- Keep only the most recent N files. Use `--keep-last` to set how many to keep.
+- delete-by-size (alias: sizecap)
+	- Delete files until the total size stays under `--max-total-bytes`.
+- move-to-trash (alias: trash)
+	- Move files to a specified `--trash-dir` instead of deleting.
+
+Common options available to each subcommand:
+
+- `--recursive` / `--no-recursive` — descend into subdirectories (default: recursive)
+- `--follow-symlinks` — follow symbolic links when walking directories
+- `--dry-run` — simulate actions without changing files
+- `--delete-empty-dirs` — remove directories that become empty after deletions
+- `--include-pattern` / `--exclude-pattern` — glob patterns to include/exclude files
+- `--min-size` / `--max-size` — size filters in bytes
+- `--log-level` — set logging level (DEBUG, INFO, WARNING, ERROR)
+
+Example (dry-run deleting files older than 30 days):
+
+```powershell
+file_delete_manager delete-by-age C:\path\to\dir --older-than 30d --dry-run
+```
+
+Example (keep only last 5 files):
+
+```powershell
+file_delete_manager delete-by-count C:\path\to\dir --keep-last 5 --dry-run
+```
+
+## Programmatic API
+
+Import the package and call the helpers directly from Python:
+
+```python
+from file_delete_manager.core import DeleteOptions, delete_by_age, delete_by_count
+from file_delete_manager.rules import delete_if_over_size, move_to_trash
+
+opts = DeleteOptions(dry_run=True, recursive=True)
+# delete files older than 7 days (dry-run)
+deleted = delete_by_age("/tmp/mydir", "7d", opts)
+
+# keep only the last 10 files (real run)
+opts.dry_run = False
+deleted = delete_by_count("/tmp/mydir", 10, opts)
+
+# enforce total size cap
+deleted = delete_if_over_size("/tmp/mydir", max_total_bytes=10_000_000, options=opts)
+
+# move to trash
+moved = move_to_trash("/tmp/myfile.txt", "/tmp/trash", options=opts)
+```
+
+API summary:
+
+- `DeleteOptions` — dataclass with flags for dry_run, recursive, include/exclude patterns, size filters, follow_symlinks, delete_empty_dirs, and sort_key.
+- `delete_by_age(directory, older_than, options)` — deletes files older than the specified age.
+- `delete_by_count(directory, keep_last, options, sort_key='mtime')` — removes files to keep only the last N.
+- `delete_if_over_size(directory, max_total_bytes, options, sort_key=None)` — trims files until total size <= max_total_bytes.
+- `move_to_trash(path, trash_dir, options)` — moves files into a trash directory instead of deleting.
+
+## Tests
+
+Run tests with pytest from the project root:
+
+```powershell
+pytest -q
+```
+
+## Contributing
+
+Contributions are welcome. Please open issues or pull requests. Follow the project's coding style and include tests for behavior changes.
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
+
+## Notes
+
+- The package metadata (pyproject.toml) should expose the CLI entry point `file_delete_manager` which maps to `file_delete_manager.cli:main`.
+- Ensure `pyproject.toml` and package metadata are updated to reflect the new project name (for example, change the `name` field and any script entry points). If `pyproject.toml` still lists `libtpz` you may want to update it to `file_delete_manager`.
+
+For more detailed usage and examples, see `manual.md` in the repository.
