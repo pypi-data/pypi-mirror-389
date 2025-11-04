@@ -1,0 +1,149 @@
+{
+  "name": "node-connection",
+  "version": "2.4.4",
+  "requires": [
+    "authentication"
+  ],
+  "public_routes": [
+    "/api/node/health"
+  ],
+  "description": "Multi-node connection manager with registry and auto-registration. Integrates with digital-twin discovery service.",
+  "dt_tools": [
+    {
+      "name": "get_node_status",
+      "description": "Get the current status of the node connection including authentication state, connection details, and health metrics",
+      "endpoint": "/api/node/status",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Node connection status with authentication state, uptime, and connection details"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Get current node connection status"
+        }
+      ]
+    },
+    {
+      "name": "reconnect_node",
+      "description": "Reconnect the node to the API domain. Use this when connection is lost or needs to be refreshed",
+      "endpoint": "/api/node/reconnect",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Reconnection status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Reconnect node to API domain"
+        }
+      ]
+    },
+    {
+      "name": "get_connection_details",
+      "description": "Get detailed connection information including API endpoints, authentication tokens, and network configuration",
+      "endpoint": "/api/node/connection-details",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Connection details for the authenticated user"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Get connection details for authenticated user"
+        }
+      ]
+    },
+    {
+      "name": "update_node_config",
+      "description": "Update node configuration settings remotely. This requires confirmation as it modifies node behavior",
+      "endpoint": "/api/node/config",
+      "method": "PUT",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "api_domain": {
+            "type": "string",
+            "description": "API domain URL"
+          },
+          "auto_reconnect": {
+            "type": "boolean",
+            "description": "Enable automatic reconnection"
+          },
+          "heartbeat_interval": {
+            "type": "integer",
+            "description": "Heartbeat interval in seconds"
+          }
+        },
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Updated configuration"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {
+            "auto_reconnect": true,
+            "heartbeat_interval": 30
+          },
+          "description": "Enable auto-reconnect with 30 second heartbeat"
+        }
+      ]
+    },
+    {
+      "name": "restart_node",
+      "description": "Restart this specific node's connection (resets connection state and reconnects). Does NOT restart the server process - safe for production use",
+      "endpoint": "/api/node/restart",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Restart status with updated node status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Restart the node connection for this specific node"
+        }
+      ]
+    }
+  ]
+}
