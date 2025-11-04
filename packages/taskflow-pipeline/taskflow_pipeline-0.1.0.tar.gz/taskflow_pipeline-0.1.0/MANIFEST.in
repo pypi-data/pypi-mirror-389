@@ -1,0 +1,22 @@
+# Include documentation files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include QUICK_START.md
+
+# Include example files
+recursive-include examples *.py *.yaml *.yml *.json
+
+# Include test files
+recursive-include tests *.py
+
+# Include package data
+recursive-include taskflow *.py
+
+# Exclude compiled Python files
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*
