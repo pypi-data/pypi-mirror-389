@@ -1,0 +1,148 @@
+[project]
+name = "OpenFisca-Survey-Manager"
+version = "4.0.0"
+description = "A tool for managing survey/administrative data and import them in OpenFisca"
+readme = "README.md"
+keywords = ["microsimulation", "tax", "benefit", "rac", "rules-as-code", "survey", "data"]
+authors = [
+  {name = "OpenFisca Team", email = "contact@openfisca.fr"},
+]
+license = "AGPL-3.0-or-later"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: POSIX",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+requires-python = ">= 3.9"
+dependencies = [
+    'chardet >=5.1.0, < 6.0',
+    'configparser >=5.3.0, < 8.0',
+    'humanize >=4.6.0, < 5.0',
+    'numpy >=1.24.2, <2.0',
+    'openfisca-core >=43.0.0, <44.0.0',
+    'pandas >=2.0.3, < 3.0',
+    'pyarrow >=13.0.0, < 19.0.0',
+    'pyxdg >=0.28, < 0.29',
+    'PyYAML >=6.0, < 7.0',
+    'tables >=3.8.0, < 4.0',
+    'tabulate >=0.9.0, < 0.10.0',
+    'weightedcalcs >=0.1.2, < 0.2.0',
+    'wquantiles >=0.6, < 0.7',
+]
+
+[project.urls]
+Homepage = "https://github.com/openfisca/openfisca-survey-manager"
+Repository = "https://github.com/openfisca/openfisca-survey-manager"
+Issues = "https://github.com/openfisca/openfisca-survey-manager/issues"
+Changelog = "https://github.com/openfisca/openfisca-survey-manager/blob/main/CHANGELOG.md"
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+# Command-line scripts
+build-collection = "openfisca_survey_manager.scripts.build_collection:main"
+
+[project.optional-dependencies]
+matching = [
+    # 'feather',
+    'rpy2 >=3.5.10, < 4.0'
+    ]
+dev = [
+    'coveralls >=3.3.1, < 5.0',
+    'openfisca-country-template >=7.1.5, <8.0.0',
+    'pyreadstat >=1.2.1, < 1.3',
+    'pytest', # Let OpenFisca-Core decide pytest version
+    'pytest-cov',
+    'scipy >=1.10.1, < 2.0',
+    'pytest-order',
+    'ruff',
+    'isort',
+    'pre-commit',
+    'ipdb',
+    'pdbpp'
+]
+casd = [
+    'pytest',
+    'scipy >=1.10.1, < 2.0',
+    'ruff',
+    'isort'
+]
+sas = [
+    'pyreadstat >=1.2.1, < 1.3',
+    'sas7bdat >=2.2.3, < 3.0'
+]
+
+[tool.ruff]
+line-length = 119
+extend-exclude = ["openfisca_survey_manager/tests/data_files/*", "openfisca_survey_manager/tests/storage/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I001", "B", "A", "C4", "T20", "SIM", "PTH", "N"]
+ignore = [
+    "N801", # Class name should use CapWords convention (ignored for Variable children)
+    "N805", # First argument of a method should be named `self` (ignored for Variable children)
+    "E501", # Line too long (will be fixed manually or ignored if unavoidable)
+    "B018", # Found useless expression (will be fixed manually or ignored if intended)
+    "N806", # Variable in function should be lowercase (ignored for specific cases like StatMatch, PLCx, PLCy, LCx, LCy, N)
+    "F401", # Unused imports (will be cleaned up manually)
+    "F821", # Undefined name (will be fixed manually, likely missing import or instantiation)
+    "I001", # Import block is un-sorted or un-formatted (will be fixed by isort)
+    "PTH118", # os.path.join() should be replaced by Path with / operator (will be fixed manually)
+    "PTH110", # os.path.exists() should be replaced by Path.exists() (will be fixed manually)
+    "PTH123", # open() should be replaced by Path.open() (will be fixed manually)
+    "PTH103", # os.makedirs() should be replaced by Path.mkdir(parents=True) (will be fixed manually)
+    "PTH117", # os.path.isabs() should be replaced by Path.is_absolute() (will be fixed manually)
+    "PTH112", # os.path.isdir() should be replaced by Path.is_dir() (will be fixed manually)
+    "PTH208", # Use pathlib.Path.iterdir() instead (will be fixed manually)
+    "PTH207", # Replace glob with Path.glob or Path.rglob (will be fixed manually)
+    "PTH113", # os.path.isfile() should be replaced by Path.is_file() (will be fixed manually)
+    "PTH119", # os.path.basename() should be replaced by Path.name (will be fixed manually)
+    "PTH120", # os.path.dirname() should be replaced by Path.parent (will be fixed manually)
+    "PTH206", # Replace .split(os.sep) with Path.parts (will be fixed manually)
+    "N999", # Invalid module name (ignored for __init__.py files)
+    "N802", # Function name should be lowercase (ignored for mathematical functions F and F_prime)
+    "SIM113", # Use enumerate() for index variable in for loop (ignored for simple counters)
+    "SIM115", # Use a context manager for opening files (ignored for compatibility)
+]
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[tool.pylint.message_control]
+disable             = ["all"]
+enable              = ["C0115", "C0116", "R0401"]
+score               = ["no"]
+
+[tool.pytest.ini_options]
+addopts      = "--doctest-modules --disable-pytest-warnings --showlocals"
+testpaths    = "openfisca_survey_manager"
+doctest_optionflags = "ELLIPSIS IGNORE_EXCEPTION_DETAIL NUMBER NORMALIZE_WHITESPACE"
+python_files = ["**/*.py"]
+
+
+[tool.coverage.paths]
+source = [
+    ".",
+    "*/site-packages"
+]
+
+[tool.coverage.run]
+branch = true
+source = ["openfisca_survey_manager"]
+
+[tool.coverage.report]
+fail_under = 75
+show_missing = true
+skip_covered = true
+skip_empty = true
+
+
+[tool.setuptools.packages.find]
+include = ["openfisca_survey_manager*"]
