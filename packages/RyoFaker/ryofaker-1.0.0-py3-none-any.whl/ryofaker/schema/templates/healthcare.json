@@ -1,0 +1,94 @@
+{
+  "tables": {
+    "patients": {
+      "rows": 1000,
+      "columns": {
+        "patient_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "mrn": {
+          "provider": "mrn",
+          "unique": true
+        },
+        "first_name": {
+          "provider": "first_name"
+        },
+        "last_name": {
+          "provider": "last_name"
+        },
+        "date_of_birth": {
+          "provider": "date_of_birth",
+          "args": {
+            "minimum_age": 0,
+            "maximum_age": 100
+          }
+        },
+        "gender": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["M", "F", "O"]
+          }
+        },
+        "phone": {
+          "provider": "phone_number"
+        },
+        "email": {
+          "provider": "email"
+        },
+        "created_at": {
+          "provider": "date_time_between",
+          "args": {
+            "start_date": "-5y",
+            "end_date": "now"
+          }
+        }
+      }
+    },
+    "visits": {
+      "rows": 5000,
+      "columns": {
+        "visit_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "patient_id": {
+          "foreign_key": "patients.patient_id"
+        },
+        "visit_date": {
+          "provider": "date_time_between",
+          "args": {
+            "start_date": "-2y",
+            "end_date": "now"
+          }
+        },
+        "visit_type": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Emergency", "Outpatient", "Inpatient", "Consultation"]
+          }
+        },
+        "diagnosis_code": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["E11.9", "I10", "J45.9", "M79.3", "R51"]
+          }
+        },
+        "discharge_date": {
+          "provider": "date_time_between",
+          "args": {
+            "start_date": "-2y",
+            "end_date": "now"
+          }
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "parent": "patients",
+      "child": "visits",
+      "ratio": 5
+    }
+  ]
+}

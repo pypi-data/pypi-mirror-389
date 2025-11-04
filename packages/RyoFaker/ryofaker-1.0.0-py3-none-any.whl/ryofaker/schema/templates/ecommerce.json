@@ -1,0 +1,169 @@
+{
+  "tables": {
+    "customers": {
+      "rows": 1000,
+      "columns": {
+        "customer_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "first_name": {
+          "provider": "first_name"
+        },
+        "last_name": {
+          "provider": "last_name"
+        },
+        "email": {
+          "provider": "email",
+          "unique": true
+        },
+        "phone": {
+          "provider": "phone_number"
+        },
+        "address": {
+          "provider": "address"
+        },
+        "city": {
+          "provider": "city"
+        },
+        "state": {
+          "provider": "state"
+        },
+        "zip_code": {
+          "provider": "zipcode"
+        },
+        "created_at": {
+          "provider": "date_between",
+          "args": {
+            "start_date": "-2y",
+            "end_date": "today"
+          }
+        }
+      }
+    },
+    "products": {
+      "rows": 500,
+      "columns": {
+        "product_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "product_name": {
+          "provider": "catch_phrase"
+        },
+        "category": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Electronics", "Clothing", "Home", "Books", "Toys"]
+          }
+        },
+        "price": {
+          "provider": "pydecimal",
+          "args": {
+            "left_digits": 4,
+            "right_digits": 2,
+            "positive": true
+          }
+        },
+        "stock_quantity": {
+          "provider": "random_int",
+          "args": {
+            "min": 0,
+            "max": 1000
+          }
+        },
+        "created_at": {
+          "provider": "date_between",
+          "args": {
+            "start_date": "-1y",
+            "end_date": "today"
+          }
+        }
+      }
+    },
+    "orders": {
+      "rows": 5000,
+      "columns": {
+        "order_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "customer_id": {
+          "foreign_key": "customers.customer_id"
+        },
+        "order_date": {
+          "provider": "date_time_between",
+          "args": {
+            "start_date": "-1y",
+            "end_date": "now"
+          }
+        },
+        "status": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["pending", "processing", "shipped", "delivered", "cancelled"]
+          }
+        },
+        "total_amount": {
+          "provider": "pydecimal",
+          "args": {
+            "left_digits": 5,
+            "right_digits": 2,
+            "positive": true
+          }
+        }
+      }
+    },
+    "order_items": {
+      "rows": 15000,
+      "columns": {
+        "order_item_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "order_id": {
+          "foreign_key": "orders.order_id"
+        },
+        "product_id": {
+          "foreign_key": "products.product_id"
+        },
+        "quantity": {
+          "provider": "random_int",
+          "args": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        "unit_price": {
+          "provider": "pydecimal",
+          "args": {
+            "left_digits": 4,
+            "right_digits": 2,
+            "positive": true
+          }
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "parent": "customers",
+      "child": "orders",
+      "ratio": 5
+    },
+    {
+      "parent": "orders",
+      "child": "order_items",
+      "ratio": 3
+    }
+  ],
+  "quality": {
+    "inject_nulls": {
+      "columns": ["phone", "address"],
+      "rate": 0.05
+    },
+    "inject_duplicates": {
+      "rate": 0.02
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "tables": {
+    "subscribers": {
+      "rows": 10000,
+      "columns": {
+        "subscriber_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "msisdn": {
+          "provider": "msisdn",
+          "unique": true
+        },
+        "imsi": {
+          "provider": "imsi",
+          "unique": true
+        },
+        "imei": {
+          "provider": "imei"
+        },
+        "first_name": {
+          "provider": "first_name"
+        },
+        "last_name": {
+          "provider": "last_name"
+        },
+        "plan_type": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Prepaid", "Postpaid"]
+          }
+        },
+        "activation_date": {
+          "provider": "date_between",
+          "args": {
+            "start_date": "-3y",
+            "end_date": "today"
+          }
+        },
+        "status": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Active", "Suspended", "Inactive"]
+          }
+        }
+      }
+    },
+    "call_records": {
+      "rows": 100000,
+      "columns": {
+        "call_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "subscriber_id": {
+          "foreign_key": "subscribers.subscriber_id"
+        },
+        "call_date": {
+          "provider": "date_time_between",
+          "args": {
+            "start_date": "-30d",
+            "end_date": "now"
+          }
+        },
+        "call_type": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Voice", "SMS", "Data"]
+          }
+        },
+        "duration_seconds": {
+          "provider": "random_int",
+          "args": {
+            "min": 1,
+            "max": 3600
+          }
+        },
+        "destination": {
+          "provider": "msisdn"
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "parent": "subscribers",
+      "child": "call_records",
+      "ratio": 10
+    }
+  ]
+}
