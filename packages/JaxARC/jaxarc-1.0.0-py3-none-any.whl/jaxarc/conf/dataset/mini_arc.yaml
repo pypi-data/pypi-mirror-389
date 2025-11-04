@@ -1,0 +1,23 @@
+# MiniARC Dataset Configuration
+# Standard configuration for MiniARC dataset (5x5 grids for rapid prototyping)
+
+# Dataset Information
+dataset_name: "MiniARC"
+dataset_path: "data/MiniARC"
+dataset_repo: "https://github.com/KSB21ST/MINI-ARC"
+parser_entry_point: "jaxarc.parsers:MiniArcParser"
+expected_subdirs: ["data"]
+task_split: "train"
+shuffle_tasks: true
+
+# Grid Configuration - Optimized for 5x5 grids
+max_grid_height: 5
+max_grid_width: 5
+min_grid_height: 1
+min_grid_width: 1
+max_colors: 10
+background_color: -1
+
+# Task Configuration - Optimized for smaller dataset
+max_train_pairs: 8
+max_test_pairs: 1
