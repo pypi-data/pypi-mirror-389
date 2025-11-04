@@ -1,0 +1,509 @@
+Metadata-Version: 2.1
+Name: pytest-green-light
+Version: 0.1.0
+Summary: Pytest plugin that gives SQLAlchemy async engines the green light - automatically fixes MissingGreenlet errors
+Author-email: Odos Matthews <odosmatthews@gmail.com>
+Maintainer-email: Odos Matthews <odosmatthews@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/eddiethedean/pytest-green-light
+Project-URL: Documentation, https://github.com/eddiethedean/pytest-green-light#readme
+Project-URL: Repository, https://github.com/eddiethedean/pytest-green-light
+Project-URL: Issues, https://github.com/eddiethedean/pytest-green-light/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Framework :: Pytest
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pytest>=7.0.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: greenlet>=2.0.0
+Provides-Extra: dev
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: aiosqlite>=0.19.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: ty>=0.0.1; extra == "dev"
+Provides-Extra: postgres
+Requires-Dist: asyncpg>=0.28.0; extra == "postgres"
+Requires-Dist: testing.postgresql>=2.0.0; extra == "postgres"
+Provides-Extra: mysql
+Requires-Dist: aiomysql>=0.2.0; extra == "mysql"
+Requires-Dist: testing.mysqld>=2.0.0; extra == "mysql"
+Provides-Extra: all
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "all"
+Requires-Dist: aiosqlite>=0.19.0; extra == "all"
+Requires-Dist: asyncpg>=0.28.0; extra == "all"
+Requires-Dist: aiomysql>=0.2.0; extra == "all"
+Requires-Dist: testing.postgresql>=2.0.0; extra == "all"
+Requires-Dist: testing.mysqld>=2.0.0; extra == "all"
+
+# pytest-green-light
+
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Type checking: ty](https://img.shields.io/badge/type%20checking-ty-blue.svg)](https://github.com/astral-sh/ty)
+
+A pytest plugin that gives SQLAlchemy async engines the green light to work seamlessly in pytest fixtures. Solves the `MissingGreenlet` error automatically.
+
+> ✅ **Status: Working (Alpha)**  
+> **Version:** 0.1.0  
+> **Test Coverage:** 100%  
+> **Python:** 3.8+
+> 
+> This package is functional and ready to use! It automatically establishes greenlet context for SQLAlchemy async engines in pytest fixtures.
+
+## The Problem
+
+SQLAlchemy's async engines require a greenlet context to be established before async operations can be performed. When using pytest fixtures with async SQLAlchemy code, you encounter:
+
+```
+sqlalchemy.exc.MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here.
+```
+
+This happens because pytest's async fixtures don't automatically establish the greenlet context that SQLAlchemy async requires.
+
+## The Solution
+
+This plugin automatically establishes greenlet context before async tests run, allowing SQLAlchemy async engines to work seamlessly in pytest fixtures. Just install it and your async SQLAlchemy tests will work!
+
+## Quick Start
+
+```bash
+pip install pytest-green-light
+```
+
+That's it! The plugin automatically activates when pytest runs. No configuration needed.
+
+## Installation
+
+### From PyPI
+
+```bash
+pip install pytest-green-light
+```
+
+### Development Installation
+
+```bash
+git clone https://github.com/eddiethedean/pytest-green-light.git
+cd pytest-green-light
+pip install -e ".[dev]"
+```
+
+## Usage
+
+### Basic Usage
+
+Just install the plugin and use async SQLAlchemy in your tests. The plugin automatically establishes greenlet context, so you don't need to do anything special:
+
+```python
+import pytest
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+
+@pytest.fixture
+async def async_engine():
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    yield engine
+    await engine.dispose()
+
+@pytest.fixture
+async def async_session(async_engine):
+    async_session_maker = sessionmaker(
+        async_engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with async_session_maker() as session:
+        yield session
+
+async def test_my_async_code(async_session):
+    # This works now! No more MissingGreenlet errors
+    from sqlalchemy import text
+    result = await async_session.execute(text("SELECT 1"))
+    assert result.scalar() == 1
+```
+
+### With pytest-asyncio
+
+This plugin works alongside `pytest-asyncio`:
+
+```bash
+pip install pytest-asyncio pytest-green-light
+```
+
+```python
+import pytest
+
+pytestmark = pytest.mark.asyncio
+
+async def test_async_sqlalchemy(async_session):
+    # Works perfectly!
+    pass
+```
+
+### Helper Fixtures
+
+The plugin provides convenient fixtures for common patterns:
+
+```python
+from pytest_green_light.fixtures import (
+    async_engine_factory,
+    async_session_factory,
+    async_db_transaction,
+)
+
+@pytest.fixture
+async def engine(async_engine_factory):
+    async for eng in async_engine_factory("sqlite+aiosqlite:///:memory:"):
+        yield eng
+
+@pytest.fixture
+async def session(async_session_factory, engine):
+    async for sess in async_session_factory(engine):
+        yield sess
+
+async def test_with_session(session):
+    # Session automatically has greenlet context
+    from sqlalchemy import text
+    result = await session.execute(text("SELECT 1"))
+    assert result.scalar() == 1
+```
+
+### Transaction Management
+
+Automatic transaction rollback for clean test isolation:
+
+```python
+from pytest_green_light.fixtures import async_db_transaction
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column
+from sqlalchemy import Integer, String
+
+Base = declarative_base()
+
+class MyModel(Base):
+    __tablename__ = "my_model"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+
+async def test_with_rollback(session):
+    # All changes automatically rolled back after test
+    async with async_db_transaction(session):
+        obj = MyModel(name="test")
+        session.add(obj)
+        await session.commit()
+        # Changes are visible during the transaction
+        result = await session.get(MyModel, obj.id)
+        assert result is not None
+    
+    # After transaction, changes are rolled back
+    result = await session.get(MyModel, obj.id)
+    assert result is None  # Rolled back
+```
+
+#### Transaction Options
+
+```python
+# Commit changes instead of rolling back
+async with async_db_transaction(session, rollback=False):
+    session.add(obj)
+    await session.commit()
+    # Changes persist after context
+
+# Nested transactions (savepoints)
+async with async_db_transaction(session, nested=True):
+    # Creates a savepoint
+    session.add(obj)
+    await session.commit()
+    # Changes rolled back when context exits
+```
+
+### Configuration Options
+
+The plugin works automatically with no configuration needed! It automatically:
+- Detects async test functions
+- Establishes greenlet context before tests run
+- Works with any async testing plugin (pytest-asyncio, alt-pytest-asyncio, etc.)
+
+You can also customize behavior with command-line options:
+
+```bash
+# Disable automatic greenlet context establishment
+pytest --green-light-no-autouse
+
+# Enable debug logging for greenlet context
+pytest --green-light-debug
+```
+
+## How It Works
+
+The plugin uses pytest hooks and an auto-use fixture (`ensure_greenlet_context`) to:
+
+1. **Automatic Detection**: Detects when async tests are about to run
+2. **Context Establishment**: Calls SQLAlchemy's `greenlet_spawn` to establish the greenlet context
+3. **Persistence**: Ensures the context is available throughout the test execution
+4. **Error Handling**: Provides helpful diagnostics if `MissingGreenlet` errors still occur
+
+The plugin works by:
+- Registering an auto-use async fixture that runs before every test
+- Calling `await greenlet_spawn(_noop)` to establish the greenlet context
+- Making the context available to all SQLAlchemy async operations
+- Intercepting `MissingGreenlet` exceptions to provide helpful diagnostics
+
+## Requirements
+
+- Python 3.8+
+- pytest 7.0+
+- SQLAlchemy 2.0+
+- greenlet 2.0+
+
+## Features
+
+- ✅ **Automatic greenlet context establishment** - No configuration needed
+- ✅ **Helper fixtures** - Easy engine and session creation with `async_engine_factory` and `async_session_factory`
+- ✅ **Transaction management** - Automatic rollback for test isolation with `async_db_transaction`
+- ✅ **Full test coverage** - 100% code coverage with 74+ tests
+- ✅ **Multiple database support** - SQLite, PostgreSQL, MySQL
+- ✅ **Enhanced error messages** - Helpful diagnostics when issues occur
+- ✅ **Python 3.8+ support** - Works with modern Python versions
+- ✅ **Type checking** - Fully type-checked with `ty`
+- ✅ **Well-tested** - Comprehensive test suite covering all features
+
+## Troubleshooting
+
+### MissingGreenlet Error Still Occurs
+
+If you still see `MissingGreenlet` errors:
+
+1. **Verify the plugin is installed and loaded**:
+   ```bash
+   pip list | grep pytest-green-light
+   pytest --version  # Should show 'green-light' plugin
+   ```
+
+2. **Enable debug mode**:
+   ```bash
+   pytest --green-light-debug
+   ```
+
+3. **Check your async fixtures**: Make sure you're using `async def` for fixtures and tests:
+   ```python
+   @pytest.fixture
+   async def my_fixture():  # Must be async
+       ...
+   ```
+
+4. **Ensure pytest-asyncio is installed** if using async test markers:
+   ```bash
+   pip install pytest-asyncio
+   ```
+
+The plugin's error handler will automatically provide detailed diagnostics if a `MissingGreenlet` error occurs.
+
+### Common Issues
+
+**Issue**: Plugin doesn't seem to be working
+- **Solution**: Ensure you're using `async def` for fixtures and tests
+
+**Issue**: Tests are slow
+- **Solution**: The plugin has minimal overhead. If you experience slowness, check your database connections
+
+**Issue**: Want to disable the plugin for specific tests
+- **Solution**: Use `--green-light-no-autouse` flag or configure via pytest.ini
+
+## Examples
+
+See the [examples/](examples/) directory for integration examples with FastAPI and other frameworks.
+
+### Real-World Example
+
+```python
+import pytest
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column
+from sqlalchemy import Integer, String
+from pytest_green_light.fixtures import async_db_transaction
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(50))
+
+@pytest.fixture
+async def engine():
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+    await engine.dispose()
+
+@pytest.fixture
+async def session(engine):
+    from sqlalchemy.orm import sessionmaker
+    async_session_maker = sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with async_session_maker() as session:
+        yield session
+
+async def test_create_user(session):
+    # Plugin ensures greenlet context is available
+    user = User(username="testuser")
+    session.add(user)
+    await session.commit()
+    
+    result = await session.get(User, user.id)
+    assert result.username == "testuser"
+
+async def test_transaction_rollback(session):
+    # Use transaction management for clean test isolation
+    async with async_db_transaction(session):
+        user = User(username="temp")
+        session.add(user)
+        await session.commit()
+        # User exists during transaction
+        assert await session.get(User, user.id) is not None
+    
+    # After transaction, user is rolled back
+    assert await session.get(User, user.id) is None
+```
+
+## Development
+
+### Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/eddiethedean/pytest-green-light.git
+cd pytest-green-light
+
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Install all optional dependencies (for full test suite)
+pip install -e ".[all]"
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=pytest_green_light --cov-report=term-missing
+
+# Run specific test file
+pytest tests/test_plugin.py
+
+# Run tests for specific database
+pytest -m postgresql  # Requires PostgreSQL
+pytest -m mysql      # Requires MySQL
+```
+
+### Code Quality
+
+```bash
+# Type checking
+python -m ty check src/
+
+# Linting
+ruff check .
+
+# Format code
+ruff format .
+
+# Run all checks
+ruff check . && ruff format . && python -m ty check src/
+```
+
+### Project Status
+
+- ✅ **Core functionality working** - Plugin establishes greenlet context automatically
+- ✅ **100% test coverage** - Comprehensive test suite with 74+ tests
+- ✅ **Type checking** - Fully type-checked with `ty`
+- ✅ **Comprehensive documentation** - README, examples, and inline docs
+- ✅ **Multiple database support** - SQLite, PostgreSQL, MySQL tested
+- ✅ **Error diagnostics** - Helpful error messages with troubleshooting steps
+
+## FAQ
+
+**Q: Do I need to configure anything?**  
+A: No! Just install the plugin and it works automatically.
+
+**Q: Does this work with pytest-asyncio?**  
+A: Yes! The plugin works alongside `pytest-asyncio` and other async testing plugins.
+
+**Q: Can I disable the plugin for specific tests?**  
+A: Yes, use `pytest --green-light-no-autouse` to disable automatic context establishment.
+
+**Q: What Python versions are supported?**  
+A: Python 3.8+ is supported and tested.
+
+**Q: Does this work with all SQLAlchemy versions?**  
+A: Yes, it works with SQLAlchemy 2.0+ and handles different import paths automatically.
+
+**Q: What about performance?**  
+A: The plugin has minimal overhead - it simply establishes the greenlet context once per test.
+
+## Issues & Support
+
+If you encounter any issues or have questions, please file an issue on [GitHub](https://github.com/eddiethedean/pytest-green-light/issues).
+
+When reporting issues, please include:
+- Python version
+- SQLAlchemy version
+- pytest version
+- A minimal example that reproduces the issue
+- The output of `pytest --green-light-debug` if applicable
+
+## Contributing
+
+Contributions welcome! This plugin was created to solve a real-world problem with testing async SQLAlchemy code.
+
+We welcome:
+- Bug reports
+- Feature requests
+- Documentation improvements
+- Code contributions
+- Test coverage improvements
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on how to contribute.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests and ensure 100% coverage: `pytest --cov=pytest_green_light`
+5. Run type checking: `python -m ty check src/`
+6. Run linting: `ruff check . && ruff format .`
+7. Commit your changes (`git commit -m 'Add amazing feature'`)
+8. Push to the branch (`git push origin feature/amazing-feature`)
+9. Open a Pull Request
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Author
+
+**Odos Matthews**
+
+- GitHub: [@eddiethedean](https://github.com/eddiethedean)
+- Repository: [pytest-green-light](https://github.com/eddiethedean/pytest-green-light)
+
+---
+
+Made with ❤️ for the Python async testing community
+
