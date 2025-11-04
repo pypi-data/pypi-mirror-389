@@ -1,0 +1,44 @@
+{# TODO: See about grouping messages of the same type together if the amount gets out of hand. #}
+
+
+{% if messages %}
+  {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.DEBUG %}
+
+      {% block message_debug %}
+        {% include "adminlte2/partials/_message.html" with alert_class="alert-info" %}
+      {% endblock message_debug %}
+
+    {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+
+      {% block message_info %}
+        {% include "adminlte2/partials/_message.html" with alert_class="alert-primary" %}
+      {% endblock message_info %}
+
+    {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+
+      {% block message_success %}
+        {% include "adminlte2/partials/_message.html" with alert_class="alert-success" %}
+      {% endblock message_success %}
+
+    {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+
+      {% block message_warning %}
+        {% include "adminlte2/partials/_message.html" with alert_class="alert-warning" %}
+      {% endblock message_warning %}
+
+    {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+
+      {% block message_error %}
+        {% include "adminlte2/partials/_message.html" with alert_class="alert-error" %}
+      {% endblock message_error %}
+
+    {% else %}
+
+      {% block message_default %}
+        {% include "adminlte2/partials/_message.html" with alert_class="alert-default" %}
+      {% endblock message_default %}
+
+    {% endif %}
+  {% endfor %}
+{% endif %}
