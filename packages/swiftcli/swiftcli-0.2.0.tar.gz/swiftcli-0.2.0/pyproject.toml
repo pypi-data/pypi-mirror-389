@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "swiftcli"
+version = "0.2.0"
+description = "Build testable CLI apps with `click` and `pydantic`"
+authors = ["Or Levi <orlevi128@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.8"
+pydantic = "^2.6.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.14.3"
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
+mypy = "^1.18.2"
+ipdb = "^0.13.13"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.5.49"
+mkdocs-awesome-pages-plugin = "^2.10.1"
+
+[tool.poe.tasks]
+lint = "ruff check src tests"
+format = "ruff format src tests"
+test = "pytest -v"
+mypy = "mypy -p swiftcli -p tests"
+
+# docs
+"docs:build".shell = "cd docs && mkdocs build"
+"docs:serve".shell = "cd docs && mkdocs serve"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
