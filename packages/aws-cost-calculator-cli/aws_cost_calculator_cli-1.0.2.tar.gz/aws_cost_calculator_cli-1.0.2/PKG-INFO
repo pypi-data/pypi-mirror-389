@@ -1,0 +1,164 @@
+Metadata-Version: 2.4
+Name: aws-cost-calculator-cli
+Version: 1.0.2
+Summary: AWS Cost Calculator CLI - Calculate daily and annual AWS costs across multiple accounts
+Home-page: https://github.com/yourusername/cost-calculator
+Author: Cost Optimization Team
+Author-email: 
+Project-URL: Documentation, https://github.com/yourusername/cost-calculator/blob/main/README.md
+Keywords: aws cost calculator billing optimization cloud
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: System :: Monitoring
+Classifier: Topic :: Utilities
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.0.0
+Requires-Dist: boto3>=1.26.0
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# AWS Cost Calculator (cc)
+
+A CLI tool to quickly calculate AWS costs across multiple accounts.
+
+## Installation
+
+```bash
+cd ~/cost-calculator
+pip install -e .
+```
+
+## Quick Start
+
+### 1. Login to AWS SSO
+
+```bash
+aws sso login --profile my_aws_profile
+```
+
+**Note:** You need to do this before running cost calculations. The SSO session typically lasts 8-12 hours.
+
+### 2. Initialize a profile
+
+```bash
+cc init --profile myprofile \
+  --aws-profile my_aws_profile \
+  --accounts "123456789012,234567890123,345678901234"
+```
+
+### 3. Calculate costs
+
+```bash
+# Default: Today minus 2 days, going back 30 days
+cc calculate --profile myprofile
+
+# Specific start date
+cc calculate --profile myprofile --start-date 2025-11-04
+
+# Custom offset and window
+cc calculate --profile myprofile --offset 2 --window 30
+
+# JSON output
+cc calculate --profile myprofile --json-output
+```
+
+### 4. List profiles
+
+```bash
+cc list-profiles
+```
+
+## How It Works
+
+### Date Calculation
+- **Start Date**: Defaults to today, or specify with `--start-date`
+- **Offset**: Days to go back from start date (default: 2)
+- **Window**: Number of days to analyze (default: 30)
+
+Example: If today is Nov 4, 2025:
+- With offset=2, window=30: Analyzes Oct 3 - Nov 2 (30 days)
+
+### Cost Calculation
+1. **Operational Costs**: Sum of daily costs ÷ window days
+2. **Support Allocation**: 
+   - Gets support cost from the analysis month
+   - Divides by 2 (50% allocation)
+   - Divides by days in that month
+3. **Daily Rate**: Operational + Support per day
+4. **Annual Projection**: Daily rate × 365
+
+### Filters Applied
+- **Billing Entity**: AWS only (excludes marketplace)
+- **Excluded**: Tax, Support (calculated separately)
+- **Metric**: Net Amortized Cost
+
+## Configuration
+
+Profiles are stored in: `~/.config/cost-calculator/profiles.json`
+
+Example:
+```json
+{
+  "myprofile": {
+    "aws_profile": "my_aws_profile",
+    "accounts": ["123456789012", "234567890123", "345678901234"]
+  }
+}
+```
+
+## Examples
+
+```bash
+# Quick daily check
+cc calculate --profile myprofile
+
+# Historical analysis
+cc calculate --profile myprofile --start-date 2025-10-01
+
+# Export to JSON for processing
+cc calculate --profile myprofile --json-output > costs.json
+
+# Different window size
+cc calculate --profile myprofile --window 60
+```
+
+## Output
+
+```
+Analyzing: 2025-10-03 to 2025-11-02 (30 days)
+AWS Profile: my_aws_profile
+Accounts: 3
+
+Fetching cost data...
+Fetching support costs...
+============================================================
+Period: 2025-10-03 to 2025-11-02
+Days analyzed: 30
+============================================================
+Total operational cost: $450,000.00
+Daily operational: $14,516.13
+Support (month): $15,000.00
+Support per day (÷2÷days): $241.94
+============================================================
+DAILY RATE: $14,758.07
+ANNUAL PROJECTION: $5,386,695
+============================================================
+```
