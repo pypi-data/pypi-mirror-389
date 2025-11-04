@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Basic Slicing/Filtering Example &#8212; pySpecData 0.9.5.5.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=832af5b0" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css?v=7f9a90b1" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2b30a6e6" />
+    <script src="../_static/documentation_options.js?v=a4fd5d96"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Unevenly spaced data" href="pcolor_example.html" />
+    <link rel="prev" title="ppm Example" href="ppm_example.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-basic-example-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="basic-slicing-filtering-example">
+<span id="sphx-glr-auto-examples-basic-example-py"></span><h1>Basic Slicing/Filtering Example<a class="headerlink" href="#basic-slicing-filtering-example" title="Link to this heading">¶</a></h1>
+<p>Here we demonstrate both the coordinate-based slicing notatation, which is
+unique to pySpecData,
+as well the way in which the axis coordinates for a Fourier transform are
+handled automatically.
+We also show how to make a new data object based on the axis coordinates of an
+existing object – e.g., to create an apodization filter (as here) or to apply
+a frequency-dependent phase shift.</p>
+<p>The case considered here is that of an NMR FID that has been acquired with a
+wider spectral width than the signal of interest, and with a longer acquisition
+time.
+As we select an apply filters/apodization to throw out the noise outside the
+bandwidth and time range of the signal, the SNR of the signal improves.</p>
+<img src="../_images/sphx_glr_basic_example_001.png" srcset="../_images/sphx_glr_basic_example_001.png, ../_images/sphx_glr_basic_example_001_2_00x.png 2.00x" alt="time domain, frequency domain" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>note that the original dwell time is 0.001 and the original frequency resolution is 2.0
+note that the new dwell time of the truncated data is 0.0024875621890547263 and the new frequency resolution is 4.962962962962963
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pylab</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyspecdata</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax_time</span><span class="p">,</span> <span class="n">ax_freq</span><span class="p">)</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t</span></a> <span class="o">=</span> <a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class"><span class="n">nddata</span></a><span class="p">(</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.5</span><span class="p">:</span><span class="mf">1e-3</span><span class="p">],</span> <span class="s1">&#39;t2&#39;</span><span class="p">)</span> <span class="c1"># 1 kHz SW with a freq. resolution of 1/0.5=2 Hz</span>
+<a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="mi">100</span><span class="o">*</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t</span></a><span class="o">-</span><span class="mi">10</span><span class="o">*</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t</span></a><span class="o">*</span><span class="n">pi</span><span class="p">)</span> <span class="c1"># 10 Hz wide line at 100 Hz offset</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.add_noise" title="pyspecdata.nddata.add_noise" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">add_noise</span></a><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span><span class="o">.</span><span class="n">set_units</span><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_time</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;raw data&#39;</span><span class="p">)</span>
+<span class="n">ax_time</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;time domain&quot;</span><span class="p">)</span>
+<span class="n">ax_freq</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;frequency domain&quot;</span><span class="p">)</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ft" title="pyspecdata.nddata.ft" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">ft</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">assert</span> <a href="../pyspecdata.html#pyspecdata.nddata.get_ft_prop" title="pyspecdata.nddata.get_ft_prop" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">get_ft_prop</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1e-3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;note that the original dwell time is&quot;</span><span class="p">,</span><a href="../pyspecdata.html#pyspecdata.nddata.get_ft_prop" title="pyspecdata.nddata.get_ft_prop" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">get_ft_prop</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span><span class="s1">&#39;dt&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;and the original frequency resolution is&quot;</span><span class="p">,</span><a href="../pyspecdata.html#pyspecdata.nddata.get_ft_prop" title="pyspecdata.nddata.get_ft_prop" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">get_ft_prop</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span><span class="s1">&#39;df&#39;</span><span class="p">))</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_freq</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;raw data&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a> <span class="o">=</span> <a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">[</span><span class="s1">&#39;t2&#39;</span><span class="p">:(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">)]</span> <span class="c1"># filter the data in the frequency domain by slicing from -200 to 200 Hz</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_freq</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after frequency slice&#39;</span><span class="p">)</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ift" title="pyspecdata.nddata.ift" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">ift</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">)</span> <span class="c1"># now, move back into the time domain, where it will have less noise, and with less points</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_time</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after frequency slice&#39;</span><span class="p">)</span>
+<span class="c1"># in the time domain, we can either slice simply:</span>
+<a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">truncated_data</span></a> <span class="o">=</span> <a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">[</span><span class="s1">&#39;t2&#39;</span><span class="p">:(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.2</span><span class="p">)]</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">truncated_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_time</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after time slice&#39;</span><span class="p">)</span>
+<span class="c1"># or we can implement a matched filter:</span>
+<a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a> <span class="o">*=</span> <span class="mi">2</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><a href="../pyspecdata.html#pyspecdata.nddata.fromaxis" title="pyspecdata.nddata.fromaxis" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">fromaxis</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">))</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_time</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;apodized&#39;</span><span class="p">)</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ft" title="pyspecdata.nddata.ft" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">truncated_data</span><span class="o">.</span><span class="n">ft</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">)</span> <span class="c1"># note that after we ft the first time, it &quot;remembers&quot;</span>
+<span class="c1">#                         whether or not we have frequency shifted, and will</span>
+<span class="c1">#                         use the existing start point in the frequency domain</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ft" title="pyspecdata.nddata.ft" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">fake_data</span><span class="o">.</span><span class="n">ft</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">truncated_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_freq</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after time slice&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fake_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_freq</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after apodization&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;note that the new dwell time of the truncated data is&quot;</span><span class="p">,</span><a href="../pyspecdata.html#pyspecdata.nddata.get_ft_prop" title="pyspecdata.nddata.get_ft_prop" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">truncated_data</span><span class="o">.</span><span class="n">get_ft_prop</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span><span class="s1">&#39;dt&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;and the new frequency resolution is&quot;</span><span class="p">,</span><a href="../pyspecdata.html#pyspecdata.nddata.get_ft_prop" title="pyspecdata.nddata.get_ft_prop" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">truncated_data</span><span class="o">.</span><span class="n">get_ft_prop</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span><span class="s1">&#39;df&#39;</span><span class="p">))</span>
+<span class="c1"># finally, show that we can zero fill</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ift" title="pyspecdata.nddata.ift" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">truncated_data</span><span class="o">.</span><span class="n">ift</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">)</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ft" title="pyspecdata.nddata.ft" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">truncated_data</span><span class="o">.</span><span class="n">ft</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">truncated_data</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_freq</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after time slice and zero filling&#39;</span><span class="p">)</span>
+<a href="../pyspecdata.html#pyspecdata.nddata.ift" title="pyspecdata.nddata.ift" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-method"><span class="n">truncated_data</span><span class="o">.</span><span class="n">ift</span></a><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><a href="../pyspecdata.html#pyspecdata.nddata" title="pyspecdata.nddata" class="sphx-glr-backref-module-pyspecdata sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">truncated_data</span></a><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_time</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;after time slice and zero filling&#39;</span><span class="p">)</span>
+<span class="n">ax_time</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">))</span>
+<span class="n">ax_freq</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.901 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basic-example-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/3d81e3bd0b01ea87cf106f5076df9628/basic_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">basic_example.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/0585365779ccb7e8092a6f450639b266/basic_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">basic_example.py</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/pyspec_path_equaltip.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../nddata.html">ND-Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitdata.html">the lmfitdata class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">List of Modules and Sub-Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebook.html">LaTeX Notebook Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../figlist.html">The Figure List</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../units.html">Units</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Example Gallery</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">PySpecData Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="polyfit.html">Polynomial Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppm_2D.html">PPM in 2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_example.html">Error and units example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calculate_covariance.html">Calculation of the Covariance Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="convolution.html">Simple Convolution Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image_plot.html">Plotting Routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html">Calculation of the Covariance Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ppm_example.html">ppm Example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic Slicing/Filtering Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcolor_example.html">Unevenly spaced data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dcct">DCCT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#esr">ESR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#regularization">Regularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#uv">UV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#fitting">Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#xx-individual-functions-xx">XX Individual Functions XX</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">PySpecData Examples</a><ul>
+      <li>Previous: <a href="ppm_example.html" title="previous chapter">ppm Example</a></li>
+      <li>Next: <a href="pcolor_example.html" title="next chapter">Unevenly spaced data</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2016, John M. Franck.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/auto_examples/basic_example.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
