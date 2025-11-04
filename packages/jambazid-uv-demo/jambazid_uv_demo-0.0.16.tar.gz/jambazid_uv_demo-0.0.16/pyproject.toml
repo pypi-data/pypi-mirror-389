@@ -1,0 +1,229 @@
+############
+# METADATA #
+############
+
+[project]
+name = "jambazid-uv-demo"
+import-namespaces = ["jambazid"]
+import-names = ["jambazid.demo"]
+version = "0.0.16" # <CHANGE THIS>
+requires-python = ">= 3.11"
+description = "A minimal Python project template built with `uv`." # <CHANGE THIS>
+license = "MIT" # TODO: think about this! See https://opensource.guide/legal/#which-open-source-license-is-appropriate-for-my-project
+authors = [
+    {name = "Jambazid", email = "pypi@jambazid.dev"},
+]
+maintainers = [
+    {name = "Jambazid", email = "pypi@jambazid.dev"},
+]
+dependencies = [
+  "typer >= 0.20.0, < 2",
+  "httpx >= 0.28.1, < 2",
+  "pydantic >= 2.12, < 3",
+]
+readme = {file = "src/README.md", content-type = "text/markdown"}
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Documentation",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Repository = "https://github.com/jambazid/python-uv-template"
+Homepage = "https://poetry-demo.python.jambazid.dev"
+"Bug Tracker" = "https://github.com/jambazid/python-uv-template/issues"
+
+
+################
+# BUILD SYSTEM #
+################
+
+[build-system]
+requires = ["uv_build >= 0.9.7, < 0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "jambazid.demo"
+source-include = ["jambazid/**/data/**/*"]
+
+
+################
+# DEPENDENCIES #
+################
+
+[tool.uv]
+default-groups = ["dev", "test"]
+
+[dependency-groups]
+dev = [
+    "mypy >= 1.7.1",
+    "pylint >= 3.0.3",
+    "pdoc >= 14.2.0, < 15",
+    "twine >= 6.1.0, < 7",
+]
+test = [
+    "tox >= 4.25, < 5",
+    "coverage >= 7.3.3, < 8",
+    "pytest >= 8.3.5",
+    "pytest-asyncio >= 0.26.0",
+    "pytest-env >= 1.1.5, < 2",
+    "pytest-html >= 4.1.1, < 5",
+    "pytest-randomly >= 3.16, < 4",
+    "hypothesis >= 6.138.6, < 7",
+    "mutmut >= 3.2.3, < 4",
+]
+
+
+###################
+# PACKAGE SOURCES #
+###################
+
+[[tool.uv.index]]
+name = "prod"
+url = "https://pypi.org/simple/"
+publish-url = "https://upload.pypi.org/legacy/"
+explicit = true
+
+[[tool.uv.index]]
+name = "test"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
+
+
+#######
+# CLI #
+#######
+
+[project.scripts]
+jambazid-uv-demo = "jambazid.demo.cli:app"
+
+
+################
+# TEST HARNESS #
+################
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+env = ['HYPOTHESIS_PROFILE=light']
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["tests/**/*"]
+
+[tool.coverage.report]
+omit = ["tests/**/*"]
+
+[tool.coverage.html]
+directory = "reports/html"
+
+[tool.coverage.xml]
+output = "reports/coverage.xml"
+
+[tool.mutmut]
+paths_to_mutate = "src/"
+tests_dir = "tests/"
+
+[tool.tox]
+requires = ["tox>=4.25"]
+envlist = [
+    "python3.11",
+    "python3.12",
+    "python3.13",
+    "python3.14",
+]
+
+[tool.tox.env_run_base]
+allowlist_externals = ["uv"]
+commands_pre = [
+    ["uv", "sync", "--all-extras", "--all-groups"],
+]
+commands = [
+    ["uv", "run", "pytest", "tests/", "--import-mode", "importlib"],
+]
+
+
+#################
+# TYPE CHECKING #
+#################
+
+[tool.pyright]
+include = ['src/jambazid']
+typeCheckingMode = "standard"
+reportUnnecessaryTypeIgnoreComment = true
+
+
+###############################
+# LINTING & FORMATTING (ruff) #
+###############################
+
+[tool.ruff]
+target-version = 'py311'
+line-length = 120
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+select = [
+    "D", # pydocstyle rules
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+    "UP",
+]
+ignore = [
+    "B008", # Do not perform function calls in argument defaults
+    "C901", # Too complex
+    "E722", # Bare `except`
+    "E731", # Assigning a `lambda`
+    "C408", # Unnecessary `dict` call (rewrite as a literal)
+    "D417", # Missing argument descriptions in docstrings
+    "D200", # One-line docstring should fit on one line
+    "D103", # Missing docstring in public function
+    "D205", # 1 blank line required between summary line and description
+    "D212", # Allow whitespace on first line of multi-line docstrings
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+lines-after-imports = 2
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "langchain",
+  "first-party",
+  "local-folder",
+  "testing"
+]
+
+[tool.ruff.lint.isort.sections]
+langchain = ["langchain-*"]
+testing = ["pytest", "hypothesis"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = [
+    "D415" # First line should end with a period, question mark, or exclamation point
+]
+"!src/**.py" = [
+    "D103" # Missing docstring in public function
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+skip-magic-trailing-comma = false
+docstring-code-format = true
