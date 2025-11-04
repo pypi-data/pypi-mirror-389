@@ -1,0 +1,48 @@
+Metadata-Version: 2.4
+Name: navid-linkedin-puzzle-solver
+Version: 0.1.0
+Summary: Automates solving LinkedIn mini games (Queens, Tango, Zip)
+Author-email: Navid <example@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/mirzaaghazadeh/navid-linkedin-puzzle-solver
+Project-URL: Repository, https://github.com/mirzaaghazadeh/navid-linkedin-puzzle-solver
+Keywords: linkedin,games,solver,selenium,puzzle
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: selenium>=4.12
+Requires-Dist: webdriver-manager>=4.0
+Dynamic: license-file
+
+# Navid LinkedIn Puzzle Solver
+
+Automates solving LinkedIn games (Queens, Tango, Zip) using Selenium.
+
+## Install
+
+```bash
+pip install navid-linkedin-puzzle-solver
+```
+
+## Usage
+
+```bash
+navid-linkedin-puzzle-solver
+```
+
+- Choose Login to authenticate in a browser, then return to menu
+- Choose a game to auto-solve and submit the solution
+
+## Requirements
+- Google Chrome installed
+- Network access for LinkedIn
+
+## Notes
+- This tool controls a browser; use responsibly and follow LinkedIn terms.
+
+## License
+MIT
+
