@@ -1,0 +1,80 @@
+Metadata-Version: 2.4
+Name: dbinfer-relbench-adapter
+Version: 0.1.2
+Summary: Adapter to bridge DBInfer datasets and tasks to the RelBench interface with caching support
+Author-email: Vijay Prakash Dwivedi <hi@vijaydwivedi.com.np>
+Maintainer-email: Vijay Prakash Dwivedi <hi@vijaydwivedi.com.np>
+License: MIT
+Project-URL: Homepage, https://github.com/vijaydwivedi75/dbinfer-relbench
+Project-URL: Repository, https://github.com/vijaydwivedi75/dbinfer-relbench
+Project-URL: Bug Tracker, https://github.com/vijaydwivedi75/dbinfer-relbench/issues
+Keywords: dbinfer,relbench,adapter,relational,database,benchmark
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Database
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: dbinfer_bench
+Requires-Dist: relbench
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: numpy>=1.20.0
+Requires-Dist: scikit-learn>=0.24.0
+Requires-Dist: torch==2.3.0
+Requires-Dist: torchvision
+Requires-Dist: torchaudio
+Requires-Dist: torchdata==0.9.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=3.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: isort>=5.10.0; extra == "dev"
+Requires-Dist: flake8>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=0.950; extra == "dev"
+Dynamic: license-file
+
+# DBInfer-RelBench Adapter
+
+Adapter to use DBInfer datasets with the RelBench interface.
+
+## Installation
+
+```bash
+pip install dbinfer-relbench-adapter
+pip install dgl -f https://data.dgl.ai/wheels/torch-2.3/repo.html
+```
+
+## Example
+
+```python
+from dbinfer_relbench_adapter import load_dbinfer_data
+
+# Load dataset and task
+dataset, task = load_dbinfer_data("diginetica", "ctr")
+
+# Access database tables
+db = dataset.get_db()
+for table_name, table in db.table_dict.items():
+    print(f"{table_name}: {len(table)} rows")
+
+# Get train/val/test splits
+train_table = task.get_table("train")
+val_table = task.get_table("val")
+test_table = task.get_table("test")
+
+# Evaluate predictions
+predictions = model.predict(test_table)
+results = task.evaluate(predictions, test_table)
+```
+
+## License
+
+MIT
