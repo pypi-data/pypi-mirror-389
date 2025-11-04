@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: mcp-zentao
+Version: 1.0.0
+Summary: 禅道系统 MCP 服务器 - 基于 Semantic Kernel 的 Model Context Protocol 服务器
+Project-URL: Homepage, https://github.com/wrcopilot-org/mcp-zentao
+Project-URL: Repository, https://github.com/wrcopilot-org/mcp-zentao
+Project-URL: Documentation, https://github.com/wrcopilot-org/mcp-zentao#readme
+Project-URL: Bug Tracker, https://github.com/wrcopilot-org/mcp-zentao/issues
+Author-email: nblog <your-email@example.com>
+Maintainer-email: nblog <your-email@example.com>
+License: MIT
+License-File: LICENSE
+Keywords: ai,mcp,project-management,semantic-kernel,zentao
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Office/Business
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.11
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: pydantic-settings>=2.10.1
+Requires-Dist: pydantic>=2.11.7
+Requires-Dist: semantic-kernel[mcp]>=1.32.2
+Provides-Extra: dev
+Requires-Dist: pytest>=8.4.1; extra == 'dev'
