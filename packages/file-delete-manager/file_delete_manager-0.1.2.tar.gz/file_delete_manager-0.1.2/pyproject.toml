@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "file_delete_manager"
+version = "0.1.2"
+readme = "README.md" 
+description = "Library to delete files with rules"
+authors = [{name = "Juan Manuel Cabrera"}]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+filedeletemanager = "filedeletemanager.cli:main"
