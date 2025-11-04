@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools >= 77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "hentailib"
+description = "Library for easy requests hentai sites"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "MIT"}
+keywords = ["hentai", "requests", "rule34"]
+authors = [
+  {name = "Onii-Chan", email = "skobochki.ad@mail.ru"}
+]
+version = "1.0.1"
+
+requires-python = ">=3.9"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Other Audience",
+  "Topic :: Internet",
+  "Topic :: Multimedia",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "requests>=2.32.5"
+]
+
+[project.urls]
+Repository = "https://github.com/SerJo2/hentailib"
+Issues = "https://github.com/SerJo2/hentailib/issues"
+Changelog = "https://github.com/SerJo2/hentailib/blob/master/CHANGELOG.md"
+
+[tool.setuptools]
+packages = {find = {where = ["src"], exclude = ["tests*", "tests.*"]}}
+package-dir = {"" = "src"}
+
+[project.optional-dependencies]
+test = ["pytest>=6.0"]
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
