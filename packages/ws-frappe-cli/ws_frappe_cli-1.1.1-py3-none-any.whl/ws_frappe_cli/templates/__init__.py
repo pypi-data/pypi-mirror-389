@@ -1,0 +1,1 @@
+"""Templates for ws-frappe-cli package."""
