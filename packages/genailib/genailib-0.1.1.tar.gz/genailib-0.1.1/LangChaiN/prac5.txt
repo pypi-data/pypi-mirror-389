@@ -1,0 +1,164 @@
+!pip install diffusers transformers torch torchvision matplotlib
+
+from diffusers import DDPMPipeline
+import matplotlib.pyplot as plt
+
+#Load pre-trained DDPM model for MNIST
+model_id = "google/ddpm-cifar10-32"  # you can also use cifar10 (similar small images)
+pipe = DDPMPipeline.from_pretrained(model_id)
+
+#Generate samples
+images = pipe(num_inference_steps=25).images
+
+#Plot a few results
+plt.figure(figsize=(10, 2))
+for i, img in enumerate(images[:6]):
+    plt.subplot(1, 6, i + 1)
+    plt.imshow(img)
+    plt.axis("off")
+plt.suptitle("Generated Images using Pre-trained DDPM", fontsize=14)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Absolutely ✅ — here’s a clear, concise **theoretical explanation** for your experiment:
+
+# ---
+
+# # 🧠 **Image Generation using a Pre-trained Diffusion Model (DDPM)**
+
+# ### 🎯 **Objective**
+
+# To understand and perform **image generation** using a **pre-trained Denoising Diffusion Probabilistic Model (DDPM)**, implemented through the **Hugging Face Diffusers** library.
+# We demonstrate this by generating new images from **random noise** using a pre-trained **CIFAR-10 DDPM model** (a small image dataset similar to MNIST).
+
+# ---
+
+# ## 🧩 **1️⃣ What is a Diffusion Model?**
+
+# A **diffusion model** is a **generative model** that learns to create data (like images) by **reversing a gradual noising process**.
+
+# It has two main phases:
+
+# | Phase                             | Description                                                                                                                              |
+# | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+# | **Forward Diffusion**             | Adds random Gaussian noise to an image step by step until it becomes pure noise.                                                         |
+# | **Reverse Diffusion (Denoising)** | A neural network learns to reverse this process — starting from random noise and gradually removing noise to generate a realistic image. |
+
+# ---
+
+# ## 🧮 **2️⃣ Denoising Diffusion Probabilistic Model (DDPM)**
+
+# The **DDPM** (proposed by Ho et al., 2020) is a **probabilistic diffusion model** that models this forward and reverse process.
+
+# ### Key idea:
+
+# [
+# x_t = \sqrt{\alpha_t}x_{t-1} + \sqrt{1 - \alpha_t}\epsilon
+# ]
+
+# * ( x_t ): noisy image at step *t*
+# * ( \epsilon ): random noise
+# * ( \alpha_t ): noise schedule controlling how much noise is added
+
+# During **inference**, the model predicts the noise ( \epsilon ) and removes it to get a cleaner image.
+
+# ---
+
+# ## ⚙️ **3️⃣ Implementation Steps**
+
+# ### 🧰 Libraries Used
+
+# * **diffusers** → Provides pre-trained diffusion models
+# * **torch** → Deep learning backend
+# * **matplotlib** → Visualization
+
+# ### 🧠 Steps in Code
+
+# 1. **Import and load the model**
+
+#    ```python
+#    from diffusers import DDPMPipeline
+#    pipe = DDPMPipeline.from_pretrained("google/ddpm-cifar10-32")
+#    ```
+
+#    This loads a DDPM model trained on CIFAR-10 (small color images of 32×32).
+
+# 2. **Generate images**
+
+#    ```python
+#    images = pipe(num_inference_steps=25).images
+#    ```
+
+#    The model starts from **pure noise** and performs 25 reverse steps to **denoise** it into meaningful images.
+
+# 3. **Visualize results**
+
+#    ```python
+#    plt.imshow(images[i])
+#    ```
+
+#    This shows newly generated images — realistic but not identical to training samples.
+
+# ---
+
+# ## 📊 **4️⃣ Visualization**
+
+# Each generated image is the output of a **reverse diffusion process** —
+# starting from random noise → gradually cleaned → meaningful object (like airplane, bird, etc.).
+
+# You can think of it like:
+
+# > 🎨 *Noise → blurry shapes → sharper patterns → complete image*
+
+# ---
+
+# ## 🧠 **5️⃣ Why It’s Important (Generative AI Context)**
+
+# | Aspect           | Explanation                                                                     |
+# | ---------------- | ------------------------------------------------------------------------------- |
+# | **Realism**      | Diffusion models generate highly realistic images.                              |
+# | **Stability**    | They are more stable to train than GANs (no discriminator).                     |
+# | **Control**      | Can be guided by text, class labels, or other signals (as in Stable Diffusion). |
+# | **Applications** | Art generation, denoising, super-resolution, and text-to-image systems.         |
+
+# ---
+
+# ## 🧩 **6️⃣ Summary**
+
+# | Step | Concept       | Description                                        |
+# | ---- | ------------- | -------------------------------------------------- |
+# | 1️⃣  | Model         | Denoising Diffusion Probabilistic Model (DDPM)     |
+# | 2️⃣  | Input         | Random Gaussian noise                              |
+# | 3️⃣  | Process       | Iterative denoising through learned neural network |
+# | 4️⃣  | Output        | Synthetic but realistic image                      |
+# | 5️⃣  | Visualization | Generated CIFAR-10 or MNIST-like samples           |
+
+# ---
+
+# ### ✅ **Key Takeaways**
+
+# * DDPMs learn to **reverse the noise-adding process** to create new data.
+# * They are foundational to **modern generative AI** models (like Stable Diffusion).
+# * This experiment shows **inference** (generation), not training — meaning we use a model already trained on CIFAR-10.
+# * The **denoising steps** are what allow the model to transform random noise into meaningful patterns.
+
+# ---
+
+# Would you like me to give a **short, report-ready summary paragraph** (≈100 words) for this experiment (useful for lab submission or project documentation)?

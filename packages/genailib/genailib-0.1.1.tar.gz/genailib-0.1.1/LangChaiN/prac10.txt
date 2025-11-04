@@ -1,0 +1,60 @@
+!pip install transformers torch -q
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch.nn.utils.prune as prune
+
+# Load GPT-2 small
+model_name = "gpt2"
+model = AutoModelForCausalLM.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# Apply pruning (remove 30% small weights)
+for name, module in model.named_modules():
+    if isinstance(module, torch.nn.Linear):
+        prune.l1_unstructured(module, name='weight', amount=0.3)
+
+print("Pruning applied successfully!")
+
+# Remove pruning masks before quantization
+for name, module in model.named_modules():
+    if isinstance(module, torch.nn.Linear) and hasattr(module, 'weight_orig'):
+        prune.remove(module, 'weight')
+
+# Apply dynamic quantization
+quantized_model = torch.quantization.quantize_dynamic(
+    model, {torch.nn.Linear}, dtype=torch.qint8
+)
+print("Quantization applied successfully!")
+
+# Test optimized model
+input_text = "Once upon a time"
+inputs = tokenizer(input_text, return_tensors="pt")
+outputs = quantized_model.generate(**inputs, max_length=30)
+print("\nGenerated text:\n", tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+
+
+
+
+
+
+
+
+
+# Here’s a **short and clear theory explanation** for your code 👇
+
+# ---
+
+# ## 🧠 **Theory: Model Optimization using Pruning & Quantization for Generative Models**
+
+# **Model optimization** techniques like **pruning** and **quantization** are used to make large neural networks smaller, faster, and more efficient — especially important for deploying generative models (like GPT) on limited hardware such as mobile devices or edge systems.
+
+# * **Pruning** reduces the number of parameters by removing less important weights (usually small-magnitude ones) from the model’s layers. This creates a sparser network that maintains similar performance while using less memory and computation. In this code, *L1 unstructured pruning* removes 30% of the smallest weights from each linear layer.
+
+# * **Quantization** compresses model weights from high-precision (e.g., 32-bit floats) to lower precision (e.g., 8-bit integers). This reduces model size and speeds up inference with minimal accuracy loss. Here, *dynamic quantization* is applied only during inference to convert linear layer weights to 8-bit integers.
+
+# Together, these techniques make pre-trained generative models like **GPT-2** more efficient without retraining, allowing faster text generation and easier deployment on resource-constrained systems.
+
+# ---
+
+# Would you like me to give you a **comparison table** (before vs after optimization — size, speed, precision)? It’s great for reports or slides.
