@@ -1,0 +1,24 @@
+# Manifest file for including additional files in the package
+include README.md
+include LICENSE
+include CHANGELOG.md
+include pyproject.toml
+include setup.cfg
+
+# Include package data
+recursive-include src/ws_frappe_cli *.py
+recursive-include src/ws_frappe_cli *.typed
+recursive-include src/ws_frappe_cli/templates *.md *.yaml *.json *.sh *.py
+
+# Include tests
+recursive-include tests *.py
+
+# Exclude development and build files
+exclude .gitignore
+exclude .pre-commit-config.yaml
+exclude tox.ini
+exclude Makefile
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * *.so
+recursive-exclude * .DS_Store
