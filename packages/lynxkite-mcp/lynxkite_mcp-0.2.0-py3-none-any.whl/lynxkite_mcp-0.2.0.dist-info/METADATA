@@ -1,0 +1,26 @@
+Metadata-Version: 2.3
+Name: lynxkite-mcp
+Version: 0.2.0
+Summary: A command-line tool and MCP server for running LynxKite workspaces.
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
+Requires-Dist: lynxkite-core
+Requires-Dist: mcp>=1.20.0
+Requires-Python: >=3.11
+Project-URL: Homepage, https://github.com/lynxkite/lynxkite-2000/
+Description-Content-Type: text/markdown
+
+# LynxKite MCP
+
+An MCP server for running a LynxKite workspace. The boxes with no inputs, such as
+"Import CSV" are considered the inputs of the workspace, and the boxes with no outputs,
+such as "View table" are considered its outputs. The model using the MCP server
+will be able to modify the settings in the input boxes and access the results in the
+output boxes.
+
+In the MCP client, configure a command such as:
+
+```
+lynxkite-mcp 'examples/NetworkX demo.lynxkite.json'
+```
+
+This will take care of running the workspace. No need for a running LynxKite instance.
