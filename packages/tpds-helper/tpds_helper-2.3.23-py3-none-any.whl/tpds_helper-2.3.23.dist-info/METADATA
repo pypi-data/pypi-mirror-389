@@ -1,0 +1,137 @@
+Metadata-Version: 2.4
+Name: tpds-helper
+Version: 2.3.23
+Summary: Microchip(SPG) Trust Platform Utilities
+Maintainer-email: Microchip Technology <SPG.Tools@microchip.com>
+License: (c) 2018-2021 Microchip Technology Inc. and its subsidiaries.
+        
+        Subject to your compliance with these terms, you may use Microchip software
+        and any derivatives exclusively with Microchip products. It is your
+        responsibility to comply with third party license terms applicable to your
+        use of third party software (including open source software) that may
+        accompany Microchip software.
+        
+        THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+        EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+        WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+        PARTICULAR PURPOSE. IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT,
+        SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE
+        OF ANY KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF
+        MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.
+        TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL
+        CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF
+        FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+        
+        
+Classifier: License :: Other/Proprietary License
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: asn1crypto
+Requires-Dist: cryptography~=35.0.0
+Requires-Dist: hidapi
+Requires-Dist: ipycanvas~=0.13.3
+Requires-Dist: ipython
+Requires-Dist: ipywidgets~=8.0.2
+Requires-Dist: lxml
+Requires-Dist: pyasn1_modules
+Requires-Dist: Pygments
+Requires-Dist: pykitinfo==1.1.2.19
+Requires-Dist: pymcuprog
+Requires-Dist: pyOpenSSL~=22.0.0
+Requires-Dist: python_jose
+Requires-Dist: PyYAML
+Requires-Dist: libusb_package
+Requires-Dist: websocket_client
+Requires-Dist: awscli
+Requires-Dist: tpds-certificate-tools
+Requires-Dist: tpds-schema
+Requires-Dist: cryptoauthlib>=20241015
+Requires-Dist: requests
+Provides-Extra: azure
+Requires-Dist: azure-iot-hub; extra == "azure"
+Requires-Dist: azure-identity; extra == "azure"
+Requires-Dist: azure-mgmt-iothub; extra == "azure"
+Requires-Dist: azure-iot-device; extra == "azure"
+Requires-Dist: azure-iothub-provisioningserviceclient; extra == "azure"
+Requires-Dist: azure-mgmt-iothubprovisioningservices; extra == "azure"
+Requires-Dist: azure-mgmt-resource; extra == "azure"
+Provides-Extra: dev
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: pytest-integration; extra == "test"
+Dynamic: license-file
+
+## Package
+TPDS Helper has all the required modules for Trust Platform Design Suite Core package
+
+## Release Notes
+
+### 2.3.23
+   - ECC608 TFLXTLS XML filed bug fixes for Size and default data
+
+### 2.3.22
+   - Fixed pykitinfo revision as last update has issues
+
+### 2.3.21
+   - Flash Programming flags corrected for releasing the reset
+
+### 2.3.20
+   - Updated to support extended format of the compressed certificates
+
+### 2.3.19
+   - Custom PKI updates for definitions generation
+   - Improvement for Asymmetric Key class to include KeySize
+
+### 2.3.18
+   - CryptoAuthLib version requirement updated
+
+### 2.3.17
+   - Updated for ipycanvas version issue
+   - Bug fix for redundant data in public slots
+
+### 2.3.x
+   - Updated to play Usecase videos and XML encryption for ED25519
+   - Updates to add additional key types, encrypt script
+   - Updated for signer and device c def strings
+
+### 2.2.1
+   - Minor updates to conda dependencies
+
+### 2.2.0
+   - Convert to use tpds namespacing so packages can locate modules without path manipulation
+
+### 2.0.5
+   - Updated check for Azure IoT Hub name
+   - Other minor updates
+
+### 2.0.4
+   - Bug fix for cert validity and signer ID
+
+### 2.0.3
+   - Updates/fixes for Linux support
+   - Other minor bug fixes and updates
+
+### 2.0.2
+   - Fixed TrustCustom configuration write error
+   - Canvas/UseCaseDiagram updates and bug fixes
+   - Other minor updates and bug fixes
+
+### 2.0.1
+   - Updates added to suport OSX
+
+### 2.0.0
+   - Initial version of TPDS-Helper package
+   - Supporting package for TPDS Application and Core
+   - Contains various scripts to handle certificates, encryptions and device
+   - Encryption Utilities for Secure Exchange Process
+   - Usecase transaction diagrams and User input building blocks
+   - Many other improvements from legacy version

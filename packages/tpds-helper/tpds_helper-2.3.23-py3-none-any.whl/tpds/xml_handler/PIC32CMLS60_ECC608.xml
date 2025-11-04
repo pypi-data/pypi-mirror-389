@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ATECC608B>
+  <XMLVersion>01 00 04</XMLVersion>
+  <PartNumber>ATECC608B-MAHxx-p</PartNumber>
+  <Device>
+ <ConfigurationZone>
+  <SN01>01 23</SN01>
+  <SN8>01</SN8>
+  <AESEnable>01</AESEnable>
+  <I2CEnable>01</I2CEnable>
+  <I2CAddress>C0</I2CAddress>
+  <Reserved Address="17" Size="1">00</Reserved>
+  <!-- Counter match feature is disabled. -->
+  <CountMatch>00</CountMatch>
+  <!--
+    I2C address is UserExtraAdd (config byte 85). If UserExtraAdd is 0x00, then I2C address defaults back to I2C_Address. This allows a one-time ability to change the I2C address.
+    Input levels use a fixed reference. This allows for larger mismatch between VCC and IO voltage levels (e.g. VCC is 3.3V and VIO is 1.8V).
+    tWATCHDOG is 1.3s
+    Device is running at its fastest speed.
+  -->
+  <ChipMode>00</ChipMode>
+  <SlotConfigurations Size="16">
+    <!-- Primary private key -->
+    <SlotConfiguration Index="0">85 00</SlotConfiguration>
+    <!-- Internal sign private key -->
+    <SlotConfiguration Index="1">82 00</SlotConfiguration>
+    <!-- Secondary private key 1 -->
+    <SlotConfiguration Index="2">85 20</SlotConfiguration>
+    <!-- Secondary private key 2 -->
+    <SlotConfiguration Index="3">85 20</SlotConfiguration>
+    <!-- Secondary private key 3 -->
+    <SlotConfiguration Index="4">85 20</SlotConfiguration>
+    <!-- Secret key -->
+    <SlotConfiguration Index="5">8F 46</SlotConfiguration>
+    <!-- IO protection key -->
+    <SlotConfiguration Index="6">8F 0F</SlotConfiguration>
+    <!-- Secure boot digest -->
+    <SlotConfiguration Index="7">9F 8F</SlotConfiguration>
+    <!-- General data -->
+    <SlotConfiguration Index="8">0F 0F</SlotConfiguration>
+    <!-- AES key -->
+    <SlotConfiguration Index="9">8F 0F</SlotConfiguration>
+    <!-- Device compressed certificate -->
+    <SlotConfiguration Index="A">0F 0F</SlotConfiguration>
+    <!-- Signer public key -->
+    <SlotConfiguration Index="B">0F 0F</SlotConfiguration>
+    <!-- Signer compressed certificate -->
+    <SlotConfiguration Index="C">0F 0F</SlotConfiguration>
+    <!-- Parent public key or general data -->
+    <SlotConfiguration Index="D">0F 0F</SlotConfiguration>
+    <!-- Validated public key -->
+    <SlotConfiguration Index="E">0D 1F</SlotConfiguration>
+    <!-- Secure boot public key -->
+    <SlotConfiguration Index="F">0F 0F</SlotConfiguration>
+  </SlotConfigurations>
+  <Counter0 Size="8">FF FF FF FF 00 00 00 00</Counter0>
+  <Counter1 Size="8">FF FF FF FF 00 00 00 00</Counter1>
+  <UseLock>00</UseLock>
+  <!-- Disable direct control of the persistent latch. -->
+  <VolatileKeyPermission>00</VolatileKeyPermission>
+  <!-- Secure boot command is enabled and can use the stored digest optimization (FullDig). -->
+  <SecureBoot Size="2">13 F7</SecureBoot>
+  <!-- No effect since ChipOptions.KDFProt doesn't force encryption in this configuration. -->
+  <KdfIvLoc>00</KdfIvLoc>
+  <!-- No effect since ChipOptions.KDFProt doesn't force encryption in this configuration. -->
+  <KdfIvStr Size="2">69 76</KdfIvStr>
+  <Reserved Address="75" Size="9">00 00 00 00 00 00 00 00 00</Reserved>
+  <!-- Single byte that can be updated once by the UpdateExtra command. -->
+  <UserExtra>00</UserExtra>
+  <!-- New I2C Address of the device. This can only be set once, by the user, through the UpdateExtra command. When set to a non-zero value, the device will use this as its I2C address instead of the default address in I2C_Address.DeviceAddress. -->
+  <UserExtraAdd>00</UserExtraAdd>
+  <!-- No self-tests will automatically execute on power-up or wake. -->
+  <SlotLocked>FF FF</SlotLocked>
+  <!--
+    No self-tests will automatically execute on power-up or wake.
+    IO protection key functionality is enabled.
+    AES mode of the KDF command is enabled.
+    Health test failure bit is automatically cleared after reporting the failure once. This allows a command to be easily retried if the failure was transient.
+    ECDH and KDF output in the Clear allowed but encryption is possible.
+  -->
+  <ChipOptions Size="2">0E 60</ChipOptions>
+  <X509format>00 00 00 00</X509format>
+  <KeyConfigurations Size="16">
+    <KeyConfiguration Index="0">53 00</KeyConfiguration>
+    <KeyConfiguration Index="1">53 00</KeyConfiguration>
+    <KeyConfiguration Index="2">73 00</KeyConfiguration>
+    <KeyConfiguration Index="3">73 00</KeyConfiguration>
+    <KeyConfiguration Index="4">73 00</KeyConfiguration>
+    <KeyConfiguration Index="5">38 00</KeyConfiguration>
+    <KeyConfiguration Index="6">7C 00</KeyConfiguration>
+    <KeyConfiguration Index="7">1C 00</KeyConfiguration>
+    <KeyConfiguration Index="8">3C 00</KeyConfiguration>
+    <KeyConfiguration Index="9">1A 00</KeyConfiguration>
+    <KeyConfiguration Index="A">3C 00</KeyConfiguration>
+    <KeyConfiguration Index="B">30 00</KeyConfiguration>
+    <KeyConfiguration Index="C">3C 00</KeyConfiguration>
+    <KeyConfiguration Index="D">30 00</KeyConfiguration>
+    <KeyConfiguration Index="E">12 00</KeyConfiguration>
+    <KeyConfiguration Index="F">30 00</KeyConfiguration>
+  </KeyConfigurations>
+</ConfigurationZone>
+    <DataZone Size="16">
+      <Slot Index="0" Mode="GenKey" />
+      <Slot Index="1" Mode="GenKey" />
+      <Slot Index="2" Mode="GenKey" />
+      <Slot Index="3" Mode="GenKey" />
+      <Slot Index="4" Mode="GenKey" />
+      <Slot Index="5" Mode="Random" />
+      <Slot Index="6" Mode="Random" />
+      <Slot Index="7" Mode="Random" />
+      <Slot Index="8" Mode="Public">
+        <Data Size="416">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="9" Mode="Random" />
+      <Slot Index="A" Mode="DeviceSig" PubSlot="0" CompressedCert="0" />
+      <Slot Index="B" Mode="SignerPubKey" />
+      <Slot Index="C" Mode="SignerSig" PubSlot="B" CompressedCert="1" />
+      <Slot Index="D" Mode="Public">
+        <Data Size="72">
+          00 00 00 00
+          2B 67 B4 47 73 4F F0 35  7C 2D 9E 6C EF C7 FB D3
+          1C 8F 12 75 C0 8C C3 0C  F8 1B 16 E1 07 6F 80 1C
+          00 00 00 00
+          00 55 7F 4F 37 7E CB 61  B8 AD 2F 3F D9 6A B6 BF
+          E2 35 BA 13 0A 52 F7 EF  87 A5 19 9C 1D 3F C1 47
+        </Data>
+      </Slot>
+      <Slot Index="E" Mode="Public">
+        <Data Size="72">
+          00 00 00 00
+          E2 6B 0F AE EB A3 AD D6  24 CC 96 50 EA DB 73 17
+          35 BE 8F D9 22 41 C8 C6  B4 B4 C9 E7 95 ED F2 D2
+          00 00 00 00
+          6B D9 FD 68 42 4E E4 A6  29 4F 14 F9 7A 5B 52 24
+          8C 0C AB A6 A2 69 B2 B1  D5 CC F8 2D 41 13 51 58
+        </Data>
+      </Slot>
+      <Slot Index="F" Mode="Public">
+        <Data Size="72">
+          00 00 00 00
+          8C F4 5B F9 A3 43 BD 6D  C7 CC EB 22 2B 5B 17 91
+          EF B4 32 66 B3 1B 19 92  45 E8 F2 C1 43 41 7B 75
+          00 00 00 00
+          88 47 7C 0E 87 4C BE 5C  78 4A 97 0E BE 87 46 33
+          DA 69 3D 2D 78 0D 4C C5  88 A3 EF EB 13 77 0E 98
+        </Data>
+      </Slot>
+    </DataZone>
+    <OTPZone Mode="Public">
+      <Data Size="64">
+        4D 4B 4D 77 79 68 50 31  00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+      </Data>
+    </OTPZone>
+  </Device>
+  <!--
+  This section contains the certificate definitions for the device and signer certificates. These definitions
+  supply a certificate template and describe the locations of the dynamic portions of the certificate in the
+  template.
+  -->
+  <CompressedCerts CompressedCerts="2">
+    <CompressedCert Index="0" Type="X509" TemplateID="3" ChainID="0" SNSource="A" ChainLevel="0" TbsSize="411" TbsLoc="4" ValidYears="28">
+      <Element Name="SerialNumber" DataLoc="15" NumBytes="16"/>
+      <Element Name="SignerID" DataLoc="120" NumBytes="4" Format="Hex-BE"/>
+      <Element Name="IssueDate" DataLoc="128" NumBytes="13" DateFormat="RFC2459.UTC.Zulu"/>
+      <Element Name="ExpireDate" DataLoc="143" NumBytes="15" DateFormat="RFC2459.Generalized.Zulu"/>
+      <Element Name="SN03" DataLoc="208" NumBytes="8" DeviceLoc="Config" Offset="0" Transforms="TF_BIN2HEX_UC"/>
+      <Element Name="SN48" DataLoc="216" NumBytes="10" DeviceLoc="Config" Offset="8" Transforms="TF_BIN2HEX_UC"/>
+      <Element Name="SubjectPublicKey" DataLoc="253" NumBytes="64"/>
+      <Element Name="SubjectKeyId" DataLoc="362" NumBytes="20"/>
+      <Element Name="AuthorityKeyId" DataLoc="395" NumBytes="20"/>
+      <Element Name="Signature" DataLoc="427" NumBytes="64"/>
+      <TemplateData Size="500">
+        30 82 01 F0 30 82 01 97 A0 03 02 01 02 02 10 55
+        CE 2E 8F F6 1C 62 50 B7 E1 68 03 54 14 1C 94 30
+        0A 06 08 2A 86 48 CE 3D 04 03 02 30 4F 31 21 30
+        1F 06 03 55 04 0A 0C 18 4D 69 63 72 6F 63 68 69
+        70 20 54 65 63 68 6E 6F 6C 6F 67 79 20 49 6E 63
+        31 2A 30 28 06 03 55 04 03 0C 21 43 72 79 70 74
+        6F 20 41 75 74 68 65 6E 74 69 63 61 74 69 6F 6E
+        20 53 69 67 6E 65 72 20 46 46 46 46 30 20 17 0D
+        31 38 31 31 30 38 30 35 30 30 30 30 5A 18 0F 32
+        30 34 36 31 31 30 38 30 35 30 30 30 30 5A 30 42
+        31 21 30 1F 06 03 55 04 0A 0C 18 4D 69 63 72 6F
+        63 68 69 70 20 54 65 63 68 6E 6F 6C 6F 67 79 20
+        49 6E 63 31 1D 30 1B 06 03 55 04 03 0C 14 73 6E
+        30 31 32 33 30 31 30 32 30 33 30 34 30 35 30 36
+        30 31 30 59 30 13 06 07 2A 86 48 CE 3D 02 01 06
+        08 2A 86 48 CE 3D 03 01 07 03 42 00 04 71 F1 A7
+        0D A3 79 A3 FD ED 6B 50 10 BD AD 6E 1F B9 E8 EB
+        A7 DF 2C 4B 5C 67 D3 5E BA 84 DA 09 E7 7A E8 DB
+        2C CB 96 28 EE EB 85 CD AA B3 5C 92 E5 3E 1C 44
+        D5 5A 2B A7 A0 24 AA 92 60 3B 68 94 8A A3 60 30
+        5E 30 0C 06 03 55 1D 13 01 01 FF 04 02 30 00 30
+        0E 06 03 55 1D 0F 01 01 FF 04 04 03 02 03 88 30
+        1D 06 03 55 1D 0E 04 16 04 14 1A 90 B2 22 37 A4
+        51 B7 57 DD 36 D1 3A 85 2B E1 3D 2E F2 CA 30 1F
+        06 03 55 1D 23 04 18 30 16 80 14 BC D4 FD E8 80
+        8A 2D C9 0B 6D 01 A8 C5 B9 B2 47 33 7E BD DA 30
+        0A 06 08 2A 86 48 CE 3D 04 03 02 03 47 00 30 44
+        02 20 56 73 96 E4 9C 0A A7 4E 61 60 12 E3 8A 60
+        C3 A8 11 09 7D 9C 5D A4 CD 37 89 C3 62 96 88 7E
+        2A 0C 02 20 1E 69 B2 AF 0A D6 C6 7E E1 2D 5D BE
+        5A 44 5A D9 1D F1 A5 98 35 8E D0 69 D9 8B D7 DB
+        B2 99 CC 34
+      </TemplateData>
+    </CompressedCert>
+    <CompressedCert Index="1" Type="X509" TemplateID="1" ChainID="0" SNSource="A" ChainLevel="1" TbsSize="430" TbsLoc="4" ValidYears="31">
+      <Element Name="SerialNumber" DataLoc="15" NumBytes="16" />
+      <Element Name="IssueDate" DataLoc="128" NumBytes="13" DateFormat="RFC2459.UTC.Zulu" />
+      <Element Name="ExpireDate" DataLoc="143" NumBytes="15" DateFormat="RFC2459.Generalized.Zulu" />
+      <Element Name="SignerID" DataLoc="235" NumBytes="4" Format="Hex-BE" />
+      <Element Name="SubjectPublicKey" DataLoc="266" NumBytes="64" />
+      <Element Name="SubjectKeyId" DataLoc="381" NumBytes="20" />
+      <Element Name="AuthorityKeyId" DataLoc="414" NumBytes="20" />
+      <Element Name="Signature" DataLoc="446" NumBytes="64" />
+      <TemplateData Size="520">
+        30 82 02 04 30 82 01 AA A0 03 02 01 02 02 10 44
+        0E E4 17 0C B5 45 CE 59 69 8E 30 56 99 0A 5D 30
+        0A 06 08 2A 86 48 CE 3D 04 03 02 30 4F 31 21 30
+        1F 06 03 55 04 0A 0C 18 4D 69 63 72 6F 63 68 69
+        70 20 54 65 63 68 6E 6F 6C 6F 67 79 20 49 6E 63
+        31 2A 30 28 06 03 55 04 03 0C 21 43 72 79 70 74
+        6F 20 41 75 74 68 65 6E 74 69 63 61 74 69 6F 6E
+        20 52 6F 6F 74 20 43 41 20 30 30 32 30 20 17 0D
+        31 38 31 31 30 38 30 34 30 30 30 30 5A 18 0F 32
+        30 34 39 31 31 30 38 30 34 30 30 30 30 5A 30 4F
+        31 21 30 1F 06 03 55 04 0A 0C 18 4D 69 63 72 6F
+        63 68 69 70 20 54 65 63 68 6E 6F 6C 6F 67 79 20
+        49 6E 63 31 2A 30 28 06 03 55 04 03 0C 21 43 72
+        79 70 74 6F 20 41 75 74 68 65 6E 74 69 63 61 74
+        69 6F 6E 20 53 69 67 6E 65 72 20 46 46 46 46 30
+        59 30 13 06 07 2A 86 48 CE 3D 02 01 06 08 2A 86
+        48 CE 3D 03 01 07 03 42 00 04 84 98 44 0A 31 9B
+        3F 71 E2 5D 52 26 00 90 00 C7 56 BD 5C 0F AE 4A
+        1B 84 1A D4 A3 3F 21 AB A0 9A 48 10 1C 75 C8 28
+        24 90 B3 B6 5A 52 80 27 29 BD 3A 75 2C 3D F0 DD
+        1B 04 A2 A1 B5 7E 0C 92 24 47 A3 66 30 64 30 0E
+        06 03 55 1D 0F 01 01 FF 04 04 03 02 01 86 30 12
+        06 03 55 1D 13 01 01 FF 04 08 30 06 01 01 FF 02
+        01 00 30 1D 06 03 55 1D 0E 04 16 04 14 BC D4 FD
+        E8 80 8A 2D C9 0B 6D 01 A8 C5 B9 B2 47 33 7E BD
+        DA 30 1F 06 03 55 1D 23 04 18 30 16 80 14 7A ED
+        7D 6D C6 B7 78 9D B2 38 01 A5 E8 4A 8C B0 A4 0E
+        2A 8C 30 0A 06 08 2A 86 48 CE 3D 04 03 02 03 48
+        00 30 45 02 21 00 C5 07 B8 2A 7B F9 A3 3A 1B 78
+        DC EB 01 C9 26 92 9E F3 78 3D 46 8E 69 A2 84 D3
+        6A BA B9 25 1B EF 02 20 0E 6D 7F 76 8D 65 A7 49
+        FA 71 2D DA 2B 69 25 35 CD 57 7D 65 01 96 A3 D2
+        BF 3B 22 78 8E 75 41 86
+      </TemplateData>
+      <CAPublicKey>
+        BD 54 E6 6D E3 87 54 84 00 6B 53 AE 15 80 D5 0A
+        A0 69 E7 8A DF 55 78 D8 5C E2 D5 4D D5 B8 30 29
+        6B FF DD 6E 6F 72 56 FB D9 9E F1 A1 16 B1 1D 33
+        AD 49 10 3A A1 85 87 39 DC FA E4 37 E1 9D 63 4E
+      </CAPublicKey>
+    </CompressedCert>
+  </CompressedCerts>
+</ATECC608B>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ATECC608A>
+  <XMLVersion>01 00 04</XMLVersion>
+  <PartNumber>ATECC608A-xxxxxx-T</PartNumber>
+  <Device>
+    <ConfigurationZone>
+      <SN01>01 23</SN01>
+      <SN8>EE</SN8>
+      <AESEnable>01</AESEnable>
+      <I2CEnable>01</I2CEnable>
+      <Reserved Address="15" Size="1">00</Reserved>
+      <I2CAddress>70</I2CAddress>
+      <Reserved Address="17" Size="1">00</Reserved>
+      <CountMatch>00</CountMatch>
+
+      <!-- I2C Address updateable Fixed Reference, 1.3S, Fast -->
+      <ChipMode>01</ChipMode>
+      <SlotConfigurations Size="16">
+
+        <!-- WPC Slot 0 Private Key -->
+        <SlotConfiguration Index="0">81 00</SlotConfiguration>
+
+        <!-- WPC Slot 1 Private Key -->
+        <SlotConfiguration Index="1">81 00</SlotConfiguration>
+
+        <!-- Primary TLS Private Key -->
+        <SlotConfiguration Index="2">85 00</SlotConfiguration>
+
+        <!-- WPC Slot 0 Digest -->
+        <SlotConfiguration Index="3">0F 0F</SlotConfiguration>
+
+        <!-- WPC Slot 0 MFG CA Other Cert Data -->
+        <SlotConfiguration Index="4">0F 8F</SlotConfiguration>
+
+        <!-- WPC Slot 0 PU Other Cert Data -->
+        <SlotConfiguration Index="5">0F 8F</SlotConfiguration>
+
+        <!-- I/O Protection Key -->
+        <SlotConfiguration Index="6">8F 0F</SlotConfiguration>
+
+        <!-- Secure Boot Digest -->
+        <SlotConfiguration Index="7">9F 8F</SlotConfiguration>
+
+        <!-- WPC Slot 1 Cert Data and Digest -->
+        <SlotConfiguration Index="8">0F 0F</SlotConfiguration>
+
+        <!-- WPC Slot 0 MFG CA Public Key -->
+        <SlotConfiguration Index="9">0F 8F</SlotConfiguration>
+
+        <!-- TLS Device Compressed Certificate -->
+        <SlotConfiguration Index="A">0F 0F</SlotConfiguration>
+
+        <!-- TLS Signer Public Key -->
+        <SlotConfiguration Index="B">0F 0F</SlotConfiguration>
+
+        <!-- TLS Signer Compressed Certificate -->
+        <SlotConfiguration Index="C">0F 0F</SlotConfiguration>
+
+        <!-- WPC Slot 0 PU Compressed Cert -->
+        <SlotConfiguration Index="D">0F 8F</SlotConfiguration>
+
+        <!-- WPC Slot 0 MFG CA Compressed Cert -->
+        <SlotConfiguration Index="E">0F 8F</SlotConfiguration>
+
+        <!-- Secure Boot Public Key -->
+        <SlotConfiguration Index="F">0F 0F</SlotConfiguration>
+      </SlotConfigurations>
+      <Counter0 Size="8">FF FF FF FF 00 00 00 00</Counter0>
+      <Counter1 Size="8">FF FF FF FF 00 00 00 00</Counter1>
+      <UseLock>00</UseLock>
+      <VolatileKeyPermission>00</VolatileKeyPermission>
+      <SecureBoot Size="2">03 F7</SecureBoot>
+      <KdfIvLoc>00</KdfIvLoc>
+      <KdfIvStr Size="2">00 00</KdfIvStr>
+      <Reserved Address="75" Size="9">00 00 00 00 00 00 00 00 00</Reserved>
+      <UserExtra>00</UserExtra>
+      <UserExtraAdd>00</UserExtraAdd>
+      <SlotLocked>FF FF</SlotLocked>
+      <ChipOptions Size="2">02 60</ChipOptions>
+      <X509format>00 00 00 00</X509format>
+      <KeyConfigurations Size="16">
+        <KeyConfiguration Index="0">53 00</KeyConfiguration>
+        <KeyConfiguration Index="1">53 00</KeyConfiguration>
+        <KeyConfiguration Index="2">53 00</KeyConfiguration>
+        <KeyConfiguration Index="3">3C 00</KeyConfiguration>
+        <KeyConfiguration Index="4">1C 00</KeyConfiguration>
+        <KeyConfiguration Index="5">1C 00</KeyConfiguration>
+        <KeyConfiguration Index="6">7C 00</KeyConfiguration>
+        <KeyConfiguration Index="7">1C 00</KeyConfiguration>
+        <KeyConfiguration Index="8">30 00</KeyConfiguration>
+        <KeyConfiguration Index="9">10 00</KeyConfiguration>
+        <KeyConfiguration Index="A">3C 00</KeyConfiguration>
+        <KeyConfiguration Index="B">30 00</KeyConfiguration>
+        <KeyConfiguration Index="C">3C 00</KeyConfiguration>
+        <KeyConfiguration Index="D">1C 00</KeyConfiguration>
+        <KeyConfiguration Index="E">1C 00</KeyConfiguration>
+        <KeyConfiguration Index="F">30 00</KeyConfiguration>
+      </KeyConfigurations>
+    </ConfigurationZone>
+    <DataZone Size="16">
+      <Slot Index="0" Mode="GenKey"/>
+      <Slot Index="1" Mode="GenKey"/>
+      <Slot Index="2" Mode="GenKey"/>
+      <Slot Index="3" Mode="Public">
+        <Data Size="36">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="4" Mode="SigData">
+        <Data Size="36">
+          00 00 00 00 00 00 00 00 00 00
+          32 30 00 00 00 00 00 00 00 00 00 00 00 00 00
+          xx xx xx xx xx xx xx
+          00 00 00 01
+        </Data>
+      </Slot>
+      <Slot Index="5" Mode="SigData">
+        <Data Size="36">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="6" Mode="Random"/>
+      <Slot Index="7" Mode="Random"/>
+      <Slot Index="8" Mode="Public">
+        <Data Size="416">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="9" Mode="SignerPubKey"/>
+      <Slot Index="A" Mode="Public">
+        <Data Size="72">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="B" Mode="Public">
+        <Data Size="72">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="C" Mode="Public">
+        <Data Size="72">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00
+        </Data>
+      </Slot>
+      <Slot Index="D" Mode="DeviceSig" PubSlot="0" CompressedCert="0"/>
+      <Slot Index="E" Mode="SignerSig" PubSlot="9" CompressedCert="1"/>
+      <Slot Index="F" Mode="Public">
+        <Data Size="72">
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00
+        </Data>
+      </Slot>
+    </DataZone>
+    <OTPZone Mode="Public">
+      <Data Size="64">
+        FF FF FF FF FF FF FF FF  FF FF FF FF FF FF FF FF
+        FF FF FF FF FF FF FF FF  FF FF FF FF FF FF FF FF
+        FF FF FF FF FF FF FF FF  FF FF FF FF FF FF FF FF
+        FF FF FF FF FF FF FF FF  FF FF FF FF FF FF FF FF
+      </Data>
+    </OTPZone>
+  </Device>
+  <CompressedCerts CompressedCerts="2">
+    <CompressedCert Index="0" Type="X509" TemplateID="2" ChainID="3" SNSource="A" ChainLevel="0" TbsSize="225" TbsLoc="4" ValidYears="0" SingleSignerID="WPC_CA_004E_0001">
+      <Element Name="SubjectPublicKey" DataLoc="136" NumBytes="64"/>
+      <Element Name="Signature" DataLoc="241" NumBytes="64"/>
+      <Element Name="IssueDate" DataLoc="58" NumBytes="15" DateFormat="RFC2459.Generalized.Zulu"/>
+      <Element Name="SerialNumber" DataLoc="14" NumBytes="8"/>
+      <Element Name="issuer" DataLoc="47" NumBytes="7" DeviceLoc="Slot4" Offset="25"/>
+      <!-- CounterStart value chosen at random to obfuscate total number of produced devices -->
+      <Element Name="RSID" DataLoc="221" NumBytes="8" DeviceLoc="Slot5" Offset="1" CounterStart="0000000000000001" CounterStop="FFFFFFFFFFFFFFFF" CounterStep="01" CounterFormat="bin-be"/>
+      <TemplateData Size="315">
+      </TemplateData>
+    </CompressedCert>
+    <CompressedCert Index="1" Type="X509" TemplateID="1" ChainID="3" SNSource="7" ChainLevel="1" TbsSize="238" TbsLoc="4" ValidYears="0" SingleSignerID="WPC_CA_004E_0001">
+      <Element Name="SubjectPublicKey" DataLoc="134" NumBytes="64"/>
+      <Element Name="Signature" DataLoc="254" NumBytes="64"/>
+      <Element Name="IssueDate" DataLoc="57" NumBytes="13" DateFormat="RFC2459.UTC.Zulu" DeviceLoc="Slot4" Offset="12"/>
+      <Element Name="SerialNumber" DataLoc="13" NumBytes="9" DeviceLoc="Slot4" Offset="0"/>
+      <Element Name="subject" DataLoc="100" NumBytes="7" DeviceLoc="Slot4" Offset="25"/>
+      <Element Name="qiPolicy" DataLoc="238" NumBytes="4" DeviceLoc="Slot4" Offset="32"/>
+      <TemplateData Size="328">
+      </TemplateData>
+      <CAPublicKey>
+        04 84 07 20 B3 A3 B1 79 D0 6C 77 AD A0 00 44 D2 CF 20 9B C3 3C E3 44 9A 08 C6 7F 8F F5 03 73 63
+        A0 43 F5 90 71 90 AF B7 BC F1 FC A6 67 CB 5E C3 EA 19 F9 6A 7B 41 1F 3D 8D 63 30 48 2D 7E 28 12
+      </CAPublicKey>
+    </CompressedCert>
+  </CompressedCerts>
+</ATECC608A>
