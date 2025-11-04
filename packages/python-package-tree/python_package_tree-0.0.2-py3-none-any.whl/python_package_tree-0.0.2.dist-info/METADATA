@@ -1,0 +1,39 @@
+Metadata-Version: 2.4
+Name: python_package_tree
+Version: 0.0.2
+Summary: Tree-like display directories, files, functions and classes of a python project
+Author-email: Jean-Marc Frigerio <jean-marc.frigerio@inrae.fr>
+License: GPLv3+
+License-File: LICENSE
+Classifier: Operating System :: OS Independent
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.12
+Requires-Dist: asciitree
+Requires-Dist: click
+Description-Content-Type: text/markdown
+
+# python_package_tree
+
+Tree-like display of directories, files, functions and classes of a python project
+
+![alt text](image.png)
+
+## Installation
+
+```sh
+pip install --break-system-package git+https://gitlab.inria.fr/jfrigeri/python_package_tree.git
+```
+remove --break-system-package if you are in a virtual environnement
+
+## Usage
+Explore the current directory
+```sh
+python_package_tree
+```
+Display the help message
+```sh
+python_package_tree -h
+```
+## License
+GPLv3+
