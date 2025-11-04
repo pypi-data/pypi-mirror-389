@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nu_lpw_v"
+version = "0.0.9"
+authors = [
+    { name="Samarth Patel", email="samarthnimeshkumarpatel@gmail.com" },
+]
+description = "Enjoy my codes!"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools]
+packages = ["nu_lpw_v"]
