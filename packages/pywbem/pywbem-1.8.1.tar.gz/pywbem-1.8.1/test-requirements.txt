@@ -1,0 +1,74 @@
+# Pip requirements file for test dependencies.
+
+# These dependencies have been separated from the other development dependencies
+# in dev-requirements.txt in order to be able to run tests from just the
+# source archive using 'setup.py test', without having the rest of the files
+# in the repo.
+
+
+# Direct dependencies for test and indirect dependencies for test that are
+# needed for some reason (must be consistent with minimum-constraints-develop.txt)
+
+# six
+# urllib3 1.26.5 vendors six 1.16.0 which is needed on Python 3.10 to remove ImportWarning
+six>=1.14.0; python_version <= '3.9'
+six>=1.16.0; python_version >= '3.10'
+
+# Unit test (imports into testcases):
+packaging>=24.1
+# pytest 4.3.1 solves an issue on Python 3 with minimum package levels
+# pytest==6.0.0 causes pylint to report "not-callable" issues
+# pytest>=6.0.0 causes pylint to report "abstract-method" issues
+# For both, see https://github.com/pytest-dev/pytest/issues/7591
+# Max pytest version < 8.0 because of issue with Deprecated warnings in pytest 8.0.x.
+# pytest-cov 4.0.0 depends on pytest>=4.6
+pytest>=4.6.0,!=6.0,<8.0; python_version <= '3.9'
+pytest>=6.2.5,<8.0; python_version >= '3.10'
+testfixtures>=6.9.0
+# pylint>=2.15 requires colorama>=0.4.5
+colorama>=0.4.5
+# FormEncode is used for xml comparisons in unit test
+# FormEncode 2.1.1 added support for Python 3.13
+FormEncode>=2.1.1
+
+# Easy-server packages
+easy-vault>=0.7.0
+easy-server>=0.8.0
+pytest-easy-server>=0.8.0
+cryptography>=43.0.1
+keyring>=18.0.0
+
+# jsonschema 4.18.0 required by jupyter-events 0.9.1
+jsonschema>=4.18.0
+
+requests-mock>=1.6.0
+requests-toolbelt>=0.8.0
+yagot>=0.5.0
+
+importlib-metadata>=4.8.3
+
+# zoneinfo is part of Python starting with Python 3.9
+backports.zoneinfo>=0.2.1; python_version == '3.8'
+# tzdata is needed by zoneinfo on systems with no timezone database (e.g. Windows)
+tzdata>=2024.1; sys_platform == 'win32'
+
+# Unit test (indirect dependencies):
+
+pluggy>=0.13.0
+
+decorator>=4.0.11
+
+# Lxml
+# lxml>=5.0 fails installing on macOS 14 with Python 3.8, see https://bugs.launchpad.net/lxml/+bug/2063945
+# lxml 4.9.2 addresses changes in Python 3.11
+# lxml 4.9.3 added support for Python 3.12
+# lxml 5.3.0 added support for Python 3.13
+lxml>=4.6.2,<5.0; python_version == '3.8' and sys_platform == 'darwin'
+lxml>=4.6.2; python_version == '3.8' and sys_platform != 'darwin'
+lxml>=4.6.2; python_version == '3.9'
+lxml>=4.6.4; python_version == '3.10'
+lxml>=4.9.2; python_version == '3.11'
+lxml>=4.9.3; python_version == '3.12'
+lxml>=5.3.0; python_version >= '3.13'
+
+virtualenv>=20.26.6
