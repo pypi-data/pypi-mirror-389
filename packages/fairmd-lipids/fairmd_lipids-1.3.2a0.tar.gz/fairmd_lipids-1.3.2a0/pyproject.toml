@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools_scm>=8", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    {name = "NMRlipids Open Collaboration", email = "databank@nmrlipids.fi"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Shells",
+]
+description = "FAIRMD Lipids project (formerly NMRlipids) contains the core functionality for managing and accessing the Database."
+dynamic = ["version"]
+keywords = [
+    "Science",
+    "Molecular Dynamics",
+    "Membranes",
+]
+license = "GPL-3.0-or-later"
+# maintainers = [] TODO
+name = "fairmd-lipids"
+readme = "README.md"
+dependencies = [
+    "buildh>=1.6.1",
+    "MDAnalysis>=2.7.0,<2.10",
+    "maicos>=0.11.2,<0.12",
+    "numpy>=2.0",
+    "pandas>=2.0.0",
+    "PyYAML>=6.0.0",
+    "tqdm>=4.5.0",
+    "periodictable>=1.5.0",
+    "Deprecated",
+    "scipy",
+    "jsonschema",
+]
+
+[project.urls]
+homepage = "https://FAIRMD_lipids.nmrlipids.fi"
+documentation = "https://nmrlipids.github.io/FAIRMD_lipids/latest/"
+repository = "https://github.com/NMRLipids/FAIRMD_lipids"
+# changelog = ""
+issues = "https://github.com/NMRLipids/FAIRMD_lipids/issues"
+
+[project.scripts]
+fmdl_add_simulation = "fairmd.lipids.bin.add_simulation:add_simulation"
+fmdl_compute_databank = "fairmd.lipids.bin.compute_databank:compute_databank"
+fmdl_evaluate_quality = "fairmd.lipids.bin.evaluate_quality:evaluate_quality"
+fmdl_make_ranking = "fairmd.lipids.bin.make_ranking:make_ranking"
+fmdl_match_experiments = "fairmd.lipids.bin.match_experiments:match_experiments"
+fmdl_initialize_data = "fairmd.lipids.bin.initialize_data:initialize_data"
+
+[tool.check-manifest]
+ignore = ["src/fairmd/lipids/_version.py"]
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+addopts = [
+    "-ra",
+    "--cov=fairmd.lipids",
+    "--cov-append",
+    "--cov-report=",
+    "--import-mode=append",
+]
+markers = [
+    "sim1: toy-database for computing properties from scratch",
+    "sim2: toy-database with pre-computed properties for API tests",
+    "adddata: for AddData.py standalone script testing",
+    "nodata: test auxilary functions not related to Data",
+    "all: run all tests",
+    "min: run tests not requiring GROMACS installation",
+]
+
+[tool.ruff]
+target-version = "py310"
+# Set the maximum line length to 120
+line-length = 120
+exclude = ["src/fairmd/lipids/_version.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I"]
+extend-select = ["E501"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# TODO: check and renable these
+"**/{tests}/*" = ["D", "E", "F", "B", "I"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.setuptools_scm]
+version_file = "src/fairmd/lipids/_version.py"
+
+[tool.setuptools.package-data]
+"fairmd.lipids.data" = ["*"]
