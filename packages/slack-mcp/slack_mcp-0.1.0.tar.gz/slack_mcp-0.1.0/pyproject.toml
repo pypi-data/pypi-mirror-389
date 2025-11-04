@@ -1,0 +1,104 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "slack-mcp"
+version = "0.1.0"
+description = "🦾 A strong MCP server for Slack."
+authors = [{ name = "Chisanan232", email = "chi10211201@cycu.org.tw" }]
+requires-python = ">=3.12,<3.14"
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = [
+    "slack",
+    "mcp",
+    "mcp-server",
+    "slack-mcp",
+    "slack-mcp-server",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Utilities",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+#    "Programming Language :: Python :: 3.14",  # TODO: Because of PyO3's maximum supported version (3.13)
+]
+dependencies = [
+    # Base installation only includes the base protocol rules of this project (no any feature for MCP, HTTP server, etc.)
+    "abstract-backend>=0.0.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/Chisanan232/slack-mcp-server"
+Repository = "https://github.com/Chisanan232/slack-mcp-server"
+Documentation = "https://chisanan232.github.io/slack-mcp-server/"
+Changelog = "https://chisanan232.github.io/slack-mcp-server/docs/next/changelog"
+"Project Management" = "https://app.clickup.com/9018752317/v/f/90185744047/90184991515"
+
+[project.scripts]
+slack-mcp-server = "slack_mcp.mcp.entry:main"
+slack-webhook-server = "slack_mcp.webhook.entry:main"
+
+[project.optional-dependencies]
+# MCP core feature set supports SSE/Streamable transports (but doesn't support integrated mode)
+mcp = [
+    "mcp[cli]>=1.10.1",
+    "slack-sdk>=3.36.0",
+    "pydantic>=2.11.7",
+]
+
+# HTTP server support for Slack webhook features (but doesn't support integrated mode)
+webhook = [
+    "fastapi>=0.116.1",
+    "uvicorn>=0.35.0",
+    "pydantic>=2.11.7",
+]
+
+# Everything supported by this project
+all = [
+    "mcp[cli]>=1.10.1",
+    "slack-sdk>=3.36.0",
+    "pydantic>=2.11.7",
+    "fastapi>=0.116.1",
+    "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1,<9",
+    "pytest-cov>=6.2.1,<7",
+    "coverage>=7.9.2,<8",
+    "pytest-rerunfailures>=15.1,<16",
+    "aiohttp>=3.12.13,<4",
+    "pytest-asyncio>=1.0.0,<2",
+    "python-dotenv>=1.1.1,<2",
+    "httpx>=0.28.1,<0.29", # For FastAPI testing
+    "pytest-mock>=3.14.1,<4",
+]
+pre-commit-ci = [
+    "pre-commit>=4.2.0,<5",
+    "pylint>=3.3.7,<4",
+    "mypy>=1.16.1,<2",
+]
+
+[tool.uv]
+default-groups = [
+    "dev",
+    "pre-commit-ci",
+]
+
+[tool.hatch.build.targets.sdist]
+include = ["slack_mcp/"]
+packages = ["slack_mcp"]
+artifacts = ["slack_mcp/py.typed"]
+
+[tool.hatch.build.targets.wheel]
+include = ["slack_mcp/"]
+packages = ["slack_mcp"]
+artifacts = ["slack_mcp/py.typed"]
