@@ -1,0 +1,409 @@
+/*
+ * DeepBridge Reports - Fairness Custom Styles
+ *
+ * Layer 3: Report-specific overrides for Fairness reports
+ * Modern dark design with rounded borders (same as other modules)
+ *
+ * Version: 2.0
+ * Date: 2025-11-03
+ */
+
+/* ============================================================================
+   MODERN DARK DESIGN - FAIRNESS
+   ============================================================================ */
+
+/* Override CSS variables for dark theme */
+:root {
+    --primary-color: white;
+    --secondary-color: rgba(255, 255, 255, 0.9);
+    --text-color: rgba(255, 255, 255, 0.8);
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --accent-color: #4287f5;
+}
+
+/* Dark gradient background (same as robustness/uncertainty/resilience) */
+body {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: var(--spacing-xl);
+}
+
+/* Modern dark container with rounded borders */
+.report-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: linear-gradient(145deg, #2c3e50 0%, #34495e 100%);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    padding: var(--spacing-2xl);
+    color: white;
+}
+
+/* Modern header with centered text */
+.report-header {
+    text-align: center;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+    border-radius: 24px 24px 0 0;
+    margin: calc(var(--spacing-2xl) * -1) calc(var(--spacing-2xl) * -1) var(--spacing-2xl);
+    padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
+}
+
+.report-header__title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: white;
+    margin-bottom: var(--spacing-sm);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.report-header__subtitle {
+    font-size: var(--font-size-lg);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.report-header__metadata {
+    margin-top: var(--spacing-md);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Enhanced metric cards with glass effect */
+.metric-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 4px solid #4287f5;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-left-color: #1b78de;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.metric-card__label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.9em;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.metric-card__value {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 1.8em;
+    font-weight: bold;
+    display: block;
+}
+
+/* Metric card internal elements (metric-name, metric-value, metric-interpretation) */
+.metric-card .metric-name,
+.metric-name {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.metric-card .metric-value,
+.metric-value {
+    color: white !important;
+    font-size: 1.8em;
+    font-weight: bold;
+    margin: 8px 0;
+    display: block;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.metric-card .metric-interpretation,
+.metric-interpretation {
+    color: rgba(255, 255, 255, 0.75) !important;
+    font-size: 0.85em;
+    margin-top: 8px;
+    display: block;
+    line-height: 1.4;
+}
+
+.metric-card p {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Status-specific border colors */
+.metric-card.status-ok {
+    border-left-color: #52be80;
+}
+
+.metric-card.status-warning {
+    border-left-color: #f39c12;
+}
+
+.metric-card.status-critical {
+    border-left-color: #e74c3c;
+}
+
+/* Tab navigation with dark theme */
+.tab-navigation {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.tab-button {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tab-button:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button.active {
+    color: white;
+    background: rgba(66, 135, 245, 0.3);
+    border-bottom-color: #4287f5;
+}
+
+/* Tab content styling */
+.tab-content {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tab-content h2 {
+    color: white !important;
+}
+
+.tab-content h3 {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.tab-content p {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.tab-content li {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Table styling - dark theme */
+.data-table {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.data-table th {
+    background: rgba(66, 135, 245, 0.8);
+    color: white;
+    font-weight: var(--font-weight-semibold);
+}
+
+.data-table td {
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.data-table tbody tr:hover {
+    background: rgba(66, 135, 245, 0.2);
+}
+
+/* Section headers with light accent */
+.section__title,
+.section h2 {
+    color: white !important;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid rgba(66, 135, 245, 0.5);
+    margin-bottom: var(--spacing-lg);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.section h3 {
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.section p {
+    color: rgba(255, 255, 255, 0.8) !important;
+    line-height: 1.6;
+}
+
+/* Chart containers with glass effect */
+.chart-container {
+    margin: var(--spacing-xl) 0;
+    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Fairness Score Display */
+.fairness-score {
+    font-size: 4em;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.fairness-score.excellent {
+    color: #52be80;
+}
+
+.fairness-score.good {
+    color: #82e0aa;
+}
+
+.fairness-score.moderate {
+    color: #f39c12;
+}
+
+.fairness-score.critical {
+    color: #e74c3c;
+}
+
+/* Issues Section */
+.issue-list {
+    list-style: none;
+    padding: 0;
+}
+
+.issue-item {
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    border-left: 4px solid rgba(255, 255, 255, 0.3);
+    color: #2c3e50;
+}
+
+.issue-item.warning {
+    background: rgba(255, 243, 205, 0.95);
+    border-left-color: #f39c12;
+    color: #856404;
+}
+
+.issue-item.critical {
+    background: rgba(248, 215, 218, 0.95);
+    border-left-color: #e74c3c;
+    color: #721c24;
+}
+
+/* Protected Attributes Section */
+.attribute-section {
+    margin: 30px 0;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.attribute-section h3 {
+    color: #4287f5 !important;
+    margin-bottom: var(--spacing-md) !important;
+    font-weight: 600;
+}
+
+.attribute-section h4 {
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-top: var(--spacing-sm) !important;
+    margin-bottom: var(--spacing-xs) !important;
+}
+
+.attribute-section p,
+.attribute-section li,
+.attribute-section span {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.attribute-section div {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Override inline styles in attribute-section - FORCE WHITE TEXT */
+.attribute-section h3[style],
+.attribute-section h3[style*="color"],
+.attribute-section h3 {
+    color: #4287f5 !important;
+    margin-bottom: var(--spacing-md) !important;
+}
+
+.attribute-section h4[style],
+.attribute-section h4[style*="color"],
+.attribute-section h4 {
+    color: rgba(255, 255, 255, 0.95) !important;
+    margin-top: var(--spacing-sm) !important;
+    margin-bottom: var(--spacing-xs) !important;
+    font-weight: 600 !important;
+}
+
+/* Metrics Grid with fairness colors */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin: var(--spacing-xl) 0;
+}
+
+/* Inline styles overrides ONLY for light background sections */
+.section[style*="background: #f8f9fa"] h2,
+.section[style*="background: #f8f9fa"] h3 {
+    color: #2c3e50 !important;
+}
+
+.section[style*="background: #f8f9fa"] p {
+    color: #34495e !important;
+}
+
+.section[style*="background: rgb(248, 249, 250)"] h2,
+.section[style*="background: rgb(248, 249, 250)"] h3 {
+    color: #2c3e50 !important;
+}
+
+.section[style*="background: rgb(248, 249, 250)"] p {
+    color: #34495e !important;
+}
+
+/* FORCE override ALL inline styles with dark colors */
+h3[style*="color: #2c3e50"],
+h3[style*="color: #34495e"],
+h4[style*="color: #2c3e50"],
+h4[style*="color: #34495e"] {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Exception: keep dark colors only in light backgrounds */
+[style*="background: #f8f9fa"] h2[style*="color: #2c3e50"],
+[style*="background: #f8f9fa"] h3[style*="color: #2c3e50"],
+[style*="background: #f8f9fa"] h4[style*="color: #34495e"] {
+    color: #2c3e50 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: var(--spacing-md);
+    }
+
+    .report-container {
+        padding: var(--spacing-lg);
+        border-radius: 16px;
+    }
+
+    .fairness-score {
+        font-size: 3em;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
