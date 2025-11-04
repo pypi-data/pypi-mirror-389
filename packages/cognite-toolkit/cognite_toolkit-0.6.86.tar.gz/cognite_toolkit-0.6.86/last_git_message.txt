@@ -1,0 +1,24 @@
+[CDF-26070] 🔨 Download table format (#2152)
+
+# Description
+
+Testing the upload /download functionality and finding issues. 
+
+## Changelog
+
+- [x] Patch
+- [ ] Skip
+
+## cdf
+
+### Fixed
+
+- [alpha] When running `cdf data download`, Toolkit now sanitize the
+name for the data directory it creates.
+- [alpha] When running `cdf data download assets` no longer skips
+metdata when a `.csv` or `.parquet` is selected as the
+  output format. 
+
+## templates
+
+No changes.
