@@ -1,0 +1,50 @@
+[project]
+name = "mcp-zentao"
+version = "1.0.0"
+description = "禅道系统 MCP 服务器 - 基于 Semantic Kernel 的 Model Context Protocol 服务器"
+license = {text = "MIT"}
+authors = [
+    { name = "nblog", email = "your-email@example.com" }
+]
+maintainers = [
+    { name = "nblog", email = "your-email@example.com" }
+]
+keywords = ["mcp", "zentao", "semantic-kernel", "ai", "project-management"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+    "semantic-kernel[mcp]>=1.32.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/wrcopilot-org/mcp-zentao"
+Repository = "https://github.com/wrcopilot-org/mcp-zentao"
+Documentation = "https://github.com/wrcopilot-org/mcp-zentao#readme"
+"Bug Tracker" = "https://github.com/wrcopilot-org/mcp-zentao/issues"
+
+[project.scripts]
+mcp-zentao = "mcp_zentao.sk_mcp_server:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
