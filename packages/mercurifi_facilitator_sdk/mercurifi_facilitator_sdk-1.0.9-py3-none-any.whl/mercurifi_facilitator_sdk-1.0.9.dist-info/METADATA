@@ -1,0 +1,234 @@
+Metadata-Version: 2.3
+Name: mercurifi_facilitator_sdk
+Version: 1.0.9
+Summary: Python client for X402 Facilitator API
+License: MIT
+Keywords: x402,payments,facilitator,web3,usdc
+Author: Mercuri
+Author-email: info@mercuri.finance
+Requires-Python: >=3.8,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Dist: base58 (==2.1.1)
+Requires-Dist: cachetools (==4.2.4)
+Requires-Dist: construct-typing (==0.5.6)
+Requires-Dist: eth-account (==0.13.7)
+Requires-Dist: h11 (==0.14.0)
+Requires-Dist: httpcore (==0.16.3)
+Requires-Dist: httpx (==0.23.3)
+Requires-Dist: pynacl (==1.6.0)
+Requires-Dist: requests (==2.32.5)
+Requires-Dist: rfc3986 (==1.5.0)
+Requires-Dist: solana (==0.31.0)
+Requires-Dist: solders (==0.19.0)
+Requires-Dist: web3 (==7.14.0)
+Requires-Dist: websockets (==11.0.3)
+Project-URL: Documentation, https://github.com/mercuri-finance/mercuri-facilitator-sdk-py
+Project-URL: Homepage, https://github.com/mercuri-finance/mercuri-facilitator-sdk-py
+Project-URL: Repository, https://github.com/mercuri-finance/mercuri-facilitator-sdk-py
+Description-Content-Type: text/markdown
+
+# **Mercuri Finance**
+
+## **`mercurifi_facilitator_sdk`**
+
+The **Mercuri Facilitator SDK (Python)** provides a unified interface for interacting with the **X402 Facilitator API**, including generation of payment headers, verification, settlement, and discovery of supported blockchain payment kinds.
+
+![PyPI](https://img.shields.io/pypi/v/mercurifi_facilitator_sdk)
+![Python](https://img.shields.io/pypi/pyversions/mercurifi_facilitator_sdk)
+![License](https://img.shields.io/pypi/l/mercurifi_facilitator_sdk)
+
+---
+
+## **Features**
+
+- **Generate X402 Payment Headers** for **EVM (EIP-3009)** and **Solana**
+- **Verify Payment Sessions** before settlement
+- **Settle Authorized Payments** via the Facilitator
+- **List Supported Networks & Schemes**
+- **Lightweight & Secure** — built on `requests`, `eth-account`, and `solana`
+
+---
+
+## **Installation**
+
+```bash
+pip install mercurifi_facilitator_sdk
+```
+
+---
+
+## **Usage**
+
+### **1. Initialize the Facilitator Client**
+
+```python
+from mercurifi_facilitator_sdk import Facilitator
+
+facilitator = Facilitator(network="base", base_url="https://facilitator.mercuri.finance")
+```
+
+---
+
+### **2. List Supported Payment Kinds**
+
+```python
+supported = facilitator.get_supported()
+print(supported)
+```
+
+**Example Output**
+
+```json
+{
+  "kinds": [
+    { "x402Version": 1, "scheme": "exact", "network": "base" },
+    { "x402Version": 1, "scheme": "exact", "network": "solana-devnet" }
+  ]
+}
+```
+
+---
+
+### **3. Generate a Payment Header**
+
+#### EVM Example (Base / Ethereum)
+
+```python
+from eth_account import Account
+from mercurifi_facilitator_sdk.integrations.evm_header import generate_evm_payment_header
+
+signer = Account.from_key("0xYOUR_PRIVATE_KEY")
+
+header = generate_evm_payment_header(
+    signer=signer,
+    to="0xRecipient...",
+    value="1.00",
+)
+
+print(header)
+```
+
+#### Solana Example
+
+```python
+from solders.keypair import Keypair
+from mercurifi_facilitator_sdk.integrations.solana_header import generate_solana_payment_header
+
+private_key_bytes = bytes(json.loads("0xYOUR_PRIVATE_KEY"))
+sender = Keypair.from_bytes(private_key_bytes)
+
+header = generate_solana_payment_header(
+    keypair=sender,
+    to="RecipientPublicKey...",
+    value="1.00",
+)
+
+print(header)
+```
+
+---
+
+### **4. Verify a Payment Session**
+
+```python
+verify_response = facilitator.verify_payment({
+    "x402Version": 1,
+    "paymentHeader": "eyJhbGciOi...",
+    "paymentRequirements": {
+        "scheme": "exact",
+        "network": "base",
+        "payTo": "0xRecipient...",
+        "asset": "0xAsset...",
+        "description": "Test transaction"
+    }
+})
+
+print(verify_response)
+```
+
+**Example Response**
+
+```json
+{
+  "isValid": true,
+  "invalidReason": null
+}
+```
+
+---
+
+### **5. Settle a Verified Payment**
+
+```python
+settle_response = facilitator.settle_payment({
+    "x402Version": 1,
+    "paymentHeader": "eyJhbGciOi...",
+    "paymentRequirements": {
+        "scheme": "exact",
+        "network": "base",
+        "payTo": "0xRecipient...",
+        "asset": "0xAsset..."
+    }
+})
+
+print(settle_response)
+```
+
+**Example Response**
+
+```json
+{
+  "x402Version": 1,
+  "event": "payment.settled",
+  "txHash": "0xTransactionHash...",
+  "network": "base",
+  "timestamp": "2025-11-03T09:00:32.280Z"
+}
+```
+
+---
+
+## **API Reference**
+
+| Method                                        | Description                                                |
+| --------------------------------------------- | ---------------------------------------------------------- |
+| `Facilitator.get_supported()`                 | Lists supported payment kinds and networks.                |
+| `Facilitator.verify_payment(request)`         | Verifies a payment header with the facilitator.            |
+| `Facilitator.settle_payment(request)`         | Settles a verified payment session.                        |
+| `Facilitator.generate_payment_header()`       | Creates a Base64-encoded payment header for EVM or Solana. |
+| `Facilitator.generate_payment_requirements()` | Builds a valid `X402PaymentRequirements` payload.          |
+
+---
+
+### **Payment Header Fields**
+
+| Field         | Type | Description                                      |
+| ------------- | ---- | ------------------------------------------------ |
+| `x402Version` | int  | Protocol version (1).                            |
+| `scheme`      | str  | Payment scheme (e.g., `"exact"`).                |
+| `network`     | str  | Blockchain network (EVM / Solana).               |
+| `payload`     | dict | Contains all signed fields (from, to, value...). |
+
+---
+
+## **Error Handling**
+
+| HTTP Code | Error                 | Description                          |
+| --------- | --------------------- | ------------------------------------ |
+| `400`     | Bad Request           | Check payload formatting.            |
+| `404`     | Not Found             | Verify the facilitator endpoint URL. |
+| `500`     | Internal Server Error | Retry or contact support.            |
+
+---
+
+## **License**
+
+MIT © 2025 **Mercuri Finance**
+
