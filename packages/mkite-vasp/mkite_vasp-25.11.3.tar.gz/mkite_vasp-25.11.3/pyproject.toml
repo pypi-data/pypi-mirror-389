@@ -1,0 +1,21 @@
+[project]
+
+name = "mkite_vasp"
+version = "25.11.03"
+description = "mkite_vasp is a plugin to execute VASP calculations using mkite"
+authors = [{name = "Daniel Schwalbe-Koda", email = "dskoda@ucla.edu"}]
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["workflow", "materials-science"]
+dependencies = [
+    "pymatgen",
+    "custodian",
+    "pydantic>=2.0",
+]
+
+[project.entry-points."mkite.recipes"]
+"vasp.pbe.relax" = "mkite_vasp.recipes.pbe:RelaxPBEVaspChain"
+"vasp.pbe.static" = "mkite_vasp.recipes.pbe:StaticPBEVaspChain"
+"vasp.rpbe.relax" = "mkite_vasp.recipes.rpbe:RelaxRPBEVaspChain"
+"vasp.rpbe.static" = "mkite_vasp.recipes.rpbe:StaticRPBEVaspChain"
+"vasp.rpbe.dos" = "mkite_vasp.recipes.rpbe:DosRPBEVaspChain"
