@@ -1,0 +1,48 @@
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'
+
+[project]
+name = 'pyDINEOF'
+dynamic = ['version']
+description = 'A Python version of DINEOF.'
+readme = 'README.md'
+requires-python = '>=3.10'
+license = 'GPL-3.0-or-later'
+license-files = [ 'LICEN[CS]E' ]
+keywords = []
+authors = [
+    {name = 'Arthur Coqué'},
+]
+maintainers = [
+  { name = 'Arthur Coqué', email = 'arthur.coque@naturalsciences.be' },
+]
+classifiers = [
+  'Development Status :: 4 - Beta',
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Topic :: Scientific/Engineering :: Atmospheric Science',
+  'Topic :: Scientific/Engineering :: Image Processing',
+  'Topic :: Scientific/Engineering :: Oceanography',
+]
+dependencies = [
+  'numpy',
+  'pandas',
+  'scipy',
+  'xarray',
+]
+
+[project.urls]
+Documentation = 'https://github.com/acoque/pyDINEOF#readme'
+Issues = 'https://github.com/acoque/pyDINEOF/issues'
+Source = 'https://github.com/acoque/pyDINEOF'
+
+[project.scripts]
+pyDINEOF = 'pydineof.cli:cli'
+
+[tool.hatch.version]
+path = 'src/pydineof/__about__.py'
