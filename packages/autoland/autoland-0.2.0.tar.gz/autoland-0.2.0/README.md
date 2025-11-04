@@ -1,0 +1,94 @@
+English | [日本語](./README.ja.md)
+
+# autoland
+
+A CLI tool that automatically fixes and merges GitHub PRs using AI agents
+
+## Features
+
+- Automatic detection and processing of open PRs
+- Waiting for GitHub checks completion
+- Automatic fixes for review comments using AI agents
+- Automatic commit and push of fixes
+- Automatic merge decision and execution
+
+## Installation
+
+```bash
+pipx install autoland
+```
+
+Please refer to <https://pipx.pypa.io/latest/installation/> for pipx installation.
+
+## Prerequisites
+
+The following tools must be set up:
+
+- `gh` (GitHub CLI)
+- `codex` command (AI coding tool)
+- Execution in a Git repository
+
+## Usage
+
+Run in the target repository directory:
+
+```bash
+autoland
+```
+
+## Workflow
+
+1. **PR Detection**: Selects the oldest open PR and checks out to the corresponding branch
+2. **Checks Waiting**: Waits for GitHub checks to complete
+3. **Auto-fix**: AI agent analyzes review comments and executes necessary fixes
+4. **Push Changes**: Commits fixes and posts a processing report as a comment
+5. **Re-check**: Checks for new comments and determines merge eligibility
+6. **Execute Merge**: Automatically merges if there are no issues
+
+```mermaid
+flowchart TD
+  Start(["Start"]) --> Use[["Usage<br>Run in target repository: <code>autoland</code>"]]
+
+  subgraph CLI["Process performed by CLI tool"]
+    direction TB
+    C0{"Are there any open PRs?"}
+    C1["Select oldest open PR and<br>checkout to corresponding branch"]
+    C2["Wait for GitHub checks to complete"]
+    C3["Launch fixing agent and<br>pass PR context"]
+    C6["Post agent-generated report<br>as PR comment"]
+    C4{"Did agent add commits?"}
+    C5["push"]
+    C8["Merge PR"]
+  end
+
+  subgraph AG["Coding Agent"]
+    direction TB
+    A1["Analyze context"]
+    A2{"Are there any issues?"}
+    A3["Implement necessary fixes and commit"]
+    A5["Create issues for out-of-scope problems<br>(if --create-issue enabled)"]
+    A4_fix["Output result report (fix details)"]
+    A4_ok["Output result report (no issues)"]
+    A_OUT["Report"]
+  end
+
+  Use --> C0
+  C0 -- Yes --> C1 --> C2
+  C0 -- No --> End(["End"])
+
+  C2 --> C3 --> A1 --> A2
+  A2 -- Yes --> A3 --> A5 --> A4_fix --> A_OUT
+  A2 -- No --> A5 --> A4_ok --> A_OUT
+
+  A_OUT --> C6
+
+  C6 --> C4
+  C4 -- No (mergeable) --> C8 --> End
+  C4 -- Yes (has changes to push) --> C5 --> C2
+```
+
+## Design Principles
+
+- CLI does not manage authentication credentials, leverages existing tools
+- Complex decisions are delegated to AI, only mechanical decisions are implemented on the CLI side
+- Timestamped log output for long-running operations
