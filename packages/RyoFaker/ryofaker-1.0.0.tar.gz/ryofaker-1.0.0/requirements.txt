@@ -1,0 +1,27 @@
+# Core dependencies for RyoFaker
+# These are the minimum packages required to use RyoFaker
+
+# Base fake data generation
+Faker>=20.0.0
+
+# Data manipulation and output
+pandas>=2.0.0
+pyarrow>=10.0.0
+
+# Schema parsing and validation
+pyyaml>=6.0
+jsonschema>=4.0.0
+
+# Relationship graph resolution
+networkx>=3.0
+
+# Progress tracking
+tqdm>=4.65.0
+
+# Optional: for better performance
+# numpy>=1.24.0
+pytest==8.4.2
+
+pytest-cov==6.2.1
+pytest-mock==3.14.1
+pytest-html==4.1.1

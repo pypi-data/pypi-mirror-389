@@ -1,0 +1,35 @@
+# Include documentation files
+include VERSION
+include LICENSE
+include README.md
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+# Include requirements
+include requirements.txt
+include dev-requirements.txt
+
+# Include configuration files
+include pyproject.toml
+include setup.py
+include setup.cfg
+
+# Include schema templates
+recursive-include ryofaker/schema/templates *.json 
+recursive-include ryofaker/schema/templates *.yaml
+recursive-include ryofaker/schema/templates *.yml
+
+# Include type stubs
+include ryofaker/py.typed
+
+# Exclude unnecessary files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *$py.class
+global-exclude *.so
+global-exclude .DS_Store
+exclude .gitignore
+exclude .gitattributes
+recursive-exclude tests *
+recursive-exclude docs *
+recursive-exclude examples *

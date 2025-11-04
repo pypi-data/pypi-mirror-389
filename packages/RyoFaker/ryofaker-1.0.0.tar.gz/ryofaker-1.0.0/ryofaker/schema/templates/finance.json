@@ -1,0 +1,90 @@
+{
+  "tables": {
+    "accounts": {
+      "rows": 1000,
+      "columns": {
+        "account_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "account_number": {
+          "provider": "bban",
+          "unique": true
+        },
+        "account_type": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Checking", "Savings", "Credit", "Investment"]
+          }
+        },
+        "balance": {
+          "provider": "pydecimal",
+          "args": {
+            "left_digits": 8,
+            "right_digits": 2,
+            "positive": true
+          }
+        },
+        "opened_date": {
+          "provider": "date_between",
+          "args": {
+            "start_date": "-10y",
+            "end_date": "today"
+          }
+        },
+        "status": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Active", "Inactive", "Closed"]
+          }
+        }
+      }
+    },
+    "transactions": {
+      "rows": 50000,
+      "columns": {
+        "transaction_id": {
+          "provider": "uuid4",
+          "primary_key": true
+        },
+        "account_id": {
+          "foreign_key": "accounts.account_id"
+        },
+        "transaction_date": {
+          "provider": "date_time_between",
+          "args": {
+            "start_date": "-1y",
+            "end_date": "now"
+          }
+        },
+        "transaction_type": {
+          "provider": "random_element",
+          "args": {
+            "elements": ["Debit", "Credit", "Transfer", "Fee"]
+          }
+        },
+        "amount": {
+          "provider": "pydecimal",
+          "args": {
+            "left_digits": 6,
+            "right_digits": 2,
+            "positive": true
+          }
+        },
+        "description": {
+          "provider": "sentence",
+          "args": {
+            "nb_words": 6
+          }
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "parent": "accounts",
+      "child": "transactions",
+      "ratio": 50
+    }
+  ]
+}
