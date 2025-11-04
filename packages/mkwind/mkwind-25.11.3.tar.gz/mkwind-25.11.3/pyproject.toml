@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mkwind"
+version = "25.11.03"
+description = "mkwind is a job building/submission automator companion to mkite"
+authors = [{name = "Daniel Schwalbe-Koda", email = "dskoda@ucla.edu"}]
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["workflow", "materials-science"]
+dependencies = [
+    "click",
+    "pydantic>=2.0",
+    "freezegun",
+    "jinja2",
+]
+
+[project.scripts]
+wind = "mkwind.cli.wind:wind"
+
+[tool.setuptools]
+packages = ["mkwind"]
