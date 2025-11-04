@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: mavi-companion
+Version: 0.5.6
+Summary: Mavi Companion CLI - fast coding assistant for documentation lookups.
+Author: Vishnu Chityala
+License: MIT
+Requires-Python: >=3.9
+Requires-Dist: torch
+Requires-Dist: transformers
+Requires-Dist: langchain
+Requires-Dist: langchain-google-genai
+Requires-Dist: langchain-huggingface
+Requires-Dist: langchain-community
+Requires-Dist: keyring
+Requires-Dist: typer
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: build; extra == "dev"
