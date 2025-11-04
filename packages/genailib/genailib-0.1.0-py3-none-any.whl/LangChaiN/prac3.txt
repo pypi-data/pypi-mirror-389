@@ -1,0 +1,85 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+#Create a mock dataset (for example, generative model input data)
+np.random.seed(42)
+data={
+    "Age": np.random.normal(30,5,100),
+    "Salary": np.random.normal(50000,8000,100),
+    "Creativity_Score": np.random.uniform(0,1,100)
+}
+
+df = pd.DataFrame(data)
+print(df.head())
+
+#Histogram – Data Distribution
+plt.figure(figsize=(6, 4))
+plt.hist(df["Age"],bins=10,color='skyblue',edgecolor='black')
+plt.title("Age Distribution")
+plt.xlabel("Age")
+plt.ylabel("Frequency")
+plt.show()
+
+#Scatter Plot – Relationship between features
+plt.figure(figsize=(6, 4))
+sns.scatterplot(x="Age",y="Salary",data=df,color='orange')
+plt.title("Age vs Salary")
+plt.xlabel("Age")
+plt.ylabel("Salary")
+plt.show()
+
+#Correlation Heatmap – Feature relationships
+plt.figure(figsize=(5, 4))
+corr = df.corr()
+sns.heatmap(corr,annot=True,cmap="coolwarm",fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Perfect ✅ — here’s a **short, clear explanation + simple code** focused only on
+
+# ## 📊 *Histograms, Scatter Plots, and Correlation Heatmaps for Generative AI Datasets*
+
+# ---
+
+# ### **🧠 Theory / Explanation**
+
+# When preparing datasets for **Generative AI**, it’s essential to **understand data patterns** and **relationships** between features.
+# Visualization helps ensure your dataset is **balanced**, **diverse**, and **free from bias or anomalies**.
+
+# Key visualization tools:
+
+# | Visualization           | Purpose                                                                                 |
+# | ----------------------- | --------------------------------------------------------------------------------------- |
+# | **Histogram**           | Shows how values are distributed — detects skewed or missing ranges                     |
+# | **Scatter Plot**        | Reveals relationships or correlations between two features                              |
+# | **Correlation Heatmap** | Displays feature interdependence — helps identify redundant or strongly linked features |
+
+
+# ### **📘 Why It Matters for Generative AI**
+
+# * Helps ensure **balanced training data**
+# * Identifies **feature dependencies** that may bias generated outputs
+# * Guides **feature selection** and **normalization** before model training
+
+# ---
+
+# Would you like me to add **text labels or color gradients** to make the scatter and heatmap plots more visually insightful?
+
+
+
+

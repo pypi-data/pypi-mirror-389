@@ -1,0 +1,93 @@
+import pandas as pd
+import numpy as np
+
+#Load sample data (you can replace this with a CSV file)
+data={
+    "Name":["Raju","Pinku","Rahul","Rajesh", None],
+    "Age":[25,np.nan,30,25,22],
+    "Salary":[50000,60000,None,50000,45000]
+}
+
+df=pd.DataFrame(data)
+print("Original Data:\n", df)
+
+#Handle missing values
+df["Age"].fillna(df["Age"].mean(), inplace=True)      
+df["Salary"].fillna(df["Salary"].median(), inplace=True)
+df.dropna(subset=["Name"], inplace=True)
+
+#Remove duplicates
+df.drop_duplicates(inplace=True)
+
+#Normalize numeric columns using NumPy
+df["Salary"] = (df["Salary"] - np.min(df["Salary"])) / (np.max(df["Salary"]) - np.min(df["Salary"]))
+
+#Display the cleaned dataset
+print("\nCleaned and Normalized Data:\n", df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Perfect 👍 — here’s a **short, clear, and practical explanation** (with example code) for
+
+# ## 🧠 *Data Preprocessing and Cleaning for Generative AI using Pandas and NumPy*
+
+# ---
+
+# ### **🔍 Theory / Explanation**
+
+# Data preprocessing is the **first and most crucial step** in building any **Generative AI or Machine Learning model**.
+# Raw data often contains **missing values, duplicates, inconsistent formats, or irrelevant information**, which can affect the quality of generated results.
+
+# Using **Pandas** and **NumPy**, we can:
+
+# 1. **Load and inspect** data
+# 2. **Clean** missing or incorrect values
+# 3. **Normalize / scale** numerical features
+# 4. **Prepare data** in the right structure for model training
+
+# These cleaned and structured datasets are then fed into Generative AI models such as **text generators, image generators, or transformers**.
+
+# ---
+
+# ### **⚙️ Steps in Preprocessing and Cleaning**
+
+# | Step                           | Description                                                     |
+# | ------------------------------ | --------------------------------------------------------------- |
+# | **1. Load Data**               | Import data from CSV, Excel, or other formats                   |
+# | **2. Handle Missing Values**   | Fill, drop, or impute missing entries                           |
+# | **3. Remove Duplicates**       | Avoid redundant information                                     |
+# | **4. Fix Data Types**          | Convert columns to correct formats (e.g., int, float, datetime) |
+# | **5. Normalize / Scale Data**  | Bring numeric values to a common scale                          |
+# | **6. Encode Categorical Data** | Convert text labels into numeric form if needed                 |
+
+# ---
+
+# ### **📘 Summary**
+
+# | Concept    | Description                                                         |
+# | ---------- | ------------------------------------------------------------------- |
+# | **Pandas** | Handles data loading, cleaning, and transformation                  |
+# | **NumPy**  | Provides efficient numerical computations and normalization         |
+# | **Goal**   | Produce clean, normalized, structured data for Generative AI models |
+
+# ---
+
+# Would you like me to extend this example to show how this **cleaned data can be converted into tensors** for training in TensorFlow or PyTorch (the next step after preprocessing)?

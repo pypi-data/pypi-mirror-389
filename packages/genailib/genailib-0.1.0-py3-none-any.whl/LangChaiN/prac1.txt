@@ -1,0 +1,163 @@
+import tensorflow as tf
+
+#Create Tensors
+a = tf.constant([[1.0, 2.0], [3.0, 4.0]])
+b = tf.ones((2, 2))
+c = tf.random.uniform((2, 2))
+
+print("Tensor a:\n", a)
+print("Tensor b:\n", b)
+print("Tensor c:\n", c)
+
+#Manipulate Tensors
+sum_ab = a + b                
+product = tf.matmul(a, b)     
+mean_c = tf.reduce_mean(c)
+
+print("\nSum (a + b):\n", sum_ab)
+print("Matrix Product (a x b):\n", product)
+print("Mean of c:", mean_c.numpy())
+
+#Eager Execution Example (default mode in TF2)
+a = tf.constant([5.0, 3.0])
+b = tf.constant([2.0, 7.0])
+c = a + b                    
+print("\nEager Execution Output:", c.numpy())
+
+#Graph Execution using @tf.function
+@tf.function
+def multiply_tensors(x, y):
+    return x * y
+
+result = multiply_tensors(a, b)  
+print("Graph Mode Output:", result.numpy())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ## 🧠 Working with Tensors in TensorFlow 2: Creation, Manipulation, and Eager Execution
+
+# ### **1️⃣ Tensor Creation**
+
+# In TensorFlow, a **tensor** is a multi-dimensional array — similar to NumPy arrays — used to represent data.
+# You can create tensors using functions like:
+
+# * `tf.constant()` → for fixed values
+# * `tf.ones()`, `tf.zeros()` → for tensors filled with ones or zeros
+# * `tf.random.uniform()` → for tensors with random values
+
+# In your code:
+
+# ```python
+# a = tf.constant([[1.0, 2.0], [3.0, 4.0]])
+# b = tf.ones((2, 2))
+# c = tf.random.uniform((2, 2))
+# ```
+
+# Here:
+
+# * `a` is a **constant** tensor.
+# * `b` is a **tensor of ones**.
+# * `c` is a **tensor with random uniform values** between 0 and 1.
+
+# ---
+
+# ### **2️⃣ Tensor Manipulation**
+
+# TensorFlow supports many mathematical operations directly on tensors, such as:
+
+# * **Addition** → `a + b`
+# * **Matrix multiplication** → `tf.matmul(a, b)`
+# * **Reduction operations** → `tf.reduce_mean(c)` to compute mean values.
+
+# In your code:
+
+# ```python
+# sum_ab = a + b
+# product = tf.matmul(a, b)
+# mean_c = tf.reduce_mean(c)
+# ```
+
+# This demonstrates **element-wise operations** and **matrix-level operations** on tensors.
+
+# ---
+
+# ### **3️⃣ Eager Execution (Default in TF2)**
+
+# In **TensorFlow 2**, *eager execution* is **enabled by default**.
+# This means operations are executed **immediately**, and you can see their results without building a computational graph.
+
+# Example:
+
+# ```python
+# a = tf.constant([5.0, 3.0])
+# b = tf.constant([2.0, 7.0])
+# c = a + b
+# print(c.numpy())
+# ```
+
+# Here, TensorFlow directly computes `c = [7.0, 10.0]` and outputs the result using `.numpy()`.
+# This makes TensorFlow behave more like regular Python and NumPy, making debugging easier.
+
+# ---
+
+# ### **4️⃣ Graph Execution with `@tf.function`**
+
+# TensorFlow also supports **graph execution**, which is faster and more efficient for large computations or model training.
+# You can convert Python functions into TensorFlow computation graphs using the **`@tf.function`** decorator.
+
+# Example:
+
+# ```python
+# @tf.function
+# def multiply_tensors(x, y):
+#     return x * y
+# ```
+
+# When you call this function:
+
+# ```python
+# result = multiply_tensors(a, b)
+# ```
+
+# TensorFlow **compiles** the function into a graph, optimizing performance by running it as a compiled computation rather than step-by-step.
+
+# ---
+
+# ### **🔍 Summary**
+
+# | Concept               | Description                                                          |
+# | --------------------- | -------------------------------------------------------------------- |
+# | **Tensor**            | A multi-dimensional array used to represent data.                    |
+# | **Eager Execution**   | Default in TF2. Operations run immediately and return actual values. |
+# | **Graph Execution**   | Enabled using `@tf.function`; creates optimized computation graphs.  |
+# | **Tensor Operations** | Include addition, multiplication, matrix operations, and reductions. |
+
+# ---
+
+# ### ✅ **In Short**
+
+# Your code demonstrates:
+
+# 1. How to **create tensors** of various types.
+# 2. How to **perform operations** (add, multiply, find mean).
+# 3. How **eager execution** runs operations immediately.
+# 4. How to use **`@tf.function`** to run operations in optimized **graph mode**.
