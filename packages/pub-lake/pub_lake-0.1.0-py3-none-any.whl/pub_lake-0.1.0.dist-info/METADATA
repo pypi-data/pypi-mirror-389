@@ -1,0 +1,97 @@
+Metadata-Version: 2.4
+Name: pub-lake
+Version: 0.1.0
+Summary: Aggregate publication metadata from bioRxiv, OpenAlex, and more.
+Author-email: Thomas Eidens <thomas.eidens@embo.org>
+Maintainer-email: Thomas Eidens <thomas.eidens@embo.org>
+License: MIT
+Project-URL: bugs, https://github.com/source-data/pub-lake/issues
+Project-URL: changelog, https://github.com/source-data/pub-lake/blob/main/HISTORY.md
+Project-URL: homepage, https://github.com/source-data/pub-lake
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas>=2.3.3
+Requires-Dist: pyalex>=0.18
+Requires-Dist: pydantic>=2.12.3
+Requires-Dist: requests>=2.32.5
+Requires-Dist: sqlalchemy>=2.0.44
+Requires-Dist: sqlalchemy-utc>=0.14.0
+Requires-Dist: tenacity>=9.1.2
+Requires-Dist: tqdm>=4.67.1
+Requires-Dist: typer-slim>=0.20.0
+Dynamic: license-file
+
+# pub-lake
+
+![PyPI version](https://img.shields.io/pypi/v/pub-lake.svg)
+[![Documentation Status](https://readthedocs.org/projects/pub-lake/badge/?version=latest)](https://pub-lake.readthedocs.io/en/latest/?version=latest)
+
+Aggregate publication metadata from bioRxiv, OpenAlex, and more.
+
+* PyPI package: https://pypi.org/project/pub-lake/
+* Free software: MIT License
+* Documentation: https://pub-lake.readthedocs.io.
+
+## Features
+
+1. **bioRxiv preprints**: fetch metadata for preprints from the bioRxiv API and enrich it with OpenAlex topics.
+
+## How it works
+
+The package follows an ELT (Extract, Load, Transform) architecture and stores data in a relational database (SQLite by default).
+Key steps:
+1. **Extract**: Fetch raw metadata from bioRxiv and OpenAlex APIs.
+2. **Load**: Store the raw metadata in the database.
+3. **Transform**: Clean, normalize, and aggregate the data.
+
+Data can then be queried and returns a unified view of publication metadata.
+
+## Installation
+
+```bash
+uv add pub-lake
+```
+
+See [docs/installation.md](docs/installation.md) for more details.
+
+## Usage
+
+```bash
+# ingest preprints from the given dates into the database
+uv run python -m pub_lake preprints fetch --start "2025-01-02" --end "2025-01-04" --polite "eidens@embl.de"
+
+# list preprints available in the database
+uv run python -m pub_lake preprints list [--start "2025-01-02"] [--end "2025-01-04"]
+```
+
+See [docs/usage.md](docs/usage.md) for more details.
+
+## Development
+
+### Project Structure
+
+`src/pub_lake/` has the following structure:
+
+-   `cli.py`: main entry point for the command-line interface.
+-   `elt/`: core logic for the Extract, Load, Transform pipeline.
+    -   `extract/`: fetching data from external sources (e.g., bioRxiv, OpenAlex).
+    -   `load/`: loading raw data into the database.
+    -   `transform/`: cleaning and normalizing the loaded data.
+-   `models/`: database schema and data models.
+-   `interface/`: methods for querying the final, cleaned data.
+-   `config.py`: configuration, such as database connections and API keys.
+
+## Credits
+
+This package was created with [Cookiecutter](https://github.com/audreyfeldroy/cookiecutter) and the [audreyfeldroy/cookiecutter-pypackage](https://github.com/audreyfeldroy/cookiecutter-pypackage) project template.
