@@ -1,0 +1,16 @@
+spacy>=3.5.0
+javaobj-py3>=0.4.4
+
+[deepsearch]
+
+[deepsearch:platform_system != "Darwin"]
+cupy-cuda12x>=12.0.0
+spacy[cuda12x]>=3.5.0
+
+[dev]
+pytest>=7.0.0
+black>=24.0.0
+ruff>=0.1.0
+
+[progress]
+tqdm>=4.65.0
