@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: ncm-converter-mcp
+Version: 1.0.1
+Summary: Netease Cloud Music .ncm audio converter MCP server based on ncmdump-py
+Author-email: NCM Converter MCP <dev@example.com>
+License: MIT
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Requires-Dist: mcp>=1.0.0
+Requires-Dist: ncmdump-py>=1.1.6
+Description-Content-Type: text/markdown
+
+# NCM Converter MCP
+
+基于 `ncmdump-py` 的网易云 `.ncm` 音频解密转换 MCP 服务。
+
+功能：
+- 转换单个或批量 `.ncm` 文件为标准音频格式（mp3/flac/ape/wav 等）。
+- 以 MCP 工具形式提供：`convert_ncm`、`batch_convert`。
+
+安装与运行：
+- 依赖：`mcp>=1.0.0`、`ncmdump-py>=1.1.6`。
+- 作为包安装后可通过 `ncm-converter-mcp` 脚本运行。
+
+许可证：MIT。
