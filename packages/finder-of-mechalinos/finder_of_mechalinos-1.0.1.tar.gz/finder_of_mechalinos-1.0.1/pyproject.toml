@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finder-of-mechalinos"
+version = "1.0.1"
+description = "Tool to discover Mechalino robots on a local network"
+authors = [
+  { name="Khalil Youssefi", email="kh4lil@outlook.com" }
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+dependencies = [
+  "scapy>=2.5",
+  "netifaces>=0.11",
+]
+
+[project.urls]
+Homepage = "https://github.com/Khalil-Youssefi/finder-of-mechalinos"
+
+[project.scripts]
+finder-of-mechalinos = "finder_of_mechalinos.main:cli"
