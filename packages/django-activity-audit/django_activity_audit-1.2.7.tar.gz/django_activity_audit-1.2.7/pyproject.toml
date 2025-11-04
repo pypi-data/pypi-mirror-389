@@ -1,0 +1,97 @@
+[project]
+name = "django-activity-audit"
+version = "1.2.7"
+description = "A Django package for easy CRUD operation logging and container logs"
+authors = [
+    { name = "Shreeshan", email = "shreeshan256@gmail.com" }
+]
+readme = "README.md"
+license = { text = "MIT" }
+keywords = ["logging", "audit", "django", "utilities"]
+
+classifiers = [
+    "Environment :: Plugins",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+
+requires-python = ">=3.8"
+dependencies = [
+  "django>=4.2,<6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/shree256/django-activity-audit"
+Repository = "https://github.com/shree256/django-activity-audit"
+Documentation = "https://github.com/shree256/django-activity-audit"
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit~=3.5; python_version<'3.9'",
+  "pre-commit>=3.5; python_version>='3.9'",
+  "ruff>=0.1.11",
+]
+test = [
+  "factory-boy>=3.2.0",
+  "pytest>=6.0.0",
+  "pytest-django>=4.0.0",
+  "pytest-cov>=4.0.0",
+  "djangorestframework>=3.14.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "tests/",
+  "Makefile",
+]
+
+[tool.hatch.build.targets.wheel]
+exclude = [
+  "tests/",
+  "Makefile",
+]
+packages = ["activity_audit"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["I", "F401", "F811"]
+ignore = ["E", "W", "C", "N"]  # Ignore most checks
+fixable = ["I"]
+unfixable = ["F401"]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["F401"]
+"*/apps.py" = ["F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-single-line = false
+lines-between-types = 1
+
