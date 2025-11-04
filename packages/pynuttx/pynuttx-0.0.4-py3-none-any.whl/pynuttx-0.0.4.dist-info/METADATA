@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: pynuttx
+Version: 0.0.4
+Summary: Comprehensive Python debugging and analysis toolkit for NuttX RTOS - includes GDB extensions, memory analysis, crash diagnostics, trace parsing, and remote debugging capabilities
+Project-URL: Homepage, https://nuttx.apache.org/
+Project-URL: Documentation, https://nuttx.apache.org/docs/latest/
+Project-URL: Repository, https://github.com/apache/nuttx
+Project-URL: Issues, https://github.com/apache/nuttx/issues
+Project-URL: Changelog, https://github.com/apache/nuttx/tags
+Keywords: nuttx,rtos,embedded,gdb,debugging,memory-analysis,crash-analysis,trace,profiling
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Debuggers
+Classifier: Topic :: Software Development :: Embedded Systems
+Classifier: Topic :: System :: Operating System Kernels
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: Apache Software License
+Requires-Python: >=3.10
+Requires-Dist: angr>=0.0.0
+Requires-Dist: capstone>=0.0.0
+Requires-Dist: cloudpickle>=0.0.0
+Requires-Dist: construct>=0.0.0
+Requires-Dist: debugpy>=0.0.0
+Requires-Dist: lauterbach-trace32-rcl>=0.0.0
+Requires-Dist: lief>=0.0.0
+Requires-Dist: matplotlib>=0.0.0
+Requires-Dist: mcp>=0.0.0
+Requires-Dist: numpy>=0.0.0
+Requires-Dist: pandas>=0.0.0
+Requires-Dist: pillow>=0.0.0
+Requires-Dist: plotly>=0.0.0
+Requires-Dist: prettytable>=0.0.0
+Requires-Dist: pyelftools>=0.0.0
+Requires-Dist: pylink-square>=0.0.0
+Requires-Dist: viztracer>=0.0.0
