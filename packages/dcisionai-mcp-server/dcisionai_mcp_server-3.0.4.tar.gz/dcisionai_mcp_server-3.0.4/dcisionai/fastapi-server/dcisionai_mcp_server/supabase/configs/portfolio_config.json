@@ -1,0 +1,177 @@
+{
+  "id": "portfolio",
+  "name": "Portfolio Rebalancing",
+  "domain": "finance",
+  "problem_type": "portfolio_optimization",
+  "description": "Optimizes investment portfolio allocation to maximize risk-adjusted returns while meeting diversification requirements and regulatory constraints.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Portfolio Management Expert",
+    "profile": "20+ years managing institutional portfolios. CFA charterholder. Expert in modern portfolio theory, risk management, and asset allocation.",
+    "priorities": [
+      "Maximize risk-adjusted returns (Sharpe ratio)",
+      "Meet target sector allocations",
+      "Maintain diversification",
+      "Minimize transaction costs",
+      "Comply with regulatory limits",
+      "Respect client risk tolerance"
+    ],
+    "key_metrics": [
+      "Expected return (%)",
+      "Portfolio volatility (%)",
+      "Sharpe ratio",
+      "Diversification score"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Quantitative Finance Specialist",
+    "profile": "PhD in Financial Engineering. Expert in Markowitz portfolio theory, risk optimization, and efficient frontier analysis.",
+    "problem_class": "Quadratic Programming (Portfolio Optimization) - Polynomial time but complex",
+    "formulation": "Maximize expected return for given risk level (or minimize risk for target return). Quadratic objective with linear constraints on allocations, sectors, and regulatory limits.",
+    "complexity": "O(n^3) using interior-point methods for n assets"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "risk_adjusted_return",
+        "weight": 0.6,
+        "formula": "(expected_return - risk_free_rate) / portfolio_volatility",
+        "description": "Maximize Sharpe ratio"
+      },
+      {
+        "name": "expected_return",
+        "weight": 0.25,
+        "formula": "sum(asset.weight * asset.expected_return)",
+        "description": "Maximize portfolio return"
+      },
+      {
+        "name": "diversification",
+        "weight": 0.1,
+        "formula": "1.0 - herfindahl_index",
+        "description": "Maximize diversification"
+      },
+      {
+        "name": "transaction_cost",
+        "weight": 0.05,
+        "formula": "minimize sum(abs(new_weight - current_weight) * trading_cost)",
+        "description": "Minimize rebalancing costs"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "regulatory_violation",
+        "weight": 1000.0,
+        "description": "Violating regulatory position limits"
+      },
+      {
+        "name": "sector_constraint_violation",
+        "weight": 100.0,
+        "description": "Exceeding sector allocation limits"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "budget",
+        "formula": "sum(asset.weight) == 1.0",
+        "description": "Allocations must sum to 100%"
+      },
+      {
+        "name": "asset_bounds",
+        "formula": "0 <= asset.weight <= max_position_size",
+        "description": "Position size limits per asset"
+      },
+      {
+        "name": "regulatory_limits",
+        "formula": "comply with investment mandates and regulations",
+        "description": "Legal and mandate constraints"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "sector_diversification",
+        "penalty": 10.0,
+        "formula": "sector allocations within target ranges",
+        "description": "Target sector allocations"
+      },
+      {
+        "name": "transaction_costs",
+        "penalty": 5.0,
+        "formula": "minimize portfolio turnover",
+        "description": "Limit trading costs"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 100,
+    "max_generations": 200,
+    "crossover_rate": 0.7,
+    "mutation_rate": 0.2,
+    "tournament_size": 5,
+    "elite_size": 10,
+    "crossover_config": {
+      "type": "allocation_crossover",
+      "description": "Blends asset allocations while maintaining 100% sum"
+    },
+    "mutation_config": {
+      "type": "reallocation_mutation",
+      "description": "Shifts allocations between assets",
+      "mutation_strength": 0.1
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY**\n\n**Problem:**\n{problem_description}\n\n**Return JSON:**\n```json\n{{\n  \"asset_count\": <number>,\n  \"total_portfolio_value\": <number, default 1000000>,\n  \"constraints\": {{\n    \"risk_tolerance\": \"conservative\" | \"moderate\" | \"aggressive\",\n    \"sector_limits\": <boolean>,\n    \"transaction_costs\": <boolean>\n  }},\n  \"objective\": \"maximize_return\" | \"minimize_risk\" | \"sharpe_ratio\"\n}}\n```\n\n**Rules:**\n1. Extract asset count: \"50 stocks\" → {{\"asset_count\": 50}}\n2. Extract portfolio value from \"$1M portfolio\"\n3. Infer risk tolerance from \"conservative\", \"aggressive\"\n\nReturn ONLY JSON.",
+    "required_fields": ["asset_count"],
+    "optional_fields": ["total_portfolio_value", "constraints"],
+    "validation_rules": [
+      "asset_count > 0"
+    ],
+    "data_usage_explanation": "Generates assets with returns, volatilities, and sectors. Creates realistic correlation matrix and risk profiles."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Expected Return",
+        "key": "expected_return",
+        "format": "percentage",
+        "target": ">8%"
+      },
+      {
+        "name": "Portfolio Volatility",
+        "key": "volatility",
+        "format": "percentage"
+      },
+      {
+        "name": "Sharpe Ratio",
+        "key": "sharpe_ratio",
+        "format": "ratio",
+        "target": ">1.0"
+      },
+      {
+        "name": "Diversification Score",
+        "key": "diversification",
+        "format": "score",
+        "target": ">0.8"
+      }
+    ],
+    "visualization_types": ["efficient_frontier", "sector_allocation", "risk_return_scatter"],
+    "narrative_template": "Optimized portfolio of {asset_count} assets. Expected return: {expected_return}%, Volatility: {volatility}%, Sharpe ratio: {sharpe_ratio}. Achieved {diversification}/10 diversification score.",
+    "export_formats": ["json", "csv", "portfolio_report", "allocation_pie"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+
