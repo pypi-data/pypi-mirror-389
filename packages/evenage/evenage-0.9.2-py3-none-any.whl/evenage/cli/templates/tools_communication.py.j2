@@ -1,0 +1,14 @@
+"""
+Communication tools (delegation helper placeholder)
+"""
+from __future__ import annotations
+
+from evenage import tool
+
+
+@tool(name="delegate_task", description="Request a specialist agent to handle a subtask", trace=True, trace_mask=[])
+def delegate_task(agent: str, task: str) -> dict:
+    """Placeholder for delegation; in runtime, use Agent.delegate instead.
+    This tool can be used by coordinator to simulate a delegation intent in LLM planning.
+    """
+    return {"agent": agent, "task": task, "status": "requested"}
