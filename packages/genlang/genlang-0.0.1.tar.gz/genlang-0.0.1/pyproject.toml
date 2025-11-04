@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genlang"
+version = "0.0.1"
+description = "Genlang — ultra-strict symbolic/reactive dynamic language"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name="Ege Güvener", email="egeguvener0808@gmail.com"}]
+requires-python = ">=3.8"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/egegvner/Genlang"
+"Source" = "https://github.com/egegvner/Genlang"
+
+[project.scripts]
+genlang = "genlang.cli:main"
