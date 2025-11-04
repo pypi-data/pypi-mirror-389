@@ -1,0 +1,125 @@
+Metadata-Version: 2.4
+Name: hydromt_fiat
+Version: 1.0.0rc1
+Summary: HydroMT plugin for Delft-FIAT.
+Author-email: "B.W. Dalmijn" <brendan.dalmijn@deltares.nl>, "T.C. de Jong" <tjalling.dejong@deltares.nl>, "L. Blom" <luuk.blom@deltares.nl>
+Maintainer-email: "B.W. Dalmijn" <brendan.dalmijn@deltares.nl>, "T.C. de Jong" <tjalling.dejong@deltares.nl>, "L. Blom" <luuk.blom@deltares.nl>
+License-Expression: GPL-3.0-or-later
+Project-URL: Homepage, https://github.com/Deltares/hydromt_fiat
+Project-URL: Bug Reports, https://github.com/Deltares/hydromt_fiat/issues
+Project-URL: Source, https://github.com/Deltares/hydromt_fiat
+Keywords: HydroMT,FIAT,Impact
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Hydrology
+Classifier: Topic :: Scientific/Engineering :: GIS
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.11
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: barril
+Requires-Dist: geopandas
+Requires-Dist: hydromt<1.3.0,>=1.2.0
+Requires-Dist: numpy
+Requires-Dist: osmnx
+Requires-Dist: pooch
+Requires-Dist: pyproj
+Requires-Dist: requests
+Requires-Dist: shapely
+Requires-Dist: tomlkit
+Requires-Dist: xarray
+Provides-Extra: dev
+Requires-Dist: build; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: python-magic; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: sbom4python; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: nbsphinx; extra == "docs"
+Requires-Dist: pydata-sphinx-theme; extra == "docs"
+Requires-Dist: sphinx>=8.2.0; extra == "docs"
+Requires-Dist: sphinx_design; extra == "docs"
+Requires-Dist: sphinx_autosummary_accessors; extra == "docs"
+Provides-Extra: examples
+Requires-Dist: cartopy; extra == "examples"
+Requires-Dist: jupyterlab; extra == "examples"
+Requires-Dist: nbconvert==7.13.1; extra == "examples"
+Requires-Dist: notebook; extra == "examples"
+Requires-Dist: pandoc; extra == "examples"
+Provides-Extra: test
+Requires-Dist: pytest>=2.7.3; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: responses; extra == "test"
+Dynamic: license-file
+
+.. _readme:
+
+========================================
+HydroMT-FIAT: Building Delft-FIAT models
+========================================
+
+|pypi| |conda forge| |quality| |coverage| |license|
+
+What is HydroMT-FIAT?
+---------------------
+**HydroMT-FIAT** is an open-source python package for building for **Delft-FIAT** models.
+It is meant to make model building easier on the user by streamlining and generalizing
+data processing. For this purpose HydroMT-FIAT relies on the excellent **HydroMT**
+python library.
+
+Documentation
+-------------
+Important documentation in regard to HydroMT-FIAT.
+
+- `HydroMT-FIAT <HydroMT_FIAT_>`_
+- `Delft-FIAT <Delft_FIAT_>`_
+- `HydroMT <HydroMT_>`_
+
+Attribution
+-----------
+HydroMT-FIAT relies on these excellent libraries:
+
+- barril
+- geopandas
+- hydromt
+- numpy
+- osmnx
+- pooch
+- pyproj
+- requests
+- shapely
+- tomlkit
+- xarray
+
+.. |pypi| image:: https://img.shields.io/pypi/v/hydromt-fiat
+    :alt: PyPI
+    :target: https://pypi.org/project/hydromt_fiat/
+
+.. |conda forge| image:: https://img.shields.io/conda/v/conda-forge/hydromt_fiat
+    :alt: Conda-Forge
+    :target: https://anaconda.org/conda-forge/hydromt_fiat
+
+.. |quality| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_fiat&metric=alert_status
+    :alt: SonarQube status
+    :target: https://sonarcloud.io/summary/new_code?id=Deltares_hydromt_fiat
+
+.. |coverage| image:: https://sonarcloud.io/api/project_badges/measure?project=Deltares_hydromt_fiat&metric=coverage
+    :alt: Coverage
+    :target: https://sonarcloud.io/summary/new_code?id=Deltares_hydromt_fiat
+
+.. |license| image:: https://img.shields.io/github/license/Deltares/hydromt_fiat
+    :alt: License
+    :target: https://github.com/Deltares/hydromt_fiat/blob/main/LICENSE
+
+.. _Delft_FIAT: https://deltares.github.io/Delft-FIAT/stable
+.. _HydroMT_FIAT: https://deltares.github.io/hydromt_fiat/latest
+.. _HydroMT: https://deltares.github.io/hydromt/stable
