@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ocstrack"
+dynamic = ["version"]
+description = "Satellite data download, crop, and collocation with model outputs"
+authors = [
+    { name = "Felicio Cassalho", email = "felicio.cassalho@noaa.gov" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "numpy",
+    "xarray",
+    "scipy",
+    "tqdm",
+    "requests",
+    "netcdf4",
+    "h5netcdf",
+    "dask"
+]
+
+[project.urls]
+Homepage = "https://github.com/noaa-ocs-modeling/OCSTrack"
+Repository = "https://github.com/noaa-ocs-modeling/OCSTrack"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pylint",
+]
+
+[tool.setuptools_scm]
+write_to = "ocstrack/_version.py"
+version_scheme = "post-release"
+local_scheme = "no-local-version"
