@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "strnd"
+version = "0.1.0"
+description = "STRND: Graph reconstruction via Node2Vec (pecanpy) + UMAP"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Your Name" }]
+keywords = ["graphs", "embedding", "node2vec", "umap", "networkx", "representation learning"]
+
+dependencies = [
+  "matplotlib==3.5.1",
+  "networkx<3.0",
+  "numpy>=1.22.4,<2",
+  "pandas<2.0.0",
+  "pecanpy==2.0.9",
+  "proxigraph==0.1.2",
+  "PointQuality",
+  "umap-learn==0.5.5",
+]
+
+[project.optional-dependencies]
+pyg = ["torch>=2.0"]  # if user wants PyG input support
+
+[tool.setuptools.packages.find]
+where = ["src"]
