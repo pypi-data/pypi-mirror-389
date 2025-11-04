@@ -1,0 +1,246 @@
+Metadata-Version: 2.4
+Name: ShadeSorter
+Version: 0.1.0
+Summary: Deterministic color family classifier across HSL, HSV, Lab, and LCH
+Project-URL: Homepage, https://github.com/Tintelligence-App/shade-sorter
+Project-URL: Repository, https://github.com/Tintelligence-App/shade-sorter
+Project-URL: Issues, https://github.com/Tintelligence-App/shade-sorter/issues
+Author: Tintelligence
+License: MIT License
+        
+        Copyright (c) 2025 Tintelligence
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+License-File: LICENSE
+Keywords: classification,color,hex,hsl,hsv,lab,lch
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Requires-Dist: tintelligence-color-utils>=0.1.0
+Provides-Extra: dev
+Requires-Dist: build>=1.2.1; extra == 'dev'
+Requires-Dist: pytest>=7.0; extra == 'dev'
+Description-Content-Type: text/markdown
+
+# ShadeSorter
+
+Deterministic color family classifier across HSL, HSV, Lab, and LCH color spaces.
+
+ShadeSorter uses the same scoring-based classification logic used in Tintelligence's paint management system. It analyzes colors across multiple color spaces (HSL, HSV, LAB, LCH) to accurately classify colors into 13 color families.
+
+## Features
+
+- **Multiple color space support**: Accept input as HEX, HSL, HSV, LAB, or LCH
+- **Comprehensive classification**: Analyzes colors across all four color spaces simultaneously
+- **Accurate results**: Uses the same proven scoring algorithm from Tintelligence
+- **Detailed output**: Returns family ID, name, and detailed scoring breakdown
+
+## Installation
+
+```bash
+pip install ShadeSorter
+```
+
+## Quick Start
+
+```python
+from shade_sorter import classify_from_hex
+
+result = classify_from_hex("#FF0000")
+print(result)
+# {'family_id': 6, 'family_name': 'Red', 'scores': {...}}
+```
+
+## Usage Examples
+
+### From HEX
+
+```python
+from shade_sorter import classify_from_hex
+
+result = classify_from_hex("#1A1A1A")
+# {'family_id': 1, 'family_name': 'Black', 'scores': {...}}
+
+result = classify_from_hex("FF0000")  # Works with or without #
+# {'family_id': 6, 'family_name': 'Red', 'scores': {...}}
+```
+
+### From HSL
+
+```python
+from shade_sorter import classify_from_hsl
+
+# h in degrees (0-360), s and l in 0-1
+result = classify_from_hsl(210.0, 0.35, 0.45)
+```
+
+### From HSV
+
+```python
+from shade_sorter import classify_from_hsv
+
+# h in degrees (0-360), s and v in 0-1
+result = classify_from_hsv(210.0, 0.40, 0.55)
+```
+
+### From LAB
+
+```python
+from shade_sorter import classify_from_lab
+
+# L in 0-100, a and b can be negative
+result = classify_from_lab(52.3, -8.1, -18.2)
+```
+
+### From LCH
+
+```python
+from shade_sorter import classify_from_lch
+
+# L in 0-100, C >= 0, H in degrees (0-360)
+result = classify_from_lch(52.3, 20.0, 245.0)
+```
+
+### From All Color Spaces
+
+```python
+from shade_sorter import classify_from_all
+
+# Provide values from any or all color spaces
+result = classify_from_all(
+    hsl=(210.0, 0.35, 0.45),
+    lab=(52.3, -8.1, -18.2),
+    lch=(52.3, 20.0, 245.0),
+    hsv=(210.0, 0.40, 0.55),
+)
+```
+
+## Color Families
+
+ShadeSorter classifies colors into 13 families:
+
+1. **Black**
+2. **White / Off White**
+3. **Grey**
+4. **Brown**
+5. **Green**
+6. **Red**
+7. **Pink**
+8. **Orange**
+9. **Yellow**
+10. **Turquoise / Teal**
+11. **Blue**
+12. **Purple / Violet**
+13. **Unknown** (if no family matches)
+
+## API Reference
+
+### `classify_from_hex(hex_str: str) -> dict`
+
+Classify color family from HEX color string.
+
+**Parameters:**
+- `hex_str` (str): HEX color string (e.g., "#FF0000" or "FF0000")
+
+**Returns:**
+- `dict` with keys:
+  - `family_id` (int): Color family ID (1-13)
+  - `family_name` (str): Color family name
+  - `scores` (dict): Scores for all color families
+
+### `classify_from_hsl(h: float | None, s: float, l: float) -> dict`
+
+Classify color family from HSL values.
+
+**Parameters:**
+- `h` (float | None): HSL hue in degrees (0-360), can be None for greys
+- `s` (float): HSL saturation (0-1)
+- `l` (float): HSL lightness (0-1)
+
+**Returns:** Same as `classify_from_hex`
+
+### `classify_from_hsv(h: float | None, s: float, v: float) -> dict`
+
+Classify color family from HSV values.
+
+**Parameters:**
+- `h` (float | None): HSV hue in degrees (0-360), can be None for greys
+- `s` (float): HSV saturation (0-1)
+- `v` (float): HSV value (0-1)
+
+**Returns:** Same as `classify_from_hex`
+
+### `classify_from_lab(L: float, a: float, b: float) -> dict`
+
+Classify color family from LAB values.
+
+**Parameters:**
+- `L` (float): LAB lightness (0-100)
+- `a` (float): LAB a component (can be negative)
+- `b` (float): LAB b component (can be negative)
+
+**Returns:** Same as `classify_from_hex`
+
+### `classify_from_lch(L: float, C: float, H: float) -> dict`
+
+Classify color family from LCH values.
+
+**Parameters:**
+- `L` (float): LCH lightness (0-100)
+- `C` (float): LCH chroma (>=0)
+- `H` (float): LCH hue in degrees (0-360)
+
+**Returns:** Same as `classify_from_hex`
+
+### `classify_from_all(hsl=None, hsv=None, lab=None, lch=None) -> dict`
+
+Classify color family from all available color spaces. Requires at least one color space to be provided.
+
+**Parameters:**
+- `hsl` (tuple | None): Tuple `(h, s, l)` where h in degrees (0-360), s/l in 0-1
+- `hsv` (tuple | None): Tuple `(h, s, v)` where h in degrees (0-360), s/v in 0-1
+- `lab` (tuple | None): Tuple `(L, a, b)` where L in 0-100, a/b can be negative
+- `lch` (tuple | None): Tuple `(L, C, H)` where L in 0-100, C>=0, H in degrees (0-360)
+
+**Returns:** Same as `classify_from_hex`
+
+**Raises:**
+- `ValueError`: If no color space is provided
+
+## Dependencies
+
+- `tintelligence-color-utils>=0.1.0`: For color space conversions
+
+## License
+
+MIT
+
+## Contributing
+
+This package is part of the Tintelligence project. Contributions are welcome!
+
