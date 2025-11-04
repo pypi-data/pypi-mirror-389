@@ -1,0 +1,123 @@
+Metadata-Version: 2.4
+Name: testrepoflow
+Version: 1.0.0
+Summary: A short description
+Home-page: https://github.com/BACH-AI-Tools/testrepoflow
+Author: Your Name
+Author-email: Your Name <your.email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/BACH-AI-Tools/testrepoflow
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
+# Web测试项目
+
+这是一个简单的Flask web测试项目，包含多种API测试功能。
+
+## 功能特性
+
+- 🏠 **主页界面**: 美观的web界面，包含各种测试功能
+- 📡 **API测试**: GET和POST请求测试
+- 🌐 **外部API测试**: 测试调用外部API服务
+- ❤️ **健康检查**: 服务状态监控
+- 🐳 **Docker支持**: 容器化部署
+- 🔧 **错误处理**: 完善的错误处理机制
+
+## 项目结构
+
+```
+testrepoflow/
+├── app.py              # Flask应用主文件
+├── requirements.txt    # Python依赖
+├── Dockerfile         # Docker配置
+├── templates/         # HTML模板
+│   └── index.html     # 主页模板
+└── README.md          # 项目说明
+```
+
+## 本地运行
+
+### 1. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. 运行应用
+
+```bash
+python app.py
+```
+
+应用将在 http://localhost:5000 启动
+
+### 3. 访问功能
+
+- **主页**: http://localhost:5000
+- **API测试**: http://localhost:5000/api/test
+- **健康检查**: http://localhost:5000/health
+- **外部API测试**: http://localhost:5000/api/external-test
+
+## Docker运行
+
+### 1. 构建镜像
+
+```bash
+docker build -t testrepoflow .
+```
+
+### 2. 运行容器
+
+```bash
+docker run -p 5000:5000 testrepoflow
+```
+
+## API端点
+
+### GET /api/test
+返回简单的JSON响应
+
+### POST /api/test
+接收JSON数据并返回确认响应
+
+### GET /api/external-test
+测试外部API调用（jsonplaceholder.typicode.com）
+
+### GET /health
+健康检查端点，返回服务状态
+
+## 测试功能
+
+访问主页后，你可以：
+
+1. **测试GET API**: 发送GET请求到本地API
+2. **测试POST API**: 发送POST请求到本地API
+3. **测试外部API**: 调用外部测试API
+4. **健康检查**: 检查服务运行状态
+5. **自定义POST测试**: 发送自定义数据
+
+所有测试结果会实时显示在页面上，包含完整的JSON响应数据。
+
+## 开发说明
+
+- Flask应用运行在调试模式
+- 支持热重载
+- 包含错误处理和日志记录
+- 响应格式统一为JSON
+
+## 扩展建议
+
+你可以在此基础上添加：
+
+- 数据库集成
+- 用户认证
+- 更多API端点
+- 单元测试
+- 日志系统
+- 配置管理
