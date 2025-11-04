@@ -1,0 +1,56 @@
+site_name: Terraform Ingest Documentation
+site_description: Documentation for the Terraform Ingest
+site_url: https://zloeber.github.io/terraform-ingest/
+theme:
+  palette:
+    scheme: slate
+  name: material
+nav:
+  - 'Home': index.md
+  - 'Quickstart': quickstart.md
+  - 'Development': dev.md
+  - 'Vector Database': vectordb.md
+  - 'Vector Embeddings': embeddings.md
+  - 'Ingestion Indexing': module_indexing.md
+  - 'CLI Documentation': cli.md
+  - 'Config Command': config_command.md
+  - 'Import Command': import.md
+  - 'GitHub Rate Limit Fix': github_rate_limit_fix.md
+  - 'MCP': mcp.md
+  - 'MCP Usage Examples': mcp_use_examples.md
+  - 'MCP Registry Publishing': mcp_registry_publishing.md
+  - 'Docker': docker.md
+  - 'Docker Architecture': docker_arch.md
+  - 'Docker Guide': docker_guide.md
+  - 'Docker Complete': docker_complete.md
+  - 'Docker Quickstart': docker_quick_ref.md
+
+markdown_extensions:
+  - mkdocs-click
+  - admonition         # Adds boxes for Notes, Warnings, etc.
+  - attr_list          # Adds attribute lists to generated HTML
+  - codehilite         # Syntax coloring for code blocks
+  - def_list           # Adds syntax for definition lists
+  - sane_lists         # Enables list items with multiple paragraphs
+  - toc:               # Builds a table of contents
+      permalink: "#"   # Puts a "#" at the end of each header
+  - pymdownx.superfences:
+        # make exceptions to highlighting of code:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
+plugins:
+- llmstxt:
+    markdown_description: Documentation for the Terraform Ingest project
+    full_output: llms-full.txt
+    sections:
+      Usage:
+      - index.md: Index
+      - quickstart.md: Quickstart Guide
+      - dev.md: Development Guide
+      - vectordb.md: Vector Database Setup
+      - embeddings.md: Vector Database Embeddings
+      - mcp.md: MCP Server usage
+      - mcp_use_examples.md: MCP Usage Examples
+      - docker_quick_ref.md: Docker Quick Reference
