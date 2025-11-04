@@ -1,0 +1,53 @@
+[project]
+name = "httpchain"
+version = "1.0.1"
+description = "Declarative HTTP workflow engine for building complex API request chains with dependency management and data extraction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Jatin Banga"}
+]
+keywords = ["http", "workflow", "api", "automation", "web-scraping", "osint"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "brotli>=1.1.0",
+    "bs4>=0.0.2",
+    "httpx>=0.28.1",
+    "json5>=0.12.1",
+    "jsonpath-ng>=1.7.0",
+    "lxml>=6.0.2",
+    "requests>=2.32.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/jatin-dot-py/httpchain"
+Documentation = "https://github.com/jatin-dot-py/httpchain#readme"
+Repository = "https://github.com/jatin-dot-py/httpchain"
+Issues = "https://github.com/jatin-dot-py/httpchain/issues"
+
+[project.optional-dependencies]
+dev = [
+    "tldextract>=5.1.2",
+]
+examples = [
+    "tldextract>=5.1.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["httpchain"]

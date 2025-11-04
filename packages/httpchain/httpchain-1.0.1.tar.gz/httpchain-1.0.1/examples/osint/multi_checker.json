@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "name": "Multi account checker",
+  "chain_variables": [
+    "username"
+  ],
+  "steps": [
+    {
+      "name": "check_reddit",
+      "depends_on_variables": [
+        "username"
+      ],
+      "request": {
+        "request_method": "GET",
+        "request_url": "https://reddit.com/user/{{username}}",
+        "request_headers": {
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Cache-Control": "max-age=0"
+        },
+        "request_retries": 1,
+        "extractors": [
+          {
+            "extractor_key": "reddit_account_does_not_exist",
+            "extractor_type": "declarative_check",
+            "declarative_check_extractor": {
+              "path" : ["text_body"],
+              "operator": "contains_pattern",
+              "value": "This account may have been banned or the username is incorrect"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "check_medium.com",
+      "depends_on_variables": [
+        "username"
+      ],
+      "request": {
+        "request_method": "GET",
+        "request_url": "https://medium.com/@{{username}}",
+        "request_headers": {
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Cache-Control": "max-age=0"
+        },
+        "request_retries": 1,
+        "extractors": [
+          {
+            "extractor_key": "medium_account_does_not_exist",
+            "extractor_type": "declarative_check",
+            "declarative_check_extractor": {
+              "path" : ["text_body"],
+              "operator": "contains_pattern",
+              "value": "Maybe these stories will take you somewhere new"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "name": "Instagram",
+  "chain_variables": [
+    "username"
+  ],
+  "steps": [
+    {
+      "name": "Extract Instagram Info",
+      "depends_on_variables": [
+        "username"
+      ],
+      "request": {
+        "request_method": "GET",
+        "request_params": {
+          "username": "{{username}}"
+        },
+        "request_url": "https://www.instagram.com/api/v1/users/web_profile_info/",
+        "request_headers": {
+          "accept": "*/*",
+          "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+          "priority": "u=1, i",
+          "referer": "https://www.instagram.com/{{username}}/",
+          "sec-ch-prefers-color-scheme": "dark",
+          "sec-ch-ua": "\"Google Chrome\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"",
+          "sec-ch-ua-full-version-list": "\"Google Chrome\";v=\"141.0.7390.108\", \"Not?A_Brand\";v=\"8.0.0.0\", \"Chromium\";v=\"141.0.7390.108\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-model": "\"\"",
+          "sec-ch-ua-platform": "\"Android\"",
+          "sec-ch-ua-platform-version": "\"\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "user-agent": "Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+          "x-ig-app-id": "936619743392459",
+          "x-ig-www-claim": "0",
+          "x-requested-with": "XMLHttpRequest"
+        },
+        "request_retries": 1,
+        "extractors": [
+
+        ]
+      }
+    }
+  ]
+}

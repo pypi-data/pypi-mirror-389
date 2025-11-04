@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "RDAP Bootstrap Registry Fetch",
+  "chain_variables": [],
+  "steps": [
+    {
+      "name": "fetch_iana_bootstrap",
+      "depends_on_variables": [],
+      "request": {
+        "request_method": "GET",
+        "request_url": "https://data.iana.org/rdap/dns.json",
+        "headers": {
+          "accept": "application/json",
+          "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36"
+        },
+        "extractors": [
+          {
+            "extractor_key": "bootstrap_registry",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": ["json_body", "services"]
+          },
+          {
+            "extractor_key": "bootstrap_success",
+            "extractor_type": "declarative_check",
+            "declarative_check_extractor": {
+              "path": ["json_body", "services"],
+              "operator": "exists"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

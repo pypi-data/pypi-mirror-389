@@ -1,0 +1,327 @@
+{
+  "version": 1,
+  "name": "X.com account checker",
+  "chain_variables": [
+    "username"
+  ],
+  "steps": [
+    {
+      "name": "get_guest_token",
+      "request": {
+        "request_method": "GET",
+        "request_url": "https://x.com/login",
+        "request_headers": {
+          "accept": "*/*",
+          "accept-language": "en-US,en;q=0.8",
+          "cache-control": "no-cache",
+          "origin": "https://x.com",
+          "pragma": "no-cache",
+          "priority": "u=1, i",
+          "referer": "https://x.com/",
+          "sec-ch-ua": "\"\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-site",
+          "sec-gpc": "1",
+          "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36",
+          "x-twitter-active-user": "yes",
+          "x-twitter-client-language": "en"
+        },
+        "request_retries": 1,
+        "extractors": [
+          {
+            "extractor_key": "guest_token",
+            "extractor_type": "regex",
+            "regex_extractor": {
+              "path": [
+                "html_body"
+              ],
+              "pattern": "gt=([0-9]+);",
+              "find_all": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "check x profile",
+      "depends_on_variables": [
+        "username",
+        "guest_token"
+      ],
+      "condition": {
+        "operator": "and",
+        "checks": [
+          {
+            "variable_name": "guest_token",
+            "operator": "contains_pattern",
+            "value": "^\\d+$"
+          }
+        ]
+      },
+      "request": {
+        "request_method": "GET",
+        "request_url": "https://api.x.com/graphql/Sfq_BSQ7VVpC3u9ycqwKYg/UserByScreenName",
+        "request_headers": {
+          "accept": "*/*",
+          "accept-language": "en-US,en;q=0.8",
+          "authorization": "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA",
+          "cache-control": "no-cache",
+          "content-type": "application/json",
+          "origin": "https://x.com",
+          "pragma": "no-cache",
+          "priority": "u=1, i",
+          "referer": "https://x.com/",
+          "sec-ch-ua": "\"\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-site",
+          "sec-gpc": "1",
+          "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36",
+          "x-client-transaction-id": "2JHyISmyr5cST9gZlpF7/hjVsijWlXyPKabaLMyFAKnWRaHChHoWGv8Jk70dPdGLS0oHRdwjghFCA/Ftvae2H+gKREyk2w",
+          "x-guest-token": "{{guest_token}}",
+          "x-twitter-active-user": "yes",
+          "x-twitter-client-language": "en"
+        },
+        "request_params": {
+          "variables": "{\"screen_name\":\"{{username}}\",\"withGrokTranslatedBio\":false}",
+          "features": "{\"hidden_profile_subscriptions_enabled\":true,\"payments_enabled\":false,\"profile_label_improvements_pcf_label_in_post_enabled\":true,\"responsive_web_profile_redirect_enabled\":false,\"rweb_tipjar_consumption_enabled\":true,\"verified_phone_label_enabled\":true,\"subscriptions_verification_info_is_identity_verified_enabled\":true,\"subscriptions_verification_info_verified_since_enabled\":true,\"highlights_tweets_tab_ui_enabled\":true,\"responsive_web_twitter_article_notes_tab_enabled\":true,\"subscriptions_feature_can_gift_premium\":true,\"creator_subscriptions_tweet_preview_api_enabled\":true,\"responsive_web_graphql_skip_user_profile_image_extensions_enabled\":false,\"responsive_web_graphql_timeline_navigation_enabled\":true}",
+          "fieldToggles": "{\"withAuxiliaryUserLabels\":true}"
+        },
+        "request_retries": 1,
+        "extractors": [
+          {
+            "extractor_key": "x_account_exists",
+            "extractor_type": "declarative_check",
+            "declarative_check_extractor": {
+              "path": [
+                "json_body",
+                "data",
+                "user"
+              ],
+              "operator": "exists"
+            }
+          },
+          {
+            "extractor_key": "x_profile_picture",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "avatar",
+              "image_url"
+            ]
+          },
+          {
+            "extractor_key": "x_account_created_at",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "core",
+              "created_at"
+            ]
+          },
+          {
+            "extractor_key": "x_account_name",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "core",
+              "name"
+            ]
+          },
+          {
+            "extractor_key": "x_account_followers_count",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "followers_count"
+            ]
+          },
+          {
+            "extractor_key": "x_account_following_count",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "friends_count"
+            ]
+          },
+          {
+            "extractor_key": "x_account_banner_url",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "profile_banner_url"
+            ]
+          },
+          {
+            "extractor_key": "x_account_id",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "rest_id"
+            ]
+          },
+          {
+            "extractor_key": "x_is_blue_verified",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "is_blue_verified"
+            ]
+          },
+          {
+            "extractor_key": "x_account_description",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "description"
+            ]
+          },
+          {
+            "extractor_key": "x_account_favourites_count",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "favourites_count"
+            ]
+          },
+          {
+            "extractor_key": "x_account_statuses_count",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "statuses_count"
+            ]
+          },
+          {
+            "extractor_key": "x_account_media_count",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "media_count"
+            ]
+          },
+          {
+            "extractor_key": "x_account_url",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "legacy",
+              "url"
+            ]
+          },
+          {
+            "extractor_key": "x_account_location",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "location",
+              "location"
+            ]
+          },
+          {
+            "extractor_key": "x_account_protected",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "privacy",
+              "protected"
+            ]
+          },
+          {
+            "extractor_key": "x_verification_type",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "verification",
+              "verified_type"
+            ]
+          },
+          {
+            "extractor_key": "x_is_identity_verified",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "verification_info",
+              "is_identity_verified"
+            ]
+          },
+          {
+            "extractor_key": "x_highlighted_tweets_count",
+            "extractor_type": "jsonpatharray",
+            "jsonpatharray_extractor": [
+              "json_body",
+              "data",
+              "user",
+              "result",
+              "highlights_info",
+              "highlighted_tweets"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
