@@ -1,0 +1,237 @@
+# triplet-extract
+
+Pure Python triplet extraction - Extract (subject, relation, object) triples from text
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
+## Example
+
+```python
+from triplet_extract import extract
+
+text = "95.6% of people don't know what GraphRAG is for"
+triplets = extract(text)
+
+for t in triplets:
+    print(f"({t.subject}, {t.relation}, {t.object})")
+```
+
+Output:
+```
+(95.6% of people, don't know, what GraphRAG is for)
+```
+
+**What makes this different:**
+- Natural formatting with proper contraction spacing
+- Good contradiction handling
+- Quantifiers preserved and normalized (percentages, scientific units) so "95.6% of people" is kept intact
+- Stanford OpenIE doesn't extract any triplets from this sentence
+
+## About
+
+This is a Python port of Stanford OpenIE, a system for extracting relation triples from natural language text. The implementation follows the same three-stage pipeline as the original and uses the trained models from the Stanford NLP Group's research.
+
+**Reference:** "Leveraging Linguistic Structure For Open Domain Information Extraction"
+Gabor Angeli, Melvin Jose Johnson Premkumar, and Christopher D. Manning
+*Association for Computational Linguistics (ACL), 2015*
+[Paper](http://nlp.stanford.edu/pubs/2015angeli-openie.pdf) | [Stanford OpenIE](https://stanfordnlp.github.io/CoreNLP/openie.html) | [CoreNLP Github](https://github.com/stanfordnlp/CoreNLP)
+
+This port uses spaCy for dependency parsing instead of Stanford CoreNLP, providing a pure Python alternative that works without Java dependencies. I'm grateful to the Stanford NLP Group for their groundbreaking research and for making their models available.
+
+**Note:** This implementation supports English text only. The trained models and natural logic rules are language-specific.
+
+## Design Philosophy
+
+This implementation prioritizes preserving rich semantic context in extracted triples. Unlike some ports that simplify subjects and relations, this port retains qualifiers, quantifiers, and contextual information (e.g., "The U.S. president Barack Obama" rather than just "Barack Obama", or "25% of people" rather than just "people"). This makes the output particularly well-suited for knowledge graph construction, GraphRAG applications, and other systems that benefit from semantically rich representations.
+
+## Installation
+
+```bash
+pip install triplet-extract
+python -m spacy download en_core_web_sm
+```
+
+For local development with `uv`:
+
+```bash
+git clone https://github.com/adlumal/triplet-extract.git
+cd triplet-extract
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e ".[dev]"
+uv run spacy download en_core_web_sm
+```
+
+## Usage
+
+### Basic Extraction
+
+```python
+from triplet_extract import extract
+
+text = "Cats love milk and mice."
+triplets = extract(text)
+
+for t in triplets:
+    print(f"({t.subject}, {t.relation}, {t.object})")
+```
+
+### Using the Extractor Class
+
+The `OpenIEExtractor` class provides more control over the extraction pipeline:
+
+```python
+from triplet_extract import OpenIEExtractor
+
+extractor = OpenIEExtractor(
+    enable_clause_split=True,    # Split complex sentences into clauses
+    enable_entailment=True,      # Generate entailed shorter forms
+    min_confidence=0.5           # Filter low-confidence triplets
+)
+
+triplets = extractor.extract_triplet_objects(text)
+
+for t in triplets:
+    print(f"Subject: {t.subject}")
+    print(f"Relation: {t.relation}")
+    print(f"Object: {t.object}")
+    print(f"Confidence: {t.confidence}")
+    print()
+```
+
+### Pipeline Options
+
+The extractor implements three stages:
+
+**Stage 1: Clause Splitting** (`enable_clause_split`)
+Breaks complex sentences into simpler clauses using beam search. For example, "Obama, born in Hawaii, is president" becomes ["Obama is president", "Obama born in Hawaii"].
+
+**Stage 2: Forward Entailment** (`enable_entailment`)
+Generates shorter entailed forms using natural logic. For example, "Blue cats play" produces ["Blue cats play", "cats play"]. This applies to all fragments, including those from clause splitting.
+
+**Confidence Threshold** (`min_confidence`)
+Filters triplets below the specified confidence score (0.0 to 1.0). Higher values give fewer but higher-quality results.
+
+```python
+# Fast extraction without variations
+extractor = OpenIEExtractor(
+    enable_clause_split=False,
+    enable_entailment=False
+)
+
+# High-precision extraction
+extractor = OpenIEExtractor(
+    min_confidence=0.7
+)
+```
+
+### Batch Processing
+
+For processing multiple texts efficiently:
+
+```python
+texts = [
+    "First sentence to process.",
+    "Second sentence to process.",
+    "Third sentence to process."
+]
+
+results = extractor.extract_batch(texts, batch_size=32, progress=True)
+
+for text, triplets in zip(texts, results):
+    print(f"\n{text}")
+    print(f"  {len(triplets)} triplets extracted")
+```
+
+### Performance Tips
+
+Reuse extractor instances when processing multiple texts:
+
+```python
+# Good: Reuse the same extractor
+extractor = OpenIEExtractor(min_confidence=0.5)
+for text in texts:
+    triplets = extractor.extract_triplet_objects(text)
+
+# Avoid: Creates new extractor (reloads models) each time
+for text in texts:
+    triplets = extract(text, min_confidence=0.5)
+```
+
+Use batch processing for best performance:
+
+```python
+results = extractor.extract_batch(texts, batch_size=32)
+```
+
+### Verbose Logging
+
+The library is silent by default. Enable logging to see internal operations:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG)  # Show all details
+# or
+logging.basicConfig(level=logging.INFO)   # Show major steps
+
+from triplet_extract import extract
+triplets = extract("Your text here")
+```
+
+## How It Works
+
+The system implements the three-stage pipeline from the Stanford OpenIE paper:
+
+**Stage 1: Clause Splitting**
+Uses a pre-trained linear classifier to break complex sentences into independent clauses. The classifier was trained on the LSOIE dataset and considers dependency parse structure to make splitting decisions.
+
+**Stage 2: Forward Entailment**
+Applies natural logic deletion rules to generate shorter entailed forms. Uses prepositional phrase attachment affinities to determine which constituents can be safely deleted while preserving truth.
+
+**Stage 3: Pattern Matching**
+Extracts (subject, relation, object) triples from sentence fragments using dependency patterns. Handles various syntactic constructions including copular sentences, prepositional phrases, and clausal complements.
+
+The trained models (clause splitting classifier and PP attachment affinities) are from the original Stanford implementation and are included in this package.
+
+## Implementation Notes
+
+This implementation uses spaCy for dependency parsing instead of Stanford CoreNLP. While the algorithm and models are the same, the parsers may produce different dependency trees for the same sentence. Differences in tokenization, POS tagging, and dependency labels mean that extraction results won't be identical to the original Java implementation.
+
+In practice, core extractions remain highly compatible with Stanford OpenIE, though edge cases may differ, particularly with unusual capitalization or complex grammatical constructions. If you require exact compatibility with Stanford OpenIE output, please use the original Java implementation.
+
+## Citation
+
+If you use this library in research, kindly cite the original paper:
+
+```bibtex
+@inproceedings{angeli2015openie,
+  title={Leveraging Linguistic Structure For Open Domain Information Extraction},
+  author={Angeli, Gabor and Johnson Premkumar, Melvin Jose and Manning, Christopher D},
+  booktitle={Proceedings of the 53rd Annual Meeting of the Association for Computational Linguistics (ACL 2015)},
+  year={2015}
+}
+```
+
+## Contributing
+
+Bug reports and feature requests are welcome. Please open an issue on GitHub if you encounter problems or have suggestions for improvements.
+
+## License
+
+GPL-3.0-or-later
+
+This is a derivative work of Stanford OpenIE, which is licensed under GPL-3.0. The trained models included in this package are from the original Stanford implementation and remain under their GPL-3.0 license.
+
+See [LICENSE](LICENSE) for details.
+
+## Links
+
+- [Stanford OpenIE](https://stanfordnlp.github.io/CoreNLP/openie.html)
+- [Original Paper](http://nlp.stanford.edu/pubs/2015angeli-openie.pdf)
+- [spaCy](https://spacy.io/)
+
+## Related packages
+
+- [stanford-openie-python](https://github.com/philipperemy/stanford-openie-python)
