@@ -1,0 +1,55 @@
+Metadata-Version: 2.4
+Name: watchmen-rest-doll
+Version: 18.0.1
+Summary: 
+License: MIT
+License-File: LICENSE
+Author: botlikes
+Author-email: 75356972+botlikes456@users.noreply.github.com
+Requires-Python: >=3.12,<3.13
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Provides-Extra: adls
+Provides-Extra: boto3
+Provides-Extra: collector
+Provides-Extra: es-ext-writer
+Provides-Extra: kafka
+Provides-Extra: mongodb
+Provides-Extra: mssql
+Provides-Extra: mysql
+Provides-Extra: oracle
+Provides-Extra: oss
+Provides-Extra: postgresql
+Provides-Extra: prometheus
+Provides-Extra: rabbit
+Provides-Extra: s3
+Provides-Extra: sso
+Provides-Extra: standard-ext-writer
+Provides-Extra: trino
+Requires-Dist: aio-pika (>=9.4.2,<10.0.0) ; extra == "rabbit"
+Requires-Dist: aiokafka (>=0.11.0,<0.12.0) ; extra == "kafka"
+Requires-Dist: bcrypt (>=4.2.0,<5.0.0)
+Requires-Dist: cryptography (>=42.0.8,<43.0.0) ; extra == "mysql" or extra == "sso"
+Requires-Dist: kafka-python (>=2.0.2,<3.0.0) ; extra == "kafka"
+Requires-Dist: passlib (>=1.7.4,<2.0.0)
+Requires-Dist: python-multipart (>=0.0.9,<0.0.10)
+Requires-Dist: python3-saml (>=1.16.0,<2.0.0) ; extra == "sso"
+Requires-Dist: requests (>=2.32.3,<3.0.0) ; extra == "standard-ext-writer"
+Requires-Dist: starlette-prometheus (>=0.9.0,<0.10.0) ; extra == "prometheus"
+Requires-Dist: uvloop (>=0.19.0,<0.20.0)
+Requires-Dist: watchmen-collector-surface (==18.0.1) ; extra == "collector"
+Requires-Dist: watchmen-data-surface (==18.0.1)
+Requires-Dist: watchmen-indicator-surface (==18.0.1)
+Requires-Dist: watchmen-inquiry-surface (==18.0.1)
+Requires-Dist: watchmen-inquiry-trino (==18.0.1) ; extra == "trino"
+Requires-Dist: watchmen-lineage (==18.0.1)
+Requires-Dist: watchmen-pipeline-surface (==18.0.1)
+Requires-Dist: watchmen-storage-adls (==18.0.1) ; extra == "adls"
+Requires-Dist: watchmen-storage-mongodb (==18.0.1) ; extra == "mongodb"
+Requires-Dist: watchmen-storage-mssql (==18.0.1) ; extra == "mssql"
+Requires-Dist: watchmen-storage-mysql (==18.0.1) ; extra == "mysql"
+Requires-Dist: watchmen-storage-oracle (==18.0.1) ; extra == "oracle"
+Requires-Dist: watchmen-storage-oss (==18.0.1) ; extra == "oss"
+Requires-Dist: watchmen-storage-postgresql (==18.0.1) ; extra == "postgresql"
+Requires-Dist: watchmen-storage-s3 (==18.0.1) ; extra == "s3"
