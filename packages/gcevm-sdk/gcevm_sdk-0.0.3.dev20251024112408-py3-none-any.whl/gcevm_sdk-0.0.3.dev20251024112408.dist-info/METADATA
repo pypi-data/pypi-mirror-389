@@ -1,0 +1,56 @@
+Metadata-Version: 2.4
+Name: gcevm-sdk
+Version: 0.0.3.dev20251024112408
+Summary: Cryptographic SDK for AES, RSA, ECDSA encryption and Soda Labs blockchain integration
+Home-page: https://github.com/soda-mpc/soda-sdk
+Author: Soda Labs
+Author-email: meital@sodalabs.xyz
+License: MIT
+Project-URL: Homepage, https://github.com/soda-mpc/soda-sdk
+Project-URL: Bug Reports, https://github.com/soda-mpc/soda-sdk/issues
+Project-URL: Source, https://github.com/soda-mpc/soda-sdk
+Project-URL: Documentation, https://github.com/soda-mpc/soda-sdk#readme
+Keywords: cryptography,aes,rsa,ecdsa,blockchain,sodalabs,mpc,garbled-circuits,encryption,privacy
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Security :: Cryptography
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: pycryptodome>=3.10.0
+Requires-Dist: eth-keys>=0.3.3
+Requires-Dist: cryptography>=3.4.7
+Requires-Dist: web3==6.11.2
+Requires-Dist: setuptools>=65.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov>=2.0; extra == "dev"
+Requires-Dist: black>=21.0; extra == "dev"
+Requires-Dist: flake8>=3.8; extra == "dev"
+Requires-Dist: mypy>=0.800; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest>=6.0; extra == "test"
+Requires-Dist: pytest-cov>=2.0; extra == "test"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+Soda SDK - Cryptographic functions for Soda Labs blockchain
