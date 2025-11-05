@@ -1,0 +1,20 @@
+metadata:
+  version: 1.0
+  description: Nested GPS panel
+
+widgets:
+  - type: table
+    header:
+      time: "UTC Time, usec"
+      lat: "Lat"
+      lon: "Lon"
+      sats: "Sats"
+    rows:
+      - time:   {type: BoundLabel, topics: [dronecan.uavcan.equipment.gnss.Fix2], fields: [gnss_timestamp.usec]}
+        lat:    {type: BoundLabel, topics: [dronecan.uavcan.equipment.gnss.Fix2], fields: [latitude_deg_1e8]}
+        lon:    {type: BoundLabel, topics: [dronecan.uavcan.equipment.gnss.Fix2], fields: [longitude_deg_1e8]}
+        sats:   {type: BoundLabel, topics: [dronecan.uavcan.equipment.gnss.Fix2], fields: [sats_used]}
+  - type: GpsWidget
+    topic: dronecan.uavcan.equipment.gnss.Fix2
+    field_lat: latitude_deg_1e8
+    field_lon: longitude_deg_1e8
