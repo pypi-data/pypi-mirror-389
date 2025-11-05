@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyb3-data-client"
+version = "1.0.0"
+description = "Python client for B3 Market Data API"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "Pedro Todescan", email = "pedrotodescan@gmail.com"},
+]
+maintainers = [
+    {name = "Pedro Todescan", email = "pedrotodescan@gmail.com"},
+]
+keywords = ["b3", "bovespa", "stock", "market", "data", "api", "finance", "brazil", "pyb3"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "requests>=2.31.0",
+    "polars>=0.20.0",
+    "pyarrow>=15.0.0",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=2.0.0"]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=24.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/PedroDnT/pyb3"
+Documentation = "https://api.b3data.com/docs"
+Repository = "https://github.com/PedroDnT/pyb3"
+Issues = "https://github.com/PedroDnT/pyb3/issues"
+Changelog = "https://github.com/PedroDnT/pyb3/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+packages = ["pyb3_data_client"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+pyb3_data_client = ["*.py"]
