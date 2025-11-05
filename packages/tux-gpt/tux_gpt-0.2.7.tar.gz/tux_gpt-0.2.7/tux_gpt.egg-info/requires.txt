@@ -1,0 +1,11 @@
+openai>=0.27.0
+prompt-toolkit>=3.0.0
+rich>=10.0.0
+
+[:python_version < "3.8"]
+importlib-metadata>=4.0
+
+[dev]
+pytest
+mypy
+flake8
