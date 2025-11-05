@@ -1,0 +1,18 @@
+[package]
+name = "count_distinct"
+version = "0.2.4"
+edition = "2024"
+readme = "README.md"
+
+[lib]
+name = "count_distinct"
+# "cdylib" is necessary to produce a shared library for Python to import from.
+crate-type = ["cdylib"]
+
+[dependencies]
+cvmcount = "1.0.0"
+pyo3 = { version = "0.27.1", features = ["abi3", "abi3-py310", "abi3-py311", "abi3-py312", "abi3-py313", "abi3-py314"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
