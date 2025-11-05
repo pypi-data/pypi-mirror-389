@@ -1,0 +1,34 @@
+Metadata-Version: 2.2
+Name: pymathutils
+Version: 0.1.23
+Summary: Fast mathematical utilities
+Keywords: mathematics,scientific-computing,numerical-methods
+Author-Email: wlough <wilson.lough@colorado.edu>
+License: MIT
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Project-URL: Homepage, https://github.com/wlough/MathUtils
+Project-URL: Repository, https://github.com/wlough/MathUtils
+Project-URL: Issues, https://github.com/wlough/MathUtils/issues
+Requires-Python: >=3.8
+Requires-Dist: numpy
+Requires-Dist: numba
+Requires-Dist: sympy
+Requires-Dist: scipy
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Description-Content-Type: text/markdown
+
+# MathUtils
+
+Mathematical utilities with C++ backend for high-performance numerical computations.
+
