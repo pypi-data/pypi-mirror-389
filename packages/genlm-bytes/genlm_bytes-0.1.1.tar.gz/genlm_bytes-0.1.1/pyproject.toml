@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=64.0", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[project]
+name = "genlm-bytes"
+dynamic = ["version"]
+description = "Algorithms for byte-level language modeling"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [ { name = "Ben LeBrun", email = "benlebrun1@gmail.com" }, { name = "Tim Vieira"} ]
+dependencies = [
+    "genlm-backend>=0.1.1",
+    "arsenal",
+    "IPython",
+]
+
+[project.optional-dependencies]
+test = [
+    "coverage",
+    "pytest",
+    "pytest-benchmark",
+    "pytest-asyncio",
+    "pytest-cov",
+    "hypothesis",
+]
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+    "mkdocs-jupyter",
+]
+bench = [
+    "datasets",
+]
+
+[tool.setuptools.packages.find]
+include = ["genlm", "genlm/bytes"]
