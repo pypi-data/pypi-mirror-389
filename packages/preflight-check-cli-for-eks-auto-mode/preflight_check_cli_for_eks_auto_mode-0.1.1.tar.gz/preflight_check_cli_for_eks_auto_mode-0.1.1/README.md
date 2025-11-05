@@ -1,0 +1,143 @@
+# Preflight Check CLI for EKS Auto Mode
+
+[![PyPI version](https://img.shields.io/pypi/v/preflight-check-cli-for-eks-auto-mode.svg)](https://pypi.org/project/preflight-check-cli-for-eks-auto-mode/)
+[![PyPI Supported Python Versions](https://img.shields.io/pypi/pyversions/preflight-check-cli-for-eks-auto-mode.svg)](https://pypi.org/project/preflight-check-cli-for-eks-auto-mode/)
+[![Downloads](https://img.shields.io/pypi/dm/preflight-check-cli-for-eks-auto-mode.svg)](https://pypi.org/project/preflight-check-cli-for-eks-auto-mode/)
+
+A comprehensive command-line tool designed to assess your Amazon EKS cluster's readiness for migration to [EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/automode.html). This tool performs automated compatibility checks across 11 key areas including Kubernetes version, IAM configurations, instance types, and workload compatibility to ensure a smooth transition to EKS Auto Mode's fully managed compute experience.
+
+## Features
+
+- **11 Compatibility Checks**: Version, IAM, instances, Windows nodes, SSH/SSM access, custom AMIs, user data, addons, autoscaling, identity, and load balancers
+- **Multiple Output Formats**: Table, JSON, YAML, and HTML reports
+- **CI/CD Ready**: Proper exit codes for automation
+- **Selective Testing**: Run specific checks or all checks
+
+## AWS Permissions
+
+Required IAM permissions:
+- `eks:DescribeCluster`, `eks:ListNodegroups`, `eks:DescribeNodegroup`
+- `eks:ListAddons`, `eks:DescribeAddon`
+- `ec2:DescribeInstances`, `ec2:DescribeLaunchTemplateVersions`
+- `autoscaling:DescribeAutoScalingGroups`
+- `iam:ListAttachedRolePolicies`, `iam:GetRole`
+
+## Installation
+
+### Recommended: System-wide Installation
+```bash
+pip install preflight-check-cli-for-eks-auto-mode
+eks-automode-cli --version
+```
+*CLI installed to: `/usr/local/bin/eks-automode-cli` (macOS/Linux)*
+
+### Virtual Environment (Isolated)
+```bash
+python3 -m venv /tmp/.venv
+source /tmp/.venv/bin/activate
+pip install preflight-check-cli-for-eks-auto-mode
+eks-automode-cli --version
+```
+*CLI installed to: `/tmp/.venv/bin/eks-automode-cli`*
+
+### User Installation
+```bash
+pip install --user preflight-check-cli-for-eks-auto-mode
+eks-automode-cli --version
+```
+*CLI installed to: `~/.local/bin/eks-automode-cli`*
+
+**Note:** The `eks-automode-cli` command becomes available in your terminal PATH after installation. System-wide installation is recommended for ease of use.
+
+## Usage
+
+```bash
+# Basic check
+eks-automode-cli check -c my-cluster --region us-east-1
+
+# JSON output
+eks-automode-cli check -c my-cluster --region us-east-1 --output json
+
+# HTML report
+eks-automode-cli check -c my-cluster --region us-east-1 --output html
+
+# Run specific checks
+eks-automode-cli check -c my-cluster --checks version,iam,instances
+
+# Verbose output with recommendations
+eks-automode-cli check -c my-cluster --region us-east-1 --verbose
+
+# Quiet mode (exit codes only)
+eks-automode-cli check -c my-cluster --region us-east-1 --quiet
+
+# List available checks
+eks-automode-cli list-checks
+```
+
+## EKS Auto Mode Readiness Status
+
+- **Ready** - Cluster is ready for EKS Auto Mode migration
+- **Requires Changes** - Minor configurations needed before migration
+- **Not Ready** - Critical blockers detected (e.g., custom AMIs)
+- **Error** - Assessment could not be completed
+
+## Compatibility Checks
+
+| Check | Description |
+|-------|-----------|
+| **version** | Kubernetes 1.29+ requirement |
+| **iam** | Cluster role and Auto Mode policies |
+| **instances** | Instance type compatibility |
+| **windows** | Windows node detection |
+| **ssh** | SSH/SSM access detection |
+| **amis** | Custom AMI usage |
+| **userdata** | Custom node bootstrapping |
+| **addons** | Managed addons compatibility |
+| **autoscaling** | Existing autoscaling detection |
+| **identity** | IRSA v1 vs Pod Identity |
+| **loadbalancers** | ALB and NLB detection |
+
+## Output Examples
+
+### Table Output
+```
+Check         Status    Details
+------------  --------  ----------------------------------
+version       PASS      Kubernetes 1.29 supported
+iam           PASS      All required policies attached
+instances     FAIL      2 nano instances found
+identity      WARN      Using IRSA v1 (OIDC)
+```
+
+### JSON Output
+```json
+{
+  "cluster": "my-cluster",
+  "overall_status": "REQUIRES_CHANGES",
+  "checks": {
+    "version": {"status": "PASS", "details": "Kubernetes 1.29 supported"},
+    "instances": {"status": "FAIL", "details": "2 nano instances found"}
+  }
+}
+```
+
+## Development
+
+```bash
+# Install from source
+git clone <repository-url>
+cd eks-automode-preflight-checker-cli
+pip install -e .
+```
+
+## Support & Feedback
+
+This project is maintained by AWS Solution Architects. It is not part of an AWS service and support is provided best-effort by the maintainers. To post feedback, submit feature ideas, or report bugs, please use the [Issues](../../issues) section of this repo. If you are interested in contributing, please see the [Contribution guide](CONTRIBUTING.md).
+
+## License
+
+[Apache-2.0](LICENSE)
+
+## Security
+
+See [Threat Model](THREAT_MODEL.md) for security considerations.

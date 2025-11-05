@@ -1,0 +1,1 @@
+# EKS Auto Mode Preflight Checker CLI
