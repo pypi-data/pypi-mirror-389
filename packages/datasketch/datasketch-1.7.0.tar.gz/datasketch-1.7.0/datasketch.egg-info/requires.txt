@@ -1,0 +1,43 @@
+numpy>=1.11
+scipy>=1.0.0
+
+[benchmark]
+pyhash>=0.9.3
+matplotlib>=3.1.2
+scikit-learn>=0.21.3
+scipy>=1.3.3
+pandas>=0.25.3
+SetSimilaritySearch>=0.1.7
+pyfarmhash>=0.2.2
+nltk>=3.4.5
+
+[bloom]
+
+[bloom:python_version < "3.9"]
+pybloomfiltermmap3==0.6.0
+
+[bloom:python_version >= "3.9"]
+pybloomfilter3>=0.7.2
+
+[cassandra]
+cassandra-driver>=3.20
+
+[experimental_aio]
+
+[experimental_aio:python_version >= "3.8"]
+aiounittest
+motor>3.6.0
+
+[redis]
+redis>=2.10.0
+
+[test]
+cassandra-driver>=3.20
+redis>=2.10.0
+mock>=2.0.0
+mockredispy
+coverage
+pymongo>=3.9.0
+nose>=1.3.7
+nose-exclude>=0.5.0
+pytest
