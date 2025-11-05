@@ -1,0 +1,122 @@
+Metadata-Version: 2.4
+Name: pds.ldd-manager
+Version: 2.0.0
+Summary: Software tools used in the management of PDS4 Local Data Dictionaries in GitHub Actions
+Home-page: https://github.com/NASA-PDS/ldd-manager
+Download-URL: https://github.com/NASA-PDS/ldd-manager/releases/
+Author: PDS
+Author-email: pds_operator@jpl.nasa.gov
+License: apache-2.0
+Keywords: pds,planetary data,various,other,keywords
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+License-File: NOTICE.txt
+Requires-Dist: lasso.releasers~=2.0.0
+Requires-Dist: lasso.reports~=2.0.0
+Requires-Dist: requests~=2.31.0
+Provides-Extra: dev
+Requires-Dist: flake8~=7.3.0; extra == "dev"
+Requires-Dist: flake8-bugbear~=24.12.12; extra == "dev"
+Requires-Dist: flake8-docstrings~=1.7.0; extra == "dev"
+Requires-Dist: pep8-naming~=0.13.3; extra == "dev"
+Requires-Dist: mypy~=1.14.1; extra == "dev"
+Requires-Dist: pydocstyle~=6.3.0; extra == "dev"
+Requires-Dist: coverage~=7.3.0; extra == "dev"
+Requires-Dist: pytest~=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov~=4.1.0; extra == "dev"
+Requires-Dist: pytest-watch~=4.2.0; extra == "dev"
+Requires-Dist: pytest-xdist~=3.3.1; extra == "dev"
+Requires-Dist: pre-commit~=3.3.3; extra == "dev"
+Requires-Dist: sphinx~=8.2.3; extra == "dev"
+Requires-Dist: sphinx-rtd-theme~=3.0.2; extra == "dev"
+Requires-Dist: tox~=4.11.0; extra == "dev"
+Dynamic: download-url
+Dynamic: license-file
+
+# PDS4 Local Data Dictionary Management
+
+This repo contains tools and software needed for managing PDS4 Local Data Dictionaries
+
+## Prerequisites
+
+Python 3.13.
+
+
+## User Quickstart
+
+Install with:
+
+    pip install pds.ldd-manager
+
+
+To execute, run:
+
+    ldd-generate --help
+    ldd-validate --help
+    ldd-release --help
+
+
+## Code of Conduct
+
+All users and developers of the NASA-PDS software are expected to abide by our [Code of Conduct](https://github.com/NASA-PDS/.github/blob/main/CODE_OF_CONDUCT.md). Please read this to ensure you understand the expectations of our community.
+
+
+## Development
+
+To develop this project, use your favorite text editor, or an integrated development environment with Python support, such as [PyCharm](https://www.jetbrains.com/pycharm/).
+
+
+### Contributing
+
+For information on how to contribute to NASA-PDS codebases please take a look at our [Contributing guidelines](https://github.com/NASA-PDS/.github/blob/main/CONTRIBUTING.md).
+
+
+### Documentation
+
+Your project should use [Sphinx](https://www.sphinx-doc.org/en/master/) to build its documentation. PDS' documentation template is already configured as part of the default build. You can build your projects docs with:
+
+    sphinx-build -b html docs/source docs/build
+
+You can access the build files in the following directory relative to the project root:
+
+    docs/build/index.html
+
+
+## Build
+
+    pip install build
+    python3 -m build .
+
+
+## Publication
+
+NASA PDS packages can publish automatically using the [Roundup Action](https://github.com/NASA-PDS/roundup-action), which leverages GitHub Actions to perform automated continuous integration and continuous delivery. A default workflow that includes the Roundup is provided in the `.github/workflows/unstable-cicd.yaml` file. (Unstable here means an interim release.)
+
+
+### Manual Publication
+
+Create the package:
+
+    pip install build
+    python3 -m build .
+
+Publish it as a Github release.
+
+Publish on PyPI (you need a PyPI account and configure `$HOME/.pypirc`):
+
+    pip install twine
+    twine upload dist/*
+
+Or publish on the Test PyPI (you need a Test PyPI account and configure `$HOME/.pypirc`):
+
+    pip install twine
+    twine upload --repository testpypi dist/*
+
+
+## CI/CD
+
+The template repository comes with our two "standard" CI/CD workflows, `stable-cicd` and `unstable-cicd`. The unstable build runs on any push to `main` (± ignoring changes to specific files) and the stable build runs on push of a release branch of the form `release/<release version>`. Both of these make use of our GitHub actions build step, [Roundup](https://github.com/NASA-PDS/roundup-action). The `unstable-cicd` will generate (and constantly update) a SNAPSHOT release. If you haven't done a formal software release you will end up with a `v0.0.0-SNAPSHOT` release (see NASA-PDS/roundup-action#56 for specifics).
