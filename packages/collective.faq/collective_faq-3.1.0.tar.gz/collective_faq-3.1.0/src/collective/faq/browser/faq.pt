@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      xml:lang="en"
+      i18n:domain="collective.faq"
+>
+  <head>
+    <metal:jsonld fill-slot="javascript_head_slot">
+      <script type="application/ld+json">${structure: view/jsonld}</script>
+    </metal:jsonld>
+  </head>
+  <body>
+    <metal:content-core fill-slot="content-core">
+      <div>
+        <a class="btn btn-primary mb-3"
+           aria-controls=".faq-item-answer"
+           aria-expanded="false"
+           data-bs-target=".faq-item-answer"
+           data-bs-toggle="collapse"
+           i18n:translate=""
+        >
+          Show/Hide all
+        </a>
+      </div>
+      <div class="faq"
+           tal:repeat="container view/faqs"
+      >
+        <tal:nested define="
+                      faq python: container['faq'];
+                    "
+                    condition="python: faq is not None"
+        >
+          <h2 class="mt-3">
+            <a class="faq-nested-title"
+               href="${faq/absolute_url}"
+            >
+              ${faq/title}
+            </a>
+          </h2>
+          <div class="faq-nested-description mb-2"
+               tal:condition="faq/description"
+          >
+              ${faq/description}
+          </div>
+        </tal:nested>
+        <div class="accordion">
+          <div class="accordion-item"
+               tal:repeat="item container/questions"
+          >
+            <tal:item define="
+                        question python:item['question'];
+                        related python:item['related'];
+                      ">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed"
+                        aria-controls="faq-item-${question/UID}"
+                        aria-expanded="false"
+                        type="button"
+                        data-bs-target="#faq-item-${question/UID}"
+                        data-bs-toggle="collapse"
+                >
+                  ${question/title}
+                </button>
+                <p class="discreet ms-4"
+                   tal:condition="python: getattr(question, 'detailed_question', None)"
+                >${question/detailed_question}</p>
+              </h2>
+              <div class="faq-item-answer accordion-collapse collapse"
+                   id="faq-item-${question/UID}"
+              >
+                <div class="accordion-body">
+                  ${structure: question/answer/output | nothing}
+                  <div class="related"
+                       tal:condition="related"
+                  >
+                    <strong class="more-information"
+                            i18n:translate=""
+                    >More information</strong>
+                    <ul class="more-information-list">
+                      <li class="more-information-item"
+                          tal:repeat="rel related"
+                      >
+                        <a href="${rel/absolute_url}">${rel/Title}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </tal:item>
+          </div>
+        </div>
+      </div>
+    </metal:content-core>
+  </body>
+</html>
