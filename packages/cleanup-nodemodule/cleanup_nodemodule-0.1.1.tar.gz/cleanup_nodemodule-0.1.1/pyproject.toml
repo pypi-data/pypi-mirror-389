@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cleanup-nodemodule"
+version = "0.1.1"
+description = "Find and remove node_modules, .next and dist folders (dry-run default)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [ { name = "sakil470004" } ]
+dependencies = []
+
+[project.scripts]
+cleanup-nodemodule = "cleanup_nodemodule.cli:main"
