@@ -1,0 +1,84 @@
+Metadata-Version: 2.4
+Name: py2fern
+Version: 0.1.4
+Summary: Generate Fern documentation from Python packages using static analysis.
+Keywords: python,documentation,fern,api,static-analysis
+Author-email: Ryan Stephen <ryanstep@buildwithfern.com>
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+License-File: LICENSE
+Requires-Dist: astroid>=2.7,<4
+Requires-Dist: tomli; python_version<'3.11'
+Requires-Dist: typing-extensions
+Requires-Dist: typer[all]
+Requires-Dist: PyYAML
+Requires-Dist: pytest ; extra == "testing"
+Requires-Dist: pytest-regressions ; extra == "testing"
+Requires-Dist: pytest-cov ; extra == "testing"
+Requires-Dist: PyYAML ; extra == "testing"
+Requires-Dist: types-PyYAML ; extra == "testing"
+Project-URL: Home, https://github.com/fern-api/py2fern
+Provides-Extra: testing
+
+# py2fern
+
+Generate [Fern](https://buildwithfern.com) API documentation from Python packages using static analysis.
+
+Simplified fork of [`sphinx-autodoc2`](https://github.com/sphinx-extensions2/sphinx-autodoc2) focused purely on **Python → Fern markdown** output.
+
+## Installation
+
+```bash
+pipx install py2fern
+```
+
+## Usage
+
+Generate Fern markdown documentation:
+
+```bash
+py2fern write /path/to/your/package
+```
+
+Specify output directory:
+
+```bash
+py2fern write /path/to/your/package --output ./docs/api
+```
+
+This creates:
+- **MDX files** with Fern-compatible frontmatter and slugs
+- **`navigation.yml`** for Fern docs structure
+
+## Acknowledgments
+
+This project is a fork of the excellent [`sphinx-autodoc2`](https://github.com/sphinx-extensions2/sphinx-autodoc2) by Chris Sewell. All credit for the core functionality goes to the original project.
+
+## Development
+
+All configuration is mainly in `pyproject.toml`.
+
+Use [tox](https://tox.readthedocs.io/en/latest/) to run the tests.
+
+```bash
+pipx install tox
+tox -av
+```
+
+Use [pre-commit](https://pre-commit.com/) to run the linters and formatters.
+
+```bash
+pipx install pre-commit
+pre-commit run --all-files
+# pre-commit install
+```
+
+[flit](https://flit.readthedocs.io/en/latest/) is used to build the package.
+
+```bash
+pipx install flit
+flit build
+```
+
