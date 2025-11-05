@@ -1,0 +1,28 @@
+[project]
+name = "unicode_age"
+version = "17.0.0.0"
+description = "A package for determining what version a Unicode codepoint was added to the standard"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+readme = "README.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "twine",
+    "build",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{39,310,311,312,313,314}
+
+[testenv]
+deps = pytest
+commands = pytest
+"""
