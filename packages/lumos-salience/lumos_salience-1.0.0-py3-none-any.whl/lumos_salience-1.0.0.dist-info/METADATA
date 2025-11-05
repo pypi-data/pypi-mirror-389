@@ -1,0 +1,360 @@
+Metadata-Version: 2.4
+Name: lumos-salience
+Version: 1.0.0
+Summary: LLM-based Universal Measure Of Salience - Testing LLMs' ability to capture image salience
+Project-URL: Repository, http://github.com/NNyarlathotep/Lumos-Salience
+Project-URL: Issues, https://github.com/NNyarlathotep/Lumos-Salience/issues
+Author-email: Cantay Caliskan <ccaliska@ur.rochester.edu>, Zhizhuang Chen <zchen141@u.rochester.edu>
+License: MIT
+License-File: LICENSE
+Keywords: Computer Vision,Image Segmentation,Large Language Model,Saliency Detection
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Image Recognition
+Requires-Python: >=3.8
+Requires-Dist: accelerate>=0.20.0
+Requires-Dist: numpy>=1.19.0
+Requires-Dist: opencv-python>=4.5.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: pillow>=8.0.0
+Requires-Dist: requests>=2.25.0
+Requires-Dist: torch>=2.0.0
+Requires-Dist: tqdm>=4.60.0
+Requires-Dist: transformers>=4.30.0
+Description-Content-Type: text/markdown
+
+# LUMOS — LLM-based Universal Measure Of Salience
+
+A comprehensive Python package for testing Large Language Models' ability to capture salience in images using bounding boxes and segmentation masks.
+
+## Overview
+
+LUMOS provides a complete pipeline for:
+1. **Model Integration**: Run various LLMs (local or via API) for saliency detection
+2. **Saliency Extraction**: Extract bounding boxes from LLM outputs
+3. **Mask Generation**: Convert bounding boxes to fine-grained masks using SAM (Segment Anything Model)
+4. **Evaluation**: Compute metrics (IoU, MAE, S-measure, E-measure) against ground truth
+
+## Installation
+
+```bash
+# Install from PyPI
+pip install lumos-salience
+
+# Or install from source
+git clone https://github.com/NNyarlathotep/Lumos-Salience.git
+cd Lumos-Salience
+pip install -e .
+
+# IMPORTANT: Install SAM (Segment Anything Model) separately
+# SAM is required for Module 3 (Segmentation)
+pip install git+https://github.com/facebookresearch/segment-anything.git
+
+# Optional: For DeepSeek-VL local model
+git clone https://github.com/deepseek-ai/DeepSeek-VL.git
+pip install -e ./DeepSeek-VL
+```
+
+> **Note**: SAM cannot be installed automatically from PyPI due to packaging limitations. You must install it manually using the command above if you want to use the segmentation module.
+
+## Requirements
+
+### Core Dependencies
+```
+numpy>=1.19.0
+opencv-python>=4.5.0
+pandas>=1.3.0
+pillow>=8.0.0
+torch>=2.0.0
+tqdm>=4.60.0
+requests>=2.25.0
+transformers>=4.30.0
+accelerate>=0.20.0
+```
+
+### Additional Requirements (Manual installation)
+```
+# For SAM segmentation (Module 3)
+segment-anything (install from GitHub as shown above)
+
+# For DeepSeek-VL local model
+deepseek-vl (optional, install from GitHub)
+```
+
+## Quick Start
+
+### 1. Basic Usage with OpenRouter API
+
+```python
+from lumos import create_model, extract_saliency, segment_with_sam, evaluate_saliency
+
+# Create model (OpenRouter API)
+model = create_model(
+    "openrouter", 
+    model_name="anthropic/claude-3-opus",
+    api_key="your-api-key-here"  # or set OPENROUTER_API_KEY env variable
+)
+
+# Extract salience bounding boxes
+extract_saliency(
+    model=model,
+    images_folder="path/to/images",
+    output_csv="bbox_results.csv",
+    limit=100  # process first 100 images
+)
+
+# Generate fine-grained masks with SAM
+segment_with_sam(
+    csv_path="bbox_results.csv",
+    images_root="path/to/images",
+    output_dir="sam_outputs",
+    model_type="vit_h"  # or "vit_l", "vit_b" for faster inference
+)
+
+# Evaluate against ground truth
+results = evaluate_saliency(
+    csv_path="sam_outputs/sam_results.csv",
+    validation_dir="path/to/ground_truth_masks",
+    output_csv="evaluation_results.csv",
+    mode="mask"  # or "bbox" for bounding box evaluation
+)
+
+print(f"Average IoU: {results['iou'].mean():.4f}")
+print(f"Average MAE: {results['mae'].mean():.4f}")
+```
+
+### 2. Using Local Models
+
+```python
+# DeepSeek-VL
+model = create_model("deepseek-vl", model_path="deepseek-ai/deepseek-vl-7b-chat")
+
+# Qwen-VL
+model = create_model("qwen-vl", model_path="Qwen/Qwen2.5-VL-7B-Instruct")
+
+# MiniCPM-V
+model = create_model("minicpm", model_path="openbmb/MiniCPM-V-4_5")
+
+# Then use the same extraction pipeline
+extract_saliency(model, "images/", "results.csv")
+```
+
+### 3. Custom Prompts
+
+```python
+custom_prompt = """
+Analyze this image and identify the most salient region.
+Return the bounding box in [x_min, y_min, x_max, y_max] format.
+Use pixel coordinates.
+"""
+
+extract_saliency(
+    model=model,
+    images_folder="images/",
+    output_csv="custom_results.csv",
+    prompt=custom_prompt
+)
+```
+
+## Module Documentation
+
+### Module 1: Models (`lumos.models`)
+
+Supports multiple LLM backends for saliency detection:
+
+```python
+from lumos.models import create_model
+
+# OpenRouter (cloud API)
+model = create_model("openrouter", model_name="anthropic/claude-3-opus", api_key="...")
+
+# Local models
+model = create_model("deepseek-vl")
+model = create_model("qwen-vl")
+model = create_model("minicpm")
+```
+
+**Supported Models:**
+- **OpenRouter API**: Access to 100+ models via unified API
+- **DeepSeek-VL**: 7B parameter vision-language model
+- **Qwen2.5-VL**: Alibaba's vision-language model
+- **MiniCPM-V**: Efficient 4.5B parameter model
+
+### Module 2: Extraction (`lumos.extraction`)
+
+Extract and normalize bounding boxes from LLM outputs:
+
+```python
+from lumos.extraction import BoundingBoxExtractor, extract_saliency
+
+# Automatic extraction with format handling
+extractor = BoundingBoxExtractor(model, output_format="pixel")
+extractor.process_folder("images/", prompt, output_csv="results.csv")
+
+# Supports multiple input formats:
+# - [x1, y1, x2, y2]
+# - [[x1, y1, x2, y2], ...]
+# - [{"bbox_2d": [x1, y1, x2, y2], "label": "..."}, ...]
+```
+
+### Module 3: Segmentation (`lumos.segmentation`)
+
+Generate fine-grained masks using SAM:
+
+```python
+from lumos.segmentation import SAMSegmenter, segment_with_sam
+
+# Quick function
+segment_with_sam(
+    csv_path="bbox_results.csv",
+    images_root="images/",
+    output_dir="sam_outputs",
+    model_type="vit_h",  # vit_h (best), vit_l (balanced), vit_b (fast)
+    save_overlay=True    # save visualization overlays
+)
+
+# Advanced usage
+segmenter = SAMSegmenter(model_type="vit_h")
+masks = segmenter.segment_from_bboxes(image, bboxes)
+```
+
+**Performance Tips:**
+- `vit_h`: Best quality, slowest (~1x speed)
+- `vit_l`: Balanced (2-3x faster)
+- `vit_b`: Fast (4-5x faster), good quality
+
+### Module 4: Evaluation (`lumos.evaluation`)
+
+Comprehensive evaluation metrics:
+
+```python
+from lumos.evaluation import SaliencyEvaluator, evaluate_saliency
+
+# Evaluate from CSV
+results = evaluate_saliency(
+    csv_path="results.csv",
+    validation_dir="ground_truth/",
+    output_csv="evaluation.csv",
+    mode="bbox"  # or "mask"
+)
+
+# Available metrics
+evaluator = SaliencyEvaluator("ground_truth/")
+metrics = evaluator.evaluate_single_from_bbox(image_path, bboxes)
+# Returns: {"iou": float, "mae": float, "s_measure": float, "e_measure": float}
+```
+
+**Metrics:**
+- **IoU** (Intersection over Union): Overlap between prediction and ground truth
+- **MAE** (Mean Absolute Error): Pixel-wise error
+- **S-measure**: Structure similarity (ICCV 2017)
+- **E-measure**: Enhanced alignment measure (IJCAI 2018)
+
+## Examples
+
+### End-to-End Pipeline
+
+```python
+import os
+from lumos import create_model, extract_saliency, segment_with_sam, evaluate_saliency
+
+# Setup
+os.environ["OPENROUTER_API_KEY"] = "your-key-here"
+
+# 1. Create model
+model = create_model("openrouter", model_name="anthropic/claude-3-opus")
+
+# 2. Extract bounding boxes
+extract_saliency(
+    model=model,
+    images_folder="dataset/images",
+    output_csv="step1_bboxes.csv",
+    limit=None  # process all images
+)
+
+# 3. Generate masks with SAM
+segment_with_sam(
+    csv_path="step1_bboxes.csv",
+    images_root="dataset/images",
+    output_dir="step2_masks",
+    model_type="vit_h"
+)
+
+# 4. Evaluate
+results = evaluate_saliency(
+    csv_path="step2_masks/sam_results.csv",
+    validation_dir="dataset/ground_truth",
+    output_csv="step3_evaluation.csv",
+    mode="mask"
+)
+
+# Print summary
+print(f"\n{'='*50}")
+print(f"Evaluation Results (n={len(results)})")
+print(f"{'='*50}")
+print(f"IoU:       {results['iou'].mean():.4f} ± {results['iou'].std():.4f}")
+print(f"MAE:       {results['mae'].mean():.4f} ± {results['mae'].std():.4f}")
+print(f"S-measure: {results['s_measure'].mean():.4f} ± {results['s_measure'].std():.4f}")
+print(f"E-measure: {results['e_measure'].mean():.4f} ± {results['e_measure'].std():.4f}")
+```
+
+### Batch Processing Multiple Models
+
+```python
+models_to_test = [
+    ("openrouter", {"model_name": "anthropic/claude-3-opus"}),
+    ("deepseek-vl", {}),
+    ("qwen-vl", {}),
+]
+
+for model_type, kwargs in models_to_test:
+    print(f"\nTesting {model_type}...")
+    
+    model = create_model(model_type, **kwargs)
+    
+    extract_saliency(
+        model=model,
+        images_folder="test_images/",
+        output_csv=f"results_{model_type}.csv",
+        limit=50
+    )
+    
+    evaluate_saliency(
+        csv_path=f"results_{model_type}.csv",
+        validation_dir="ground_truth/",
+        output_csv=f"eval_{model_type}.csv",
+        mode="bbox"
+    )
+```
+
+## Project Structure
+
+```
+Lumos-Salience/
+├── src/
+│   └── lumos/
+│       ├── __init__.py          # Package initialization
+│       ├── models.py            # Module 1: LLM model runners
+│       ├── extraction.py        # Module 2: Bounding box extraction
+│       ├── segmentation.py      # Module 3: SAM segmentation
+│       └── evaluation.py        # Module 4: Evaluation metrics
+├── pyproject.toml              # Package configuration
+├── LICENSE                     # MIT License
+└── README.md                   # This file
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+**Cantay Caliskan**  
+Email: ccaliska@ur.rochester.edu
+
+**Zhizhuang Chen**  
+Email: zchen141@u.rochester.edu
