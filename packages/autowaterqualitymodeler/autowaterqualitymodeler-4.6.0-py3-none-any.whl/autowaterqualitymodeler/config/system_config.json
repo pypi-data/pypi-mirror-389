@@ -1,0 +1,113 @@
+{
+  "system": {
+    "encryption": {
+      "password": "water_quality_analysis_key",
+      "salt": "water_quality_salt",
+      "iv": "fixed_iv_16bytes",
+      "iterations": 100000,
+      "key_length": 32
+    },
+    "output": {
+      "models_dir": "output/models",
+      "logs_dir": "logs",
+      "predictions_dir": "output/predictions"
+    },
+    "logging": {
+      "level": "INFO",
+      "max_bytes": 10485760,
+      "backup_count": 5,
+      "console_output": true
+    }
+  },
+  "water_quality_params": [
+    "turbidity", "ss", "sd", "do", "codmn", 
+    "codcr", "chla", "tn", "tp", "chroma", "nh3n"
+  ],
+  "feature_stations": [
+    "STZ1", "STZ2", "STZ3", "STZ4", "STZ5", "STZ6", "STZ7", 
+    "STZ8", "STZ9", "STZ10", "STZ11", "STZ12", "STZ13", 
+    "STZ14", "STZ15", "STZ16", "STZ17", "STZ18", "STZ19",
+    "STZ20", "STZ21", "STZ22", "STZ23", "STZ24", "STZ25", "STZ26"
+  ],
+  "column_name_mapping": {
+    "comment": "双向列名映射配置",
+    "input_mappings": {
+      "TURBIDITY": "turbidity",
+      "Turbidity": "turbidity",
+      "浊度": "turbidity",
+      "NTU": "turbidity",
+      "Turb": "turbidity",
+      "CHLA": "chla",
+      "Chla": "chla",
+      "CHL-A": "chla",
+      "叶绿素a": "chla",
+      "叶绿素A": "chla",
+      "Chlorophyll-a": "chla",
+      "SS": "ss",
+      "悬浮物": "ss",
+      "TSS": "ss",
+      "总悬浮物": "ss",
+      "SD": "sd",
+      "透明度": "sd",
+      "Secchi": "sd",
+      "塞氏盘深度": "sd",
+      "DO": "do",
+      "溶解氧": "do",
+      "Dissolved_Oxygen": "do",
+      "CODMN": "codmn",
+      "CODMn": "codmn",
+      "高锰酸盐": "codmn",
+      "高锰酸盐指数": "codmn",
+      "CODCR": "codcr",
+      "CODCr": "codcr",
+      "COD": "codcr",
+      "化学需氧量": "codcr",
+      "重铬酸盐指数": "codcr",
+      "TN": "tn",
+      "总氮": "tn",
+      "Total_Nitrogen": "tn",
+      "TP": "tp",
+      "总磷": "tp",
+      "Total_Phosphorus": "tp",
+      "CHROMA": "chroma",
+      "Chroma": "chroma",
+      "色度": "chroma",
+      "Color": "chroma",
+      "NH3N": "nh3n",
+      "NH3-N": "nh3n",
+      "氨氮": "nh3n",
+      "Ammonia_Nitrogen": "nh3n"
+    },
+    "output_mappings": {
+      "turbidity": "Turb",
+      "ss": "SS",
+      "sd": "SD",
+      "do": "DO",
+      "codmn": "CODMn",
+      "codcr": "COD",
+      "chla": "Chla",
+      "tn": "TN",
+      "tp": "TP",
+      "chroma": "Chroma",
+      "nh3n": "NH3-N"
+    }
+  },
+  "processing": {
+    "default_min_wavelength": 400,
+    "default_max_wavelength": 900,
+    "default_smooth_window": 11,
+    "default_smooth_order": 3,
+    "anomaly_threshold": 0.1,
+    "interpolation_method": "cubic"
+  },
+  "modeling": {
+    "default_min_samples": 6,
+    "default_max_features": 5,
+    "correlation_threshold": 0.3,
+    "power_model_bounds": {
+      "a": [0.000001, 100000],
+      "b": [-50, 50]
+    },
+    "max_fitting_iterations": 10000
+  }
+}
