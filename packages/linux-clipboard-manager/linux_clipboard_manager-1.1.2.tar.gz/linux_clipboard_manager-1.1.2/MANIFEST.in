@@ -1,0 +1,19 @@
+include README.md
+include LICENSE
+include CONTRIBUTING.md
+include DEPLOYMENT.md
+include requirements.txt
+include pyproject.toml
+include install-system.sh
+include smart-clipboard.service
+include smart-clipboard.desktop
+include smart-clipboard
+include smart-clipboard-gui
+recursive-include src *.py
+recursive-include tests *.py
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .pytest_cache
+global-exclude *.so
+global-exclude .coverage
+global-exclude .DS_Store
