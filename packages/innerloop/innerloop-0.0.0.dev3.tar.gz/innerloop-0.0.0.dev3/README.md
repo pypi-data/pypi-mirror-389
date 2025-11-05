@@ -1,0 +1,419 @@
+# InnerLoop
+
+Python SDK for invoking the [OpenCode](https://opencode.ai/) coding CLI in a headless, non-interactive manner.
+
+Supports:
+
+- Synchronous and Asynchronous modes
+- Structured outputs using Pydantic models
+- Sessions for multiple invocations with shared context
+- Permission configuration for reading, writing, web, and bash tools
+- Configurable working directory per loop, session, or call
+
+## Quick Start
+
+See [docs/guides/installing-opencode.md](docs/guides/installing-opencode.md) for installation and configuration.
+
+Quick install:
+```bash
+make install_opencode  # Handles bun config automatically
+```
+
+Or manually:
+```bash
+npm install -g opencode-ai
+export OPENCODE_API_KEY=your-key
+opencode models
+```
+
+## Installation
+
+You can install `innerloop` using `uv` (recommended) or `pip`.
+
+```bash
+# Using uv
+uv pip install innerloop
+
+# Using pip
+pip install innerloop
+```
+
+## Prerequisites
+
+**InnerLoop requires the OpenCode CLI.** Install it and ensure `opencode` is on your PATH:
+
+```bash
+opencode --version
+```
+
+If the command fails, install OpenCode from [opencode.ai](https://opencode.ai/) and add it to your PATH.
+
+See the [OpenCode documentation](https://opencode.ai/docs/) for installation instructions.
+
+## Usage
+
+<!-- BEGIN USAGE -->
+We summarize results below each snippet without `print()` in the examples.
+Summary shows: Output (first 100 chars), Duration (ms), Events.
+
+To render yourself from a Response object:
+
+```python
+def show(resp):
+    print('Output:', str(resp.output)[:100])
+    dur = (resp.time.end - resp.time.start) if resp.time else 0
+    print(f'Duration: {dur} ms')
+    print(f'Events: {resp.event_count}')
+    print(resp.model_dump_json(by_alias=True, indent=4))
+```
+
+See: src/innerloop/response.py
+
+
+### Synchronous Run
+
+```python
+from innerloop import Loop
+
+loop = Loop(model="anthropic/claude-haiku-4-5")
+response = loop.run("Say hello, one short line.")
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "error": "Command not found"
+}
+```
+</details>
+
+### Asynchronous Run
+
+```python
+import asyncio
+from innerloop import Loop
+
+async def main():
+    loop = Loop(model="anthropic/claude-haiku-4-5")
+    async with loop.asession() as s:
+        await s("Remember this number: 42")
+        response = await s("What was the number?")
+
+asyncio.run(main())
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "error": "Command not found"
+}
+```
+</details>
+
+### Tool Use (with workdir)
+
+```python
+from innerloop import Loop, allow
+
+loop = Loop(
+    model="anthropic/claude-haiku-4-5",
+    perms=allow("bash"),
+)
+loop.default_workdir = "src/innerloop"
+response = loop.run("Use bash: ls -1\nReturn only the raw command output.")
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "error": "Command not found"
+}
+```
+</details>
+
+### Synchronous Session
+
+```python
+from innerloop import Loop
+
+loop = Loop(model="anthropic/claude-haiku-4-5")
+with loop.session() as s:
+    s("Please remember this word for me: avocado")
+    response = s("What was the word I asked you to remember?")
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "error": "Command not found"
+}
+```
+</details>
+
+### Asynchronous Session
+
+```python
+import asyncio
+from innerloop import Loop
+
+async def main():
+    loop = Loop(model="anthropic/claude-haiku-4-5")
+    async with loop.asession() as s:
+        await s("Remember this number: 42")
+        response = await s("What was the number?")
+
+asyncio.run(main())
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "error": "Command not found"
+}
+```
+</details>
+
+### Structured Output
+
+```python
+from innerloop import Loop, allow
+from pydantic import BaseModel
+
+class HNStory(BaseModel):
+    title: str
+    url: str
+    points: int
+    comments: int
+
+class HNTop(BaseModel):
+    stories: list[HNStory]
+
+loop = Loop(
+    model="anthropic/claude-haiku-4-5",
+    perms=allow(webfetch=True),
+)
+
+prompt = (
+    "Using web search, find the current top 5 stories on Hacker News.\n"
+    "Prefer news.ycombinator.com (front page or item pages). For each,\n"
+    "return: title, url, points (int), comments (int). Output JSON with\n"
+    "a 'stories' array. If counts are missing, open the item page and\n"
+    "extract them. Keep titles unmodified.\n"
+)
+response = loop.run(prompt, response_format=HNTop)
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "note": "Structured example requires working webfetch/network and provider.",
+    "prompt": "Using web search, find the current top 5 stories on Hacker News.\nPrefer news.ycombinator.com (front page or item pages). For each,\nreturn: title, url, points (int), comments (int). Output JSON with\na 'stories' array. If counts are missing, open the item page and\nextract them. Keep titles unmodified.\n",
+    "error": "Command not found"
+}
+```
+</details>
+
+### Providers — OpenCode API
+
+```python
+from innerloop import Loop, providers
+
+# Method 1: Using OPENCODE_API_KEY environment variable (recommended)
+# Set: export OPENCODE_API_KEY=your-key
+loop = Loop(model="opencode/big-pickle")
+
+# Method 2: Pass API key explicitly via providers
+loop = Loop(
+    model="opencode/big-pickle",
+    providers=providers(opencode="your-key-here"),
+)
+
+# Method 3: Full configuration with dict
+loop = Loop(
+    model="opencode/big-pickle",
+    providers=providers(opencode={"apiKey": "your-key-here"}),
+)
+
+response = loop.run("Say hello in one short line.")
+```
+
+```text
+Output: Hello! How can I assist you today?
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "note": "OpenCode example requires OPENCODE_API_KEY environment variable.",
+    "how_to": [
+        "Set OPENCODE_API_KEY environment variable: export OPENCODE_API_KEY=your-key",
+        "Or pass via providers: providers(opencode='your-key')"
+    ],
+    "session_id": "ses_example",
+    "input": "Say hello in one short line.",
+    "output": "Hello! How can I assist you today?",
+    "attempts": 1,
+    "events": [],
+    "event_count": 0
+}
+```
+</details>
+
+### Providers — LM Studio (local)
+
+```python
+from innerloop import Loop
+
+loop = Loop(
+    model="lmstudio/google/gemma-3n-e4b",
+    providers={
+        "lmstudio": {
+            "options": {"baseURL": "http://127.0.0.1:1234/v1"}
+        },
+    },
+)
+
+response = loop.run("In one concise sentence, say something creative about coding.")
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "note": "LM Studio example requires a running server.",
+    "how_to": [
+        "Start LM Studio and load google/gemma-3n-e4b",
+        "Ensure LM Studio is listening at http://127.0.0.1:1234/v1"
+    ],
+    "error": "Command not found"
+}
+```
+</details>
+
+### MCP — Remote server (Context7)
+
+```python
+from innerloop import Loop, mcp
+
+loop = Loop(
+    model="anthropic/claude-sonnet-4-5",
+    mcp=mcp(context7="https://mcp.context7.com/mcp"),
+)
+prompt = (
+    "Use the context7 MCP server to search for FastAPI's latest "
+    "async database patterns. Summarize in 2-3 sentences."
+)
+response = loop.run(prompt)
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "note": "MCP remote example requires network and server access.",
+    "prompt": "Use the context7 MCP server to search for FastAPI's latest async database patterns. Summarize in 2-3 sentences.",
+    "error": "Command not found"
+}
+```
+</details>
+
+### MCP — Local server (BioMCP)
+
+```python
+from innerloop import Loop, mcp
+
+loop = Loop(
+    model="anthropic/claude-sonnet-4-5",
+    mcp=mcp(biomcp="uvx --from biomcp-python biomcp run"),
+)
+prompt = (
+    "Using ONLY the biomcp MCP server tools, look up the BRAF V600E mutation. "
+    "List associated cancer types and targeted drug therapies in 2-3 sentences."
+)
+response = loop.run(prompt, timeout=60.0)
+```
+
+```text
+Output: None
+Duration: n/a ms
+Events: 0
+```
+
+<details>
+  <summary>JSON Output</summary>
+
+```json
+{
+    "note": "MCP local example likely requires biomcp installed.",
+    "prompt": "Using ONLY the biomcp MCP server tools, look up the BRAF V600E mutation. List associated cancer types and targeted drug therapies in 2-3 sentences.",
+    "error": "Command not found"
+}
+```
+</details>
+<!-- END USAGE -->
