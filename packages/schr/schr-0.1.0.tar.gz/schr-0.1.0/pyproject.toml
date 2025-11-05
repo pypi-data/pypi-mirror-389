@@ -1,0 +1,63 @@
+[project]
+name = "schr"
+version = "0.1.0"
+description = "Schr: GPU-Accelerated Quantum Mechanics and QED Simulator"
+readme = "README.md"
+authors = [
+    { name = "sql-hkr", email = "sql.hkr@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "jax>=0.8.0",
+    "jaxlib>=0.8.0",
+    "matplotlib>=3.10.7",
+    "tqdm>=4.67.1",
+]
+keywords = ["quantum mechanics", "quantum electrodynamics", "JAX", "GPU", "simulation", "physics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.3,<0.9.0"]
+build-backend = "uv_build"
+
+
+[project.urls]
+Homepage = "https://github.com/sql-hkr/schr"
+Documentation = "https://github.com/sql-hkr/schr/blob/main/README.md"
+Repository = "https://github.com/sql-hkr/schr"
+Issues = "https://github.com/sql-hkr/schr/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = [
+    "E501",  # Line too long (physics/math documentation)
+    "N803",  # Argument name should be lowercase (physics conventions: psi, H, etc.)
+    "N806",  # Variable in function should be lowercase (physics conventions: X, Y, H, etc.)
+    "F841",  # Local variable is assigned to but never used
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.3",
+    "sphinx>=8.2.3",
+    "myst-parser>=4.0.0",
+]
+
