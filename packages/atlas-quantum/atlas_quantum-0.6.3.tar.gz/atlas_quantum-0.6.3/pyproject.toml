@@ -1,0 +1,199 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas-quantum"
+version = "0.6.3"
+description = "GPU-accelerated quantum tensor network simulator with coherence-aware VQE, adaptive MPS, molecular chemistry, VRA integration, and cuQuantum backend"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "ATLAS-Q Development Team"},
+]
+maintainers = [
+    {name = "ATLAS-Q Development Team"},
+]
+keywords = [
+    "quantum",
+    "simulation",
+    "tensor-networks",
+    "mps",
+    "peps",
+    "vqe",
+    "coherence-aware",
+    "vra",
+    "qaoa",
+    "tdvp",
+    "period-finding",
+    "molecular-chemistry",
+    "circuit-cutting",
+    "gpu-acceleration",
+    "cuquantum",
+    "nisq"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "numpy>=1.22",
+    "scipy>=1.10.0",
+    "matplotlib>=3.6",
+    "torch>=2.0.0",
+]
+
+[project.optional-dependencies]
+# GPU acceleration (Triton kernels)
+gpu = [
+    "triton>=2.0.0",
+]
+
+# cuQuantum backend (advanced GPU optimization)
+cuquantum = [
+    "cuquantum-python>=23.0.0",
+]
+
+# Molecular chemistry (PySCF integration + OpenFermion for VQE)
+chemistry = [
+    "pyscf>=2.0.0",
+    "openfermion>=1.5.0",
+    "openfermionpyscf>=0.5.0",
+]
+
+# ML tools (rank prediction, AI-guided truncation)
+ml = [
+    "scikit-learn>=1.0.0",
+]
+
+# Development and testing
+dev = [
+    "pytest>=7.3",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.0.260",
+]
+
+# Jupyter notebooks
+notebooks = [
+    "jupyter>=1.0",
+    "ipykernel>=6.22",
+]
+
+# All optional dependencies
+all = [
+    "atlas-quantum[gpu,cuquantum,chemistry,ml,dev,notebooks]",
+]
+
+[project.urls]
+Homepage = "https://github.com/followthesapper/ATLAS-Q"
+Documentation = "https://github.com/followthesapper/ATLAS-Q/tree/main/docs"
+Repository = "https://github.com/followthesapper/ATLAS-Q"
+"Bug Tracker" = "https://github.com/followthesapper/ATLAS-Q/issues"
+Changelog = "https://github.com/followthesapper/ATLAS-Q/blob/main/docs/CHANGELOG.md"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["atlas_q*", "triton_kernels*"]
+
+[tool.setuptools.package-data]
+atlas_q = ["py.typed"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+markers = [
+    "gpu: tests that exercise optional GPU paths (deselect with '-m \"not gpu\"')",
+    "slow: longer-running tests (deselect with '-m \"not slow\"')",
+    "ml: tests requiring PyTorch/ML dependencies",
+    "integration: end-to-end integration tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["atlas_q"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+known_first_party = ["atlas_q", "triton_kernels"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
