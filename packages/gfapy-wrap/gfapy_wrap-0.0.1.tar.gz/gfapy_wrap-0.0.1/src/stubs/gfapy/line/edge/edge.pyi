@@ -1,0 +1,3 @@
+from ...line import Line as Line
+
+class Edge(Line): ...

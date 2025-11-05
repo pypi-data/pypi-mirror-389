@@ -1,0 +1,3 @@
+class Pos:
+    @property
+    def rpos(self): ...

@@ -1,0 +1,118 @@
+default:
+  image: python:3.13
+  cache:
+    paths:
+      - .pip-cache/
+  before_script:
+    - |
+      python --version
+      pip install --upgrade pip
+      pip install build twine
+
+stages:
+  - build
+  - test
+  - linter
+  - publish
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
+  PKG_NAME: "wgfapy"
+  SRC_PKG: "src/wgfapy"
+
+
+build:
+  stage: build
+  script:
+    - |
+      python -m build
+  artifacts:
+    paths:
+      - dist/
+  rules:
+    - if: $CI_COMMIT_TAG
+
+.linter:
+  before_script:
+      - |
+        python --version # For debugging
+        pip install -r config/requirements-linters.txt
+        pip install .
+        function badge-values() {
+          local -r CODE=$1
+          if [ "$CODE" -eq 0 ]; then
+              badge_msg="success"
+              badge_col="green"
+          else
+              badge_msg="fail"
+              badge_col="red"
+          fi
+        }
+        function badge-json-str() {
+            local -r LABEL=$1
+            local -r CODE=$2
+            badge-values "$CODE"
+            echo "{\"schemaVersion\": 1, \"label\": \"$LABEL\", \"message\": \"$badge_msg\", \"color\": \"$badge_col\"}"
+        }
+
+mypy:
+  stage: linter
+  before_script:
+    - !reference
+      - .linter
+      - before_script
+  script:
+    - |
+      set -e
+      mypy --version
+      mkdir ./mypy
+      mypy --config-file=mypy.ini --pretty --exclude=tests "$SRC_PKG" && LINTER_CODE=0 || LINTER_CODE=1
+      badge-json-str "Mypy" $LINTER_CODE > ./mypy/badge.json
+  artifacts:
+    paths:
+      - ./mypy/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+ruff:
+  stage: linter
+  before_script:
+    - !reference
+      - .linter
+      - before_script
+  script:
+    - |
+      set -e
+      ruff --version
+      mkdir ./ruff
+      ruff check "$SRC_PKG" && LINTER_CODE=0 || LINTER_CODE=1
+      badge-json-str "Ruff" $LINTER_CODE > ./ruff/badge.json
+  artifacts:
+    paths:
+      - ./ruff/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+
+
+test:
+  stage: test
+  before_script:
+    - |
+      python --version # For debugging
+      pip install -r config/requirements-tests.txt
+      pip install .
+  script:
+    - |
+      pytest --cov=$PKG_NAME --config-file pytest.ini
+  coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+publish:
+  stage: publish
+  script:
+    - |
+      python -m twine upload -u "$TWINE_USERNAME" -p "$TWINE_PASSWORD" dist/*
+  rules:
+    - if: $CI_COMMIT_TAG
