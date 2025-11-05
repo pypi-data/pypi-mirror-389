@@ -1,0 +1,258 @@
+# Configuration
+
+A few configuration options for this theme
+
+```{note}
+This documentation and the examples below are written with MyST Markdown, a form
+of markdown that works with Sphinx. For more information about MyST markdown, and
+to use MyST markdown with your Sphinx website,
+see [the MyST-parser documentation](https://myst-parser.readthedocs.io/)
+```
+
+## Disabling QuantEcon Official Components
+
+If you are a project using this theme please use
+
+```python
+html_theme_options = {
+    ...
+    "quantecon_project": False,
+    ...
+}
+```
+
+as this will remove the QuantEcon logo from the top toolbar.
+
+This will also override some colors styles for a slightly different look
+for the theme.
+
+## Source repository buttons
+
+There are a collection of buttons that you can use to link back to your source
+repository. This lets users browse the repository, or take actions like suggest
+an edit or open an issue. In each case, they require the following configuration
+to exist:
+
+```python
+html_theme_options = {
+    ...
+    "repository_url": "https://github.com/{your-docs-url}",
+    ...
+}
+```
+
+### Add a link to your repository
+
+To add a link to your repository, add the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "repository_url": "https://github.com/{your-docs-url}",
+    "use_repository_button": True,
+    ...
+}
+```
+
+### Add a button to open issues
+
+To add a button to open an issue about the current page, use the following
+configuration:
+
+```python
+html_theme_options = {
+    ...
+    "repository_url": "https://github.com/{your-docs-url}",
+    "use_issues_button": True,
+    ...
+}
+```
+
+### Add a button to suggest edits
+
+You can add a button to each page that will allow users to edit the page text
+directly and submit a pull request to update the documentation. To include this
+button, use the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "repository_url": "https://github.com/{your-docs-url}",
+    "use_edit_page_button": True,
+    ...
+}
+```
+
+By default, the edit button will point to the `master` branch, but if you'd like
+to change this, use the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "repository_branch": "{your-branch}",
+    ...
+}
+```
+
+By default, the edit button will point to the root of the repository. If your
+documentation is hosted in a sub-folder, use the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "path_to_docs": "{path-relative-to-site-root}",
+    ...
+}
+```
+
+## Use a single-page version of this theme
+
+If your documentation only has a single page, and you don't need the left
+navigation bar, then you may configure `quantecon-book-theme` to run in **single page mode**
+with the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "single_page": True
+    ...
+}
+```
+
+## Add authors to your documentation
+
+If you'd like to add a list of authors to your documentation, you can do so with the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "authors": [
+        {"name": "author1", "url": "bio-link1"},
+        {"name": "author2", "url": "bio-link2"},
+    ]
+}
+```
+
+Authors with there bio links will be displayed just below the title of the page.
+
+## Use plugins to add/extend features
+
+If you want some extra features in your documentation website or modify an existing one, you can add a list of plugins
+in javascript format, to suit your needs:
+
+```python
+html_theme_options = {
+    ...
+    "plugins_list": ["path-relative-to-config-file.js"]
+    ...
+}
+```
+
+## Add a dark mode version of your logo
+
+To optimize your branding for dark mode, consider creating a dedicated dark mode variant of your logo.
+Then, configure the theme settings to display this variant when dark mode is active, using the following configuration:
+
+```python
+html_theme_options = {
+    ...
+    "dark_logo": "name-of-dark-logo-image"
+    ...
+}
+```
+
+The image is expected to be in the `_static` folder of your source repository.
+
+## Specifying the hosting location for Download Notebooks
+
+While this location is auto-configured to be `/_notebooks/` (which works in most deployment cases) this option
+enables you to specify a different location for more complex url structures such as those found when using
+GitHub pages (without a custom URL)
+
+```python
+html_theme_options = {
+    ...
+    "download_nb_path" : https://{{ GitHub Account}}.github.io/{{ repo }}/
+    ...
+}
+```
+
+## Custom Code Syntax Highlighting
+
+By default, the theme uses custom QuantEcon syntax highlighting colors for code blocks. If you'd prefer to use Pygments' built-in syntax highlighting styles instead, you can disable the custom code styling:
+
+```python
+# conf.py
+
+# Set the Pygments style you want to use
+pygments_style = 'friendly'  # or 'monokai', 'github-dark', 'default', etc.
+
+html_theme_options = {
+    ...
+    "qetheme_code_style": False,
+    ...
+}
+```
+
+Available Pygments styles include: `default`, `friendly`, `monokai`, `github-dark`, `github-light`, `tango`, `vim`, and many others. See the [Pygments documentation](https://pygments.org/styles/) for a full list.
+
+When `qetheme_code_style` is `True` (the default), the custom QuantEcon code highlighting is used and the `pygments_style` setting is ignored. When set to `False`, the theme will respect your `pygments_style` configuration.
+
+## Customizing Toggle Button Text
+
+The theme supports collapsible content via the `sphinx-togglebutton` extension, which provides two mechanisms for creating expandable sections:
+
+1. **Toggle directives** - Created with `` ```{toggle} `` syntax
+2. **Dropdown admonitions** - Created by adding `:class: dropdown` to admonitions
+
+### Customizing Toggle Directive Text
+
+To customize the button text for toggle directives, add the following to your Sphinx configuration:
+
+```python
+# conf.py
+
+# Customize toggle button text
+togglebutton_hint = "Show"
+togglebutton_hint_hide = "Hide"
+```
+
+For Jupyter Book projects, add to your `_config.yml`:
+
+```yaml
+# _config.yml
+
+sphinx:
+  config:
+    togglebutton_hint: "Show"
+    togglebutton_hint_hide: "Hide"
+```
+
+### Dropdown Admonitions
+
+The theme automatically customizes dropdown admonitions (those with `:class: dropdown`) to display "Show"/"Hide" instead of the default "Click to show"/"Click to hide". This styling is built into the theme and requires no additional configuration.
+
+**Example usage:**
+
+````markdown
+```{note}
+:class: dropdown
+
+This is a collapsible note that will show "Show" when collapsed and "Hide" when expanded.
+```
+
+```{toggle}
+This is a toggle directive that will use the configured button text.
+```
+````
+which renders:
+
+```{note}
+:class: dropdown
+
+This is a collapsible note that will show "Show" when collapsed and "Hide" when expanded.
+```
+
+```{toggle}
+This is a toggle directive that will use the configured button text.
+```
