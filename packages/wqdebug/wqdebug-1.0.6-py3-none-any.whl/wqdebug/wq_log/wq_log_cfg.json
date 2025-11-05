@@ -1,0 +1,109 @@
+{
+    "regex_replace": [
+        [
+            "^.*?app_bt_send_rpc_cmd (\\d+) ret=(\\d+)$",
+            [
+                "bt_cmd_t",
+                "bt_result_t"
+            ]
+        ],
+        [
+            "^.*?bt handle cmd:(\\d+)$",
+            [
+                "bt_cmd_t"
+            ]
+        ],
+        [
+            "^.*?app_send_msg type:(\\d+) id:(\\d+) param_len:(\\d+) priority:(\\d+)$",
+            [
+                "app_msg_type_t"
+            ]
+        ],
+        [
+            "^.*?app_wws_send_remote_msg type:(\\d+) id:(\\d+) param_len:(\\d+)$",
+            [
+                "app_msg_type_t"
+            ]
+        ],
+        [
+            "^.*?wws_handle_remote_msg type:(\\d+) id:(\\d+) param_len:(\\d+)$",
+            [
+                "app_msg_type_t"
+            ]
+        ],
+        [
+            "^.*?app_send_msg_delay type:(\\d+) id:\\d+ delay:\\d+$",
+            [
+                "app_msg_type_t"
+            ]
+        ],
+        [
+            "^.*?handle_msg type:(\\d+) id:\\d+ run_time_ms:\\d+$",
+            [
+                "app_msg_type_t"
+            ]
+        ],
+        [
+            "^.*?app_cancel_delay_msg type:(\\d+) id:\\d+ triggered:\\d+$",
+            [
+                "app_msg_type_t"
+            ]
+        ],
+        [
+            "^.*?sys_state (0x\\d+)=>(0x\\d+)$",
+            [
+                "bt_sys_state_t",
+                "bt_sys_state_t"
+            ]
+        ],
+        [
+            "^.*?TDS:lc_lmp_tx_cfm:idx=\\d+,opcode=(\\d+),ext_opcode=\\d+$",
+            [
+                "co_lmp_opcode"
+            ]
+        ],
+        [
+            "^.*?TDS:lc_lmp_rx:idx=\\d+,opcode=(\\d+),ext_opcode=\\d+$",
+            [
+                "co_lmp_opcode"
+            ]
+        ],
+        [
+            "^.*?TDS:lc_lmp_tx:idx=\\d+,opcode=(\\d+),ext_opcode=\\d+$",
+            [
+                "co_lmp_opcode"
+            ]
+        ],
+        [
+            "^.*?TDS:lc_lmp_rx:idx=\\d+,opcode=(\\d+),ext_opcode=\\d+,tr_id=\\d+$",
+            [
+                "co_lmp_opcode"
+            ]
+        ],
+        [
+            "^.*?TDS:lc_lmp_tx:idx=\\d+,opcode=(\\d+),ext_opcode=\\d+,tr_id=\\d+$",
+            [
+                "co_lmp_opcode"
+            ]
+        ],
+        [
+            "^.*?vector:(\\d+) time \\d+$",
+            [
+                "CHIP_IRQ_VECTOR"
+            ]
+        ],
+        [
+            "^.*?WARNING: This rpc task is too heavy!\"\"src:(\\d+), cmd:(\\d+), interval \\d+$",
+            [
+                "IPC_CORES",
+                "callee_rpc_cmd"
+            ]
+        ],
+        [
+            "^.*?RX HCI_COMMAND_COMPLETE_EVENT. Packets Num: \\d+, Opcode: (0x\\d+), Status: 0x\\d+$",
+            [
+                "bt_hci_cmd_opcode"
+            ]
+        ]
+    ]
+}
