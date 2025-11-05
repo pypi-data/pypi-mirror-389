@@ -1,0 +1,170 @@
+Metadata-Version: 2.4
+Name: csf-crypto
+Version: 1.0.13
+Summary: Post-quantum cryptographic framework with fractal encoding and semantic keys - resistant to quantum attacks
+Home-page: https://github.com/iyotee/csf
+Author: Jeremy Noverraz (based on an idea by Ivàn Àvalos AND JCZD (engrenage.ch))
+Author-email: 
+Maintainer: Jeremy Noverraz
+License: MIT
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Security :: Cryptography
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: matplotlib>=3.7.0
+Requires-Dist: msgpack>=1.0.0
+Provides-Extra: pqc
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Dynamic: home-page
+Dynamic: maintainer
+Dynamic: requires-python
+
+# CSF-Crypto: Post-Quantum Cryptographic Security Framework
+
+**CSF-Crypto** is a military-grade, post-quantum cryptographic system that integrates fractal geometry with semantic keys to provide unprecedented security against both classical and quantum attacks.
+
+## What is CSF-Crypto?
+
+CSF-Crypto (Cryptographic Security Framework) is a revolutionary encryption protocol that combines:
+
+- **Post-Quantum Cryptography**: NIST PQC standards (CRYSTALS-Kyber, CRYSTALS-Dilithium, SPHINCS+)
+- **Fractal Encoding**: Messages encoded into Julia set parameters for unique geometric signatures
+- **Semantic Keys**: Text-derived numerical vectors adding a contextual security layer
+- **Constant-Time Operations**: Side-channel attack protection built-in
+
+Unlike traditional cryptography (RSA, AES), CSF-Crypto is designed from the ground up to resist both Shor's and Grover's quantum algorithms while maintaining the simplicity of standard cryptographic libraries.
+
+## Key Features
+
+### 🔒 Quantum-Resistant Security
+- Implements complete NIST PQC standards (FIPS 203, 204, 205)
+- Dual-layer key system: mathematical + semantic keys
+- Resistant to Shor's algorithm (key exchange) and Grover's algorithm (search attacks)
+
+### 🌐 Fractal-Based Encoding
+- Messages encoded into dynamic fractal structures (Julia sets)
+- Each encryption generates a unique fractal signature
+- Visual and cryptographic authentication through fractal fingerprints
+
+### 🎯 Military-Grade Protection
+- Constant-time operations throughout
+- Secure memory wiping
+- Comprehensive input validation
+- Side-channel attack resistant
+
+### 💻 Developer-Friendly API
+Works exactly like standard cryptographic libraries:
+
+```python
+from csf import FractalCryptoSystem
+from csf.core.keys import KeyManager
+
+# Initialize
+crypto = FractalCryptoSystem()
+key_manager = KeyManager()
+
+# Generate keys
+public_key, private_key = key_manager.generate_key_pair()
+
+# Encrypt
+message = "Secret message"
+encrypted = crypto.encrypt(message, "semantic_key", public_key, private_key)
+
+# Decrypt
+decrypted = crypto.decrypt(encrypted, "semantic_key", private_key)
+print(decrypted)  # "Secret message"
+```
+
+## Installation
+
+### Standard Installation
+
+```bash
+pip install csf-crypto
+```
+
+### With Post-Quantum Cryptography Support
+
+**Note**: CSF-Crypto includes built-in fallback implementations of NIST PQC algorithms. The optional `[pqc]` extra is currently empty as external PQC libraries may not be available on PyPI. CSF works perfectly without these extras - all PQC functionality is included by default with internal implementations.
+
+```bash
+# Standard installation (includes all PQC features)
+pip install csf-crypto
+```
+
+CSF includes internal implementations of CRYSTALS-Kyber, CRYSTALS-Dilithium, and SPHINCS+ algorithms, so no additional packages are required for post-quantum cryptography functionality.
+
+### Development Installation
+
+```bash
+pip install csf-crypto[dev]
+```
+
+## Use Cases
+
+- **Secure Communications**: Encrypt messages with quantum-resistant algorithms
+- **Digital Signatures**: Generate and verify fractal-based signatures
+- **Key Exchange**: Post-quantum key exchange using lattice cryptography
+- **IoT Security**: Lightweight but robust encryption for embedded systems
+- **Blockchain**: Fractal signatures for transaction verification
+
+## Technical Specifications
+
+- **Python**: 3.9+
+- **Dependencies**: numpy, scipy, matplotlib
+- **Post-Quantum Standards**: CRYSTALS-Kyber (FIPS 203), CRYSTALS-Dilithium (FIPS 204), SPHINCS+ (FIPS 205)
+- **Security Level**: Up to 256-bit post-quantum security
+
+## Architecture
+
+CSF-Crypto uses a modular architecture:
+
+- **Core**: Lattice-based cryptography, key management, randomness generation
+- **Crypto**: Encryption, decryption, signing, verification
+- **Fractal**: Julia set encoding/decoding, fractal signature generation
+- **Semantic**: Text-to-vector transformation, semantic key derivation
+- **PQC**: Post-quantum cryptography implementations (Kyber, Dilithium, SPHINCS+)
+- **Security**: Constant-time operations, side-channel protection, validation
+
+## Why CSF-Crypto?
+
+Traditional encryption methods (RSA, ECC) are vulnerable to quantum computers. CSF-Crypto provides:
+
+1. **Future-Proof**: Designed for the quantum computing era
+2. **Unique Approach**: Only system combining fractals + semantics + post-quantum
+3. **Proven Standards**: Based on NIST-approved algorithms
+4. **Easy Integration**: Simple API, works like any cryptographic library
+
+## Documentation
+
+- **Quick Start**: See examples in the [GitHub repository](https://github.com/iyotee/csf)
+- **Full Documentation**: Complete usage guide and API reference
+- **Whitepaper**: Technical details and cryptographic specifications
+
+## Inventor
+
+**Jeremy Noverraz (1988 - 2025)** based on an idea by **Ivàn Àvalos** AND **JCZD (engrenage.ch)**
+
+## License
+
+This project is provided for private/government use.
+
+## Project Links
+
+- **GitHub**: https://github.com/iyotee/csf
+- **PyPI**: https://pypi.org/project/csf-crypto/
+
+---
+
+**CSF-Crypto**: The next generation of cryptographic security, combining mathematics, geometry, and language to transcend the limits of classical and quantum computation.
+
