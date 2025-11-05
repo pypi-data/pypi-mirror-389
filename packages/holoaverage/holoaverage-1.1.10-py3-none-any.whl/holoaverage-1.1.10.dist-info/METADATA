@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: holoaverage
+Version: 1.1.10
+Summary: Reconstruction and averaging of off-axis electron holograms as obtained by transmission electron microscopes.
+Home-page: https://github.com/niermann/holoaverage
+Author: Tore Niermann
+Author-email: tore.niermann@tu-berlin.de
+License: GPLv3+
+Project-URL: Documentation, https://holoaverage.readthedocs.io
+Project-URL: Source Code, https://github.com/niermann/holoaverage
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Classifier: Topic :: Scientific/Engineering :: Physics
+Provides: holoaverage
+License-File: LICENSE.txt
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: h5py
+Requires-Dist: python-dateutil
+Provides-Extra: rst
+Requires-Dist: docutils>=0.11; extra == "rst"
+Provides-Extra: fftw
+Requires-Dist: pyfftw; extra == "fftw"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: provides
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: summary
+
+
+Holoaverage is a Python script for the reconstruction and averaging of series of off-axis electron holograms, 
+typically recorded in transmission electron holograms. The averaging is performed iteratively, such that instabilities 
+of the microscope, like specimen and biprism drifts, can be tracked and corrected between consecutive exposures.
+
+The averaging process is speed up, when also the `pyFFTW <http://hgomersall.github.com/pyFFTW/>`_ package is installed. 
+However, is not a requirement for holoaverage and thus not automatically installed by ``pip``.
+
+The source for holoaverage can be found on `GitHub <https://github.com/niermann/holoaverage>`_. The documentation can
+be found on `ReadTheDocs <https://holoaverage.readthedocs.io>`_.
