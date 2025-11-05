@@ -1,0 +1,93 @@
+Metadata-Version: 2.4
+Name: robotforge-python-sdk
+Version: 0.2.3
+Summary: Multi-layered Python SDK for AI/ML telemetry
+Home-page: https://github.com/robotforge/telemetry-sdk
+Author: RobotForge
+Author-email: support@robotforge.com.ng
+Project-URL: Bug Reports, https://github.com/robotforge/python-sdk/issues
+Project-URL: Source, https://github.com/robotforge/python-sdk
+Project-URL: Documentation, https://robotforge-python-sdk.readthedocs.io/
+Project-URL: Changelog, https://github.com/robotforge/python-sdk/blob/main/CHANGELOG.md
+Keywords: telemetry,monitoring,ai,ml,llm,observability,tracing,logging,openai,anthropic,langchain,instrumentation
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Monitoring
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Typing :: Typed
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp>=3.8.0
+Requires-Dist: pydantic>=1.10.0
+Requires-Dist: typing-extensions>=4.0.0
+Provides-Extra: auto
+Requires-Dist: openai>=1.0.0; extra == "auto"
+Requires-Dist: anthropic>=0.25.0; extra == "auto"
+Requires-Dist: langchain>=0.1.0; extra == "auto"
+Requires-Dist: llama-index>=0.9.0; extra == "auto"
+Requires-Dist: requests>=2.28.0; extra == "auto"
+Requires-Dist: httpx>=0.24.0; extra == "auto"
+Provides-Extra: web
+Requires-Dist: fastapi>=0.100.0; extra == "web"
+Requires-Dist: flask>=2.0.0; extra == "web"
+Requires-Dist: django>=4.0.0; extra == "web"
+Provides-Extra: ml
+Requires-Dist: transformers>=4.20.0; extra == "ml"
+Requires-Dist: torch>=1.12.0; extra == "ml"
+Requires-Dist: tensorflow>=2.10.0; extra == "ml"
+Requires-Dist: scikit-learn>=1.1.0; extra == "ml"
+Requires-Dist: numpy>=1.21.0; extra == "ml"
+Requires-Dist: pandas>=1.4.0; extra == "ml"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-mock>=3.10.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: isort>=5.10.0; extra == "dev"
+Requires-Dist: flake8>=5.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: pre-commit>=2.20.0; extra == "dev"
+Requires-Dist: twine>=4.0.0; extra == "dev"
+Requires-Dist: build>=0.10.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx>=5.0.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.2.0; extra == "docs"
+Requires-Dist: sphinxcontrib-asyncio>=0.3.0; extra == "docs"
+Requires-Dist: myst-parser>=0.18.0; extra == "docs"
+Provides-Extra: config
+Requires-Dist: PyYAML>=6.0; extra == "config"
+Requires-Dist: toml>=0.10.0; extra == "config"
+Provides-Extra: all
+Requires-Dist: openai>=1.0.0; extra == "all"
+Requires-Dist: anthropic>=0.25.0; extra == "all"
+Requires-Dist: langchain>=0.1.0; extra == "all"
+Requires-Dist: llama-index>=0.9.0; extra == "all"
+Requires-Dist: requests>=2.28.0; extra == "all"
+Requires-Dist: httpx>=0.24.0; extra == "all"
+Requires-Dist: fastapi>=0.100.0; extra == "all"
+Requires-Dist: flask>=2.0.0; extra == "all"
+Requires-Dist: PyYAML>=6.0; extra == "all"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+Multi-layered Python SDK for AI/ML telemetry with support for context managers, decorators, auto-instrumentation, and logging integration.
