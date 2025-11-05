@@ -1,0 +1,127 @@
+{#- Tabular data template for CSV/Excel files -#}
+{%- set title_display = metadata.get('title', metadata.get('filename', 'Untitled Document')) -%}
+{%- set filename = metadata.get('filename', 'unknown') -%}
+{%- set file_ext = filename.split('.')[-1].upper() if '.' in filename else 'Unknown' -%}
+{%- set precision = metadata.get('precision_level', 2) | int -%}
+{%- set mode = 'accurate' if precision >= 3 else 'fast' -%}
+{%- set sheet_names = metadata.get('sheet_names', ['Data']) -%}
+{%- set numerical_columns_raw = metadata.get('numerical_columns', {}) -%}
+{%- set categorical_columns_raw = metadata.get('categorical_columns', {}) -%}
+{%- set numerical_stats_raw = metadata.get('numerical_stats', {}) -%}
+{%- set categorical_stats_raw = metadata.get('categorical_stats', {}) -%}
+{%- set duplicate_counts_raw = metadata.get('duplicate_counts', {}) -%}
+{#- Normalize CSV format (lists) to Excel format (dicts) -#}
+{%- if numerical_columns_raw is sequence and numerical_columns_raw is not mapping -%}
+  {%- set numerical_columns = {sheet_names[0]: numerical_columns_raw} -%}
+  {%- set categorical_columns = {sheet_names[0]: categorical_columns_raw} -%}
+  {%- set numerical_stats = {sheet_names[0]: numerical_stats_raw} -%}
+  {%- set categorical_stats = {sheet_names[0]: categorical_stats_raw} -%}
+  {%- set duplicate_counts = {sheet_names[0]: metadata.get('duplicate_count', 0)} -%}
+{%- else -%}
+  {%- set numerical_columns = numerical_columns_raw -%}
+  {%- set categorical_columns = categorical_columns_raw -%}
+  {%- set numerical_stats = numerical_stats_raw -%}
+  {%- set categorical_stats = categorical_stats_raw -%}
+  {%- set duplicate_counts = duplicate_counts_raw -%}
+{%- endif -%}
+---
+title: "{{ title_display }}"
+source_file: "{{ filename }}"
+created_utc: "{{ metadata.get('created_utc', 'N/A') }}"
+media_type: "tabular_data"
+---
+
+## Data Sample
+{% for block in blocks -%}
+{%- if block.type == 'table' %}
+
+**Preview (first 5 rows):**
+
+{{ block.content }}
+{% if block.is_sample and block.total_rows %}
+*Showing 5 of {{ block.total_rows }} total rows*
+{% endif %}
+{%- endif %}
+{%- endfor %}
+
+---
+
+## Sheet Summary
+
+{% for sheet_name in sheet_names -%}
+{%- set num_cols = numerical_columns.get(sheet_name, []) -%}
+{%- set cat_cols = categorical_columns.get(sheet_name, []) -%}
+{%- set num_stats = numerical_stats.get(sheet_name, {}) -%}
+{%- set cat_stats = categorical_stats.get(sheet_name, {}) -%}
+
+### {{ sheet_name }}
+
+#### Numerical Columns
+{% if num_cols -%}
+| Column Name | Min      | Max      | Mean     | Std Dev  |
+|-------------|----------|----------|----------|----------|
+{% for col in num_cols -%}
+{%- set stats = num_stats.get(col, {}) -%}
+{%- set min_val = "{:,.2f}".format(stats.get('min', 0)) if stats.get('min') is not none else '–' -%}
+{%- set max_val = "{:,.2f}".format(stats.get('max', 0)) if stats.get('max') is not none else '–' -%}
+{%- set mean_val = "{:,.2f}".format(stats.get('mean', 0)) if stats.get('mean') is not none else '–' -%}
+{%- set std_val = "{:,.2f}".format(stats.get('std', 0)) if stats.get('std') is not none else '–' -%}
+| `{{ col }}` | {{ min_val }} | {{ max_val }} | {{ mean_val }} | {{ std_val }} |
+{% endfor -%}
+{%- else -%}
+*No numerical columns in this sheet*
+{% endif %}
+
+#### Categorical Columns
+{% if cat_cols -%}
+{% for col in cat_cols -%}
+{%- set col_stats = cat_stats.get(col, {}) -%}
+{%- set mode_val = col_stats.get('mode', 'N/A') -%}
+{%- set unique_count = col_stats.get('unique_count', 0) -%}
+{%- set frequencies = col_stats.get('frequencies', {}) -%}
+
+**`{{ col }}`** ({{ unique_count }} unique values)
+- Mode: `{{ mode_val }}`
+- Top 5 values:
+{% for value, count in (frequencies.items() | sort(attribute='1', reverse=True))[:5] -%}
+{%- set total_count = col_stats.get('count', 1) -%}
+{%- set percentage = (count / total_count * 100) if total_count > 0 else 0 -%}
+  - `{{ value }}`: {{ count }} occurrences ({{ "%.1f" | format(percentage) }}%)
+{% endfor %}
+
+{% endfor -%}
+{%- else -%}
+*No categorical columns in this sheet*
+{% endif -%}
+
+{%- set dup_count = duplicate_counts.get(sheet_name, 0) -%}
+{%- if dup_count > 0 %}
+**⚠️ Duplicate Rows:** {{ dup_count }}
+{% endif %}
+
+---
+{% endfor %}
+
+## Summary
+
+{%- set all_categorical = [] -%}
+{%- set all_numerical = [] -%}
+{%- for sheet_name in sheet_names -%}
+  {%- set cat_cols = categorical_columns.get(sheet_name, []) -%}
+  {%- set num_cols = numerical_columns.get(sheet_name, []) -%}
+  {%- for col in cat_cols if col not in all_categorical -%}
+    {%- set _ = all_categorical.append(col) -%}
+  {%- endfor -%}
+  {%- for col in num_cols if col not in all_numerical -%}
+    {%- set _ = all_numerical.append(col) -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- set total_duplicates = duplicate_counts.values() | sum if duplicate_counts else 0 %}
+
+✅ **Categorical Columns:** {% if all_categorical %}`{{ all_categorical | join('`, `') }}`{% else %}None{% endif %}
+
+✅ **Numerical Columns:** {% if all_numerical %}`{{ all_numerical | join('`, `') }}`{% else %}None{% endif %}
+
+✅ **Duplicate Rows:** {{ total_duplicates }}
+
+✅ **Total Sheets Processed:** {{ sheet_names | length }}
