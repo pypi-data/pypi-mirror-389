@@ -1,0 +1,28 @@
+imagesize
+lxml>=4
+platformdirs
+requests>=2
+rich
+
+[:python_version < "3.9"]
+importlib-resources>=5
+
+[bash]
+argcomplete
+
+[compression]
+
+[compression:platform_python_implementation != "CPython"]
+brotlicffi
+
+[compression:platform_python_implementation == "CPython"]
+brotli
+
+[compression:python_version < "3.14"]
+zstandard
+
+[dev]
+allure-pytest
+pytest-cov
+pytest-xdist
+responses
