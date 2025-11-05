@@ -1,0 +1,47 @@
+{% load custom_tags_and_filters %}
+<h4>
+    In Progress
+    <span class="badge badge-secondary" style="background-color: blue; color: white">{{ in_progress.count }}</span>
+</h4>
+<div class="table-responsive" style="width: 100%">
+    <table class="table table-align-middle table-bordered table-condensed table-striped thead-light">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Started On</th>
+                <th>Started By</th>
+                <th>Progress</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in in_progress %}
+                <tr id="job-{{ job.id }}">
+                    <td>Tools Synchronization</td>
+                    <td>{{ job.created_at|date:"F jS, Y g:i A" }}</td>
+                    <td>{{ job.started_by }}</td>
+                    <td id="job-progress-{{ job.id }}">{{ job.processed_items }} / {{ job.total_items }}</td>
+                    <td>
+                        <span id="job-status-{{ job.id }}"
+                              style="font-size: 0.85em"
+                              class="label {% if job.status == 0 %}label-info{% elif job.status == 1 %}label-primary{% elif job.status == 2 %}label-success{% elif job.status == 3 %}label-warning{% elif job.status == 4 %}label-danger{% endif %}">
+                            {{ job.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 3px solid black">
+                    <td colspan="5">
+                        <div class="progress" style="margin-bottom: 5px">
+                            <div class="progress-bar {% if job.status == 0 %}progress-bar-info {% elif job.status == 1 %}progress-bar-striped active{% elif job.status == 2 %}progress-bar-success{% elif job.status == 3 %}progress-bar-warning{% elif job.status == 4 %}progress-bar-danger{% endif %}"
+                                 role="progressbar"
+                                 style="width: {{ job.progress_percent }}%"
+                                 aria-valuenow="{{ job.processed_items }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="{{ job.total_items }}">{{ job.progress_percent }}%</div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

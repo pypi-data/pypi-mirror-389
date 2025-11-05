@@ -1,0 +1,284 @@
+# NEMO-fabublox-integration
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/NEMO-fabublox-integration?label=python)](https://www.python.org/downloads/release/python-3110/)
+[![PyPI](https://img.shields.io/pypi/v/nemo-fabublox-integration?label=pypi%20version)](https://pypi.org/project/NEMO-fabublox-integration/)
+[![Changelog](https://img.shields.io/gitlab/v/release/nemo-community/fabublox/nemo-fabublox-integration?include_prereleases&label=changelog)](https://gitlab.com/nemo-community/fabublox/nemo-fabublox-integration/-/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.com/nemo-community/fabublox/nemo-fabublox-integration/blob/main/LICENSE)
+
+## Overview
+
+The NEMO-fabublox-integration plugin provides seamless integration between NEMO and FabuBlox. This plugin enables automated synchronization of tool data from your NEMO instance to FabuBlox.
+
+### Key Features
+
+- **Automated Tool Synchronization**: Synchronize tool information from NEMO to FabuBlox with customizable field selection
+- **Background Job Processing**: Asynchronous synchronization with progress tracking and detailed status reporting
+- **Error Handling**: Comprehensive error tracking and reporting for failed synchronization attempts
+- **Permission Management**: Fine-grained access control for FabuBlox integration features
+- **Status Tracking**: Keep track of which tools have been synchronized and when
+
+## Installation
+
+### Prerequisites
+
+- NEMO instance (version compatible with the plugin)
+- Python 3.9 or higher
+- FabuBlox configured facility
+- A secure location for storing the authentication key file
+
+### Installation Steps
+
+1. **Install the plugin** using pip:
+
+   ```bash
+   pip install nemo-fabublox-integration
+   ```
+
+2. **Add the plugin to your NEMO installation** by updating your `settings.py`:
+
+   ```python
+   INSTALLED_APPS = [
+       '...',
+       'NEMO_fabublox_integration',
+       '...'
+   ]
+   ```
+
+3. **Obtain credentials from FabuBlox**:
+   - Contact the FabuBlox team to set up your facility integration
+   - FabuBlox will provide you with:
+     - An authentication key file
+     - A bucket name for data synchronization
+
+4. **Configure required settings** in your `settings.py`:
+
+   ```python
+   # Required: Path to the FabuBlox authentication key
+   # This should be an absolute path to a secure location
+   # The authentication key file will be provided by FabuBlox
+   FABUBLOX_AUTHENTICATION_KEY_LOCATION = "/path/to/secure/directory/fabublox-auth-key.json"
+
+   # Required: Bucket name for data synchronization
+   # This will be provided by FabuBlox along with the authentication key
+   FABUBLOX_DATA_SYNC_BUCKET_NAME = "your-bucket-name"
+   ```
+
+5. **Run database migrations**:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Restart your NEMO server** to load the plugin.
+
+7. **Verify the installation** by navigating to `/fabublox/` in your NEMO instance (requires appropriate permissions).
+
+## Usage
+
+### Initial Configuration
+
+After installation, you need to configure the plugin through the NEMO admin interface:
+
+1. **Access the FabuBlox Configuration Page**:
+   - Navigate to `/fabublox/configuration/` in your NEMO instance
+   - You must have the required permissions (by default, superuser access)
+
+2. **Verify Authentication Key Status**:
+   - The configuration page will display the health status of your authentication key
+   - If there are any issues, they will be displayed
+
+3. **Configure Shared Tool Fields**:
+   - Select which tool fields you want to synchronize to FabuBlox
+   - Available fields include:
+     - Name
+     - Description
+     - Category
+     - Location
+     - Primary Owner (including first name, last name, and email)
+     - Backup Owners (including first name, last name, and email)
+   - Click "Update Shared Fields" to save your selection
+
+4. **Set Permissions** (Admin Interface):
+   - In the Django admin interface, navigate to the FabuBlox Integration Configuration
+   - Set the `admin_permission` field to define which user roles/groups can access the integration
+   - By default, only superusers can access the integration features
+
+### User Manual
+
+#### Accessing FabuBlox Integration
+
+The plugin provides several pages accessible from the NEMO interface:
+
+- **Configuration**: `/fabublox/configuration/` - Configure integration settings
+- **Tools**: `/fabublox/tools/` - View and synchronize tools
+- **Synchronization History**: `/fabublox/synchronization/` - View synchronization job history
+
+#### Synchronizing Tools to FabuBlox
+
+1. **Navigate to the Tools Page**:
+   - Go to `/fabublox/tools/` in your NEMO instance
+   - You will see a list of all tools in your NEMO instance
+
+2. **Select Tools to Synchronize**:
+   - **Individual Tools**: Check the boxes next to specific tools you want to synchronize
+   - **All Tools**: Click the "Synchronize All Tools" button to synchronize all tools
+
+3. **Start Synchronization**:
+   - The synchronization job will start in the background
+   - You will be redirected to the Synchronization History page
+
+4. **Monitor Progress**:
+   - The Synchronization History page shows all current and past synchronization jobs
+   - In-progress jobs display:
+     - Total number of tools being synchronized
+     - Number of successfully synchronized tools
+     - Number of failed tools
+     - Progress percentage
+     - Real-time status updates
+   - You can view detailed error messages for any failed synchronizations
+
+5. **View Synchronization Status**:
+   - Each tool in the Tools list shows:
+     - Last synchronized timestamp
+     - User who performed the last synchronization
+   - Use the search functionality to filter tools by name
+
+#### Understanding Synchronization Jobs
+
+- **Job Lifecycle**: Jobs progress through states: Pending → In Progress → Completed/Partially Completed/Failed
+- **Concurrent Jobs**: Only one synchronization job can run at a time to prevent conflicts
+- **Job Timeout**: Jobs that are inactive for more than the configured timeout (default: 5 minutes) are automatically marked as failed
+- **Automatic Cleanup**: The system automatically detects and cleans up stale jobs (from server restarts, crashes, etc.)
+
+## Security: Handling the Authentication Key
+
+The FabuBlox authentication key provided by the FabuBlox team grants access to synchronize data with your FabuBlox facility. Proper handling of this key is critical for maintaining security.
+
+### Best Practices for Key Storage
+
+1. **Secure Storage Location**:
+   ```python
+   # Use a directory outside your web root
+   FABUBLOX_AUTHENTICATION_KEY_LOCATION = "/etc/nemo/secrets/fabublox-auth-key.json"
+   
+   # [WRONG] NOT in your project directory
+   FABUBLOX_AUTHENTICATION_KEY_LOCATION = "/path/to/nemo/project/fabublox-auth-key.json"
+   ```
+
+2. **File Permissions**:
+   ```bash
+   # Set restrictive permissions (read-only for the NEMO user, 'nemo' in this example)
+   chmod 400 /etc/nemo/secrets/fabublox-auth-key.json
+   chown nemo:nemo /etc/nemo/secrets/fabublox-auth-key.json
+   ```
+
+3. **Environment-Specific Configuration**:
+   - Use environment variables or separate settings files for different environments
+   - Never commit the authentication key to version control
+   
+   ```python
+   # Example: Using environment variables
+   import os
+   FABUBLOX_AUTHENTICATION_KEY_LOCATION = os.environ.get('FABUBLOX_KEY_PATH')
+   ```
+
+4. **Key Rotation**:
+   - If you suspect the key has been compromised, contact FabuBlox support immediately
+   - Request a new authentication key from the FabuBlox team
+   - Replace the key file and restart your NEMO server
+   - Verify the new key status in the Configuration page
+
+### CI/CD Pipeline Security
+
+When deploying NEMO with FabuBlox integration in CI/CD pipelines, use encryption to protect the authentication key:
+
+- Always use encrypted secrets/variables provided by your CI/CD platform
+- Never print or log the authentication key contents
+- Mark secrets as "masked" or "protected" in your CI/CD platform
+- Limit access to secrets to specific branches or environments (e.g., production only)
+- Rotate keys regularly and update your CI/CD secrets accordingly
+- Use ephemeral environments when possible to minimize key exposure
+
+For Docker deployments, use Docker secrets or mount the key file as a read-only volume:
+
+## Troubleshooting
+
+### Authentication Key Issues
+
+**Problem**: "FabuBlox Authentication key is not configured"
+
+**Solutions**:
+- Verify `FABUBLOX_AUTHENTICATION_KEY_LOCATION` is set in your `settings.py`
+- Ensure the file path is absolute and points to an existing file
+- Check file permissions - the NEMO process must be able to read the file
+
+---
+
+**Problem**: "FabuBlox Authentication key is not valid"
+
+**Solutions**:
+- Confirm the key was provided by FabuBlox and hasn't been manually edited
+- Ensure the authentication key file has not been corrupted or truncated
+- Contact FabuBlox support if the key appears valid but is still rejected
+
+### Synchronization Issues
+
+**Problem**: "A synchronization job is already in progress"
+
+**Solutions**:
+- Wait for the current job to complete before starting a new one
+- Check the Synchronization History page to monitor the current job
+- If a job appears stuck, wait for the automatic timeout (default: 5 minutes)
+- Check server logs for any errors that might have caused the job to hang
+
+---
+
+**Problem**: "Your FabuBlox integration configuration is incomplete or invalid"
+
+**Solutions**:
+- Go to the Configuration page to see specific issues
+- Ensure `FABUBLOX_DATA_SYNC_BUCKET_NAME` is set in `settings.py`
+- Verify the authentication key is valid and properly configured
+
+---
+
+**Problem**: Synchronization job fails for specific tools
+
+**Solutions**:
+- Check the Synchronization History page for detailed error messages
+- Common causes:
+  - Network connectivity issues to the synchronization service
+  - Insufficient permissions (check with FabuBlox team)
+  - Invalid or missing required tool data
+  - Tool data exceeds size limits
+  - Authentication key has expired or been revoked
+- Review the detailed failure information in the job history
+- Contact FabuBlox support if errors persist
+
+### Permission Issues
+
+**Problem**: Cannot access `/fabublox/` URLs (403 Forbidden or redirect to login)
+
+**Solutions**:
+- Verify you're logged in to NEMO
+- Check that you have the required permissions:
+  - By default, only superusers can access the integration
+  - Admin can configure different permissions in Django admin under "FabuBlox Integration Configuration"
+- Contact your NEMO administrator if you need access
+
+## Support
+
+For issues, questions, or feature requests:
+
+- **Bug Reports**: Please file an issue in the project repository
+- **FabuBlox Support**: Contact FabuBlox support for authentication issues or configuration
+- **NEMO Support**: Consult the NEMO documentation for general NEMO questions
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please follow the coding style (Black) and ensure all tests pass before submitting pull requests.
