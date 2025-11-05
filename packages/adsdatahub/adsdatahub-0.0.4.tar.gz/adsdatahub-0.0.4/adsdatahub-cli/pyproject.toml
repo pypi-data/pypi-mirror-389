@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "adsdatahub-cli"
+version = "0.0.3"
+description = ""
+authors = ["CyberAgent, Inc."]
+readme = "README.md"
+packages = [{ include = "adsdatahub_cli", from = "src" }]
+
+[tool.poetry.scripts]
+adh = "adsdatahub_cli.__main__:main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+adsdatahub = "^0.0.1"
+pandas = "^2.2.1"
+rich = "^13.7.1"
+rich-argparse = "^1.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pandas-stubs = "^2.2.1.240316"
+ruff = "^0.3.4"
+pyright = "^1.1.356"
+taskipy = "^1.12.2"
+pytest = "^8.1.1"
+
+[tool.taskipy.tasks]
+format = "ruff format ."
+lint = "ruff check ."
+typecheck = "pyright src/** tests/**"
+test = "pytest"
+ci = "task format && task lint && task typecheck && task test"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

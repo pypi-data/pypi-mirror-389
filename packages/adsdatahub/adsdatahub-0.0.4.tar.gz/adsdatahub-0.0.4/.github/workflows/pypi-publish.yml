@@ -1,0 +1,32 @@
+name: pypi_publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        working_directory:
+          - "./"
+          - "./adsdatahub-cli"
+    defaults:
+      run:
+        working-directory: ${{ matrix.working_directory }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      - name: Build package
+        run: |
+          uv build
+      - name: Publish to PyPI
+        run: |
+          uv publish --token ${{ secrets.PYPI_TOKEN }}
