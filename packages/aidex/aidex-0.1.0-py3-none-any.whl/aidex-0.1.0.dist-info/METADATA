@@ -1,0 +1,96 @@
+Metadata-Version: 2.4
+Name: aidex
+Version: 0.1.0
+Summary: A template placeholder Python package
+Author-email: Your Name <your.email@example.com>
+Maintainer-email: Your Name <your.email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/yourusername/aidex
+Project-URL: Repository, https://github.com/yourusername/aidex
+Project-URL: Documentation, https://github.com/yourusername/aidex#readme
+Project-URL: Bug Tracker, https://github.com/yourusername/aidex/issues
+Keywords: template,placeholder,aidex
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Requires-Dist: black>=22.0; extra == "dev"
+Requires-Dist: isort>=5.0; extra == "dev"
+Requires-Dist: flake8>=5.0; extra == "dev"
+Requires-Dist: mypy>=1.0; extra == "dev"
+Dynamic: license-file
+
+# Aidex
+
+A template placeholder Python package.
+
+## Installation
+
+```bash
+pip install aidex
+```
+
+## Usage
+
+```python
+import aidex
+
+# Say hello
+print(aidex.hello("World"))
+# Output: Hello, World!
+
+# Get version
+print(aidex.get_version())
+# Output: 0.1.0
+```
+
+## Development
+
+### Setup
+
+1. Clone the repository
+2. Install in development mode:
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black .
+isort .
+```
+
+### Type Checking
+
+```bash
+mypy aidex
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
