@@ -1,0 +1,27 @@
+Copyright (c) 2025 Anton Bakhurynskyi
+
+All rights reserved.
+
+Permission is hereby granted to install and use this software (the "Software") as part of your own projects, subject to the following conditions:
+
+1. **Usage**  
+   You may use the Software in its unmodified form in your own projects and products, whether for personal or commercial purposes.
+
+2. **No Modification**  
+   You may not modify, decompile, disassemble, reverse engineer, or create derivative works of the Software, in whole or in part.
+
+3. **No Redistribution**  
+   You may not copy, publish, distribute, sublicense, rent, lease, or otherwise make the Software available to any third party, whether in original or modified form, without prior written permission from the copyright holder.
+
+4. **No Repackaging or Rehosting**  
+   You may not repackage or redistribute the Software through public or private registries (including npm, GitHub Packages, etc.), nor include it as part of another library or framework.
+
+5. **Attribution**  
+   You must retain this license file and the above copyright notice in all copies or substantial portions of the Software.
+
+6. **Disclaimer**  
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+
+For licensing inquiries, please contact: antoncodes@outlook.com
