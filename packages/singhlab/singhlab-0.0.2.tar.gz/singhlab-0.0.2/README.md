@@ -1,0 +1,52 @@
+To install:
+
+```bash
+git clone git@github.com:rohitsinghlab/singhlab-main.git
+cd singhlab-main
+pip install .
+```
+
+To run sceodesic with 10 different random seeds 
+
+```python
+from singhlab.utils.decorators import run_with_seed
+from sceodesic import run_sceo
+
+seeds = [123, 444, 33, 1234, 99, 14, 37]
+results = {}
+
+adata = sc.read_h5ad('adata.h5ad')
+
+for seed in seeds:
+    run_with_seed(seed)(run_sceo)(adata, num_hvgs=300)
+    sceo_embeddings = adata.obsm['sceo_embeddings']
+    sceo_programs = adata.varm['sceo_programs]
+    results[seed] = (sceo_embeddings, sceo_programs)
+```
+
+To do a bootstrap for some uncertainty quantification: 
+
+```python
+from singhlab.utils.decorators import bootstrap
+import numpy as np
+
+# bootstrap parameters 
+num_trials = 100
+seed = 42
+
+# the function we want to run our bootstrap on
+@bootstrap(num_trials, seed)
+def get_mean(data):
+    return np.mean(data)
+ 
+# Example data
+data = np.array([5, 7, 8, 6, 9, 10, 12, 7, 6, 8])
+
+# automatically applies bootstrap
+boot_means = get_mean(data)
+
+# Percentile CI (95%)
+lower, upper = np.percentile(boot_means, [2.5, 97.5])
+
+print(f"Bootstrap mean CI: [{lower:.2f}, {upper:.2f}]")
+```
