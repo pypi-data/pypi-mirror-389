@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "chaokai"
+version = "0.0.14"
+description = ""
+
+authors = []
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.32.3"
+pycryptodomex = "^3.23.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
