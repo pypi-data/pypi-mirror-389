@@ -1,0 +1,88 @@
+[project]
+name = "ecreshore"
+version = "1.0.1"
+description = "cli utility for copying container images to private ECR"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "aiodocker==0.24.0",
+  "boto3==1.40.25",
+  "click==8.2.1",
+  "docker==7.1.0",
+  "kubernetes==33.1.0",
+  "pytest-asyncio>=1.1.0",
+  "pytest-cov>=7.0.0",
+  "radon>=6.0.1",
+  "rich==14.1.0",
+  "structlog==25.4.0",
+  "tenacity==9.1.2",
+  "yaml-for-humans==1.1.1",
+]
+
+[project.scripts]
+ecreshore = "ecreshore.cli:cli"
+
+[dependency-groups]
+dev = [
+  "pytest==8.4.2",
+  "mypy==1.17.1",
+  "vulture>=2.14",
+  "unimport>=1.2.1",
+  "types-pyyaml>=6.0.12.20250915",
+  "types-psutil>=7.0.0.20250822",
+  "boto3-stubs>=1.40.32",
+  "lxml>=6.0.2",
+]
+
+[tool.uv]
+package = true
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = false
+strict_equality = true
+show_error_codes = true
+implicit_reexport = true
+
+# Allow untyped calls for third-party libraries without stubs
+[[tool.mypy.overrides]]
+module = [
+    "aiodocker.*",
+    "docker.*",
+    "kubernetes.*",
+    "tenacity.*",
+    "psutil.*",
+    "yaml.*",
+    "botocore.*",
+]
+ignore_missing_imports = true
+follow_imports = "skip"
+disable_error_code = ["attr-defined", "no-any-return", "union-attr", "unreachable"]
+
+# Targeted suppression for files with heavy third-party integration
+[[tool.mypy.overrides]]
+module = [
+    "ecreshore.async_docker_client",
+    "ecreshore.services.k8s_config",
+    "ecreshore.services.k8s_scanner",
+    "ecreshore.services.retry_service",
+]
+disable_error_code = ["unreachable", "no-any-return", "attr-defined", "assignment", "return-value", "union-attr"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselected by default)",
+    "ux: marks tests that involve Rich UI components (may have threading warnings)",
+    "integration: marks tests that involve remote APIs"
+]
+addopts = "-m 'not slow and not ux'"
