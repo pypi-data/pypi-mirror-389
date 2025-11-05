@@ -1,0 +1,86 @@
+[tool.poetry]
+name = "muograph"
+version = "0.1.18"
+description = "Muon tomography data analysis library"
+readme = "README.md"
+license = "AGPL-3.0-only"
+authors = ["Maxime Lagrange <muograph.ml@gmail.com>"]
+keywords = ["physics", "science", "statistics", "muon tomography", "detector simulation"]
+homepage = "https://github.com/MaximeLagrange/muograph"
+include = [
+    "muograph/py.typed",
+    "muograph/data/iron_barrel/barrel_and_cubes_scattering.csv"
+]
+exclude = [
+    "dev/*",
+    "examples/*",
+    "tutorials/*",
+    ".vscode/*",
+    ".github/*",
+    "muograph/data/*.csv",
+    "muograph/data/**/*.csv",
+    "muograph/data/",
+    "muograph/metric/"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+torch = ">=2.2.0,<2.4.0"
+scipy = "*"
+pandas = "*"
+seaborn = "*"
+fastcore = "*"
+fastprogress = "*"
+h5py = "*"
+uproot = "*"
+awkward = "*"
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = ["dev/", "examples/"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-mock = "^3.12.0"
+pytest-lazy-fixture = "^0.6.3"
+flaky = "^3.7.0"
+black = "^24.2.0"
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+pre-commit = "^3.6.1"
+notebook = "<7.0.0"
+jupyter = "^1.0.0"
+mypy = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 160
+target-version = ["py310"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | dev
+  | _build
+  | build
+  | dist
+)/
+'''
