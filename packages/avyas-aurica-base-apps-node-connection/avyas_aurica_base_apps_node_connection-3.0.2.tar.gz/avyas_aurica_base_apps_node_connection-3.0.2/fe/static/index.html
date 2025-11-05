@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Connection Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-connected {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+        
+        .config-form {
+            margin-top: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔌 Node Connection Manager</h1>
+            <p>Monitor and manage your node connections</p>
+            <div id="nodeTypeIndicator" style="margin-top: 10px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 6px; font-size: 0.9em;">
+                <i class="bi bi-info-circle"></i> <span id="nodeTypeText">Loading...</span>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading node status...</p>
+        </div>
+        
+        <div id="dashboard" class="dashboard" style="display: none;">
+            <!-- Current Node Status Card -->
+            <div class="card">
+                <h2>Current Node Status</h2>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value">
+                        <span id="status-indicator" class="status-indicator"></span>
+                        <span id="status-text">Unknown</span>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Node ID</span>
+                    <span class="info-value" id="node-id">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">API Domain</span>
+                    <span class="info-value" id="api-domain">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Uptime</span>
+                    <span class="info-value" id="uptime">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Active Connections</span>
+                    <span class="info-value" id="active-connections">-</span>
+                </div>
+                <button class="btn" onclick="reconnect()">🔄 Reconnect</button>
+                <div id="reconnect-message"></div>
+            </div>
+            
+            <!-- Execution Node Status Card (shown when on API domain) -->
+            <div class="card" id="executionNodeCard" style="display: none;">
+                <h2>Your Execution Node</h2>
+                <div id="execution-node-content">
+                    <p style="text-align: center; color: #666;">Loading...</p>
+                </div>
+                <button class="btn" onclick="checkExecutionNode()">🔍 Check Status</button>
+            </div>
+            
+            <!-- Connection Details Card -->
+            <div class="card">
+                <h2>Connection Details</h2>
+                <div id="connection-details-content">
+                    <p style="color: #666; text-align: center;">Click to load your connection details</p>
+                </div>
+                <button class="btn" onclick="loadConnectionDetails()">📋 Load Details</button>
+                <div id="details-message"></div>
+            </div>
+            
+            <!-- Configuration Card -->
+            <div class="card">
+                <h2>Configuration</h2>
+                <div class="config-form">
+                    <div class="form-group">
+                        <label>Auto Reconnect</label>
+                        <select id="auto-reconnect">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Heartbeat Interval (seconds)</label>
+                        <input type="number" id="heartbeat-interval" min="10" max="300" value="30">
+                    </div>
+                    <button class="btn" onclick="updateConfig()">💾 Update Config</button>
+                    <button class="btn btn-danger" onclick="restartNode()">� Reset Connection</button>
+                    <div id="config-message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let statusData = null;
+        
+        // Determine which node we're viewing
+        function updateNodeTypeIndicator() {
+            const hostname = window.location.hostname;
+            const nodeTypeEl = document.getElementById('nodeTypeText');
+            const executionNodeCard = document.getElementById('executionNodeCard');
+            
+            if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.')) {
+                nodeTypeEl.innerHTML = `
+                    <strong>Viewing: Your Local Execution Node</strong><br>
+                    <small>This is YOUR computer where your Digital Twin runs</small>
+                `;
+                // Hide execution node card when on local
+                if (executionNodeCard) executionNodeCard.style.display = 'none';
+            } else {
+                nodeTypeEl.innerHTML = `
+                    <strong>Viewing: API Domain Node (Cloud)</strong><br>
+                    <small>This is the cloud server. Your execution node status is shown below.</small>
+                `;
+                // Show execution node card when on API domain
+                if (executionNodeCard) {
+                    executionNodeCard.style.display = 'block';
+                    checkExecutionNode();
+                }
+            }
+        }
+        
+        async function checkExecutionNode() {
+            const contentEl = document.getElementById('execution-node-content');
+            contentEl.innerHTML = '<p style="text-align: center; color: #666;"><i class="spinner"></i> Checking your execution node...</p>';
+            
+            try {
+                const response = await fetch('/node-connection/api/node/execution-node-status', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.execution_node_found && data.execution_node_reachable) {
+                    const status = data.status;
+                    contentEl.innerHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                <span class="status-indicator status-connected"></span>
+                                <span>Online</span>
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Node ID</span>
+                            <span class="info-value">${status.node_id}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">URL</span>
+                            <span class="info-value" style="font-size: 0.85em;">${data.execution_node_url}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Uptime</span>
+                            <span class="info-value">${formatUptime(status.uptime_seconds)}</span>
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px; background: #d1fae5; color: #065f46; border-radius: 6px; font-size: 0.9em;">
+                            ✅ ${data.message}
+                        </div>
+                    `;
+                } else if (data.execution_node_found && !data.execution_node_reachable) {
+                    contentEl.innerHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                <span class="status-indicator status-disconnected"></span>
+                                <span>Offline</span>
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Known URL</span>
+                            <span class="info-value" style="font-size: 0.85em;">${data.execution_node_url || 'Unknown'}</span>
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px; background: #fee2e2; color: #991b1b; border-radius: 6px; font-size: 0.9em;">
+                            ⚠️ ${data.message}
+                        </div>
+                    `;
+                } else {
+                    contentEl.innerHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                <span class="status-indicator status-disconnected"></span>
+                                <span>Not Registered</span>
+                            </span>
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px; background: #fef3c7; color: #92400e; border-radius: 6px; font-size: 0.9em;">
+                            💡 ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error checking execution node:', error);
+                contentEl.innerHTML = `
+                    <div style="padding: 10px; background: #fee2e2; color: #991b1b; border-radius: 6px; font-size: 0.9em;">
+                        ❌ Error checking execution node: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function loadStatus() {
+            try {
+                const response = await fetch('/node-connection/api/status', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusData = data;  // Use data directly, not data.status
+                    updateUI();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'grid';
+                }
+            } catch (error) {
+                console.error('Error loading status:', error);
+                document.getElementById('loading').innerHTML = 
+                    '<p>Error loading node status. Please refresh the page.</p>';
+            }
+        }
+        
+        function updateUI() {
+            const indicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            
+            if (statusData.connected) {
+                indicator.className = 'status-indicator status-connected';
+                statusText.textContent = 'Connected';
+            } else {
+                indicator.className = 'status-indicator status-disconnected';
+                statusText.textContent = 'Disconnected';
+            }
+            
+            // Display user_id as node identifier
+            document.getElementById('node-id').textContent = statusData.user_id || 'unknown';
+            // Display cloud_url
+            document.getElementById('api-domain').textContent = statusData.cloud_url || '-';
+            // Placeholder values for fields not yet implemented
+            document.getElementById('uptime').textContent = '-';
+            document.getElementById('active-connections').textContent = '-';
+            
+            // Set default values for settings
+            const autoReconnectEl = document.getElementById('auto-reconnect');
+            if (autoReconnectEl) autoReconnectEl.value = 'true';
+            const heartbeatEl = document.getElementById('heartbeat-interval');
+            if (heartbeatEl) heartbeatEl.value = '30';
+        }
+        
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours}h ${minutes}m ${secs}s`;
+        }
+        
+        async function reconnect() {
+            const messageEl = document.getElementById('reconnect-message');
+            messageEl.innerHTML = '<div class="alert alert-success">Reconnecting...</div>';
+            
+            try {
+                const response = await fetch('/node-connection/api/reconnect', { 
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageEl.innerHTML = '<div class="alert alert-success">✓ Reconnected successfully!</div>';
+                    statusData = data.status;
+                    updateUI();
+                } else {
+                    messageEl.innerHTML = '<div class="alert alert-error">✗ Reconnection failed</div>';
+                }
+            } catch (error) {
+                messageEl.innerHTML = '<div class="alert alert-error">✗ Error: ' + error.message + '</div>';
+            }
+            
+            setTimeout(() => messageEl.innerHTML = '', 3000);
+        }
+        
+        async function loadConnectionDetails() {
+            const contentEl = document.getElementById('connection-details-content');
+            const messageEl = document.getElementById('details-message');
+            
+            try {
+                const response = await fetch('/node-connection/api/node/connection-details', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const details = data.connection_details;
+                    contentEl.innerHTML = `
+                        <div class="info-row">
+                            <span class="info-label">User ID</span>
+                            <span class="info-value">${details.user_id}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Node ID</span>
+                            <span class="info-value">${details.node_id}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Connected At</span>
+                            <span class="info-value">${new Date(details.connected_at).toLocaleString()}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Heartbeat</span>
+                            <span class="info-value">${new Date(details.last_heartbeat).toLocaleString()}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">${details.status}</span>
+                        </div>
+                    `;
+                    messageEl.innerHTML = '<div class="alert alert-success">✓ Details loaded</div>';
+                } else {
+                    messageEl.innerHTML = '<div class="alert alert-error">✗ Failed to load details</div>';
+                }
+            } catch (error) {
+                messageEl.innerHTML = '<div class="alert alert-error">✗ Error: ' + error.message + '</div>';
+            }
+            
+            setTimeout(() => messageEl.innerHTML = '', 3000);
+        }
+        
+        async function updateConfig() {
+            const messageEl = document.getElementById('config-message');
+            
+            const config = {
+                auto_reconnect: document.getElementById('auto-reconnect').value === 'true',
+                heartbeat_interval: parseInt(document.getElementById('heartbeat-interval').value)
+            };
+            
+            try {
+                const response = await fetch('/node-connection/api/node/config', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageEl.innerHTML = '<div class="alert alert-success">✓ Configuration updated!</div>';
+                    await loadStatus();
+                } else {
+                    messageEl.innerHTML = '<div class="alert alert-error">✗ Update failed</div>';
+                }
+            } catch (error) {
+                messageEl.innerHTML = '<div class="alert alert-error">✗ Error: ' + error.message + '</div>';
+            }
+            
+            setTimeout(() => messageEl.innerHTML = '', 3000);
+        }
+        
+        async function restartNode() {
+            if (!confirm('Are you sure you want to restart this node connection? This will reset the connection state for this specific node.')) {
+                return;
+            }
+            
+            const messageEl = document.getElementById('config-message');
+            
+            try {
+                const response = await fetch('/node-connection/api/node/restart', { 
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageEl.innerHTML = '<div class="alert alert-success">✓ Node connection restarted successfully!</div>';
+                    statusData = data.status;
+                    updateUI();
+                    setTimeout(() => messageEl.innerHTML = '', 3000);
+                } else {
+                    messageEl.innerHTML = '<div class="alert alert-error">✗ Restart failed</div>';
+                }
+            } catch (error) {
+                messageEl.innerHTML = '<div class="alert alert-error">✗ Error: ' + error.message + '</div>';
+            }
+        }
+        
+        // Load status on page load
+        updateNodeTypeIndicator();
+        loadStatus();
+        
+        // Auto-refresh every 10 seconds
+        setInterval(loadStatus, 10000);
+        
+        // Auto-refresh execution node status every 30 seconds if visible
+        setInterval(() => {
+            const executionNodeCard = document.getElementById('executionNodeCard');
+            if (executionNodeCard && executionNodeCard.style.display !== 'none') {
+                checkExecutionNode();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
