@@ -1,0 +1,138 @@
+[tool.poetry]
+authors = ["Yaniv Shulman <yaniv@shulman.info>"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+description = "Implementation of the Robust Local Polynomial Regression with Similarity Kernel method"
+homepage = "https://github.com/yaniv-shulman/rsklpr"
+keywords = [
+    "statistics", "robust statistics", "regression", "robust regression", "local polynomial regression", "machine learning", "locally weighted regression",
+]
+name = "rsklpr"
+packages = [
+    { include = "rsklpr", from = "src" }
+]
+readme = "README.md"
+repository = "https://github.com/yaniv-shulman/rsklpr"
+version = "2.0.0"
+
+[tool.poetry.group.experiments]
+optional = true
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.dependencies]
+joblib = "^1.4.2"
+numpy = "^2.0.2"
+python = ">=3.9"
+scikit-learn = "^1.5.2"
+scipy = "^1.13.1"
+
+[tool.poetry.group.experiments.dependencies]
+chart-studio = "^1.1.0"
+ipywidgets = "^8.1.5"
+localreg = "^0.5.0"
+matplotlib = "^3.9.2"
+notebook = "^7.3.1"
+pandas = "^2.2.3"
+plotly = "^5.24.1"
+statsmodels = "^0.14.3"
+tqdm = "^4.66.5"
+
+[tool.poetry.group.dev.dependencies]
+black = {extras = ["jupyter"], version = "^24.8.0"}
+coverage = {extras = ["toml"], version = "^7.6.1"}
+mypy = "^1.11.2"
+pytest = "^8.3.3"
+pytest-cov = "^5.0.0"
+pytest-mock = "^3.14.0"
+pytest-xdist = "^3.6.1"
+ruff = "^0.6.8"
+statsmodels = "^0.14.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".idea",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pycache__",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "paper",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "-ra -q --strict-markers"
+markers = [
+    "slow: tests that take a long time to run",
+]
+minversion = "6.0"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+omit = ["tests/*", "src/experiments/*"]
+
+[tool.coverage.report]
+show_missing=true
