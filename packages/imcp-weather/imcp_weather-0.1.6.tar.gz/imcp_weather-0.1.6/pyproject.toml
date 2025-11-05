@@ -1,0 +1,28 @@
+[project]
+name = "imcp-weather"
+version = "0.1.6"
+description = "这是我自己的mcp工具集合(IMCP - Intelligent MCP)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.20.0",
+    "pyjwt",
+    "pytz>=2025.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.0.0",
+    "twine>=4.0.0",
+]
+
+[tool.setuptools]
+packages = ["tool_天气", "imcp"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["*.py"]
+
+[project.scripts]
+imcp-weather = "imcp.main:main"
