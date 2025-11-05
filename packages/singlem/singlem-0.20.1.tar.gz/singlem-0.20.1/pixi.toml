@@ -1,0 +1,81 @@
+[workspace]
+authors = ["Ben Woodcroft <benjwoodcroft@gmail.com>"]
+channels = ["conda-forge","bioconda"]
+name = "singlem"
+platforms = ["linux-64"]
+
+[activation]
+# Sets metapackage environment variables, which are assumed to be in the db/ of
+# the base directory (perhaps symlnked).
+scripts = ["admin/set_env_vars.sh"]
+
+[feature.main.dependencies]
+python = ">=3.7"
+coreutils = "*" # So sort --parallel works
+bash = "*"
+diamond = ">=2.1.15"  # 2.1.11 segfaults (on some non-test data)
+biopython = "*"
+hmmer = "*"
+orfm = "*"
+mfqe = "*"
+extern = "*"
+graftm = "*"
+krona = "*"
+pplacer = "*"
+sra-tools = "*"
+ncbi-ngs-sdk = "*"
+sqlite = "*"
+squarify = "*"
+mafft = "*"
+seqmagick = "*"
+expressbetadiversity = "*"
+cd-hit = "*"
+fasttree = "*"
+fastalite = "*"
+jinja2 = "*"
+pip = "*"
+sqlalchemy = "*"
+pandas = "*"
+bird_tool_utils_python = ">=0.6.0"
+smafa = "*"
+pyranges = "*"
+polars = "*"
+prodigal = "*"
+tqdm = "*"
+pyarrow = "*"
+galah = ">=0.4.0"
+sqlparse = "*"  # Required indirectly (e.g. taxtastic)
+zenodo_backpack = ">=0.4.0"
+# Optional (commented out)
+# python-annoy = "*"
+# nmslib = "*"
+
+[feature.dev.pypi-dependencies]
+singlem = {path = ".", editable = true}
+
+[feature.main.pypi-dependencies]
+singlem = {path = ".", editable = true}
+
+[feature.dev.dependencies]
+# Dev/test dependencies only
+pytest = "*"
+ipython = "*"
+toml = "*"
+python-build = "*"
+setuptools-scm = "*"
+gtdbtk = "==2.4.1" # Must match the version of GTDB release used to make the default metapackage.
+
+[feature.singlem0190.dependencies]
+singlem = "=0.19.0"
+
+[environments]
+dev = ["dev", "main"]
+singlem0190 = ["singlem0190"]
+
+[tasks]
+test-base = "pytest test"
+
+[tasks.test]
+depends-on = [
+    {task = "test-base", environment = "dev"},
+]
