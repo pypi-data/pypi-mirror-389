@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.24", "hatch-vcs>=0.4"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+tag_pattern = "^curvtools-v(?P<version>.+)$"
+fallback-version = "0.0.0"
+
+[tool.hatch.version.raw-options]
+root = "../.."
+relative_to = "pyproject.toml"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/curvtools/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/curvtools"]
+
+[project]
+name = "curvtools"
+requires-python = ">=3.10"
+dynamic = ["version"]
+description = "CLI tools for the Curv RISC-V CPU project"
+readme = "readme.md"
+license = {text = "MIT"}
+authors = [{name="Mike Goelzer"}]
+classifiers = ["Programming Language :: Python :: 3 :: Only"]
+dependencies = [
+  "curv>=0",      # will resolve to workspace in dev/CI; to PyPI when published
+  "curvpyutils>=0",  # will resolve to workspace in dev/CI; to PyPI when published
+  "click>=8",
+]
+
+[project.scripts]
+# Legacy alias preserved
+curvcfg = "curvtools.cli.cfg:main"
+# Preferred names
+curv-cfg = "curvtools.cli.cfg:main"
+curv-cache-tool = "curvtools.cli.cache_tool:main"
