@@ -1,0 +1,34 @@
+[importlinter]
+root_package = pydocextractor
+include_external_packages = False
+
+[importlinter:contract:domain-independence]
+name = Domain layer must not import infrastructure or application layers
+type = forbidden
+source_modules =
+    pydocextractor.domain
+forbidden_modules =
+    pydocextractor.infra
+    pydocextractor.app
+
+[importlinter:contract:app-no-infra]
+name = Application layer must not import infrastructure
+type = forbidden
+source_modules =
+    pydocextractor.app
+forbidden_modules =
+    pydocextractor.infra
+
+[importlinter:contract:domain-purity]
+name = Domain layer must only use standard library
+type = forbidden
+source_modules =
+    pydocextractor.domain
+forbidden_modules =
+    jinja2
+    docling
+    pymupdf4llm
+    pdfplumber
+    fitz
+    typer
+    rich
