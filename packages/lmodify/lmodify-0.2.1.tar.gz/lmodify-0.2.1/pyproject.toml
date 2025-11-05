@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lmodify"
+dynamic = ["version"]
+description = "LMODify: Create LMOD packages based on Singularity images for HPC environments"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Andrea Telatin", email = "andrea.telatin@quadram.ac.uk"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "rich-click>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+
+[project.scripts]
+lmodify = "lmodify.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/quadram-institute-bioscience/lmodify"
+Repository = "https://github.com/quadram-institute-bioscience/lmodify"
+Issues = "https://github.com/quadram-institute-bioscience/lmodify/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lmodify*"]
+
+[tool.setuptools.package-data]
+lmodify = ["templates/*.tmpl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --tb=short"
+
+[tool.setuptools.dynamic]
+version = {attr = "lmodify.__version__"}

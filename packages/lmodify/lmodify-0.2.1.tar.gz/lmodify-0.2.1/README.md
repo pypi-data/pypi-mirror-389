@@ -1,0 +1,251 @@
+# lmodify
+
+[![PyPI - Format](https://img.shields.io/pypi/format/lmodify)](https://pypi.org/project/lmodify/)
+[![PyPI - Version](https://img.shields.io/pypi/v/lmodify)](https://pypi.org/project/lmodify/)
+[![Tests](https://github.com/quadram-institute-bioscience/lmodify/actions/workflows/test.yml/badge.svg)](https://github.com/quadram-institute-bioscience/lmodify/actions/workflows/test.yml)
+[![Publish to PyPI](https://github.com/quadram-institute-bioscience/lmodify/actions/workflows/publish-pypi.yml/badge.svg)](https://github.com/quadram-institute-bioscience/lmodify/actions/workflows/publish-pypi.yml)
+
+![logo](docs/lmodify-logo.png)
+
+A Python CLI tool for creating and managing LMOD modules from Singularity/Apptainer containers in HPC environments.
+
+## Features
+
+- Automatic package name and version detection from Singularity image filenames
+- Generate LMOD Lua module files
+- Create wrapper scripts for containerized applications
+- Manage multiple package versions
+- Add commands to existing packages
+- Interactive configuration setup
+
+## Installation
+
+```bash
+pip install -e .
+```
+
+For development:
+```bash
+pip install -e ".[dev]"
+```
+
+## Quick Start
+
+### 1. Initialize Configuration
+
+First, create your configuration file:
+
+```bash
+lmodify init
+```
+
+This will prompt you for:
+- Path to Singularity images
+- Path for binary wrappers
+- Path for LMOD Lua files
+- Your metadata (name, email, organization)
+
+The configuration is saved to `~/.config/lmodify.ini` by default.
+
+### 2. Create a Package
+
+Create an LMOD module from a Singularity image:
+
+```bash
+lmodify create -s /path/to/seqfu__1.20.3.simg seqfu stats
+```
+
+This will:
+1. Parse the package name and version from the image filename
+2. Create a wrapper script in `{bin_path}/seqfu__1.20.3/singularity.exec`
+3. Create symlinks for the specified commands
+4. Generate an LMOD Lua file at `{lmod_path}/seqfu/1.20.3.lua`
+
+### 3. List Available Packages
+
+View all available LMOD modules:
+
+```bash
+lmodify list
+```
+
+Filter by keyword:
+```bash
+lmodify list seqfu
+```
+
+Show only package names:
+```bash
+lmodify list -p
+```
+
+### 4. Add Commands to Existing Packages
+
+Add a new command to an existing package:
+
+```bash
+lmodify add seqfu seqfu-stats
+```
+
+Add to a specific version:
+```bash
+lmodify add seqfu seqfu-stats --version 1.20.3
+```
+
+## Supported Image Naming Patterns
+
+lmodify automatically detects package names and versions from these patterns:
+
+1. **Galaxy Project depot pattern:**
+   ```
+   depot.galaxyproject.org-singularity-{name}-{version}--{build}.img
+   depot.galaxyproject.org-singularity-kraken2-2.0.8_beta--pl526hc9558a2_2.img
+   ```
+
+2. **Colon pattern:**
+   ```
+   {name}:{version}--{build}
+   checkv:1.0.3--pyhdfd78af_0
+   genomad:1.9.0--pyhdfd78af_1.simg
+   ```
+
+3. **Double underscore pattern:**
+   ```
+   {name}__{version}[.extension]
+   seqfu__1.20.3
+   unicycler__0.5.1.simg
+   ```
+
+If automatic detection fails, you can specify manually:
+```bash
+lmodify create -s image.sif -p mypackage -v 1.0.0 mycommand
+```
+
+## Commands
+
+### init
+
+Create a configuration file with interactive prompts.
+
+```bash
+lmodify init [-o OUTPUT] [-f]
+```
+
+Options:
+- `-o, --output`: Output path for config file
+- `-f, --force`: Overwrite existing config file
+
+### create
+
+Create a new LMOD package from a Singularity image.
+
+```bash
+lmodify create [OPTIONS] [COMMANDS...]
+```
+
+Options:
+- `-s, --singularity`: Path to Singularity image (required)
+- `-p, --package`: Package name (auto-detected if not provided)
+- `-v, --version`: Package version (auto-detected if not provided)
+- `-l, --lmod-path`: Override LMOD path from config
+- `-b, --bin-path`: Override bin path from config
+- `-d, --description`: Package description
+- `-C, --category`: Package category (bio, chem, physics, tools, etc.)
+- `--force`: Overwrite existing files
+- `--dry-run`: Preview without making changes
+
+### list
+
+List available LMOD packages.
+
+```bash
+lmodify list [KEYWORD] [-p]
+```
+
+Options:
+- `KEYWORD`: Filter packages (case-insensitive)
+- `-p, --packages-only`: Show only package names, not versions
+- `-l, --lmod-path`: Override LMOD path from config
+
+### add
+
+Add a new command to an existing package.
+
+```bash
+lmodify add PACKAGE COMMAND [OPTIONS]
+```
+
+Options:
+- `-v, --version`: Add to specific version (default: all versions)
+- `-l, --lmod-path`: Override LMOD path from config
+- `-b, --bin-path`: Override bin path from config
+- `--force`: Overwrite existing command
+- `--dry-run`: Preview without making changes
+
+## Configuration File
+
+Default location: `~/.config/lmodify.ini`
+
+```ini
+[lmodify]
+singularity_default_path = /opt/singularity
+bin_path = /opt/bin
+lmod_path = /opt/lmod
+
+[metadata]
+author = Your Name
+email = your.email@example.com
+organization = Your Organization
+```
+
+You can specify a custom config file with:
+```bash
+lmodify -c /path/to/config.ini <command>
+```
+
+## How It Works
+
+When you create a package, lmodify:
+
+1. **Creates a wrapper script** (`singularity.exec`) that executes commands inside the container:
+   ```bash
+   #!/bin/bash
+   singularity exec "/path/to/image.simg" $(basename "$0") "$@"
+   ```
+
+2. **Creates symlinks** for each command pointing to the wrapper script:
+   ```bash
+   seqfu -> singularity.exec
+   stats -> singularity.exec
+   ```
+
+3. **Generates an LMOD Lua module** that adds the bin directory to PATH:
+   ```lua
+   prepend_path("PATH", "/opt/bin/seqfu__1.20.3")
+   ```
+
+Users can then load the module:
+```bash
+module load seqfu/1.20.3
+seqfu --version
+```
+
+## Development
+
+Run tests:
+```bash
+pytest
+```
+
+Run tests with coverage:
+```bash
+pytest --cov=lmodify
+```
+
+## License
+
+MIT License
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
