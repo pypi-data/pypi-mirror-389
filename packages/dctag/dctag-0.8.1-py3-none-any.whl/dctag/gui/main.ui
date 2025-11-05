@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1091</width>
+    <height>955</height>
+   </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="TabSessionInfo" name="tab_session">
+       <attribute name="title">
+        <string>Session Info</string>
+       </attribute>
+      </widget>
+      <widget class="TabBinaryLabel" name="tab_binary">
+       <attribute name="title">
+        <string>Binary Classification</string>
+       </attribute>
+      </widget>
+      <widget class="TabMultiClassLabel" name="tab_multiple">
+       <attribute name="title">
+        <string>Multi-Class Labeling</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1091</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionClose"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionSoftware"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuSession">
+    <property name="title">
+     <string>&amp;Session</string>
+    </property>
+    <addaction name="actionFlushSession"/>
+    <addaction name="actionCloseSession"/>
+    <addaction name="separator"/>
+    <addaction name="actionBackupSession"/>
+   </widget>
+   <widget class="QMenu" name="menuPreferences">
+    <property name="title">
+     <string>&amp;Preferences</string>
+    </property>
+    <addaction name="actionSelectLabels"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuPreferences"/>
+   <addaction name="menuSession"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionSoftware">
+   <property name="text">
+    <string>Software</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>&amp;Open .rtdc file</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>&amp;Close session</string>
+   </property>
+  </action>
+  <action name="actionCloseSession">
+   <property name="text">
+    <string>&amp;Close session</string>
+   </property>
+  </action>
+  <action name="actionFlushSession">
+   <property name="text">
+    <string>&amp;Flush session</string>
+   </property>
+  </action>
+  <action name="actionBackupSession">
+   <property name="text">
+    <string>&amp;Backup session</string>
+   </property>
+  </action>
+  <action name="actionSelectLabels">
+   <property name="text">
+    <string>Select labeling group...</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TabBinaryLabel</class>
+   <extends>QWidget</extends>
+   <header>dctag.gui.tab_binary</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabSessionInfo</class>
+   <extends>QWidget</extends>
+   <header>dctag.gui.tab_session</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabMultiClassLabel</class>
+   <extends>QWidget</extends>
+   <header>dctag.gui.tab_multiple</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionCloseSession</sender>
+   <signal>triggered()</signal>
+   <receiver>actionClose</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
