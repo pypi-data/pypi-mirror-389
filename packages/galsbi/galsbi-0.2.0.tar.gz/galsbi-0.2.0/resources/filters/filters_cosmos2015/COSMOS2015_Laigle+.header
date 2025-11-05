@@ -1,0 +1,415 @@
+04/2016   The photometric COSMOS2015 catalog                  (Laigle+, 2016)
+
+
+We present here a catalog containing photometry and physical
+parameters for more than half a million objects over the 2deg^2 COSMOS
+field. The photometry has been extracted from PSF-homogenised COSMOS
+optical near infrared data and infrared data.  Each near-infrared and
+optical band has been convolved so the final seeing (measured using a
+fit to a Moffat profile) corresponds to 0.8’’. Sources are selected
+from a chi-squared sum of the optical z++ band (SuprimeCam) and the 4
+NIR YJHKs bands (UltraVISTA-DR2). This ensures that the catalogue
+contains both redder and bluer objects.  It contains the NIR
+photometric data obtained at the ESO-VISTA telescope by the
+UltraVista-DR2 collaboration, as processed at IAP-Terapix and made
+publicly available, the imaging data publicly available from the
+COSMOS collaboration including Subaru and CFHT, the new Y band taken
+with HSC Subaru, and the IR data taken with Spitzer as a part the
+SPLASH Spitzer legacy program. It contains also the match with the
+MIPS 24 um catalog.  Physical parameters have been computed with Le
+Phare at LAM and have been calibrated using spectroscopic data. I n
+order to compute photometric redshifts with this catalogue, some
+additional corrections have to be applied to the magnitudes provided
+here.  They are fully described in Laigle et al. 2016.
+
+====================================================================================
+====================================================================================
+
+If questions, contact:
+- C. Laigle (laigle_at_iap.fr),
+- H.J. McCracken (hjmcc_at_iap.fr)
+- O. Ilbert( olivier.ilbert_at_lam.fr)
+
+If you use this catalog, please cite the following paper: Laigle et
+al. 2016: "The COSMOS2015 CATALOG: EXPLORING THE 1<z<6 UNIVERSE WITH
+HALF A MILLION GALAXIES".
+
+You must also include the following standard acknowledgement: "Based
+on data products from observations made with ESO Telescopes at the La
+Silla Paranal Observatory under ESO programme ID 179.A-2005 and on
+data products produced by TERAPIX and the Cambridge Astronomy Survey
+Unit on behalf of the UltraVISTA consortium."
+
+====================================================================================
+====================================================================================
+
+File Summary:
+
+The photometry extracted with SExtractor and parameters derived with LePhare are delivered as a standard FITS table.
+We provide also the matches with ACS, X-Ray, UV, IR, FIR, Radio catalogs and previous versions of the multi-band catalog on COSMOS field. When the photometry is not described in Laigle+16, the corresponding references are mentioned below.
+What follows is a description of each column.
+
+====================================================================================
+====================================================================================
+
+
+####################################################
+0) object identification
+####################################################
+
+#    name = 'NUMBER'
+
+Right Ascension and Declination
+#   name = 'ALPHA_J2000' ; unit = 'deg'
+#   name = 'DELTA_J2000'; unit = 'deg'
+
+Positions in pixels
+#   name = 'X_IMAGE';
+#   name = 'Y_IMAGE';
+#   name = 'ERRX2_IMAGE'; variance on X_IMAGE
+#   name = 'ERRY2_IMAGE'; variance on Y_IMAGE
+#   name = 'ERRXY_IMAGE'; covariance of X_iMAGE,Y_IMAGE
+
+####################################################
+2) Regions Flags. see the Readme file COSMOS2015_Flags.pdf for a full description of the regions.
+####################################################
+
+UltraVISTA area
+#   name = 'FLAG_HJMCC'; 0: UltraVISTA area, >=1 out of UltraVISTA
+
+UltraVISTA Ultra-deep stripes
+#   name = 'FLAG_DEEP'; 1: Ultra-deep stripes, 0: deep stripes
+
+COSMOS 2deg^2 area
+#   name = 'FLAG_COSMOS'; 1: 2deg2 COSMOS area
+
+Saturated objects and bad areas
+#   name = 'FLAG_PETER'; 0: good area, >=1 masked in optical broad-bands (P. Capak)
+
+####################################################
+3) Galactic extinction (Schlegel et al. 1998) at the object position
+####################################################
+
+#   name = 'EBV';
+
+
+####################################################
+4) Photometry.
+####################################################
+
+Non-detection convention (unless otherwise specified)
+Flux, Fluxerr, mag, magerr =-99 in a particular band: there is no data (or pixels are flagged as saturated) in this band at this position.
+Flux + Fluxerr >0 and mag, magerr =-99: flux is negative at this position, but flux error is consistent.
+
+
+
+#   name = 'FLUX_RADIUS'; radius enclosing 0.5 of the total flux (FLUX_AUTO)
+
+##########################
+A) Optical and NIR photometry
+[‘#’ is the filter name. Below is the filter list:
+CFHT: u
+SuprimeCam: B V r ip zpp IB427 IB464 IA484 IB505 IA527 IB574 IA624 IA679 IA738 IA767 IB709 IB827 NB711 NB816
+Hyper Suprime-Cam: yHSC (Y band)
+UltraVISTA-DR2: Y,J,H,Ks
+WIRCam: Hw (H),Ksw (Ks)]
+
+
+
+Fluxes and Fluxes errors:
+2” diameter apertures fluxes
+#   name = ‘#_FLUX_APER2';  unit = 'uJy'
+#   name = ‘#_FLUXERR_APER2'; unit = 'uJy'
+
+3” diameter apertures fluxes
+#   name = ‘#_FLUX_APER3'; unit = 'uJy'
+#   name = ‘#_FLUXERR_APER3'; unit = 'uJy'
+
+AB Magnitudes and Magnitudes errors:
+2” diameter apertures magnitudes
+#   name = ‘#_MAG_APER2';  unit = 'mag'
+#   name = ‘#_MAGERR_APER2'; unit = 'mag'
+
+3” diameter apertures magnitudes
+#   name = ‘#_MAG_APER3'; unit = 'mag'
+#   name = ‘#_MAGERR_APER3'; unit = 'mag'
+
+automatic apertures magnitudes
+#   name = ‘#_MAG_AUTO';  unit = 'mag'
+#   name = ‘#_MAGERR_AUTO'; unit = 'mag'
+
+Isophotal magnitudes
+#   name = ‘#_MAG_ISO';  unit = 'mag'
+#   name = ‘#_MAGERR_ISO';  unit = 'mag'
+
+Flags from SExtractor
+#   name = ‘#_FLAGS';
+	⁃	1  The object has neighbours, bright and close enough to significantly bias the MAG AUTO photometry, or bad pixels (more than 10% of the integrated area affected),
+	⁃	2  The object was originally blended with another one,
+	⁃	4 At least one pixel of the object is saturated (or very close to),
+	⁃	8 The object is truncated (too close to an image boundary),
+	⁃	16 Object’s aperture data are incomplete or corrupted,
+	⁃	32 Object’s isophotal data are incomplete or corrupted,
+	⁃	64 A memory overflow occurred during deblending,
+	⁃	128 A memory overflow occurred during extraction.
+#   name = ‘#_IMAFLAGS_ISO'; Object flags indicating saturation
+
+
+##########################
+B) IRAC filters (‘#’ is the filter name: SPLASH_1 (ch1, 3.6um), SPLASH_2 (ch2, 4.5um), SPLASH_3 (ch3, 5.8um), SPLASH_4 (ch4, 8.0um)):
+
+
+Total fluxes and fluxes errors:
+#   name = ‘#_FLUX;  unit = 'uJy'
+#   name = ‘#_FLUX_ERR'; unit = 'uJy'
+
+Total magnitudes and Magnitudes errors:
+#   name = ‘#_MAG';  unit = 'mag'
+#   name = ‘#_MAGERR'; unit = 'mag'
+
+
+
+##########################
+C) MIPS 24 micrometer photometry (Match with the 24um catalog by 1")
+(based on Le Floc'h 2009)
+
+fluxes and fluxes errors:
+#   name = ‘FLUX_24;  unit = 'uJy'
+#   name = ‘FLUXERR_24'; unit = 'uJy'
+
+Magnitudes and Magnitudes errors:
+#   name = ‘MAG_24';  unit = 'mag'
+#   name = ‘MAGERR_24'; unit = 'mag'
+
+ID in the 24um catalog:
+#   name = ‘ID_A24';
+
+
+##########################
+D) PACS/PEP photometry (Lutz et al. 2011)
+fluxes and fluxes errors 100um:
+#   name = ‘FLUX_100;  unit = 'mJy'
+#   name = ‘FLUXERR_100'; unit = 'mJy'
+
+fluxes and fluxes errors 160um:
+#   name = ‘FLUX_160;  unit = 'mJy'
+#   name = ‘FLUXERR_160'; unit = 'mJy'
+
+
+##########################
+E) SPIRE/HERMES photometry (Oliver et al. 2012)
+fluxes and fluxes errors 250um:
+#   name = ‘FLUX_250;  unit = 'mJy'
+#   name = ‘FLUXERR_250'; unit = 'mJy' (instrumental noise)
+#   name = ‘FLUXERRTOT_250'; unit = 'mJy' (total (inst+conf) noise)
+
+fluxes and fluxes errors 350um:
+#   name = ‘FLUX_350;  unit = 'mJy'
+#   name = ‘FLUXERR_350'; unit = 'mJy' (instrumental noise)
+#   name = ‘FLUXERRTOT_350'; unit = 'mJy' (total (inst+conf) noise)
+
+fluxes and fluxes errors 500um:
+#   name = ‘FLUX_500;  unit = 'mJy'
+#   name = ‘FLUXERR_500'; unit = 'mJy' (instrumental noise)
+#   name = ‘FLUXERRTOT_500'; unit = 'mJy' (total (inst+conf) noise)
+
+
+
+##########################
+F) GALEX photometry (Zamojski et al. 2007, Capak et al. 2007)
+
+
+fluxes and fluxes errors FUV:
+#   name = ‘MAG_GALEX_FUV;  unit = 'mag’
+#   name = ‘MAGERR_GALEX_FUV'; unit = 'mag’
+#   name = ‘FLUX_GALEX_FUV;  unit = ‘uJy'
+#   name = ‘FLUXERR_GALEX_FUV'; unit = ‘uJy'
+
+fluxes and fluxes errors NUV:
+#   name = ‘MAG_GALEX_NUV;  unit = 'mag’
+#   name = ‘MAGERR_GALEX_NUV'; unit = 'mag’
+#   name = ‘FLUX_GALEX_FUV;  unit = ‘uJy'
+#   name = ‘FLUXERR_GALEX_FUV'; unit = ‘uJy'
+
+##########################
+G) X-Ray photometry
+‘nan’ value if there is no corresponding object in the matched catalog.
+
+match from the new Chandra COSMOS catalog (Civano et al. 2016, Marchesi et al. 2016):
+The match is described in Laigle et al. 2016.
+#   name = 'ID_CHANDRA16'; format = '9A'
+
+fluxes and fluxes errors from the previous Chandra COSMOS catalog (Elvis et al. 2009)
+#   name = 'ID_CHANDRA09'; format = 'J'; null = -2147483648
+#   name = 'FLUX_CHANDRA_0.5_2’; format = 'D'; unit = 'erg/cm2/s' (0.5-2 keV band flux)
+#   name = 'FLUX_CHANDRA_2_10'; format = 'D'; unit = 'erg/cm2/s' (2-10 keV band flux)
+#   name = 'FLUX_CHANDRA_0.5_10'; format = 'D'; unit = 'erg/cm2/s'(0.5-10 keV band flux)
+
+fluxes and fluxes errors from XMM/Newton (Cappelluti et al. 2009):
+#   name = 'ID_XMM'; format = 'J'; null = -2147483648
+#   name = 'FLUX_XMM_0.5_2’; format = 'E' (0.5-2 keV band flux)
+#   name = 'FLUX_XMM_2_10'; format = 'E' (2-10 keV band flux)
+#   name = 'FLUX_XMM_5_10'; format = 'E' (5-10 keV band flux)
+#   name = 'HARDNESS_XMM'; format = 'E' (hardness ratio)
+
+
+fluxes and fluxes errors from Nustar (Civano et al. 2015):
+#   name = 'ID_NUSTAR'; format = '20A'
+#   name = 'FLUX_NUSTAR_3_24'; format = 'E' (3-24 keV band flux)
+#   name = 'FLUXERR_NUSTAR_3_24’; format = 'E' (3-24 keV band flux error)
+#   name = 'FLUX_NUSTAR_3_8’; format = 'E' (3-8 keV band flux)
+#   name = 'FLUXERR_NUSTAR_3_8’; format = 'E' (3-8 keV band flux error)
+#   name = 'FLUX_NUSTAR_8_24'; format = 'E' (8-24 keV band flux)
+#   name = 'FLUXERR_NUSTAR_8_24'; format = 'E' (8-24 keV band flux error)
+#   name = 'HARDNESS_NUSTAR'; format = 'E' (hardness ratio)
+#   name = 'HARDNESSLOW_NUSTAR'; format = 'E' (hardness ratio lower bound)
+#   name = 'HARDNESSUP_NUSTAR'; format = 'E' (hardness ratio upper bound)
+#   name = 'FLAG_XRAYBLEND'; format = 'I'; null = -32768 (flag for blended sources)
+
+
+##########################
+H) Match with the ACS catalog (Leauthaud et al. 2007)
+
+fluxes and fluxes errors F814W:
+#   name = ‘FLUX_814W';  unit = 'mJy'
+#   name = ‘FLUXERR_814W'; unit = 'mJy'
+
+
+##########################
+I) Radio VLA photometry:
+To do the match, 90cm catalog is merged with the 20cm catalog using a 6” radius.
+The 20cm catalog to the optical catalog with a 2” radius.
+
+fluxes and fluxes errors 20cm:
+#   name = ‘FLUXPEAK_20CM';  unit = 'mJy' (peak flux of the radio source)
+#   name = ‘FLUXPEAKERR_20CM'; unit = 'mJy' (rms uncertainty in the peak flux of the radio source)
+#   name = ‘FLUXINT_20CM';  unit = 'mJy' (total integrated flux of the radio source)
+#   name = ‘FLUXINTERR_20CM'; unit = 'mJy'(rms uncertainty total integrated flux of the radio source)
+#   name = ‘RMSBKG_20CM'; unit = 'mJy' (measured local rms noise at the source position)
+
+
+
+fluxes and fluxes errors 90cm:
+#   name = ‘FLUXPEAK_90CM';  unit = 'mJy' (peak flux of the radio source)
+#   name = ‘FLUXPEAKERR_90CM'; unit = 'mJy' (rms uncertainty in the peak flux of the radio source)
+#   name = ‘FLUXINT_90CM';  unit = 'mJy' (total integrated flux of the radio source)
+#   name = ‘FLUXINTERR_90CM'; unit = 'mJy' (rms uncertainty total integrated flux of the radio source)
+#   name = ‘RMSBKG_90CM'; unit = 'mJy' (measured local rms noise at the source position)
+
+name of the sources in VLA 90cm catalog
+#   name = ‘NAME_VLA90CM';
+
+name of the sources in JVL Deep catalog
+#   name = ‘NAME_JVLDEEP';
+
+name of the sources in JVL Large catalog
+#   name = ‘NAME_JVLLARGE';
+
+
+####################################################
+5) Match with previous multi-band catalogs
+####################################################
+
+1st version of the catalog from Capak et al. 2007
+   name= 'ID2006'
+2ndversion of the catalog from Capak et al. 2007
+   name= 'ID2008'
+catalog from Ilbert et al. 2013
+   name= 'ID2013'
+
+
+
+####################################################
+6) Main parameters computed with LePhare
+derived using a method similar to Ilbert et al. (2009, 2013)
+####################################################
+
+#  name= 'OFFSET'    (offset applied to the aperture magnitudes to obtain total quantities)
+#  name= 'PHOTOZ'    (z= zPDF  if galaxy [median of the likelihood distribution], z= 0 if star, z= 9.99  if Xray source based on Chandra (Civano program), z= -99   if masked area in flag_Capak)
+#  name= 'TYPE'      (Given even in masked regions; type=0   if galaxy; type=1 if star[mainly based on the chi2, only for objects detected in NIR or 3.6]; type=2   if Xray source; type=-9  if failure in the fit [most of these objects have less than 1 band])
+
+##########################
+Best fit obtained with the galaxy templates
+warning: every source has a redshift, regardless of the type or if it is in a masked area or not
+
+#  name= 'ZPDF'      (photo-z measured using the galaxy templates. Median of the likelihood distribution.)
+#  name= 'ZPDF_L68'  (lower limit, 68% confidence level [a comparison photo-z/spec-z shows that these errors could be underestimated by a factor 0.1*I-0.8 at I>20 and 1.2 at I<20])
+#  name= 'ZPDF_U68'  (upper limit, 68% confidence level [a comparison photo-z/spec-z shows that these errors could be underestimated by a factor 0.1*I-0.8 at I>20 and 1.2 at I<20])
+#  name= 'ZMIN_CHI2' (photo-z measured using the galaxy templates. Photo-z defines as the minimum of the chi2 distribution.)
+#  name= 'CHI2_BEST' (reduced chi2 [-99 if less than 3 filters] for zMinChi2)
+#  name= 'ZP_2'      (second photo-z solution if a second peak is detected with P>5% in the PDF)
+#  name= 'CHI2_2'    (reduced chi2 for the second photo-z solution)
+#  name=  'NBFILT'   (Number of filters used in the fit)
+
+
+##########################
+Best fit obtained with the AGN templates, in LePhare standard modality, but NOT optimised for Xray detected sources (no prior based on morphology, no variability correction, etc.)
+!!!! Warning: PLEASE use photos from Marchesi et al 2016 for the Xray selected sources. The mentioned paper revises also the counterparts. so it supersedes Salvato+09, Salvato+11, Civano+11, and Brusa+10.
+
+
+#  name= 'ZQ'         (photoz for the AGN library.)
+#  name= 'CHIQ'       (reduced chi2 )
+#  name=  'MODQ'      (best fit template)
+
+##########################
+Best fit obtained with the STAR templates
+
+#  name= 'MODS'       (model for the star library)
+#  name= 'CHIS'       (reduced chi2)
+
+
+##########################
+PHYSICAL PROPERTIES
+derived from the BC03 best-fit templates at zPDF (Chabrier IMF; cosmo:70,0.3,0.7; BC03 tau+delayed models described in Ilbert et al. 2015).
+##########################
+Best fit BC03 model at zPDF
+# name = 'MODEL'
+# name = 'AGE'
+# name = 'EXTINCTION'
+
+##########################
+Absolute magnitudes
+# name = 'MNUV'  NUV galex
+# name = 'MU'    u* CFHT
+# name = 'MB'    B  Subaru
+# name = 'MV'    V  Subaru
+# name = 'MR'    r+ Subaru
+# name = 'MI'    i+ Subaru
+# name = 'MZ'    z Subaru   (new filter)
+# name = 'MY'    VISTA
+# name = 'MJ'    VISTA
+# name = 'MH'    VISTA
+# name = 'MK'    VISTA
+
+##########################
+ Dust corrected color at zPDF
+# name = 'MNUV_MR'   corrected from dust-extinction.
+
+##########################
+ Classification quiescent/star-forming
+# name = 'CLASS'   0:quiescent/1:star-forming based on the NUV-R/R-J
+
+##########################
+ Mass
+# name = 'MASS_MED'        log Stellar mass from BC03 best-fit template. median of the PDF
+# name = 'MASS_MED_MIN68'  lower limit, 68% confidence level
+# name = 'MASS_MED_MAX68'  upper limit, 68% confidence level
+# name = 'MASS_BEST'       log Stellar mass from BC03 best-fit template. Taken at the minimum chi2
+
+##########################
+SFR  !Warning: computed without IR, large uncertainties with such methods
+# name = 'SFR_MED'         log SFR from BC03 best-fit template. median of the PDF
+# name = 'SFR_MED_MIN68'   lower limit, 68% confidence level
+# name = 'SFR_MED_MAX68'   upper limit, 68% confidence level
+# name = 'SFR_BEST'        log SFR from BC03 best-fit template. Taken at the minimum chi2
+# name = 'SSFR_MED'        log sSFR from BC03 best-fit template. median of the PDF
+# name = 'SSFR_MED_MIN68'  lower limit, 68% confidence level
+# name = 'SSFR_MED_MAX68'  upper limit, 68% confidence level
+# name = 'SSFR_BEST'       log sSFR from BC03 best-fit template. Taken at the minimum chi2
+
+
+##########################
+ Luminosities
+# name = 'L_NU'    log(luminosity in erg/s/Hz) in NUV filter
+# name = 'L_R'     log(luminosity in erg/s/Hz) in r filter
+# name = 'L_K'     log(luminosity in erg/s/Hz) in K filter

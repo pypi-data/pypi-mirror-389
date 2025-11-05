@@ -1,0 +1,87 @@
+stages:
+    - tests
+    - build_docs
+    - publish_docs
+
+variables:
+    GIT_STRATEGY: clone
+    GIT_DEPTH: "1"
+
+
+.setup: &setup
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    variables:
+      UV_LINK_MODE: "copy"
+    before_script:
+      - apt update && apt install -y git gcc g++ clang make
+      - echo "machine cosmo-gitlab.phys.ethz.ch" > ~/.netrc
+      - echo "login gitlab-ci-token" >> ~/.netrc
+      - echo "password ${CI_JOB_TOKEN}" >> ~/.netrc
+
+    after_script:
+      - rm -rf .venv || true
+
+style:
+    <<: *setup
+    stage: tests
+    script:
+        - uv venv --python 3.12
+        - uv sync --dev
+        - make style-check
+
+tests:
+    <<: *setup
+    stage: tests
+    parallel:
+        matrix:
+        - PYTHON_VERSION: ['3.10', '3.11', '3.12', '3.13']
+    script:
+        - test ${PYTHON_VERSION} = '3.11' && apt install -y python3.11-dev
+        - uv venv --python ${PYTHON_VERSION}
+        - uv sync --dev
+        - make tests ARGS=--runslow
+
+
+coverage:
+    <<: *setup
+    stage: tests
+    script:
+        - uv venv --python 3.12
+        - uv sync --dev
+        - make coverage ARGS=--runslow
+        - uv run coverage xml
+    coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+    artifacts:
+        paths:
+            - coverage.xml
+            - htmlcov
+
+
+docs:
+    <<: *setup
+    stage: build_docs
+    script:
+        - uv venv --python 3.12
+        - uv sync --dev
+        - make docs
+        - cp -R htmlcov docs/_build/html
+    dependencies:
+        - coverage
+    artifacts:
+           paths:
+             - docs/_build/html
+
+
+publish_docs:
+    image: eeacms/rsync
+    script:
+        - chmod 0600 ${COSMO_DOCS_SSH_KEY}
+        - >
+          rsync -e "ssh -i ${COSMO_DOCS_SSH_KEY} -o StrictHostKeyChecking=no" -rav --mkpath docs/_build/html/ docs@cosmo-docs.phys.ethz.ch:galsbi
+    stage: publish_docs
+    dependencies:
+        - docs
+    when: manual
+    only:
+        - master
+        - main

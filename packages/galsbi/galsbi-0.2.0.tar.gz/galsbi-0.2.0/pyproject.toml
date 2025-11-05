@@ -1,0 +1,101 @@
+[build-system]
+requires = ["hatchling", "numpy"]
+build-backend = "hatchling.build"
+
+[project]
+name = "galsbi"
+dynamic = ["version"]
+license = {text = "MIT License"}
+description = "Package to easily generate catalogs from the model"
+readme = {file = "README.md", content-type = "text/markdown"}
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+
+
+dependencies = [
+  "astropy",
+  "cosmic_toolbox>=0.4.1",
+  "cosmo_torrent",
+  "h5py",
+  "healpy",
+  "ivy-wfengine>=0.4.0",
+  "numpy",
+  "edelweiss>=0.2.0",
+  "psutil>=6.1.0",
+  "pycosmo>=2.2.0",
+  "scipy",
+  "ufig>=1.0.0a2",
+]
+
+authors = [
+  {name = "Silvan Fischbacher", email = "silvanf@phys.ethz.ch"},
+]
+
+[project.urls]
+Repository = "https://cosmo-docs.phys.ethz.ch/galsbi"
+
+
+[tool.hatch.version]
+path = "src/galsbi/__init__.py"
+pattern = "__version__ = \"(?P<version>[^\"]+)\""
+
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+
+[tool.pytest.ini_options]
+addopts = "-v -ra"
+testpaths = ["tests"]
+filterwarnings = ["ignore:invalid"]
+
+[tool.uv]
+dev-dependencies = [
+    "uv",
+    "twine",
+    "build",
+    "hatchling",
+    "wheel",
+    "pre-commit",
+    "ruff",
+    "black",
+    "pytest",
+    "pytest-regtest",
+    "pytest-cov",
+    "sphinx",
+    "sphinx-rtd-theme",
+    "myst-parser",
+    "sphinx-copybutton>=0.5.2",
+    "dash>=2.18.2",
+    "plotly>=5.24.1",
+]
+
+[tool.ruff]
+exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"src/galsbi/models.py" = ["E501"]
