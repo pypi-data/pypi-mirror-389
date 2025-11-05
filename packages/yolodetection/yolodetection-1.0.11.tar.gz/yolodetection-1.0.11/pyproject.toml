@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yolodetection"
+version = "1.0.11"
+description = "Yolo + sahi toolkit"
+readme = "README.md"
+authors = [
+    { name="Maxime Phaneuf", email="maxime.phaneuf@chaac.tech" }
+]
+license = { text="MIT" }
+requires-python = ">=3.8"
+dependencies = [
+    "pathlib",
+    "ultralytics",
+    "sahi"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
