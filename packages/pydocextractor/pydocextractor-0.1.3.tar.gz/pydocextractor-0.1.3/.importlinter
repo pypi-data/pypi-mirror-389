@@ -1,0 +1,50 @@
+[importlinter]
+root_package = pydocextractor
+
+# Contract 1: Domain layer should not import from infrastructure or application layers
+[importlinter:contract:1]
+name = Domain layer independence
+type = forbidden
+source_modules = 
+    pydocextractor.domain
+forbidden_modules = 
+    pydocextractor.infra
+    pydocextractor.app
+    pydocextractor.cli
+    pydocextractor.factory
+
+# Contract 2: Application layer should not import from infrastructure layer
+[importlinter:contract:2]
+name = Application layer independence
+type = forbidden
+source_modules = 
+    pydocextractor.app
+forbidden_modules = 
+    pydocextractor.infra
+
+# Contract 3: Infrastructure layer should not import from application layer
+[importlinter:contract:3]
+name = Infrastructure layer independence
+type = forbidden
+source_modules = 
+    pydocextractor.infra
+forbidden_modules = 
+    pydocextractor.app
+
+# Contract 4: CLI should not import from domain directly (should go through app layer)
+[importlinter:contract:4]
+name = CLI should use application layer
+type = forbidden
+source_modules = 
+    pydocextractor.cli
+forbidden_modules = 
+    pydocextractor.domain
+
+# Contract 5: Factory should not import from domain directly
+[importlinter:contract:5]
+name = Factory should use application layer
+type = forbidden
+source_modules = 
+    pydocextractor.factory
+forbidden_modules = 
+    pydocextractor.domain
