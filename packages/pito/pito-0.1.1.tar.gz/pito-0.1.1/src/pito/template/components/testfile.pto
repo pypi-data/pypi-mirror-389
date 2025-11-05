@@ -1,0 +1,16 @@
+\# --- Component: testfile.pto ---
+
+This is content from \textbf{components/testfile.pto}.
+
+It demonstrates that {{include("components/nested_example.pto")}} works correctly
+and can also contain LaTeX markup like this:
+
+$$
+f(x) = \int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+You can also call functions here:
+{{getSomething()}}
+{{getSomethingButWithArgs("from testfile.pto")}}
+
+\# --- End of component ---

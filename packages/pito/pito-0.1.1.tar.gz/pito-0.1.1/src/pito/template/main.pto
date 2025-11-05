@@ -1,0 +1,31 @@
+\title{{{getTitle()}}}
+\author{{{getAuthor()}}}
+\date{{{getDate()}}}
+
+\maketitle
+\clearpage
+
+\# --- Section 1 : Introduction ---
+{{getIntroText()}}
+
+\[
+E = mc^2
+\]
+
+\# --- Section 2 : Equation Demo ---
+The Scaled Dot-Product Attention formula is:
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+$$
+
+\# --- Section 3 : Content Include ---
+{{include("components/testfile.pto")}}
+
+\# --- Section 4 : Generated Data ---
+{{generateTable("data/results.csv")}}
+
+\# --- Section 5 : Conclusion ---
+{{getConclusion()}}
+
+\clearpage
+{{getFooter("Rendered with Pito")}}

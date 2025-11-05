@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pito"
+version = "0.1.1"
+authors = [
+  { name="Shinapri", email="shinapri.2003.1@gmail.com" },
+]
+description = "Pito: A lightweight dynamic programatically static pdf document generator."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "PyYAML"
+]
+
+[project.scripts]
+pito = "pito.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"pito" = ["template/**"]

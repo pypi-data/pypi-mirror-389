@@ -1,0 +1,4 @@
+def include(path):
+    with open(path, "r") as f:
+        text = f.read()
+    return text
