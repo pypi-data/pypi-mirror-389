@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - User Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .profile-info h3 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info .role-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
+        .info-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .info-value {
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .credentials-list {
+            list-style: none;
+        }
+        
+        .credential-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .credential-info {
+            flex: 1;
+        }
+        
+        .credential-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .credential-meta {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 My Profile</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="window.location.href='/auth-app/static/welcome.html'">Back to Dashboard</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div id="alert-container"></div>
+            
+            <div class="profile-header">
+                <div class="profile-avatar" id="avatar">U</div>
+                <div class="profile-info">
+                    <h3 id="display-name">Loading...</h3>
+                    <span class="role-badge" id="role">User</span>
+                </div>
+            </div>
+            
+            <h2>✏️ Edit Profile</h2>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="display-name-input">Display Name *</label>
+                    <input type="text" id="display-name-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile">
+                </div>
+                <button type="submit" class="btn btn-success">💾 Save Changes</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>🔐 Security Information</h2>
+            <div class="info-item">
+                <span class="info-label">User ID:</span>
+                <span class="info-value" id="user-id">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Account Created:</span>
+                <span class="info-value" id="created-at">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Registered Passkeys:</span>
+                <span class="info-value" id="credential-count">0</span>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔑 My Passkeys</h2>
+            <ul class="credentials-list" id="credentials-list">
+                <li class="credential-item">Loading passkeys...</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="auth-helper.js"></script>
+    <script>
+        let currentUser = null;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            const userData = await AuricaAuth.requireAuth();
+            if (!userData) {
+                return;
+            }
+            
+            await loadProfile();
+        });
+        
+        async function loadProfile() {
+            try {
+                const response = await AuricaAuth.authenticatedFetch('/auth-app/api/profile/');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load profile');
+                }
+                
+                currentUser = await response.json();
+                displayProfile(currentUser);
+            } catch (error) {
+                showAlert('Error loading profile: ' + error.message, 'error');
+            }
+        }
+        
+        function displayProfile(user) {
+            // Validate user object
+            if (!user || typeof user !== 'object') {
+                showAlert('Invalid user data received', 'error');
+                return;
+            }
+            
+            // Update avatar
+            const avatar = document.getElementById('avatar');
+            const displayName = user.display_name || user.username || 'U';
+            avatar.textContent = displayName.charAt(0).toUpperCase();
+            
+            // Update header
+            document.getElementById('display-name').textContent = displayName;
+            const role = user.role || 'user';
+            document.getElementById('role').textContent = role.toUpperCase();
+            
+            // Update form
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('display-name-input').value = user.display_name || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('mobile').value = user.mobile_number || '';
+            
+            // Update security info
+            document.getElementById('user-id').textContent = user.user_id || 'N/A';
+            document.getElementById('created-at').textContent = user.created_at ? new Date(user.created_at).toLocaleString() : 'N/A';
+            document.getElementById('credential-count').textContent = user.credentials ? user.credentials.length : 0;
+            
+            // Display credentials
+            displayCredentials(user.credentials || []);
+        }
+        
+        function displayCredentials(credentials) {
+            const list = document.getElementById('credentials-list');
+            
+            if (credentials.length === 0) {
+                list.innerHTML = '<li class="credential-item">No passkeys registered</li>';
+                return;
+            }
+            
+            list.innerHTML = credentials.map((cred, index) => `
+                <li class="credential-item">
+                    <div class="credential-info">
+                        <div class="credential-name">🔑 Passkey ${index + 1}</div>
+                        <div class="credential-meta">Created: ${new Date(cred.created_at).toLocaleString()}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+        
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                display_name: document.getElementById('display-name-input').value,
+                email: document.getElementById('email').value,
+                mobile_number: document.getElementById('mobile').value || null
+            };
+            
+            try {
+                const response = await AuricaAuth.authenticatedFetch('/auth-app/api/profile/', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to update profile');
+                }
+                
+                const result = await response.json();
+                showAlert(result.message || 'Profile updated successfully!', 'success');
+                await loadProfile();
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        });
+        
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
