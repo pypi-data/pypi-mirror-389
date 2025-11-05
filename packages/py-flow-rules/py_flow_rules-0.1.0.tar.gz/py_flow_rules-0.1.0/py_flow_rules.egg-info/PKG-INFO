@@ -1,0 +1,152 @@
+Metadata-Version: 2.4
+Name: py-flow-rules
+Version: 0.1.0
+Summary: A simple rules engine package for python
+Home-page: https://github.com/p1971/pyFlowRules
+Author: Pete Robinson
+Author-email: Pete Robinson <pete@madhippy.com>
+License-Expression: MIT
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# py flow rules
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](#)
+[![PyPI version](https://badge.fury.io/py/py-flow-rules.svg)](https://badge.fury.io/py/py-flow-rules)
+[![CI Status](https://github.com/p1971/pyFlowRules/workflows/CI/badge.svg)](https://github.com/p1971/pyFlowRules/actions)
+[![Coverage](https://codecov.io/gh/p1971/pyFlowRules/branch/main/graph/badge.svg)](https://codecov.io/gh/p1971/pyFlowRules)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Downloads](https://pepy.tech/badge/py-flow-rules)](https://pepy.tech/project/py-flow-rules)
+
+A simple rules engine implementation for python.
+
+---
+
+## Features
+
+- Allows the developer to write simple rules policies to aggregate the business logic for an application.
+
+---
+
+## Installation
+
+Clone this repository and install the necessary dependencies.
+
+```bash
+git clone https://github.com/p1971/pyFlowRules.git
+cd pyFlowRules
+python -m venv .venv
+source .venv/bin/activate  # On Windows use: .\.venv\Scripts\activate
+
+# For core functionality only (no dependencies required):
+pip install -e .
+
+# For development (includes testing tools):
+pip install -r requirements-dev.txt
+
+# For running examples:
+pip install -r requirements-examples.txt
+```
+
+Make sure you have Python 3.10 or above installed.
+
+### Versioning
+
+This project follows [Semantic Versioning](https://semver.org/). Version numbers are in the format MAJOR.MINOR.PATCH:
+
+- MAJOR version for incompatible API changes
+- MINOR version for added functionality in a backwards compatible manner
+- PATCH version for backwards compatible bug fixes
+
+Current version: ![PyPI](https://img.shields.io/pypi/v/py-flow-rules)
+
+### Requirements Files
+
+The project uses separate requirements files for different purposes:
+
+- `requirements.txt` - Core dependencies (currently empty as we only use standard library)
+- `requirements-dev.txt` - Development dependencies (pytest, coverage, etc.)
+- `requirements-examples.txt` - Dependencies for running example code
+
+---
+
+## Usage
+
+Here is an example of how to use the project:
+
+```python
+from dataclasses import dataclass
+
+from flowrules.rules_engine import policy, rule, Policy
+
+@dataclass
+class Request:
+    id: int
+    notional: float
+    client: str
+    
+@policy(policy_id="P01", policy_name="InitialRequestValidation")
+class InitialRequestPolicy(Policy):
+    @rule(rule_id="R001", rule_name="Validate notional", failure_message="The notional is too high.")
+    def validate_notional(self, r: Request):
+        return r.notional < 100000
+    
+    @rule(rule_id="R002", rule_name="Validate client", failure_message="The client is unknown.")
+    def validate_client(self, r: Request):
+        return r.client in ["client1", "client2"]
+  
+
+policy = InitialRequestPolicy()
+result = policy.execute(Request(id=1, notional=90000, client="client1"))
+print(result)
+```
+
+You can find more examples in the `examples/` directory.
+For example
+```bash
+python -m example.main
+```
+---
+
+## Running Tests
+
+Unit tests are included for this project. Use `pytest` to run them (recommended):
+
+```bash
+pip install pytest  # Install pytest if not already done
+pytest
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these steps to contribute:
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -m 'Add some feature'`).
+4. Push your branch (`git push origin feature/your-feature`).
+5. Open a pull request.
+
+Make sure your code passes all tests and follows Python best practices.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
