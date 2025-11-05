@@ -1,0 +1,66 @@
+Metadata-Version: 2.4
+Name: rbfly
+Version: 0.11.0
+Summary: RbFly - a library for RabbitMQ Streams using Python asyncio
+Home-page: https://wrobell.dcmod.org/rbfly/
+Author: Artur Wroblewski
+Author-email: wrobell@riseup.net
+License: GPL-3.0-or-later
+Project-URL: Source Code, https://gitlab.com/wrobell/rbfly
+Project-URL: Bug tracker, https://gitlab.com/wrobell/rbfly/issues
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Requires-Python: >=3.12
+Description-Content-Type: text/x-rst
+License-File: COPYING
+Provides-Extra: tests
+Requires-Dist: bandit; extra == "tests"
+Requires-Dist: cython-lint; extra == "tests"
+Requires-Dist: mypy==1.18.2; extra == "tests"
+Requires-Dist: pika; extra == "tests"
+Requires-Dist: pytest-asyncio; extra == "tests"
+Requires-Dist: pytest-cov; extra == "tests"
+Requires-Dist: pytest-lazy-fixtures; extra == "tests"
+Requires-Dist: pytest-timeout; extra == "tests"
+Requires-Dist: ruff>=0.12.9; extra == "tests"
+Requires-Dist: uvloop>=0.21.0; extra == "tests"
+Provides-Extra: performance
+Requires-Dist: msgpack; extra == "performance"
+Requires-Dist: aiokafka==0.12.0; extra == "performance"
+Requires-Dist: rstream==0.40.0; extra == "performance"
+Requires-Dist: python-qpid-proton==0.40.0; extra == "performance"
+Provides-Extra: doc
+Requires-Dist: sphinx_rtd_theme; extra == "doc"
+Dynamic: license-file
+
+RbFly is a library for RabbitMQ Streams using Python asyncio
+
+- https://www.rabbitmq.com/streams.html
+- https://docs.python.org/3/library/asyncio.html
+
+The library is designed and implemented with the following qualities in
+mind
+
+1. Simple, flexible, and asynchronous Pythonic API with type annotations.
+2. Use of AMQP 1.0 message format to enable interoperability between
+   RabbitMQ Streams clients.
+3. Performance by implementing critical sections of code using Cython,
+   avoiding copying of data, and testing.
+4. Auto reconnection to RabbitMQ broker with lazily created connection
+   objects.
+
+RbFly supports many RabbitMQ Streams broker features
+
+1. Publishing single messages, or in batches, with confirmation.
+2. Subscribing to a stream at a specific point in time, from a specific
+   offset, or using offset reference.
+3. Stream message filtering.
+4. Writing stream offset reference.
+5. Message deduplication.
+6. Integration with AMQP 1.0 ecosystem at message format level.
+7. TLS and authentication with X.509 certificates.
+
+RbFly library is licensed under terms of GPL license, version 3, see
+COPYING file for details. As stated in the license, there is no warranty,
+so any usage is on your own risk.

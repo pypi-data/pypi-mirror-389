@@ -1,0 +1,35 @@
+[build-system]
+requires = [
+    "build",
+    "setuptools",
+    "wheel",
+    "cython==3.1.6",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+strict = true
+
+[tool.bandit]
+skips = ["B101"]
+
+[tool.pytest.ini_options]
+addopts = '--log-level=debug --doctest-modules -vv --cov rbfly --cov-config pyproject.toml --cov-report=term-missing rbfly'
+testpaths = ["rbfly/tests"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 67
+omit = ["rbfly/tests/*"]
+
+[tool.ruff]
+lint.select = ['F', 'N', 'E', 'W', 'PL', 'C90', 'RUF', 'SLF', 'UP']
+# drop from ignore: PLR2004, E501
+lint.ignore = [
+    'E731', 'PLR2004', 'E501', 'UP032', 'E721', 'RUF021', 'UP040', 'UP046',
+    'UP047',
+]
+target-version = "py312"
+
+[tool.cython-lint]
+ignore = ['E252', 'E302', 'E305']

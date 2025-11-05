@@ -1,0 +1,30 @@
+RbFly is a library for RabbitMQ Streams using Python asyncio
+
+- https://www.rabbitmq.com/streams.html
+- https://docs.python.org/3/library/asyncio.html
+
+The library is designed and implemented with the following qualities in
+mind
+
+1. Simple, flexible, and asynchronous Pythonic API with type annotations.
+2. Use of AMQP 1.0 message format to enable interoperability between
+   RabbitMQ Streams clients.
+3. Performance by implementing critical sections of code using Cython,
+   avoiding copying of data, and testing.
+4. Auto reconnection to RabbitMQ broker with lazily created connection
+   objects.
+
+RbFly supports many RabbitMQ Streams broker features
+
+1. Publishing single messages, or in batches, with confirmation.
+2. Subscribing to a stream at a specific point in time, from a specific
+   offset, or using offset reference.
+3. Stream message filtering.
+4. Writing stream offset reference.
+5. Message deduplication.
+6. Integration with AMQP 1.0 ecosystem at message format level.
+7. TLS and authentication with X.509 certificates.
+
+RbFly library is licensed under terms of GPL license, version 3, see
+COPYING file for details. As stated in the license, there is no warranty,
+so any usage is on your own risk.
