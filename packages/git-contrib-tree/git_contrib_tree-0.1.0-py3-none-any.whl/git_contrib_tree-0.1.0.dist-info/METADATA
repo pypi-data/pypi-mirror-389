@@ -1,0 +1,341 @@
+Metadata-Version: 2.4
+Name: git-contrib-tree
+Version: 0.1.0
+Summary: Analyze and visualize git repository contributions with a file tree showing top contributors.
+Project-URL: Repository, https://gitlab.com/wykwit/git-contrib-tree
+Project-URL: Issues, https://gitlab.com/wykwit/git-contrib-tree/issues
+Author-email: "Wiktor W." <wykwit@disroot.org>
+License-File: LICENSE
+Keywords: analysis,cli,contributions,git,tree,visualization
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Version Control :: Git
+Classifier: Topic :: Utilities
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+# git-contrib-tree
+
+A Python tool to analyze and visualize git repository contributions by displaying a file tree with the top 3 contributors for each file and directory.
+
+> **Note:** This project was created with the assistance of Large Language Models (LLMs) for code generation, optimization, and documentation.
+
+## Features
+
+- Display repository file tree with top contributors per file
+- Show top 3 contributors for directories (aggregated from all files within)
+- Show commit counts alongside contributor names
+- Filter by date range (--since/--until)
+- Filter by contributor email(s)
+- List all contributor emails
+- Control tree depth (useful for large repositories)
+- Analyze specific subtrees within a repository
+
+## Requirements
+
+- Python 3.6+
+- Git installed and accessible in PATH
+- A git repository to analyze
+
+No external dependencies required - uses only Python standard library and git.
+
+## Installation
+
+### Using uv (Recommended)
+
+```bash
+uv pip install git-contrib-tree
+```
+
+### Using pip
+
+```bash
+pip install git-contrib-tree
+```
+
+### Arch Linux (AUR)
+
+```bash
+# Using an AUR helper
+paru -S git-contrib-tree
+```
+
+This installs the `git-contrib-tree` command, making it available as both:
+- A standalone command: `git-contrib-tree`
+- A git subcommand: `git contrib-tree`
+
+### Development Installation
+
+For development, clone the repository and install in editable mode:
+
+```bash
+git clone https://gitlab.com/wykwit/git-contrib-tree.git
+cd git-contrib-tree
+uv pip install -e .
+```
+
+### Standalone Script
+
+The `git-contrib-tree` script is a self-contained Python file with no external dependencies. You can use it directly without installing the package:
+
+```bash
+# Download the script
+curl -O https://gitlab.com/wykwit/git-contrib-tree/-/raw/main/git-contrib-tree
+chmod +x git-contrib-tree
+
+# Run it directly
+./git-contrib-tree --help
+
+# Or with Python
+python3 git-contrib-tree --help
+```
+
+This is useful for:
+- One-off usage without installation
+- Including in other projects or scripts
+- Running on systems where you can't install packages
+
+## Quick Start
+
+```bash
+# Analyze current directory
+git contrib-tree
+
+# Show project-level overview
+git contrib-tree --depth 0
+
+# See who worked on what in the last quarter
+git contrib-tree --since "3 months ago"
+
+# List all contributors
+git contrib-tree --list-emails
+```
+
+## Usage
+
+### Basic Usage
+
+```bash
+# Analyze current directory
+git contrib-tree
+
+# Analyze specific repository
+git contrib-tree --repo /path/to/repo
+```
+
+### Depth Control
+
+```bash
+# Show only project-level contributors
+git contrib-tree --depth 0
+
+# Show root level only
+git contrib-tree --depth 1
+
+# Show files up to depth 2
+git contrib-tree --depth 2
+
+# Show all files (default)
+git contrib-tree --depth -1
+```
+
+**Note:** Depth controls what is *displayed*, not what is analyzed. Directory summaries always include all files within them, even if those files are not shown due to depth limits.
+
+### Analyze Specific Path
+
+```bash
+# Analyze only the src directory
+git contrib-tree --path src
+
+# Analyze only src/models with depth 1
+git contrib-tree --path src/models --depth 1
+
+# Analyze specific file
+git contrib-tree --path README.md --depth 0
+```
+
+### Date Filtering
+
+```bash
+# Analyze contributions from specific date
+git contrib-tree --since "2024-01-01"
+
+# Analyze last 6 months
+git contrib-tree --since "6 months ago"
+
+# Analyze until specific date
+git contrib-tree --until "2024-12-31"
+
+# Analyze specific date range
+git contrib-tree --since "2024-01-01" --until "2024-12-31"
+```
+
+**Supported date formats:**
+- Specific dates: `"2024-01-01"`, `"Jan 1 2024"`
+- Relative dates: `"6 months ago"`, `"1 year ago"`, `"2 weeks ago"`
+- ISO format: `"2024-01-01T00:00:00"`
+
+### Author Filtering
+
+```bash
+# List all contributor emails
+git contrib-tree --list-emails
+
+# Filter by single author email
+git contrib-tree --email user@example.com
+
+# Filter by multiple authors (comma-separated)
+git contrib-tree --email user1@example.com,user2@example.com
+
+# Combine with other filters
+git contrib-tree --email user@example.com --since "6 months ago" --depth 2
+```
+
+### Combined Examples
+
+```bash
+# Analyze last year with depth 2
+git contrib-tree --since "1 year ago" --depth 2
+
+# Analyze specific repo and time period
+git contrib-tree --repo ~/projects/myapp --since "2024-01-01" --depth 3
+
+# Analyze src directory from last 6 months
+git contrib-tree --path src --since "6 months ago" --depth 2
+
+# See specific author's contributions in a directory
+git contrib-tree --path src --email user@example.com
+```
+
+## Output Examples
+
+### Project Level (--depth 0)
+```
+Project: my-repository
+  Top contributors: John Doe (150), Jane Smith (89), Bob Johnson (45)
+```
+
+### Tree View (Full Depth)
+```
+Repository: my-repository
+
+├── README.md - John Doe (5), Jane Smith (2)
+├── src/ - John Doe (48), Jane Smith (23), Bob Johnson (10)
+│   ├── main.py - John Doe (25), Bob Johnson (10), Jane Smith (3)
+│   ├── utils.py - Jane Smith (15), John Doe (8)
+│   └── models/ - Bob Johnson (20), John Doe (15), Jane Smith (5)
+│       └── user.py - Bob Johnson (20), John Doe (5)
+└── tests/ - Jane Smith (12), John Doe (8), Bob Johnson (2)
+    └── test_main.py - Jane Smith (12), John Doe (8), Bob Johnson (2)
+```
+
+### Tree View with Depth Limit (--depth 1)
+```
+Repository: my-repository
+
+├── README.md - John Doe (5), Jane Smith (2)
+├── src/ - John Doe (48), Jane Smith (23), Bob Johnson (10)
+└── tests/ - Jane Smith (12), John Doe (8), Bob Johnson (2)
+```
+
+### List Contributors (--list-emails)
+```
+Contributors:
+  John Doe <john@example.com> - 150 commits
+  Jane Smith <jane@example.com> - 89 commits
+  Bob Johnson <bob@example.com> - 45 commits
+```
+
+**Note:** 
+- Directory summaries show aggregated contributions from all files within that directory and its subdirectories
+- Even when depth is limited, directory summaries include contributions from all nested files
+- Files/directories with no contributions from filtered authors are hidden when using `--email`
+
+## Command Line Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--repo PATH` | `.` | Path to git repository |
+| `--depth N` | `-1` | Maximum tree depth to display (0=project only, -1=unlimited) |
+| `--path PATH` | None | Analyze only this path within the repository |
+| `--since DATE` | None | Show commits after this date |
+| `--until DATE` | None | Show commits before this date |
+| `--email EMAILS` | None | Filter by author email(s), comma-separated |
+| `--list-emails` | False | List all contributor emails and exit |
+
+## How It Works
+
+The tool analyzes git history efficiently using batch operations:
+
+1. **File Discovery**: Uses `git ls-files` to get all tracked files (optionally filtered by path)
+2. **Tree Building**: Builds a complete file tree structure in memory
+3. **Batch Loading**: Runs a single `git log --name-only` command to get all commits and affected files
+4. **Efficient Parsing**: Parses the output to build contributor data for all files simultaneously
+5. **Bottom-Up Aggregation**: Calculates directory contributors by aggregating from files within
+6. **Smart Display**: Displays the tree up to the specified depth limit while maintaining accurate summaries
+
+## Use Cases
+
+- **Code review**: Identify file owners and subject matter experts
+- **Team analysis**: Understand contribution patterns across your codebase
+- **Onboarding**: Help new team members identify who to ask about specific files
+- **Project planning**: Visualize which parts of the codebase have concentrated knowledge
+- **Historical analysis**: Track how contributions have changed over time using date filters
+- **Individual tracking**: See what files a specific contributor has worked on
+- **Refactoring**: Identify highly-modified files that might benefit from cleanup
+
+## Troubleshooting
+
+**"Not a git repository" error:**
+- Ensure you're in a git repository or use `--repo` to specify the path
+- Run `git status` to verify the directory is a git repository
+
+**No commits shown:**
+- Check your date filters (`--since`, `--until`) - they might be excluding all commits
+- Verify files exist in git: `git ls-files`
+- Ensure the specified `--path` exists in the repository
+- Check that the `--email` filter matches actual contributor emails (use `--list-emails`)
+
+**Unexpected contributor names:**
+- Git uses the name from commits, which may vary if contributors use different names
+- Check commit history: `git log --format=%aN | sort -u`
+- Use `--list-emails` to see all contributor emails and their associated names
+
+## License
+
+This project is dual-licensed under the MIT License and WTFPL.
+
+```
+MIT License
+
+Copyright (c) 2025 wykwit
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
