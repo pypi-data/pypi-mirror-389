@@ -1,0 +1,28 @@
+[project]
+name = "mad-services"
+version = "1.0.3"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "glaunay", email = "guillaume.launay@ens-lyon.fr" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.3.1",
+    "mdanalysis>=2.9.0",
+    "rich-click>=1.9.4",
+]
+
+[project.scripts]
+mad-boxer = "mad_services.box:main"
+mad-ibuild = "mad_services.insane.builder:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "mdanalysistests>=2.10.0",
+]
