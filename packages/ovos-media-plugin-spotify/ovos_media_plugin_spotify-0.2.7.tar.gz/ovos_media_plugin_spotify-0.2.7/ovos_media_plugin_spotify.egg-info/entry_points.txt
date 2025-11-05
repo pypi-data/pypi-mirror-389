@@ -1,0 +1,9 @@
+[console_scripts]
+ovos-spotify-autoconfigure = ovos_media_plugin_spotify.autoconfigure:main
+ovos-spotify-oauth = ovos_media_plugin_spotify.auth:main
+
+[mycroft.plugin.audioservice]
+ovos_spotify = ovos_media_plugin_spotify.audio
+
+[opm.media.audio]
+ovos-media-audio-plugin-spotify = ovos_media_plugin_spotify:SpotifyOCPAudioService
