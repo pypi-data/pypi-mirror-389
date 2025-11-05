@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Findings</title>
+
+    <script src="scripts/utilities.js"></script>
+    <script src="scripts/censorship.js"></script>
+    <script src="scripts/data.js"></script>
+    <script src="scripts/viewers.js"></script>
+    <script src="scripts/findings.js"></script>
+
+    <script src="vendors/tailwind-3.3.3.js"></script>
+    <link href="vendors/fontawesome-6.4.0/css/all.min.css" rel="stylesheet" type="text/css"/>
+
+    <link href="stylesheets/custom.css" rel="stylesheet" type="text/css"/>
+
+    <style type="text/tailwindcss">
+        @tailwind components;
+
+        @layer components {
+            .risk-tab--active {
+                @apply whitespace-nowrap py-2 px-3 text-sm font-medium text-white hover:text-orange-300 transition-all border-2 border-white rounded-t-md hover:border-orange-500;
+            }
+
+            .risk-tab--inactive {
+                @apply whitespace-nowrap py-2 px-3 text-sm font-medium text-gray-400 hover:text-orange-300 transition-all border-2 border-gray-500 rounded-t-md hover:border-orange-500;
+            }
+
+            .risk-tab-counter--active {
+                @apply ml-2 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block bg-white text-black;
+            }
+
+            .risk-tab-counter--inactive {
+                @apply ml-2 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block bg-gray-500 text-white;
+            }
+
+            .page-tab--active {
+                @apply rounded-t-md px-3 py-2 text-sm font-medium text-white border-2 border-white hover:border-orange-500 hover:text-orange-300 transition-all;
+            }
+
+            .page-tab--inactive {
+                @apply rounded-t-md px-3 py-2 text-sm font-medium text-gray-400 border-2 border-gray-500 hover:border-orange-500 hover:text-orange-300 transition-all;
+            }
+        }
+    </style>
+
+    <!-- This script sets up our censorship functionality. -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const censorshipButton = document.querySelector('[data-id="censorship-button"]');
+            const icon = censorshipButton.querySelector('i');
+
+            // We ensure the correct icon appears at first.
+            if (censorship.checkCensorship()) {
+                if (icon.classList.contains('fa-eye-slash')) {
+                    icon.classList.remove('fa-eye-slash');
+                }
+
+                icon.classList.add('fa-eye');
+            }
+
+            // We make sure that anytime the button is clicked, we switch the icon.
+            censorshipButton.addEventListener('click', () => {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+
+            // We finally setup our censorship.
+            censorship.setupCensorship();
+        });
+    </script>
+
+    <script>
+        'use strict';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const searchBox = document.querySelector('[data-id="search-box"]');
+            const filterTemplate = document.querySelector('[data-id="filter-template"]');
+            const filters = document.querySelector('[data-id="filters"]');
+            const filterTerms = [];
+
+            async function refreshFindingsWithFilters() {
+                // TODO: Migrate this to asynchronous code.
+                let newFindings = {};
+                let newSorting = [];
+
+                for (let index = 0; index < Object.keys(manifest.findings).length; index++) {
+                    const uuid = manifest.sorting[index];
+                    const finding = manifest.findings[uuid];
+                    let meetsTerms = true;
+
+                    for (const term of filterTerms) {
+                        const invertTerm = term.startsWith('!');
+                        let [attribute, target] = term.split(':');
+
+                        if (invertTerm) {
+                            attribute = attribute.substring(1);
+                        }
+
+                        attribute = attribute.toLowerCase();
+
+                        const valueByteArray = utilities.base64ToByteArray(finding.capture);
+                        const value = utilities.byteArrayToString(valueByteArray);
+
+                        const nameMatches = (finding.name.includes(target) === invertTerm);
+                        const valueMatches = (value.includes(target) === invertTerm);
+                        const fileMatches = (finding.fileName.includes(target) === invertTerm);
+
+                        switch (attribute) {
+                            case 'name':
+                                if (nameMatches) {
+                                    meetsTerms = false;
+                                }
+
+                                break;
+                            case 'value':
+                                if (valueMatches) {
+                                    meetsTerms = false;
+                                }
+
+                                break;
+                            case 'file':
+                                if (fileMatches) {
+                                    meetsTerms = false;
+                                }
+
+                                break;
+                        }
+
+                        if (!meetsTerms) {
+                            break;
+                        }
+                    }
+
+                    if (meetsTerms) {
+                        newFindings[uuid] = finding;
+                        newSorting.push(uuid);
+                    }
+                }
+
+                findings.refreshFindings(newFindings, manifest.descriptions, newSorting);
+            }
+
+            function addFilter(term) {
+                const filterElement = filterTemplate.content.firstElementChild.cloneNode(true);
+                filterElement.querySelector('span').textContent = term;
+                filterTerms.push(term);
+
+                filterElement.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    filterElement.remove();
+                    filterTerms.splice(filterTerms.indexOf(term), 1);
+                    refreshFindingsWithFilters();
+                });
+
+                filters.appendChild(filterElement);
+            }
+
+            searchBox.addEventListener('keyup', (event) => {
+                if (event.key !== 'Enter') {
+                    return;
+                }
+                addFilter(searchBox.value);
+                searchBox.value = '';
+                refreshFindingsWithFilters();
+            });
+
+            const pageButtonFirst = document.querySelector('[data-id="page-button--first"]');
+
+            pageButtonFirst.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                utilities.setParameter('pageIndex', pageButtonFirst.getAttribute('data-page'));
+                refreshFindingsWithFilters();
+            });
+
+            const pageButtonLast = document.querySelector('[data-id="page-button--last"]');
+
+            pageButtonLast.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                utilities.setParameter('pageIndex', pageButtonLast.getAttribute('data-page'));
+                refreshFindingsWithFilters();
+            });
+        });
+    </script>
+
+    <script>
+        'use strict';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // manifest.filteredFindings = manifest.findings;
+            findings.refreshFindings(manifest.findings, manifest.descriptions, manifest.sorting);
+
+            document.querySelector('[data-id="name-header"]').textContent = manifest.metadata.name;
+
+            document.querySelector('[data-id="finding-count-header"]').textContent = `Flagged ${manifest.sorting.length} potential findings`;
+            document.querySelector('[data-id="flagged-file-count-header"]').textContent = `Scanned ${manifest.metadata.totalFilesScanned} files`;
+
+            const duration = manifest.metadata.completedAt - manifest.metadata.startedAt;
+            document.querySelector('[data-id="duration-header"]').textContent = `Scanned over ${duration} seconds`;
+
+            const dateTime = new Date(manifest.metadata.completedAt * 1000);
+
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            };
+
+            document.querySelector('[data-id="timestamp-header"]').textContent = `Completed on ${dateTime.toLocaleDateString('en-us', options)}`;
+        });
+    </script>
+
+</head>
+
+<body class="h-full bg-zate-600">
+
+    <template data-id="finding-details-template">
+
+        <div data-role="details-container" class="mx-4 mb-4 space-y-4 hidden transition-all duration-500 overflow-hidden">
+            <hr class="border-zate-600"/>
+
+            <div>
+                <h2 class="font-semibold truncate mb-0 text-white w-full">
+                    Description
+                </h2>
+
+                <div data-role="description-container" class="text-gray-400 mt-2 space-y-2">
+                </div>
+            </div>
+
+            <div>
+                <h2 class="font-semibold truncate mb-0 text-white">
+                    Matches
+                </h2>
+
+                <div data-role="pattern-container" class="flex flex-wrap gap-2 text-sm text-gray-400 mt-2 monospace">
+                </div>
+            </div>
+
+            <div>
+                <h2 class="font-semibold truncate mb-0 text-white">
+                    Indicators <span data-content="rating-text"></span>
+                </h2>
+
+                <div data-role="indicator-container" class="flex flex-wrap gap-2 text-sm font-bold text-gray-400 mt-2">
+                </div>
+            </div>
+
+
+            <div>
+                <h2 class="font-semibold truncate mb-0 text-white">
+                    Context
+                </h2>
+
+                <div class="flex text-white mt-2 monospace">
+                    <div data-role="address-viewer" class="grid">
+                    </div>
+
+                    <div data-role="hex-viewer" class="ml-4">
+                    </div>
+
+                    <div data-role="text-viewer" class="ml-8 whitespace-pre">
+                    </div>
+                </div>
+
+                <!--
+                    TODO: Eventually, it may not be a bad idea to rip this out
+                    of the textarea element; then we can highlight exactly
+                    which portion of text is the match.
+                -->
+                <div class="flex text-white mt-2 monospace">
+                    <textarea data-role="render-viewer" readonly="true" class="min-h-[10rem] resize-none shadow-inner block w-full rounded-md bg-zate-800 p-1 text-white border-transparent text-gray-500 border-2 focus:outline-none"></textarea>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <template data-id="finding-tag-template">
+
+        <div class="bg-zate-800 px-3 py-1 rounded-md truncate space-x-2">
+            <i class="fa-solid"></i>
+            <span class="select-all"></span>
+        </div>
+
+    </template>
+
+    <template data-id="filter-template">
+
+        <button data-role="remove-filter-button" class="bg-zate-800 px-3 py-1 rounded-md truncate space-x-2 hover:text-orange-500 transition-all">
+            <i class="fa-solid fa-xmark"></i>
+            <span class="text-gray-400"></span>
+        </button>
+
+    </template>
+
+    <template data-id="finding-template">
+
+        <div class="bg-zate-700 p-1 rounded-md shadow-inner">
+            <div class="flex items-center px-4 py-4 sm:px-0 h-full">
+                <div class="flex min-w-0 flex-1 items-center">
+                    <div data-role="finding-container" class="w-full px-3 space-y-4">
+
+                        <!-- This is the row element which is shown by default. -->
+                        <div class="min-w-0 relative flex-auto text-white">
+                            <!-- This is the header used to store the finding's name. -->
+                            <h2 data-content="name" class="font-semibold truncate sm:pr-20 mb-0"></h2>
+
+                            <div class="flex flex-wrap text-sm leading-6 space-y-2">
+                                <!-- This is the tag used to store the finding's rating. -->
+                                <div data-content="rating" class="absolute top-0 right-0 sm:flex items-center space-x-1 bg-zate-800 text-gray-500 px-3 py-2 rounded-md">
+                                </div>
+
+                                <!-- This is the button which toggles the finding's details panel. -->
+                                <button data-role="view-details-button" class="absolute px-6 py-1 bottom-0 right-0 items-center border-2 border-gray-500 rounded-md text-gray-500 hover:text-orange-500 hover:border-orange-500 transition-all">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+
+                                <div class="grid-rows-2 space-y-2 w-full">
+                                    <!-- This is the tag used to store the finding's file path. -->
+                                    <div class="flex max-w-[50%] sm:max-w-[75%] w-fit">
+                                        <span class="text-gray-400 truncate bg-zate-800 px-3 py-1 rounded-md space-x-2 w-full">
+                                            <i class="fa-solid fa-file"></i>
+                                            <span data-content="file-name" class="select-all monospace"></span>
+                                        </span>
+                                    </div>
+
+                                    <!-- This is the tag used to store the finding's value. -->
+                                    <div class="flex max-w-[50%] sm:max-w-[75%] w-fit">
+                                        <div class="text-gray-400 bg-zate-800 px-3 py-1 rounded-md space-x-2 w-full inline-flex items-center">
+                                            <i class="fa-solid fa-fire-flame-curved"></i>
+                                            <div data-content="value" class="select-all text-orange-300 inline-flex monospace w-full truncate">
+                                                <span data-content="value-censored" data-censored="true" class="transition-all truncate"></span>
+                                                <span data-content="value-leftover" class="truncate"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Each finding's details will be appended down here once it's expanded. -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <template data-id="page-button-template">
+
+        <button class="inline-flex items-center px-4 py-2 mt-4 text-sm font-bold rounded-b-md text-gray-400 hover:text-orange-300 transition-all border-2 border-gray-400 hover:border-orange-500">2</button>
+
+    </template>
+
+
+    <div class="min-h-full">
+        <!-- Navbar -->
+        <nav class="bg-zate-800">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="relative flex h-16 items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fa-solid fa-dragon text-xl text-orange-500"></i>
+                        </div>
+
+                        <!-- Links section -->
+                        <div class="hidden lg:ml-10 lg:block">
+                            <div class="flex space-x-4" data-id="page-tabs">
+                                <button class="page-tab--active" data-page="page--secrets">Findings</button>
+                                <button class="page-tab--inactive" data-page="page--graphs">Files</button>
+                                <!-- <button class="page-tab--inactive" data-page="page--graphs">Graphs</button> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-1 justify-center px-2 lg:ml-6 lg:justify-end space-x-4 items-center">
+                        <!-- Search section -->
+                        <div class="w-full max-w-lg lg:max-w-xs">
+                            <div class="relative text-gray-500 focus-within:text-white transition-all">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </div>
+
+                                <input data-id="search-box" id="search"
+                                    class="shadow-inner transition-all block w-full rounded-md border-0 bg-zate-900 py-1.5 pl-10 pr-3 text-white ring-2 ring-transparent outline-none text-gray-500 focus:outline-none focus:ring-orange-500 sm:text-sm sm:leading-6"
+                                    placeholder="Search" type="search" name="search">
+                            </div>
+                        </div>
+
+                        <button class="flex-shrink-0 align-middle text-gray-500 hover:text-orange-500 transition-all" data-id="censorship-button" data-role="toggle-censorship">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </nav>
+
+        <!-- Page heading -->
+        <header class="bg-zate-800 pt-2 pb-6">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 md:flex md:items-center md:justify-between">
+                <div class="min-w-0 flex-1">
+                    <h1 data-id="name-header"
+                        class="text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight">
+                        Application-3.0.2</h1>
+
+                    <div class="flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-8 pt-2">
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fa-solid fa-fire-flame-curved mr-1.5 flex-shrink-0"></i>
+                            <span data-id="finding-count-header">Found 6 potential secrets</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fa-solid fa-file mr-1.5 flex-shrink-0"></i>
+                            <span data-id="flagged-file-count-header">Scanned 7 files</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fa-solid fa-clock mr-1.5 flex-shrink-0"></i>
+                            <span data-id="duration-header">Took 32.4 seconds</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-400">
+                            <i class="fa-solid fa-calendar mr-1.5 flex-shrink-0"></i>
+                            <span data-id="timestamp-header">Completed March 9, 2023</span>
+                        </div>
+                    </div>
+
+                    <div class="text-gray-400 pt-6 text-sm space-y-1">
+                        <div>
+                            <i class="fa-solid fa-circle-info mr-1.5 flex-shrink-0"></i>
+                            Remember that several types of filters are supported in the search bar and each filter is case-sensitive.
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-minus mr-1.5 flex-shrink-0"></i>
+                            To filter by finding name, use: <span class="monospace px-2 text-white select-all">name:finding name goes here</span>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-minus mr-1.5 flex-shrink-0"></i>
+                            To filter by file path, use: <span class="monospace px-2 text-white select-all">file:file path goes here</span>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-minus mr-1.5 flex-shrink-0"></i>
+                            To filter by value, use: <span class="monospace px-2 text-white select-all">value:value goes here</span>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-minus mr-1.5 flex-shrink-0"></i>
+                            To invert any of the above filters, add an exclamation mark: <span class="monospace px-2 text-white select-all">!value:value goes here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8" data-id="pages">
+                <div data-id="page--secrets" class="pt-6 pb-12">
+                    <div class="px-4 sm:px-0">
+
+                        <!-- Tabs -->
+                        <div class="hidden sm:block">
+                            <div>
+                                <nav class="my-2 flex space-x-4" aria-label="Tabs">
+                                    <button data-id="risk-tab--all" class="risk-tab--active">
+                                        All Risks
+                                    </button>
+
+                                    <button data-id="risk-tab--high" class="risk-tab--inactive">
+                                        High Risks
+                                    </button>
+
+                                    <button data-id="risk-tab--moderate" class="risk-tab--inactive">
+                                        Moderate Risks
+                                    </button>
+
+                                    <button data-id="risk-tab--low" class="risk-tab--inactive">
+                                        Low Risks
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- This is the container for our filters. -->
+                    <div data-id="filter-container" class="mt-4 mb-2">
+
+                        <div data-id="filters" class="flex flex-wrap gap-2 text-sm font-bold text-gray-400">
+                        </div>
+
+                        <hr class="border-zate-500 my-4"/>
+                    </div>
+
+
+                    <!-- This is the container for our findings. -->
+                    <div data-id="finding-container" class="mt-0 space-y-2">
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav class="flex items-center justify-between px-4 sm:px-0" aria-label="Pagination">
+                        <div class="flex">
+                            <button data-id="page-button--first"
+                                class="inline-flex items-center mt-4 pr-1 text-sm font-medium text-white hover:text-orange-300 transition-all">
+                                <i class="fa-solid fa-arrow-left-long mr-3"></i> First
+                            </button>
+                        </div>
+
+                        <div data-id="page-button-container" class="flex space-x-4">
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button data-id="page-button--last"
+                                class="inline-flex items-center mt-4 pl-1 text-sm font-medium text-white hover:text-orange-300 transition-all">
+                                Last <i class="fa-solid fa-arrow-right-long ml-3"></i>
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+
+                <div data-id="graph-page" class="hidden">
+                    <div class="divide-y divide-dashed pb-16">
+                        <!-- TODO: At some point... -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>
