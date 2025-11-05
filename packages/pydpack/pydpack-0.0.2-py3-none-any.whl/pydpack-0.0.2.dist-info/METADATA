@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: pydpack
+Version: 0.0.2
+Summary: This is a pydpack.
+Author-email: axiner <atpuxiner@163.com>
+Project-URL: Homepage, https://github.com/atpuxiner/pydpack
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: toollib>=1.8.7
+Requires-Dist: Cython>=3.1.6
+Dynamic: license-file
+
+# pydpack
+
+## What is this?
+
+- by: axiner
+- pydpack
+- This is a pydpack.（pyd打包，可将py目录或文件打包成pyd(so)）
+
+## Installation
+
+This package can be installed using pip (Python>=3.11):
+> pip install pydpack
+
+## Usage
+
+- 1）help
+    - `pydpack -h`
+- 2）pack
+    - `pydpack -s <py目录或文件> -e main.py`
+    - 注：
+        - 自动跳过：__init__.py，空文件，只存在注释的文件，当然还有非py文件
+        - 排除编译：正则表达式
+            - 文件夹加正斜杠'/'即可，如：tests/, tests/a/
+            - 多个则用'|'隔开，如：main.py|tests/
+            - 项目的入口文件一般是不编译的，排除即可
+        - 若编译不成功或编译后执行不成功：
+            - 规范代码，确保代码的正确性与严谨性
+            - 编译失败，目录下会保留对应的源文件
+            - 执行环境，需要与编译时的环境一致
+        - 输出：目录（源+扩展后缀），该目录与src结构一致
