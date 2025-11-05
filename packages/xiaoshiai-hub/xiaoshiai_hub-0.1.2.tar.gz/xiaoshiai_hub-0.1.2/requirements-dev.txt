@@ -1,0 +1,28 @@
+-r requirements.txt
+
+# Testing
+pytest>=6.0,<8.0
+pytest-cov>=2.0,<5.0
+pytest-mock>=3.6.0,<4.0.0
+
+# Code formatting
+black>=22.0,<24.0
+isort>=5.10.0,<6.0.0
+
+# Linting
+flake8>=4.0,<7.0
+
+# Type checking
+mypy>=0.950,<2.0
+types-requests>=2.20.0
+
+# Building and publishing
+build>=0.8.0,<2.0.0
+twine>=4.0.0,<5.0.0
+
+# Optional features (for testing)
+gitpython>=3.1.0,<4.0.0
+cryptography>=3.4.0,<42.0.0
+gmssl>=3.2.1,<4.0.0
+
+
