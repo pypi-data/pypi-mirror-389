@@ -1,0 +1,83 @@
+[project]
+name = "my-agents-adapter"
+# Keep using your _version.py; setuptools reads it via [tool.setuptools.dynamic] below
+dynamic = ["version", "readme"]
+description = "Agents hosting adapter for Azure AI"
+requires-python = ">=3.10"
+authors = [{ name = "Microsoft Corporation" }]
+classifiers = ["Programming Language :: Python :: 3", "Programming Language :: Python :: 3.10"]
+
+dependencies = [
+    "azure-monitor-opentelemetry",
+    "azure-ai-projects",
+    "azure-ai-agents>=1.2.0b5",
+    "azure-identity",
+    "opentelemetry-api",
+    "starlette",
+    "uvicorn",
+]
+
+[project.optional-dependencies]
+# from extras_require in setup.py
+agentframework = [
+    "agent_framework_azure_ai==1.0.0b251007",
+    "opentelemetry-exporter-otlp-proto-grpc"
+]
+langgraph = [
+    "langchain",
+    "langchain-openai",
+    "langchain-azure-ai[opentelemetry]",
+    "langgraph",
+    "opentelemetry-exporter-otlp-proto-http"
+]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# Your code root:
+package-dir = { "" = "src" }
+
+# Auto-discover packages under the code root, including namespace packages (PEP 420)
+packages = { find = { where = ["src"], include = ["azure*"] } }
+
+[tool.setuptools.dynamic]
+# read version from your module (see Step 2 file layout)
+version = { attr = "azure.ai.agentshosting._version.VERSION" }
+readme = { file = ["README.md"], content-type = "text/markdown" }
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+lint.select = ["E", "F", "B", "I"]   # E=pycodestyle errors, F=Pyflakes, B=bugbear, I=import sort
+lint.ignore = []
+fix = false
+
+exclude = [
+    "**/azure/ai/agentshosting/models/",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["azure.ai.agentshosting"]  # Your package/module name
+combine-as-imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit_tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--strict-config",
+]
+markers = [
+    "unit: marks tests as unit tests",
+    "integration: marks tests as integration tests", 
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
