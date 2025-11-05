@@ -1,0 +1,185 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[project]
+name = "mafw-tools"
+dynamic = ["version"]
+description = 'A set of commonly used tools to be used with MAFw and others'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "EUPL-1.2"
+license-files = ['LICENSE.txt']
+keywords = ['data-analysis']
+authors = [
+    { name = "BULGHERONI Antonio", email = "Antonio.BULGHERONI@ec.europa.eu" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = ['matplotlib']
+
+[project.urls]
+Documentation = "https://gitlab.jrc.ec.europa.eu/jrc-projects/autorad/mafw-tools"
+Issues = "https://gitlab.jrc.ec.europa.eu/jrc-projects/autorad/mafw-tools/-/issues"
+Source = "https://gitlab.jrc.ec.europa.eu/jrc-projects/autorad/mafw-tools"
+
+[project.optional-dependencies]
+dev = [
+    'ruff',
+    'pre-commit'
+]
+test = [
+    'mafw_tools[dev]', 'pytest'
+]
+
+
+[tool.hatch.version]
+path = "src/mafw_tools/__about__.py"
+
+[tool.hatch.envs.default]
+type = 'virtual'
+installer = 'uv'
+
+[tool.hatch.envs.default.extra-scripts]
+pip = "{env:HATCH_UV} pip {args}"
+
+[tool.hatch.envs.dev]
+features = ['dev']
+
+
+[tool.hatch.envs.types]
+installer = 'pip'
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/autorad4 tests}"
+
+
+[tool.hatch.envs.test]
+features = ['test']
+extra-dependencies = ['pytest-integration',]
+
+# hatch-test matrix
+[tool.hatch.envs.hatch-test]
+features = ['test']
+parallel = false # the execution time in parallel processes is only minimal
+randomize = true
+extra-dependencies = ['pytest-integration',]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.11", "3.12", "3.13"]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "coverage run -m pytest{env:HATCH_TEST_ARGS:} {args}"
+cov-combine = "coverage combine"
+cov-report = "coverage report"
+cov-html = "coverage html"
+cov-xml = "coverage xml "
+# -----------------------
+
+[tool.coverage.run]
+source_pkgs = ["mafw_tools",]
+branch = true
+parallel = true
+omit = [
+  "src/mafw_tools/__about__.py",
+]
+
+[tool.coverage.paths]
+mafw_tools = ["src/mafw_tools", "*/mafw_tools/src/mafw_tools"]
+
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+
+# Assume Python 3.12
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "single"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = true
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = 60
