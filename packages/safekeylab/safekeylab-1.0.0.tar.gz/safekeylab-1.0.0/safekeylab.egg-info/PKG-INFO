@@ -1,0 +1,437 @@
+Metadata-Version: 2.4
+Name: safekeylab
+Version: 1.0.0
+Summary: Healthcare Data Privacy & HIPAA Compliance API - Protect sensitive patient data with enterprise-grade PII detection and redaction
+Home-page: https://www.safekeylab.com
+Author: SafeKey Lab
+Author-email: SafeKey Lab <support@safekeylab.com>
+License: Proprietary
+Project-URL: Homepage, https://www.safekeylab.com
+Project-URL: Documentation, https://docs.safekeylab.com
+Project-URL: API Reference, https://api.safekeylab.com/docs
+Project-URL: Support, https://www.safekeylab.com/support
+Keywords: hipaa,healthcare,pii,phi,data-privacy,compliance,redaction,deidentification,medical,patient-data,gdpr,data-protection,mimic,ehr,api
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Medical Science Apps.
+Classifier: Topic :: Security
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests<3.0.0,>=2.28.0
+Requires-Dist: urllib3<2.0.0,>=1.26.0
+Requires-Dist: certifi>=2022.0.0
+Requires-Dist: python-dateutil>=2.8.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: sphinx>=6.0.0; extra == "dev"
+Requires-Dist: sphinx-rtd-theme>=1.2.0; extra == "dev"
+Requires-Dist: twine>=4.0.0; extra == "dev"
+Requires-Dist: build>=0.10.0; extra == "dev"
+Provides-Extra: async
+Requires-Dist: aiohttp>=3.8.0; extra == "async"
+Requires-Dist: aiofiles>=23.0.0; extra == "async"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# SafeKey Lab Python SDK
+
+[![PyPI version](https://badge.fury.io/py/safekeylab.svg)](https://badge.fury.io/py/safekeylab)
+[![Python Versions](https://img.shields.io/pypi/pyversions/safekeylab.svg)](https://pypi.org/project/safekeylab/)
+
+Healthcare Data Privacy & HIPAA Compliance API - Protect sensitive patient data with enterprise-grade PII detection and redaction.
+
+## Quick Start (60 Seconds)
+
+The fastest way to protect your healthcare application from leaking PII:
+
+### 1. Install SDK
+
+```bash
+pip install safekeylab
+```
+
+### 2. Initialize Client
+
+```python
+from safekeylab import SafeKeyLab
+
+# Get your API key from https://www.safekeylab.com/dashboard
+client = SafeKeyLab(api_key="sk-...")
+```
+
+### 3. Protect Your Data
+
+```python
+response = client.protect(
+    text="Patient John Doe, MRN 123456, DOB 01/15/1980"
+)
+
+print(response.redacted_text)
+# Output: "Patient [REDACTED], MRN [REDACTED], DOB [REDACTED]"
+```
+
+## Installation
+
+```bash
+# Using pip
+pip install safekeylab
+
+# Using pip with specific version
+pip install safekeylab==1.0.0
+
+# Using poetry
+poetry add safekeylab
+
+# From source
+git clone https://github.com/safekeylab/python-sdk.git
+cd python-sdk
+pip install -e .
+```
+
+## Authentication
+
+All API requests require authentication using an API key. You can obtain your API key from the [SafeKey Lab Dashboard](https://www.safekeylab.com/dashboard).
+
+### Using Environment Variables (Recommended)
+
+```bash
+export SAFEKEYLAB_API_KEY="sk-your-api-key"
+```
+
+```python
+from safekeylab import SafeKeyLab
+
+# Automatically uses SAFEKEYLAB_API_KEY environment variable
+client = SafeKeyLab()
+```
+
+### Passing Directly to Client
+
+```python
+from safekeylab import SafeKeyLab
+
+client = SafeKeyLab(api_key="sk-your-api-key")
+```
+
+## Features
+
+### PII Detection Types
+
+SafeKey Lab detects and redacts 18+ types of PII commonly found in healthcare data:
+
+| Category | Types Detected | Example |
+|----------|---------------|---------|
+| **Patient Identifiers** | Name, MRN, SSN | John Doe, 123-45-6789 |
+| **Demographics** | DOB, Age, Address | 01/15/1980, 123 Main St |
+| **Contact Info** | Phone, Email, Fax | (555) 123-4567 |
+| **Medical Info** | Provider, Facility, Device ID | Dr. Smith, Mayo Clinic |
+| **Financial** | Insurance ID, Account | BCBS123456 |
+
+### Text Protection
+
+```python
+from safekeylab import SafeKeyLab
+
+client = SafeKeyLab(api_key="sk-...")
+
+# Basic text protection
+response = client.protect(
+    text="Patient John Doe, SSN 123-45-6789, admitted on 01/15/2024"
+)
+
+print(f"Redacted: {response.redacted_text}")
+print(f"PII Found: {response.pii_count}")
+print(f"Processing Time: {response.processing_time_ms}ms")
+
+# Advanced options
+response = client.protect(
+    text="Contact patient at (555) 123-4567 or john@example.com",
+    dataset_type="mimic",  # Optimized for MIMIC datasets
+    pii_types=["PHONE", "EMAIL"],  # Specific PII types only
+    custom_redaction="***",  # Custom redaction text
+    return_entities=True  # Get detailed entity information
+)
+
+# Access detected entities
+for entity in response.entities:
+    print(f"Found {entity.type}: {entity.value} at position {entity.start}-{entity.end}")
+```
+
+### File Protection
+
+```python
+# Protect PDF documents
+with open("medical_record.pdf", "rb") as f:
+    response = client.protect_file(
+        file=f,
+        file_type="pdf",
+        redact_metadata=True
+    )
+    print(f"Protected file URL: {response.download_url}")
+
+# Protect DICOM images
+with open("xray.dcm", "rb") as f:
+    response = client.protect_file(
+        file=f,
+        file_type="dicom",
+        redact_metadata=True  # Remove PII from DICOM metadata
+    )
+
+# Supported file types: pdf, docx, txt, rtf, dicom, hl7, fhir, png, jpg, tiff
+```
+
+### Batch Processing
+
+```python
+# Process multiple texts efficiently
+texts = [
+    "Patient John Doe, MRN 12345",
+    "SSN: 987-65-4321, DOB: 03/15/1990",
+    "Provider: Dr. Smith at Mayo Clinic"
+]
+
+responses = client.protect_batch(texts, parallel=True)
+
+for i, response in enumerate(responses):
+    print(f"Text {i+1}: {response.pii_count} PII found")
+```
+
+### MIMIC Dataset Support
+
+SafeKey Lab is specifically optimized for MIMIC-III and MIMIC-IV datasets:
+
+```python
+# Process MIMIC discharge summary
+with open("DISCHARGE_SUMMARY.txt", "r") as f:
+    mimic_text = f.read()
+
+response = client.protect(
+    text=mimic_text,
+    dataset_type="mimic",  # Optimized for MIMIC format
+    output_format="mimic_compatible"  # Maintains MIMIC structure
+)
+
+# Save de-identified version
+with open("DISCHARGE_SUMMARY_DEIDENTIFIED.txt", "w") as f:
+    f.write(response.redacted_text)
+
+print(f"Processed {response.pii_count} PII entities")
+print(f"Redaction rate: {response.redaction_percentage:.2f}%")
+```
+
+### HIPAA Compliance
+
+```python
+# Check compliance status
+status = client.get_compliance_status()
+
+print(f"HIPAA Compliant: {status.hipaa_compliant}")
+print(f"Audit Logs: {status.audit_logs_enabled}")
+print(f"Encryption at Rest: {status.encryption_at_rest}")
+print(f"Certifications: {', '.join(status.certifications)}")
+```
+
+### Usage Analytics
+
+```python
+# Get usage statistics
+stats = client.get_usage_stats(
+    start_date="2024-01-01",
+    end_date="2024-01-31"
+)
+
+print(f"Total API Calls: {stats['total_api_calls']}")
+print(f"Total PII Detected: {stats['total_pii_detected']}")
+print(f"Average Response Time: {stats['avg_response_time_ms']}ms")
+```
+
+## Error Handling
+
+```python
+from safekeylab import SafeKeyLab, AuthenticationError, RateLimitError, ValidationError
+
+client = SafeKeyLab(api_key="sk-...")
+
+try:
+    response = client.protect(text="Patient data here")
+except AuthenticationError as e:
+    print(f"Authentication failed: {e}")
+except RateLimitError as e:
+    print(f"Rate limit exceeded: {e}")
+    # Implement exponential backoff
+except ValidationError as e:
+    print(f"Invalid request: {e}")
+except Exception as e:
+    print(f"Unexpected error: {e}")
+```
+
+## Advanced Usage
+
+### Context Manager
+
+```python
+from safekeylab import SafeKeyLab
+
+with SafeKeyLab(api_key="sk-...") as client:
+    response = client.protect(text="Patient John Doe")
+    print(response.redacted_text)
+# Connection automatically closed
+```
+
+### Custom Configuration
+
+```python
+client = SafeKeyLab(
+    api_key="sk-...",
+    base_url="https://api.safekeylab.com/v1",  # Custom API endpoint
+    timeout=60,  # Request timeout in seconds
+    max_retries=5  # Maximum retry attempts
+)
+```
+
+### Async Support (Coming Soon)
+
+```python
+import asyncio
+from safekeylab.async_client import AsyncSafeKeyLab
+
+async def main():
+    async with AsyncSafeKeyLab(api_key="sk-...") as client:
+        response = await client.protect(text="Patient data")
+        print(response.redacted_text)
+
+asyncio.run(main())
+```
+
+## Examples
+
+### Healthcare Application Integration
+
+```python
+from safekeylab import SafeKeyLab
+import json
+
+class HealthcareApp:
+    def __init__(self):
+        self.safekeylab = SafeKeyLab()
+
+    def process_patient_note(self, note_text):
+        """Process and store patient notes safely"""
+        # Redact PII before storage
+        response = self.safekeylab.protect(
+            text=note_text,
+            dataset_type="clinical_notes"
+        )
+
+        # Store redacted version
+        self.database.store({
+            "note": response.redacted_text,
+            "metadata": {
+                "pii_removed": response.pii_count,
+                "processing_id": response.request_id
+            }
+        })
+
+        return response.redacted_text
+
+app = HealthcareApp()
+safe_note = app.process_patient_note("Patient John Doe visited on 01/15/2024")
+```
+
+### Research Data De-identification
+
+```python
+import pandas as pd
+from safekeylab import SafeKeyLab
+
+client = SafeKeyLab()
+
+# De-identify research dataset
+df = pd.read_csv("patient_data.csv")
+
+def redact_column(text):
+    if pd.isna(text):
+        return text
+    response = client.protect(text=str(text))
+    return response.redacted_text
+
+# Apply to text columns
+text_columns = ["notes", "diagnosis", "history"]
+for col in text_columns:
+    df[col] = df[col].apply(redact_column)
+
+# Save de-identified dataset
+df.to_csv("patient_data_deidentified.csv", index=False)
+```
+
+## API Reference
+
+### Client Initialization
+
+```python
+SafeKeyLab(
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    timeout: int = 30,
+    max_retries: int = 3
+)
+```
+
+### Methods
+
+#### `protect(text, **options)`
+Protect text by detecting and redacting PII.
+
+#### `protect_file(file, file_type, **options)`
+Protect files by detecting and redacting PII.
+
+#### `protect_batch(texts, **options)`
+Process multiple texts in batch.
+
+#### `get_compliance_status()`
+Get HIPAA compliance status.
+
+#### `get_usage_stats(start_date, end_date)`
+Get API usage statistics.
+
+#### `validate_text(text, strict=True)`
+Validate if text contains PII without redacting.
+
+#### `health_check()`
+Check API health status.
+
+## Support
+
+- **Documentation**: [https://docs.safekeylab.com](https://docs.safekeylab.com)
+- **API Reference**: [https://api.safekeylab.com/docs](https://api.safekeylab.com/docs)
+- **Email**: support@safekeylab.com
+- **Website**: [https://www.safekeylab.com](https://www.safekeylab.com)
+
+## License
+
+Copyright © 2024 SafeKey Lab. All rights reserved.
+
+This SDK is proprietary software. Use is subject to the terms of your SafeKey Lab subscription agreement.
+
+## Security
+
+For security issues, please email security@safekeylab.com.

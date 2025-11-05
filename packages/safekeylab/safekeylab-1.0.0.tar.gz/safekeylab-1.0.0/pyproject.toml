@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safekeylab"
+version = "1.0.0"
+description = "Healthcare Data Privacy & HIPAA Compliance API - Protect sensitive patient data with enterprise-grade PII detection and redaction"
+readme = "README.md"
+authors = [{name = "SafeKey Lab", email = "support@safekeylab.com"}]
+license = {text = "Proprietary"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Security",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+keywords = [
+    "hipaa",
+    "healthcare",
+    "pii",
+    "phi",
+    "data-privacy",
+    "compliance",
+    "redaction",
+    "deidentification",
+    "medical",
+    "patient-data",
+    "gdpr",
+    "data-protection",
+    "mimic",
+    "ehr",
+    "api",
+]
+dependencies = [
+    "requests>=2.28.0,<3.0.0",
+    "urllib3>=1.26.0,<2.0.0",
+    "certifi>=2022.0.0",
+    "python-dateutil>=2.8.0",
+]
+requires-python = ">=3.7"
+
+[project.urls]
+Homepage = "https://www.safekeylab.com"
+Documentation = "https://docs.safekeylab.com"
+"API Reference" = "https://api.safekeylab.com/docs"
+Support = "https://www.safekeylab.com/support"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "sphinx>=6.0.0",
+    "sphinx-rtd-theme>=1.2.0",
+    "twine>=4.0.0",
+    "build>=0.10.0",
+]
+async = [
+    "aiohttp>=3.8.0",
+    "aiofiles>=23.0.0",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests*", "examples*", "docs*"]
+
+[tool.setuptools.package-data]
+safekeylab = ["py.typed"]
