@@ -1,0 +1,44 @@
+Metadata-Version: 2.4
+Name: pito
+Version: 0.1.1
+Summary: Pito: A lightweight dynamic programatically static pdf document generator.
+Author-email: Shinapri <shinapri.2003.1@gmail.com>
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: PyYAML
+
+# Pito
+
+Dynamic PDF document generator using Python + XeLaTeX.
+
+## Install
+
+```bash
+pip install pito
+````
+
+## Usage
+
+```bash
+pito init my_project
+cd my_project
+pito build
+```
+
+## Concept
+
+`.pto` file can call python functions inline:
+
+```pito
+{{myFunc()}}
+```
+
+Pito lets you create programmable documents,
+not static templates.
+
+## Config
+
+Edit `config.yaml` for metadata / title / author / etc.
