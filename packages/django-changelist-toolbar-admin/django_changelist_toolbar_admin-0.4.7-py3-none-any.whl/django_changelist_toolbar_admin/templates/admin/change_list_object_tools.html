@@ -1,0 +1,13 @@
+{% extends "admin/change_list_object_tools.html" %}
+
+{% block object-tools-items %}
+{% for button in django_changelist_toolbar_buttons %}
+<li>
+  <a href="{{button.href}}"
+    {%if button.classes%}class="{% for klass in button.classes %}{{klass}} {% endfor %}"{% endif %}
+    {% if button.target %}target="{{button.target}}"{% endif %}
+    {% if button.data %}data="{{button.data}}{% endif %}">{{button.title}}{% if button.icon%}<i class="{{button.icon}}"></i>{% endif %}</a>
+</li>
+{% endfor %}
+{{block.super}}
+{% endblock %}
