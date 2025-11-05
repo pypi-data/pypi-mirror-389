@@ -1,0 +1,30 @@
+Metadata-Version: 2.4
+Name: ros-shape-msgs
+Version: 5.5.1
+Summary: ROS package `shape_msgs` provides standard messages for describing 3D shapes like meshes, planes, and solid primitives.
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ros-geometry-msgs~=5.5.1
+Requires-Dist: ros-rosidl-default-runtime~=1.7.1
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+Built using https://github.com/ycheng517/ros-python-wheels.
+
+# shape_msgs
+
+This package provides several messages and services for describing 3-dimensional shapes.
+
+For more information about ROS 2 interfaces, see [docs.ros.org](https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html).
+
+## Messages (.msg)
+* [Mesh](msg/Mesh.msg): Holds information describing a mesh for visualization and collision detections.
+* [MeshTriangle](msg/MeshTriangle.msg): A single triangle of a mesh.
+* [Plane](msg/Plane.msg): Representation of a plane, using the plane equation ax + by + cz + d = 0.
+* [SolidPrimitive](msg/SolidPrimitive.msg): Describe a simple shape primitive like a box, a sphere, a cylinder, and a cone.
+
+## Quality Declaration
+This package claims to be in the **Quality Level 1** category, see the [Quality Declaration](QUALITY_DECLARATION.md) for more details.
