@@ -1,0 +1,79 @@
+listen:
+  host: 127.0.0.1
+  port: 8000
+
+backend:
+  scheme: http
+  host: localhost
+  port: 3000
+
+# Define all required plugins and their configurations
+# Note that only "basic" is available by default, other plugins must be installed separately
+auth_plugins:
+  oidc:
+    issuer: https://accounts.google.com
+    client_id: your-client-id
+    client_secret: your-client-secret
+
+  user-basic:
+    type: basic
+    users:
+      user1: password123
+      user2: secret456
+
+  admin-basic:
+    type: basic
+    users:
+      admin: admin-password
+      superuser: super-secret
+
+# Global authentication settings
+auth:
+  default_plugins: [oidc]
+  default_mode: "any"
+  default_behavior: "authenticated" # "authenticated" or "unauthenticated"
+
+# Path rules with plugin selection (processed in order)
+paths:
+  # Specific public API endpoints (must come before general API rule)
+  - path: "^/api/v1/public/.*$"
+    regex: true
+    authenticate: false
+
+  # Admin API endpoints (specific before general)
+  - path: "^/api/v1/admin/.*$"
+    regex: true
+    authenticate: true
+    plugins: [admin-basic]
+
+  # General API endpoints (after more specific rules)
+  - path: "^/api/v1/.*$"
+    regex: true
+    authenticate: true
+    plugins: [oidc, user-basic]
+    mode: "any"
+
+  # Admin dashboard
+  - path: "^/admin/.*$"
+    regex: true
+    authenticate: true
+    plugins: [admin-basic]
+
+  # Public resources
+  - path: "^/public/.*$"
+    regex: true
+    authenticate: false
+
+  # Static assets
+  - path: "^/assets/.*$"
+    regex: true
+    authenticate: false
+
+  # Health check
+  - path: "/health"
+    authenticate: false
+
+  # Metrics endpoint
+  - path: "/metrics"
+    authenticate: true
+    plugins: [admin-basic]

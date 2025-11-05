@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-auth-proxy"
+version = "0.3.4"
+description = "Modular authenticating reverse proxy"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Kumi Mitterer", email = "auth-proxy@kumi.email"},
+]
+dependencies = [
+    "pyyaml",
+    "aiohttp",
+    "requests",
+    "bcrypt",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Security",
+]
+
+[project.urls]
+"Homepage" = "https://git.private.coffee/kumi/auth-proxy"
+"Bug Tracker" = "https://git.private.coffee/kumi/auth-proxy/issues"
+
+[project.scripts]
+auth-proxy = "auth_proxy.main:main"
+auth-proxy-validate = "auth_proxy.validate:main"
+auth-proxy-hash = "auth_proxy.hash_password:main"
+
+[project.entry-points."auth_proxy.plugins"]
+basic = "auth_proxy.auth_plugins.basic:BasicAuthPlugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["auth_proxy"]
+
+[tool.black]
+line-length = 88
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=auth_proxy"
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["auth_proxy"]
+omit = ["auth_proxy/__main__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]

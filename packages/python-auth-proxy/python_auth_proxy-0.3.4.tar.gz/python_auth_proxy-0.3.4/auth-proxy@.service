@@ -1,0 +1,25 @@
+[Unit]
+Description=Auth Proxy Service (%i instance)
+Documentation=https://git.private.coffee/kumi/auth-proxy
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=auth-proxy
+Group=auth-proxy
+ExecStart=/opt/auth-proxy/bin/auth-proxy -c /etc/auth-proxy/%i.yml
+Restart=on-failure
+RestartSec=5s
+# Security enhancements
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+# Resource limits
+LimitNOFILE=65536
+# Environment variables (uncomment and modify as needed)
+#Environment=REDIS_URL=redis://localhost:6379/0
+
+[Install]
+WantedBy=multi-user.target

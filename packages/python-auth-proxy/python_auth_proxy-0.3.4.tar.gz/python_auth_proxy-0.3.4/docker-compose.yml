@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  auth-proxy:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/config
+    environment:
+      - CONFIG_PATH=/config/config.yaml
