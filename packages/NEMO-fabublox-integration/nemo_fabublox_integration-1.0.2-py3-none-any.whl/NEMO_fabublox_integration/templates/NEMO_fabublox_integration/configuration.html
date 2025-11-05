@@ -1,0 +1,269 @@
+{% extends 'NEMO_fabublox_integration/base.html' %}
+{% load custom_tags_and_filters %}
+{% load static %}
+{% block title %}FabuBlox Configuration{% endblock %}
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+    .fabublox-form-title {
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .tool-field-item {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: -1px;
+    }
+
+    .tool-field-sub-item {
+        padding-left: 40px;
+    }
+    </style>
+{% endblock %}
+{% block feature-tab %}
+    <h3 class="tab-title">Configuration</h3>
+    <div class="fabublox-form-container">
+        <hr>
+        <div style="display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 5px;
+                    flex-wrap: wrap">
+            <h4 class="fabublox-form-title" style="margin-bottom: 5px;">FabuBlox Authentication Key</h4>
+        </div>
+        <span style="margin-bottom: 20px; display: block;">
+            {% if key_health_pass %}
+                <i class="glyphicon glyphicon-ok-sign success" style="color: green"></i>
+            {% else %}
+                <i class="glyphicon glyphicon-remove-sign danger" style="color: red"></i>
+            {% endif %}
+            {{ key_health_message }}
+        </span>
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <h4 class="fabublox-form-title" style="margin: 0">Shared Tool Fields</h4>
+                <div>
+                    <button class="btn btn-sm btn-primary" onclick="select_all_tool_fields(true)">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        Select All
+                    </button>
+                    <button class="btn btn-sm btn-primary" onclick="select_all_tool_fields(false)">
+                        <i class="glyphicon glyphicon-minus"></i>
+                        Unselect All
+                    </button>
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <i class="glyphicon glyphicon-info-sign" style="color: blue;"></i>
+                The following fields will be shared with FabuBlox. You can select which fields to include/exclude in the synchronization.
+            </div>
+        </div>
+        <form method="post" style="margin-top: 10px;" action="{% url "fabublox_shared_tool_fields" %}">
+            {% csrf_token %}
+            <ul class="list-group" style="list-style: none;">
+                <li class="list-group-item tool-field-item">
+                    <input value="name"
+                           name="shared_tool_fields"
+                           id="tool_field_name"
+                           style="margin: 0"
+                           type="checkbox"
+                           checked
+                           disabled />
+                    <label style="margin: 0" for="tool_field_name">Name</label>
+                </li>
+                <li class="list-group-item tool-field-item">
+                    <input value="description"
+                           name="shared_tool_fields"
+                           id="tool_field_description"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_description">Description</label>
+                </li>
+                <li class="list-group-item tool-field-item">
+                    <input value="category"
+                           name="shared_tool_fields"
+                           id="tool_field_category"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_category">Category</label>
+                </li>
+                <li class="list-group-item tool-field-item">
+                    <input value="location"
+                           name="shared_tool_fields"
+                           id="tool_field_location"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_location">Location</label>
+                </li>
+                <li class="list-group-item tool-field-item">
+                    <input value="primary_owner"
+                           onclick="check_owner(this, true)"
+                           style="margin: 0"
+                           type="checkbox"
+                           id="tool_field_primary_owner" />
+                    <label style="margin: 0" for="tool_field_primary_owner">Primary Owner</label>
+                </li>
+                <li class="list-group-item tool-field-item tool-field-sub-item">
+                    <input value="primary_owner_first_name"
+                           data-parent="tool_field_primary_owner"
+                           onclick="check_child(this)"
+                           name="shared_tool_fields"
+                           id="tool_field_po_first_name"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_po_first_name">First Name</label>
+                </li>
+                <li class="list-group-item tool-field-item tool-field-sub-item">
+                    <input value="primary_owner_last_name"
+                           data-parent="tool_field_primary_owner"
+                           onclick="check_child(this)"
+                           name="shared_tool_fields"
+                           id="tool_field_po_last_name"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_po_last_name">Last Name</label>
+                </li>
+                <li class="list-group-item tool-field-item tool-field-sub-item">
+                    <input value="primary_owner_email"
+                           data-parent="tool_field_primary_owner"
+                           onclick="check_child(this)"
+                           name="shared_tool_fields"
+                           id="tool_field_po_email"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_po_email">Email</label>
+                </li>
+                <li class="list-group-item tool-field-item">
+                    <input value="backup_owners"
+                           onclick="check_owner(this, false)"
+                           style="margin: 0"
+                           type="checkbox"
+                           id="tool_field_backup_owners" />
+                    <label style="margin: 0" for="tool_field_backup_owners">Backup Owners</label>
+                </li>
+                <li class="list-group-item tool-field-item tool-field-sub-item">
+                    <input value="backup_owners_first_name"
+                           data-parent="tool_field_backup_owners"
+                           onclick="check_child(this)"
+                           name="shared_tool_fields"
+                           id="tool_field_bo_first_name"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_bo_first_name">First Name</label>
+                </li>
+                <li class="list-group-item tool-field-item tool-field-sub-item">
+                    <input value="backup_owners_last_name"
+                           data-parent="tool_field_backup_owners"
+                           onclick="check_child(this)"
+                           name="shared_tool_fields"
+                           id="tool_field_bo_last_name"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_bo_last_name">Last Name</label>
+                </li>
+                <li class="list-group-item tool-field-item tool-field-sub-item">
+                    <input value="backup_owners_email"
+                           data-parent="tool_field_backup_owners"
+                           onclick="check_child(this)"
+                           name="shared_tool_fields"
+                           id="tool_field_bo_email"
+                           style="margin: 0"
+                           type="checkbox" />
+                    <label style="margin: 0" for="tool_field_bo_email">Email</label>
+                </li>
+            </ul>
+            {% button type="save" submit=True name="tool_fields_save" size="large" value="Save" %}
+        </form>
+    </div>
+    <script>
+    $(document).ready(function () {
+        // Initialize tool fields based on existing selections
+        {% for tool_field in shared_tool_fields %}check_field('{{ tool_field|escapejs }}');{% endfor %}
+    });
+
+    function check_field(field_name) {
+        if (!field_name) return;
+        
+        // Use CSS.escape to prevent selector injection
+        const escapedValue = CSS.escape(field_name);
+        const field = document.querySelector(`input[name='shared_tool_fields'][value='${escapedValue}']`);
+        
+        if (field) {
+            field.checked = true;
+            const parentId = field.getAttribute('data-parent');
+            if (parentId) {
+                const parent = document.getElementById(parentId);
+                if (parent) {
+                    parent.checked = true;
+                }
+            }
+        }
+    }
+
+    function check_owner(input, primary) {
+        if (!input) return;
+
+        const poFields = ['tool_field_po_first_name', 'tool_field_po_last_name', 'tool_field_po_email'];
+        const boFields = ['tool_field_bo_first_name', 'tool_field_bo_last_name', 'tool_field_bo_email'];
+        const fields = primary ? poFields : boFields;
+
+        fields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.checked = input.checked;
+            }
+        });
+    }
+
+    function check_child(input) {
+        if (!input) return;
+
+        const parentId = input.getAttribute('data-parent');
+        if (!parentId) return;
+
+        const parent = document.getElementById(parentId);
+        if (!parent) return;
+
+        if (input.checked) {
+            parent.checked = true;
+        } else {
+            // Check if any siblings are still checked
+            const siblings = document.querySelectorAll(`input[data-parent="${CSS.escape(parentId)}"]`);
+            let anyChecked = false;
+            siblings.forEach(sibling => {
+                if (sibling.checked) {
+                    anyChecked = true;
+                }
+            });
+            parent.checked = anyChecked;
+        }
+    }
+
+    function select_all_tool_fields(select) {
+        const toolFields = document.querySelectorAll('input[name="shared_tool_fields"]');
+        const parentFields = new Set();
+
+        toolFields.forEach(field => {
+            if (field.id !== 'tool_field_name') {
+                field.checked = select;
+            }
+            const parentId = field.getAttribute('data-parent');
+            if (parentId) {
+                parentFields.add(parentId);
+            }
+        });
+
+
+        parentFields.forEach(parentId => {
+            const parent = document.getElementById(parentId);
+            if (parent) {
+                parent.checked = select;
+            }
+        });
+    }
+
+    </script>
+{% endblock %}

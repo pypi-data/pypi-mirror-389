@@ -1,0 +1,191 @@
+{% extends 'NEMO_fabublox_integration/base.html' %}
+{% load custom_tags_and_filters %}
+{% block title %}FabuBlox Tools{% endblock %}
+{% block feature-tab %}
+    <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+        <h3 class="tab-title">Tools</h3>
+        {% if ready %}
+            <form action="{% url "fabublox_synchronize_tools" %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="sync_all" value="true" />
+                <button type="button"
+                        class="btn btn-sm btn-success"
+                        style="display: flex;
+                               align-items: center;
+                               justify-content: space-between;
+                               gap: 10px"
+                        onclick="if (confirm('Are you sure you want to synchronize all the tools?')) {submit_and_disable(this)}">
+                    <i class="glyphicon glyphicon-refresh"></i>
+                    Synchronize All Tools
+                    {% if number_of_tools %}<span class="badge badge-secondary">{{ number_of_tools }}</span>{% endif %}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+    <hr>
+    {% if not ready %}
+        <div style="margin-bottom: 10px;">
+            <i class="glyphicon glyphicon-exclamation-sign" style="color: red;"></i>
+            Your integration configuration is incomplete or invalid. {{ configuration_readiness }} Please complete the configuration to start synchronizing tools data.
+        </div>
+    {% endif %}
+    {% if ready %}
+        <span style="margin-bottom: 10px;">
+            <i class="glyphicon glyphicon-info-sign info"></i>
+            Synchronize your tool data with the FabuBlox platform.
+        </span>
+        <form method="get"
+              style="display: flex;
+                     align-items: center;
+                     justify-content: space-between;
+                     gap: 10px;
+                     margin-top: 20px">
+            <label for="tool_search" style="display: none;"></label>
+            <input type="text" class="form-control" name="search" placeholder="Search by tool name" id="tool_search">
+            <button type="submit" class="btn btn-primary">
+                <i class="glyphicon glyphicon-search"></i>
+                Search
+            </button>
+        </form>
+        {% with paginator=page.paginator %}
+            {% block pagination_header %}
+                <div style="clear: both;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            margin-top: 20px">
+                    <div>
+                        {% if search_term %}<span>Results for: <strong>{{ search_term }}</strong></span>{% endif %}
+                    </div>
+                    <div>{% include "pagination/pagination_selector.html" %}</div>
+                </div>
+                <button id="synchronize-selected"
+                        class="btn btn-sm btn-primary"
+                        style="margin-top: 20px;
+                               margin-bottom: 10px;
+                               display: flex;
+                               align-items: center;
+                               justify-content: space-between;
+                               gap: 10px"
+                        onclick="if (confirm('Are you sure you want to synchronize the selected tools?')) {synchronizeSelected()}"
+                        disabled>
+                    <i class="glyphicon glyphicon-refresh"></i>
+                    Synchronize Selected
+                    <span class="badge badge-secondary" style="display: none;"></span>
+                </button>
+            {% endblock %}
+            <div class="table-responsive" style="width: 100%">
+                {% block pagination_content %}
+                    <table class="table table-align-middle table-bordered table-condensed table-striped table-hover thead-light">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select_all_checkbox" name="select_all" onchange="selectAllTools(this.checked);" />
+                                </th>
+                                <th>{% include 'pagination/pagination_column.html' with order_by='name' name='Name' %}</th>
+                                <th>{% include 'pagination/pagination_column.html' with order_by='last_synced' name='Last Synchronized' %}</th>
+                                <th>{% include 'pagination/pagination_column.html' with order_by='last_synced_by' name='Synchronized By' %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tool in page %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="tool-select" name="tools" value="{{ tool.id }}">
+                                    </td>
+                                    <td>{{ tool }}</td>
+                                    <td>
+                                        {% if tool.last_synced %}
+                                            {{ tool.last_synced|date:"F jS, Y g:i A" }}
+                                        {% else %}
+                                            <span class="text-muted " style="font-size: 0.85em;">Never synchronized</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if tool.last_synced_by %}{{ tool.last_synced_by }}{% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endblock %}
+            </div>
+            {% block pagination_footer %}
+                <div class="pagination" style="margin-bottom: 0; display: flex; justify-content: flex-end;">
+                    {% include "pagination/pagination_pages.html" %}
+                </div>
+            {% endblock %}
+        {% endwith %}
+    {% endif %}
+    <script>
+        $(document).ready(function() {
+            updateSynchronizeSelectedButton();
+            $('.tool-select').on('change', function() {
+                updateSynchronizeSelectedButton();
+            });
+        });
+
+        function selectAllTools(checked) {
+            $('.tool-select').prop('checked', checked);
+            updateSynchronizeSelectedButton();
+        }
+
+        function updateSynchronizeSelectedButton() {
+            const checkedCount = $('.tool-select:checked').length;
+            const $button = $('#synchronize-selected');
+            const $badge = $button.find('.badge');
+            
+            if ($button.length) {
+                $button.prop('disabled', checkedCount === 0);
+                
+                if ($badge.length) {
+                    if (checkedCount === 0) {
+                        $badge.hide();
+                    } else {
+                        $badge.text(checkedCount).show();
+                    }
+                }
+            }
+        }
+
+        function synchronizeSelected() {
+            const selectedTools = $('.tool-select:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            if (selectedTools.length === 0) {
+                return;
+            }
+
+            const validTools = selectedTools.filter(id => /^\d+$/.test(id));
+            if (validTools.length !== selectedTools.length) {
+                console.error('Invalid tool IDs detected');
+                return;
+            }
+
+            const $form = $('<form>', {
+                method: 'POST',
+                action: '{% url "fabublox_synchronize_tools" %}'
+            });
+
+            const csrfToken = '{{ csrf_token }}';
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'csrfmiddlewaretoken',
+                value: csrfToken
+            }).appendTo($form);
+
+            validTools.forEach(function(toolId) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'tool_id',
+                    value: toolId
+                }).appendTo($form);
+            });
+
+            $form.appendTo('body');
+            $form.submit();
+            $form.remove();
+        }
+    </script>
+{% endblock %}
