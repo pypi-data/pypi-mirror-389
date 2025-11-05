@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0,<70.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wagtail-image-from-url"
+version = "1.0.2"
+description = "Add images to Wagtail via URL - A production-ready plugin for importing images from external URLs"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Awais Qureshi", email = "awais.qureshi@arbisoft.com" }
+]
+keywords = ["wagtail", "django", "cms", "image", "upload", "url", "import"]
+
+dependencies = [
+    "Django>=4.2",
+    "Wagtail>=5.0",
+    "requests>=2.25.0",
+    "Pillow>=9.0.0",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Wagtail",
+    "Framework :: Wagtail :: 5",
+    "Framework :: Wagtail :: 6",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/awais786/wagtail-image-from-url"
+"Bug Tracker" = "https://github.com/awais786/wagtail-image-from-url/issues"
+"Documentation" = "https://github.com/awais786/wagtail-image-from-url#readme"
+
+[tool.setuptools.packages.find]
+include = ["image_url_upload", "image_url_upload.*"]
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
