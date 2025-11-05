@@ -1,0 +1,106 @@
+[project]
+name = "openrpcclientgenerator"
+version = "0.50.2"
+description = "Generate clients from an Open-RPC document."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-or-later"
+authors = [{ name = "Matthew Burkard", email = "matthewjburkard@gmail.com" }]
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+dependencies = [
+  "black>=25.9.0",
+  "case-switcher>=1.3.13",
+  "httpx>=0.26.0",
+  "jinja2>=3.1.6",
+  "openrpc>=10.5.0",
+  "pydantic>=2.12.3",
+  "rpc-cli>=2.2.3",
+]
+
+[project.urls]
+homepage = "https://gitlab.com/mburkard/openrpc-client-generator"
+repository = "https://gitlab.com/mburkard/openrpc-client-generator"
+
+[project.scripts]
+orpc = "openrpcclientgenerator.orpc:main"
+
+[dependency-groups]
+dev = [
+  "jsonrpc2-pyclient>=5.2.3",
+  "phonenumbers>=9.0.17",
+  "pydantic-extra-types>=2.10.6",
+  "pydantic[email]>=2.12.3",
+  "pytest>=8.4.2",
+  "pytest-cov>=7.0.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.11,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.basedpyright]
+strict = ["**"]
+venvPath = "./"
+venv = ".venv"
+reportAny = "none"
+reportExplicitAny = "none"
+reportUnannotatedClassAttribute = "none"
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.ruff]
+lint.select = [
+  "ARG",
+  "ASYNC",
+  "B",
+  "C4",
+  "D",
+  "E",
+  "EM",
+  "ERA",
+  "F",
+  "FBT",
+  "FA",
+  "FLY",
+  "FIX",
+  "ICN",
+  "INT",
+  "ISC",
+  "N",
+  "PL",
+  "PTH",
+  "PYI",
+  "Q",
+  "RET",
+  "S",
+  "SIM",
+  "T10",
+  "TD",
+  "TRY",
+]
+lint.ignore = [
+  "ARG002",  # Redundant with pyright.
+  "D203",  # Requires blank line before class doc-string.
+  "D213",  # Requires first doc string line on a new line.
+  "F841",  # Redundant by pyright.
+  "FIX002",  # TODO Warning.
+  "B007",  # Redundant by pyright.
+  "TD003",  # TODO require issue link.
+  "TD002",  # TODO require author.
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "D",  # Documentation linters.
+  "FLY002",  # Use f string instead of string join.
+  "PLR2004",  # Magic numbers.
+  "S101",
+]

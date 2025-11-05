@@ -1,0 +1,30 @@
+use serde::{Deserialize, Serialize};
+{% for schema_name, schema in schemas.items() %}
+    {% if schema.enum %}
+
+pub struct {{ cs.to_pascal(schema_name) }};
+
+impl {{ cs.to_pascal(schema_name) }} {
+{% for value in schema.enum %}
+    const {{ cs.to_snake(get_enum_option_name(value)).upper() }}: {{ get_enum_type(get_enum_value(value)) }} = {{ get_enum_value(value) }};
+{% endfor %}
+}
+    {% endif %}
+{% endfor %}
+
+{% for schema_name, schema in schemas.items() %}
+    {% if schema.properties %}
+
+#[derive(Deserialize, Serialize)]
+pub struct {{ cs.to_pascal(schema_name) }} {
+{% for name, schema in schema.properties.items() %}
+    {% if name == "type" %}
+    #[serde(alias = "type")]
+    pub {{ cs.to_snake(schema_name) + "_" + cs.to_snake(name) }}: {{ rs_type(components, schema) }},
+    {% else %}
+    pub {{ cs.to_snake(name) }}: {{ rs_type(components, schema) }},
+    {% endif %}
+{% endfor %}
+}
+    {% endif %}
+{% endfor %}

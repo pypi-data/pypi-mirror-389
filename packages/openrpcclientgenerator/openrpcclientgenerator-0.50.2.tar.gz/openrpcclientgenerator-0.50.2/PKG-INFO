@@ -1,0 +1,55 @@
+Metadata-Version: 2.4
+Name: openrpcclientgenerator
+Version: 0.50.2
+Summary: Generate clients from an Open-RPC document.
+Author: Matthew Burkard
+Author-email: Matthew Burkard <matthewjburkard@gmail.com>
+License-Expression: AGPL-3.0-or-later
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Requires-Dist: black>=25.9.0
+Requires-Dist: case-switcher>=1.3.13
+Requires-Dist: httpx>=0.26.0
+Requires-Dist: jinja2>=3.1.6
+Requires-Dist: openrpc>=10.5.0
+Requires-Dist: pydantic>=2.12.3
+Requires-Dist: rpc-cli>=2.2.3
+Requires-Python: >=3.10
+Project-URL: homepage, https://gitlab.com/mburkard/openrpc-client-generator
+Project-URL: repository, https://gitlab.com/mburkard/openrpc-client-generator
+Description-Content-Type: text/markdown
+
+# Open-RPC Client Generator
+
+Generate clients from Open-RPC APIs.
+
+## Supported Languages
+
+- Python
+- Rust
+- TypeScript
+
+## CLI
+
+To see options.
+
+```shell
+orpc --help
+```
+
+### Generate a Client
+
+Call `orpc` passing as arguments the language to generate client for, the URL of the API, and the `out` directory to write the generated files to.
+
+If no argument is passed for `out` it will default to `./out/`.
+
+By default it will look for an `openrpc.json` file in the active directory.
+If it finds no file it will call the `rpc.discover` method of the given URL.
+
+```shell
+orpc rust "http://127.0.0.1:1737" ./out
+```
