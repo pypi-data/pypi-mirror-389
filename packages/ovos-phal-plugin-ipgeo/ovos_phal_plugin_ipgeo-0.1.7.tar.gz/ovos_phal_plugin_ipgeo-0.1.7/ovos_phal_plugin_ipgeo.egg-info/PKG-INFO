@@ -1,0 +1,40 @@
+Metadata-Version: 2.4
+Name: ovos_phal_plugin_ipgeo
+Version: 0.1.7
+Summary: A PHAL plugin for mycroft
+Home-page: https://github.com/OpenVoiceOS/ovos-PHAL-plugin-ipgeo
+Author: JarbasAi
+Author-email: jarbasai@mailfence.com
+License: Apache-2.0
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ovos-plugin-manager<3.0.0,>=0.0.1
+Requires-Dist: ovos-config>=0.0.10
+Requires-Dist: ovos-utils>=0.4.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+# PHAL plugin - IPGeo
+
+Autoconfigure default location based on ip address via [ip-api.com](https://ip-api.com)
+
+> **This will not overwrite** user defined configuration, only populates values if missing
+
+`City`, `regionName` and `country` will be also be localized to your language if possible
+
+Supported langs: `"en", "de", "es", "pt", "fr", "ja", "zh", "ru"`
