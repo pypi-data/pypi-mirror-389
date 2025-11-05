@@ -1,0 +1,12 @@
+[package]
+name = "{{ project_name }}"
+description = "Client to {{ project_title }}."
+version = "{{ info.version }}"
+edition = "2024"
+readme = "README.md"
+
+[dependencies]
+jsonrpc = "0.18.0"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = "1.0.228"
+serde_json = "1.0.145"

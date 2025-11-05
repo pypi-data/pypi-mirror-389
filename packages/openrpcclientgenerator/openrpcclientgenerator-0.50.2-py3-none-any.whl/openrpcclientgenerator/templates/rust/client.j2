@@ -1,0 +1,87 @@
+use crate::model::{{ "{" }}{% for schema_name, schema in schemas.items() %}{% if not schema.enum %}{{ cs.to_pascal(schema_name) }}{% if not loop.last %}, {% endif %}{% endif %}{% endfor %}{{ "}" }};
+use jsonrpc::{Client, simple_http::SimpleHttpTransport};
+use serde_json::json;
+use std::fmt;
+
+#[derive(serde::Deserialize)]
+pub enum ClientError {
+    ParamSerializationError(String),
+    RpcSendError(String),
+    RpcError(String),
+}
+
+impl fmt::Display for ClientError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ClientError::ParamSerializationError(msg) => {
+                write!(f, "Failed to serialze request: {}", msg)
+            }
+            ClientError::RpcSendError(msg) => write!(f, "RPC send error: {}", msg),
+            ClientError::RpcError(msg) => write!(f, "RPC error: {}", msg),
+        }
+    }
+}
+
+pub struct {{ cs.to_pascal(group.name) }} {
+    {% for cg in group.child_groups.values() %}
+    pub {{ cs.to_snake(cg.name) }}: {{ cs.to_pascal(cg.name) }}Client,
+    {% endfor %}
+}
+
+
+{% for cg in group.child_groups.values() %}
+pub struct {{ cs.to_pascal(cg.name) }}Client {
+    client: Client,
+}
+
+impl {{ cs.to_pascal(cg.name) }}Client {
+{% for name, method in cg.methods.items() %}
+    pub fn {{ rust_name(cs.to_snake(name)) }}(
+        &self, {% for param in method.params %}{{ cs.to_snake(param.name) }}: {{ rs_type(components, param.schema_, is_param=True) }}{% if not loop.last %}, {% endif %}{% endfor %}
+
+    ) -> Result<{{ rs_type(components, method.result.schema_) }}, ClientError> {
+        {% if method.params %}
+        let params = match serde_json::value::to_raw_value(&json!([{% for param in method.params %}{{ cs.to_snake(param.name) }}{% if not loop.last %}, {% endif %}{% endfor %}])) {
+            Ok(v) => v,
+            Err(e) => return Err(ClientError::ParamSerializationError(e.to_string())),
+        };
+        let request = self.client.build_request("{{ method.name }}", Some(&params));
+        {% else %}
+        let request = self.client.build_request("{{ method.name }}", None);
+        {% endif %}
+        let response = match self.client.send_request(request) {
+            Ok(v) => v,
+            Err(e) => return Err(ClientError::RpcSendError(e.to_string())),
+        };
+        return match response.result() {
+            Ok(v) => Ok(v),
+            Err(e) => Err(ClientError::RpcError(e.to_string())),
+        };
+    }
+
+{% endfor %}
+}
+{% endfor %}
+
+pub struct {{ cs.to_pascal(group.name) }}Client {
+    {% for cg in group.child_groups.values() %}
+    pub {{ cs.to_snake(cg.name).lower() }}: {{ cs.to_pascal(cg.name) }}Client,
+    {% endfor %}
+}
+
+impl {{ cs.to_pascal(group.name) }}Client {
+    pub fn new(url: &str) -> {{ cs.to_pascal(group.name) }}Client {
+        return {{ cs.to_pascal(group.name) }}Client {
+            {% for cg in group.child_groups.values() %}
+            {{ cs.to_snake(cg.name).lower() }}: {{ cs.to_pascal(cg.name) }}Client {
+                client: {{ cs.to_pascal(group.name) }}Client::gen_client(url),
+            },
+            {% endfor %}
+        };
+    }
+
+    // No sharing a ref since we can't use lifetime specifiers.
+    fn gen_client(url: &str) -> Client {
+        return Client::with_transport(SimpleHttpTransport::builder().url(url).unwrap().build());
+    }
+}
