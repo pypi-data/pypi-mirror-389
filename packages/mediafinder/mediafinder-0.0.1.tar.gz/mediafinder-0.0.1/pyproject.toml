@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mediafinder"
+version = "0.0.1"
+description = "A CLI tool for finding and playing video files (coming soon)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Arne Pelzer", email = "arnepelzerprivat@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+	"Intended Audience :: End Users/Desktop",
+	"License :: OSI Approved :: MIT License",
+	"Natural Language :: English",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+	"Topic :: Utilities",
+	"Topic :: Multimedia :: Video",
+	"Topic :: System :: Filesystems"
+]
+keywords = ["video", "media", "cli", "player", "finder"]
+
+[project.urls]
+"Homepage" = "https://github.com/aplzr/mf"
+
+[project.scripts]
+mf = "mediafinder.cli:main"
