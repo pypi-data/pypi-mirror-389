@@ -1,0 +1,56 @@
+[project]
+name = "NEMO-fabublox-integration"
+version = '1.0.1'
+description = "Integration between NEMO and FabuBlox"
+keywords = ["NEMO", "FabuBlox"]
+readme = "README.md"
+authors = [{name = "FabuBlox, Inc.", email = "hello@fabublox.com"}]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Framework :: Django :: 4.2",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "django",
+    "google-cloud-storage>=3.2.0,<4.0",
+]
+license = {file = "LICENSE"}
+
+[project.urls]
+Homepage = "https://gitlab.com/nemo-community/fabublox/nemo-fabublox-integration"
+Changelog = "https://gitlab.com/nemo-community/fabublox/nemo-fabublox-integration/-/releases"
+Issues = "https://gitlab.com/nemo-community/fabublox/nemo-fabublox-integration/-/issues"
+CI = "https://gitlab.com/nemo-community/fabublox/nemo-fabublox-integration/-/pipelines"
+
+[project.optional-dependencies]
+NEMO-CE = ["NEMO-CE>=6.0.0",]
+NEMO = ["NEMO>=6.0.0",]
+dev-tools = ["pre-commit", "djlint", "black"]
+
+[tool.setuptools.packages.find]
+include = ["NEMO_fabublox_integration*"]
+
+
+[tool.setuptools.package-data]
+NEMO_fabublox_integration = ["static/**/*", "templates/**/*"]
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+[tool.djlint]
+profile = "django"
+max_attribute_length=100
+max_line_length=120
+ignore = "H031"

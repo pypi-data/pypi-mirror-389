@@ -1,0 +1,144 @@
+{% extends 'NEMO_fabublox_integration/base.html' %}
+{% load custom_tags_and_filters %}
+{% block title %}FabuBlox Synchronizations{% endblock %}
+{% block feature-tab %}
+    <h3 class="tab-title">Synchronizations</h3>
+    <div>
+        <div style="margin-top: 10px">
+            <i class="glyphicon glyphicon-info-sign" style="color: blue"></i>
+            Synchronized data may be delayed in appearing on FabuBlox due to background
+            processing. Some updates may not appear if FabuBlox fails to process the
+            data delivered from NEMO.
+        </div>
+        <hr />
+        {% if has_in_progress %}
+            <div id="in-progress">
+                {% include 'NEMO_fabublox_integration/in_progress_synchronization.html' with in_progress=in_progress %}
+            </div>
+        {% endif %}
+        <div style="margin-top: 20px">
+            <h4>Synchronization History</h4>
+        </div>
+        <div>
+            {% with paginator=page.paginator %}
+                {% block pagination_header %}
+                    <div class="pagination pull-right" style="clear: both">{% include "pagination/pagination_selector.html" %}</div>
+                {% endblock %}
+                <div class="table-responsive" style="width: 100%">
+                    {% block pagination_content %}
+                        <table class="table table-align-middle table-bordered table-condensed table-striped thead-light">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>{% include 'pagination/pagination_column.html' with order_by='created_at' name='Started On' %}</th>
+                                    <th>{% include 'pagination/pagination_column.html' with order_by='started_by' name='Started By' %}</th>
+                                    <th>Progress</th>
+                                    <th>{% include 'pagination/pagination_column.html' with order_by='status' name='Status' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in page %}
+                                    <tr>
+                                        <td>Tools Synchronization</td>
+                                        <td>{{ job.created_at|date:"F jS, Y g:i A" }}</td>
+                                        <td>{{ job.started_by }}</td>
+                                        <td>{{ job.processed_items }} / {{ job.total_items }}</td>
+                                        <td>
+                                            <span style="font-size: 0.85em"
+                                                  class="label {% if job.status == 0 %}label-info{% elif job.status == 1 %}label-primary{% elif job.status == 2 %}label-success{% elif job.status == 3 or job.status == 5 %}label-warning{% elif job.status == 4 %}label-danger{% endif %}">
+                                                {{ job.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 3px solid black">
+                                        <td colspan="5">
+                                            {% if job.failed_items > 0 %}
+                                                <div style="margin-top: 5px; margin-bottom: 5px">
+                                                    <a onclick="toggle_details(this)"
+                                                       data-toggle="collapse"
+                                                       data-target="#job-details-{{ job.id }}"
+                                                       class="pointer">
+                                                        <span class="glyphicon glyphicon-chevron-right chevron"></span>
+                                                        Failed Items ({{ job.failed_items }})
+                                                    </a>
+                                                </div>
+                                                <div id="job-details-{{ job.id }}" class="collapse">
+                                                    <div style="max-height: 300px;
+                                                                overflow-y: auto;
+                                                                border: 2px solid lightgrey;
+                                                                padding: 10px;
+                                                                border-radius: 5px">
+                                                        {% for item in job.failed_items_details %}
+                                                            <div style="margin-bottom: 10px">
+                                                                <i style="font-size: 0.85em" class="glyphicon glyphicon-exclamation-sign text-danger"></i>
+                                                                <strong>{{ item.item }}</strong>
+                                                                <br />
+                                                                <small style="color: red; margin-left: 20px">{{ item.error }}</small>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endblock %}
+                </div>
+                {% block pagination_footer %}
+                    <div class="pagination pull-right" style="margin-bottom: 0">{% include "pagination/pagination_pages.html" %}</div>
+                {% endblock %}
+            {% endwith %}
+        </div>
+        <script>
+    {% if has_in_progress %}
+        (function() {
+            const startTime = Date.now();
+            const MAX_POLL_DURATION = 10 * 60 * 1000; // 10 minutes
+            let pollDelay = 2000; // Start with 2 seconds
+            let pollTimeout = null;
+
+            function pollInProgress() {
+                // Stop after max poll duration
+                if (Date.now() - startTime > MAX_POLL_DURATION) {
+                    return;
+                }
+
+                fetch("{% url 'fabublox_in_progress_synchronization' %}")
+                    .then(response => {
+                        const inProgressEl = document.getElementById('in-progress');
+                        if (!inProgressEl) return;
+
+                        if (response.status === 404) {
+                            window.location.reload();
+                        } else if (response.ok) {
+                            response.text().then(html => {
+                                if (inProgressEl) {
+                                    // Django template content is pre-escaped and safe
+                                    inProgressEl.innerHTML = html;
+                                    pollDelay = 2000;
+                                    pollTimeout = setTimeout(pollInProgress, pollDelay);
+                                }
+                            });
+                        } else {
+                            inProgressEl.innerHTML = '';
+                        }
+                    })
+                    .catch(() => {
+                        // Network error, exponential backoff, max 30 seconds
+                        pollDelay = Math.min(pollDelay * 2, 30000);
+                        pollTimeout = setTimeout(pollInProgress, pollDelay);
+                    });
+            }
+
+            pollInProgress();
+
+            window.addEventListener('beforeunload', function() {
+                if (pollTimeout) clearTimeout(pollTimeout);
+            });
+        })();
+    {% endif %}
+        </script>
+    {% endblock %}
+</div>
