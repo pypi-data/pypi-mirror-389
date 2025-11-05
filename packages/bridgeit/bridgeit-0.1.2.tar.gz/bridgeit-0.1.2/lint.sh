@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+
+echo "Running ruff check..."
+uv run ruff check src tests
+
+echo "Running ruff format check..."
+uv run ruff format --check src tests
+
+echo "Running mypy..."
+uv run mypy src/bridgeit
+
+echo "Running vulture (dead code detection)..."
+uv run vulture src tests .vulture_whitelist.py --min-confidence 80
+
+echo "✓ All linting checks passed!"
