@@ -1,0 +1,39 @@
+name: documentation
+
+on:
+  push:
+    branches: main
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH=$HOME/.local/bin:$PATH
+
+      - name: Install project dependencies with Poetry
+        run: |
+          poetry install --no-root
+      - name: Build Sphinx Documentation
+        run: |
+          cd docs  # Adjust this to the location of your Sphinx conf.py
+          poetry run sphinx-build -b html . _build/html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
