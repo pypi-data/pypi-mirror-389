@@ -1,0 +1,42 @@
+[build-system]
+requires = ["flit_core>=3.9"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "krx300-hj3415"
+version = "1.0.1"
+description = "KRX 300 종목 스냅샷 동기화 도구"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{name = "Hyungjin Kim", email = "hj3415@gmail.com"}]
+keywords = ["example", "demo"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+
+dependencies = [
+  "logging-hj3415>=0.1",
+  "httpx[http2]>=0.28",
+  "tenacity>=9.1",
+  "pandas>=2.3",
+  "openpyxl>=3.1",
+  "xlrd",
+  "typer>=0.20",
+]
+
+# 선택적 의존성 (pip install your-pkg[dev] 형태)
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=7.0", "pytest-asyncio>=1.2", "ruff>=0.5", "mypy>=1.10"]
+
+[tool.flit.module]
+name = "krx300_hj3415"
+path = "src/krx300_hj3415"
+
+[tool.flit.sdist]
+exclude = ["src/krx300_hj3415/adapters/temp/*", "tests/*"]
+
+[project.scripts]
+krx300 = "krx300_hj3415.entrypoints.cli:app"
