@@ -1,0 +1,15 @@
+global-include *.txt *.py *.bat *.js *.css *.html \
+  *.ico *.jpg \
+  *.csv *.xml \
+  *.odt \
+  *.wsdl \
+  *.xsd \
+  *.mo Makefile
+
+prune docs
+prune dedocs
+prune frdocs
+prune old
+prune userdocs
+prune **/cache
+prune **/dumps

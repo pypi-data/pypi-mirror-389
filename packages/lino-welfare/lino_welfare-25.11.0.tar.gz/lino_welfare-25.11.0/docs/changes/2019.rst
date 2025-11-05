@@ -1,0 +1,133 @@
+.. _welcht.changes.2019:
+.. _weleup.changes.2019:
+.. _welfare.changes.2019:
+
+====
+2019
+====
+
+This is the :term:`change log` 2019 for :ref:`welfare`.
+You should also consult also the :term:`change log` for :ref:`book`.
+General information about how to read and maintain this document in :ref:`dev.changes`.
+
+.. contents::
+  :local:
+
+2019-12-30
+==========
+
+Released welfare and weleup 19.12.0 to PyPI.
+
+2019-11-07
+==========
+
+Fixed two bugs that caused server tracebacks in rare cases:
+
+- :meth:`lino_xl.lib.addresses.AddressOwner.get_primary_address` now returns None if
+  MultipleObjectsReturned (instead of raising a server error).
+- aids.ConfirmationsByGranting.get_data_rows() when confirmation_type of the aids type was empty.
+
+2019-10-02
+==========
+
+More changes in :mod:`lino_welfare.modlib.cbss`. The RetrieveTIGroups now works
+for the first time after their passing from v1 to v2! (The long delay is mostly
+due to administrative obstacles.)
+
+2019-09-24
+==========
+
+Released Welfare 19.9.1 and weleup 19.9.1.
+Site upgrade on the weleup preview site.
+
+2019-09-18
+==========
+
+Released Welfare 19.9.0 and weleup 19.9.0.
+
+2019-09-13
+==========
+
+New field :attr:`lino_xl.lib.cv.LanguageKnowledge.has_certificate` is a side
+effect of a change in Avanti which might be useful for Welfare as well.
+
+2019-04-17
+==========
+
+- (:ticket:`2968`): Remove cal.MyOverdueAppointments from dashboard.
+
+2019-04-16
+==========
+
+Fixed :ticket:`2946` Wrong age display (leap year bug)
+
+2019-03-26 (v19.3.0)
+====================
+
+Moved :ref:`welfare` out of :ref:`book`.
+Created a new repository :ref:`weleup`
+and moved :file:`man/welfare_de` to :file:`weleup/dedocs`.
+The welfare repo is now a library repo, similar to xl.
+It contains demo projects, specs and api for both weleup
+and welcht (it makes no sense to explain welfare without also explaining weleup
+and welcht, and it makes no sense to write technical docs about weleup without
+also explaining general welfare plugins).
+The doctrees of welcht or weleup just contain a short description, installation
+instructions and links to the real docs.
+
+Fixed a bug (:ticket:`2917`) in
+:class:`lino_welfare.modlib.households.RefundsByPerson`.
+This table considered children as adult only one year after the age
+specified in :attr:`lino_xl.lib.households.Plugin.adult_age`.
+Added a test case to cover this: :ref:`welfare.specs.households.20190326`.
+
+Released version 19.3.0
+
+2019-03-22
+==========
+
+.. currentmodule:: lino_welfare.modlib.isip
+
+- :attr:`ContractTypeBase.overlap_group` was not yet
+  visible in the following tables : :class:`ContractTypes`,
+  :class:`lino_welfare.modlib.jobs.ContractTypes`,
+  :class:`lino_welfare.modlib.art61.ContractTypes`.
+
+- :class:`OverlappingContractsTest` now ignores contracts
+  whose types have an empty :attr:`ContractBase.overlap_group`..
+
+2019-03-04
+==========
+
+- French translation of "Excluded from" is now  "Du" (no longer "Exclus depuis")
+
+2019-02-28
+==========
+
+Moved the chatelet part from the :mod:`lino_welfare` package into a new package
+:mod:`lino_welcht`.  User code on production sites must replace
+``lino_welfare.chatelet`` by ``lino_welcht``.
+We plan to do the same operation for weleup soon.
+
+Released version 19.2.0
+
+(:ticket:`2851`) Remove the filter added 2019-02-27 on pcsw.PersonGroup so the
+choicelists show only the activated groups. This filter was asked by Chatelet.
+
+(:ticket:`2850`) add a filter on pcsw.PersonGroup so the choicelists show only
+the activated groups.
+
+2019-02-27
+==========
+
+(:ticket:`2853`) Missing dependency in 'six' in welfare. The
+:xfile:`setup_info.py` may of course not import any module which is installed
+only during :xfile:`setup.py`.
+
+(:ticket:`2851`) Added a filter on pcsw.PersonGroup so the choicelists show
+only the activated groups
+
+(:ticket:`2851`) Removed study_type from column_names of ContractsByClient,
+removed job_search from the main of pcsw.ClientDetail, moved 'is_seeking
+unemployed_since seeking_since' from history_left to history_right of the main
+of pcsw.ClientDetail.

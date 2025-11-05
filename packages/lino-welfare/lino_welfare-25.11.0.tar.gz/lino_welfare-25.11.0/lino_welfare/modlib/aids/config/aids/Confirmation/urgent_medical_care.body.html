@@ -1,0 +1,37 @@
+{% extends "aids/Confirmation/certificate.body.html" %}
+
+{% block intro %}
+<p>{{tr(en="We hereby certify that the current statute of",
+        de="Hiermit bescheinigen wir, dass das augenblickliche Statut von",
+        fr="Par la présente nous certifions que le statut actuel de")}}</p>
+<p class="EnhancedPar">
+{{obj.client.get_full_name(nominative=True)}}
+<br>
+{{tr(de="Nationalregisternummer",fr="Numéro du Registre National")}}
+{{obj.client.national_id}}
+<br>
+{{obj.confirmation_address()}}
+</p>
+{% endblock %}
+
+
+{% block what %}
+<p>
+{%- if language == 'de' -%}
+
+<b>{{when}}</b>
+nur Anrecht auf die in Artikel 57 § 2.1 des
+Grundlagengesetzes über die ÖSHZ vom 08.07.1976 vorgesehene dringende
+medizinische Hilfe gibt.
+
+{%- else -%}
+
+{{iif(obj.is_past(), "a donné", "donne")}}
+<b>{{when}}</b>
+uniquement droit à l’aide médicale
+urgente conformément à l’article 57 § 2.1 de la loi du 08.07.1976
+organique des CPAS.
+
+{%- endif -%}
+</p>
+{% endblock %}

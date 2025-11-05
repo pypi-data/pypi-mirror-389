@@ -1,0 +1,6 @@
+.. _welfare.countries:
+
+=========
+Countries
+=========
+

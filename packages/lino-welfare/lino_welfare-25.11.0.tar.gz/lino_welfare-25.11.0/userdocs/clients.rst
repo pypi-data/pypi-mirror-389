@@ -1,0 +1,6 @@
+.. _welfare.clients:
+
+=======
+Clients
+=======
+

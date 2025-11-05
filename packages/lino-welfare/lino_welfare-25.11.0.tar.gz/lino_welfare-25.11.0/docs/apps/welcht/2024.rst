@@ -1,0 +1,112 @@
+.. doctest docs/apps/welcht/2024.rst
+.. _welfare.apps.welcht.changes:
+
+===================================
+Changes in 2024
+===================================
+
+.. contents::
+   :local:
+   :depth: 2
+
+.. include:: /../docs/shared/include/tested.rst
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.mathieu.settings.demo')
+>>> from lino.api.doctest import *
+
+
+
+Janvier-février 2024
+====================
+
+Rappelons quelques détails.
+
+>>> dd.get_plugin_setting('jobs', 'with_employer_model')
+True
+
+>>> models = list(rt.models_by_base(isip.ContractBase))
+>>> models += [jobs.JobProvider, jobs.Employer, isip.ContractPartner]
+>>> langs = ["en", "fr", "de"]
+>>> rows = []
+>>> for m in models:
+...     cells = [dd.full_model_name(m)]
+...     for lng in langs:
+...       with translation.override(lng):
+...         cells.append(str(m._meta.verbose_name))
+...     rows.append(cells)
+>>> print(rstgen.table(["model"]+langs, rows))
+====================== ======================== ========================= =====================
+ model                  en                       fr                        de
+---------------------- ------------------------ ------------------------- ---------------------
+ art60.Contract         Art60§7 job supplyment   Mise à l'emploi art60§7   Art.60§7-Konvention
+ art61.Contract         Art61 job supplyment     Mise à l'emploi art.61    Art.61-Konvention
+ immersion.Contract     Immersion training       Stage d'immersion         Stage d'immersion
+ isip.Contract          ISIP                     PIIS                      VSE
+ jobs.JobProvider       Job provider             Service utilisateur       Stellenanbieter
+ jobs.Employer          Employer                 Employeur                 Arbeitgeber
+ isip.ContractPartner   Contract partner         Partenaire bénéficiaire   Vertragspartner
+====================== ======================== ========================= =====================
+<BLANKLINE>
+
+
+Les activations SINE
+--------------------
+
+Jusque maintenant les activations SINE étaient notées dans un même pot avec les
+mises à l'emploi art.61. Mais en fait elles valent un modèle séparé.
+
+Une activation a juste les champs suivants:
+
+- Bénéficiaire
+- Date de réception
+- Employeur
+- mois et année
+- montant à payer
+- Titulaire (SI)
+
+
+Discussion
+----------
+
+Une activation n'est pas un "contrat" dans la mesure où aucune convention n’est
+signée dans le cadre des activations et qu’il s’agit uniquement de la réception
+mensuelle d’un formulaire officiel sur base duquel le CPAS intervient. On ne
+peut pas vraiment parler d’"aide octroyée". Il s’agit de l’application d’une
+mesure régionale concernant tous les demandeurs d’emploi. Pas d’une aide CPAS.
+
+Un bénéficiaire peut avoir toute une série d'activations, c'est juste? --> En
+théorie, oui une personne pourrait bénéficier de plusieurs activations SINE.
+
+Est-ce que nous voulons pouvoir noter l'agent social qui a confirmé la validité
+d'une demande d'activation? Un champ avec liste déroulante dans laquelle on peut
+choisir un utilisateur. --> Oui, ça peut toujours être intéressant en effet.
+
+Dans quel onglet mettre le nouveau panneau avec la liste des activations d'un
+bénéficiaire? L'ajouter dans "Mise à l'emploi"? Cet onglet deviendra bien
+rempli...
+
+Dans l'onglet "Intervenants" (champ "Workflow") on peut mettre l'état d'un
+bénéficiaire à "Ancien". D'autre part, dans l'onglet "Divers" d'un bénéficiaire
+nous avons une option "obsolète" et dans les options de filtrage pour
+bénéficiaires une option "aussi clients obsolètes". Sommes-nous d'accord que un
+des deux est inutile? Si oui, je propose d'enlever l'état "Ancien" car (1)
+cliquer sur "Ancien" dans le Workflow me semble un peu trop facile et (2) le
+champ "obsolète" existe déjà pour les employeurs et nous pourrions l'y activer.
+Qu'en penses-tu?
+
+Au lieu de noter le mois et l'année d'une activation, on pourrait utiliser le
+système avec date de début, de fin prévue et de fin effective. Qu'en penses-tu?
+
+
+Divers
+------
+
+
+The French verbose name of :class:`isip.ContractPartner` is "Partenaire
+bénéficiaire". The pluralized translation was "Servies utilisateurs" until now,
+but this was a bug, it had to be "Partenaires bénéficiaires".
+
+>>> with translation.override('fr'):
+...     print(isip.ContractPartner._meta.verbose_name_plural)
+Partenaires bénéficiaires

@@ -1,0 +1,241 @@
+.. _welcht.22.07:
+
+=============================
+Lino Welfare "Châtelet" 22.07
+=============================
+
+Ceci est votre premier release depuis avril 2019. Il a pris du temps parce qu'il
+nécessitait le passage de Python 2 à Python 3 et de Debian 9 à Debian 11, ce qui
+nécessitait une nouvelle machine virtuelle. Nous profitons de la migration vers
+le nouveau serveur pour faire  toute une série de changements qui s'étaient
+accumulées.
+
+.. contents::
+  :local:
+
+Chronologie
+===========
+
+- 2022-07-28 : La `phase de tests utilisateurs`_ a commencée.
+- 2022-09-29 : Rencontre vidéo Mathieu, Aurélie, Luc
+- 2023-01-09 : le site de prévisualisation passe en production.  À partir du
+  samedi 7 janvier j'arreterai le vieux serveur, ferai une dernière migration
+  des données, puis demanderai à JM de changer les noms de domaine.
+
+
+Phase de tests utilisateurs
+===========================
+
+Instructions pour utilisateurs:
+
+- Votre site de prévisualisation est maintenant fonctionnel sous http://srv-lino
+
+- Votre tâche est de le tester et de **trouver les erreurs**. Une erreur c'est
+  toute différence entre les deux Linos qui n'est pas encore mentionnée dans le
+  présent document.
+
+- Pour trouver des erreurs, tu "simules" une séquence de travail. Idéalement il
+  s'agit de simuler dans la prévisualisation tout ce que tu fais normalement
+  dans Lino.
+
+- Tout ce que tu modifies dans le site de prévisualisation sera annulé et oublié
+  lors de la prochaine **synchronisation des données**. Je lancerai ces
+  synchronisations de temps en temps, pendant la nuit pour ne pas ralentir
+  l'ancien serveur pendant votre temps de travail.
+
+- Fais attention de ne pas confondre les deux sites (faire une simulation dans
+  le vrai Lino ou du vrai travail dans le site de prévisualisation).
+
+- Je ferai des mises à jour du site de prévisualisation chaque fois qu'une
+  erreur a été corrigée.
+
+- Tu peux ouvrir les **deux Linos en même temps** dans deux fenêtres
+  différentes.
+
+- Dès que tu trouves une erreur, envoye-moi un email avec une description.
+  Imagine que **chaque rapport d'erreur te donne un point** ;-)
+
+
+Changements non demandés
+========================
+
+Il y a maintenant un bouton "?" qui ouvre une fenetre sur le "manuel en ligne"
+de votre Lino. C'est une nouvelle feature et vous êtes les premiers à l'avoir.
+Il faut dire que le manuel a encore besoin de travail...
+
+Changements demandés
+====================
+
+..
+  Usage des candidatures et postes de travail
+
+  Q: Nous utilisons déjà "service utilisateur" et "postes de travail". J'aimerais
+  que nous développions l'usage des "candidatures" et dans ce cadre pouvoir
+  compléter la liste des "offres d'emploi".
+
+  R: Une offre d'emploi dans ce contexte, c'est quand un service utilisateur
+  cherche concrètement une personne pour un travail concret. En principe, dans une
+  offre d'emploi, tu encodes aussi le "secteur d'activité" et la "fonction
+  professionnelle", et c'est en fonction de ces deux critères que Lino te propose
+  les candidats disponibles pour cette offre.
+
+
+.. Discutés Mathieu, Aurélie, Luc depuis le 2022-09-29
+
+
+DONE
+----
+
+- Add a field JobProvider.is_social ("économie sociale") (cela se décide par
+  service utilisateur). French help_text for this field should be: Organisation
+  bénéficiant de l'agrément "Initiative d'économie sociale" octroyé par la
+  Wallonie. [Cet agrément vise à soutenir la mise en place de projets à finalité
+  sociale et l'insertion socioprofessionnelle de travailleurs peu qualifiés par
+  le biais d'une activité économique.]
+
+- Mouvements pendant une MàE:
+  Il peut y avoir plusieurs conventions pour un même contrat.
+  On différencie entre contrat (CPAS-bénéf) et les conventions (CPAS-service utilisateur).
+  (Poste de travail, contact, régime de travail, horaire, ... vont dans convention.
+  + Date début par convention. + remarque pour la convention.
+
+- Choix du champ "Instructeur" d'un atelier: seulement les utilisateurs au
+  profil 120 (et 110). NB: plus précisément ceux avec le role "CoursesTeacher",
+  càd aussi Luc et Hamza...
+
+- Filtrer les choix des champs Auteur, Titulaire (SSG) d'une mise à l'emploi et
+  d'un stage d'immersion: N'afficher que les utilisateurs actifs avec les
+  profils 120, 420 et 900.
+
+- Translate "Successfully ended" "Terminé avec succès"
+
+- :menuselection:`Ateliers --> Ateliers d'insertion sociale` et
+  :menuselection:`Ateliers --> Ateliers d'insertion socio-prof`: par défaut
+  seulement les ateliers actifs. (+ ceux en brouillon)
+
+- art61.Contract : Ajouter deux champs "Secteur" et "Fonction".
+
+- Renommer "Auteur" en "Titulaire (ISP)"
+
+- possibilité pour les profils 420 d’avoir un raccourci [Mise à l’emploi
+  art60§7] fonctionnel.
+  Les 420 sont assignés dans user_asd.
+  Donc pour les 420 (SSG) il faudrait filtrer sur le user_asd et
+  pour les 120 (ISP) il faudrait filtrer sur le user.
+
+- dans art60.Contract:
+
+  - Enlever les champs hourly_rate and refund_rate
+  - Ajouter un champ monthly_refund ("rétrocession mensuelle") (Amount in EUR).
+  - remove remark
+  - rename "Responsabilités" to "Remarques"
+
+- [Mises à l'emploi art60§7] -> n'afficher que les "contrats en cours" par défaut.
+
+- Change "Type d'organisation" to "Forme juridique"
+
+- art60.Contract:
+  cliquer sur la loupe du champ Contract.company va sur l'organisation, mais
+  devrait aller sur le Service utilisateur.
+  Aussi dans paramètres de filtrage: replacer "Organisation" par "Service utilisateur"
+
+- art61.Contract : replacer les champs à cocher Activa... par une liste:
+
+  - Aide à l'embauche FOREM :  montant ... du ... au ...
+  - Prime Tutorat : montant ... du ... au ...
+  - Prime RW (région wallonne) : montant ... du ... au ...
+
+- Distinguer les services utilisateur: (1) ceux avec art60 ("services
+  utilisateur"), et (2) les quelques uns qui travaillent avec art61
+  ("Employeurs")
+
+- Recherche d'un bénéficiaire: "aba" --> Lino affiche aussi ceux qui habitent
+  "rue du brabant". Ne chercher que dans le nom.
+
+- Job providers:
+  - ajouter un panneau "uploads" (conventions, analyses de risques, ...)
+  - enlever le panneau "Observations" (?)
+
+- dans art60.Contract (Explorateur jobs.Contracts filter params):
+  -
+  - new filter "company_type"
+  - new filter "poste de travail"
+  - new filter "rétrocession" : Yes, No, 250, 150, ...
+
+- RolesByCompany.contact_person is learnable, but learning doesn't work. Says
+  "Personne : Cannot create Personne from 'ggg hhhh'"
+
+- dans art60.Contract, make Contract.contact_person learnable. Also add new
+  person to the contact persons of the company.
+
+- user type 120 : traduire le libellé
+
+- Traduction "Job provider" = "Partenaire emploi"
+
+- Lorsque les personnes sont inscrite en salle d’attente, elles ont une
+  "position" : 1, 2, 3... Dès que le travailleur social clique sur "recevoir" et
+  que la personne quitte la salle d’attente, les positions "bougent". Le service
+  voudrait que le numéro de position ne change pas pour garder l’ordre d’arrivée
+  même une fois la personne reçue.
+
+- Dans art60.Convention.detail et art61.Contrat.detail il y a maintenant un
+  panneu "Fichiers téléchargés" (UploadsByController). NB pas de nouvel onglet
+  dans detail de art61.
+
+- art61 : insert_layout : not type but fonction
+
+- Services utilisateurs: renommer onglet "Observations" en "Documents"
+
+- Traductions détail art61:
+  - Hiring assistance: Aide à l'emploi
+  - From: Depuis
+  - Until: Jusqu'à
+
+- Remove phantom row for Clients (`CPAS --> Bénéficiaires`). Anyway it's
+  useless. Same for isip.Contracts. In general there should be no phantom row
+  when there is an insert layout.
+
+
+See also blog entries
+`20220930 <https://luc.lino-framework.org/blog/2022/0930.html>`__,
+`20221002 <https://luc.lino-framework.org/blog/2022/1002.html>`__,
+`20221011 <https://luc.lino-framework.org/blog/2022/1011.html>`__
+
+à préciser
+----------
+
+- Ajouter encore un type de contrat : SINE (à spécifier)
+
+- Ajouter un champ "Ne plus utiliser" dans jobs.ContractType?
+
+- Nouveau type d'utilisateur 430 Social agent (office helper) Agent social (support administratif)
+
+  - seulement créer des bénef, les attribuer aux agents dispo
+  - pas d'accès à l'onglet "Historique"
+  - reste à préciser
+
+- Job providers : `name_column` also shows company_type, which is irritating.
+
+- Vérifier si les contrats art60 et art61 existants ont été migrés correctement.
+
+- Tous les "partenaires emploi" sont à la fois "service utilisateur" et
+  "employeur". Il faudra les nettoyer manuellement après la migration.
+
+- Bouton "+" dans uploads (Services utilisateurs, art60, art61) : Quels types de
+  fichiers?
+
+- Le champ "Type" des art60 disparaitra quand vous aurez complété la liste
+  des fonctions pour qu'elle reflète celle  des "types".
+
+
+TODO
+----
+
+(La liste est vide)
+
+..
+  - Onglet [Personne] Type d’aide sociale : actualiser la liste et développer un
+    module (RIS, ASE, Aide ponctuelle, Aide mensuelle, Adresse de référence +
+    possibilité de cocher plusieurs aides). Ouvrir une nouvelle fonction de tri.
+
+    On pourrait activer le aids plugin. Mais parait que ce n'est plus nécessaire.

@@ -1,0 +1,25 @@
+{% extends "aids/Confirmation/certificate.body.html" %}
+
+{% block what -%}
+
+<p>
+{% if language == 'de' %}
+<b>{{when}}</b> aus sozial-finanziellen Gründen Anrecht auf
+eine Sozialhilfe in Naturalien durch Nutzung des
+<b>M&ouml;bellagers</b> {{iif(obj.is_past(), "hatte", "hat")}}.
+</p><p>Diese Bescheinigung ist für Dauer von 6 Monaten ab Ausstellungsdatum gültig.
+{% else %}
+{{iif(obj.is_past(), "a bénéficié", "bénéficie")}}
+<b>{{when}}</b> du droit d'utiliser le <b>dépot mobilier</b>.
+</p><p>Cette attestation ist valable pour une durée de 6 mois.
+{% endif %}
+</p>
+
+{% if False %}
+<p>
+Oben genannte Person bezieht eine Sozialhilfe / wird vom ÖSHZ
+finanziell begleitet.
+</p>
+{% endif %}
+
+{%- endblock %}
