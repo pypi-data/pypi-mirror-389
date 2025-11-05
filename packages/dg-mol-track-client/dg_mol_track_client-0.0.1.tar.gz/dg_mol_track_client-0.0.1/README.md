@@ -1,0 +1,532 @@
+# dg-mol-track-client
+<!-- Start Summary [summary] -->
+## Summary
+
+MolTrack API: API for managing chemical compounds and batches
+<!-- End Summary [summary] -->
+
+<!-- Start Table of Contents [toc] -->
+## Table of Contents
+<!-- $toc-max-depth=2 -->
+* [dg-mol-track-client](#dg-mol-track-client)
+  * [SDK Installation](#sdk-installation)
+  * [IDE Support](#ide-support)
+  * [SDK Example Usage](#sdk-example-usage)
+  * [Available Resources and Operations](#available-resources-and-operations)
+  * [File uploads](#file-uploads)
+  * [Retries](#retries)
+  * [Error Handling](#error-handling)
+  * [Custom HTTP Client](#custom-http-client)
+  * [Resource Management](#resource-management)
+  * [Debugging](#debugging)
+* [Development](#development)
+  * [Maturity](#maturity)
+  * [Contributions](#contributions)
+
+<!-- End Table of Contents [toc] -->
+
+<!-- Start SDK Installation [installation] -->
+## SDK Installation
+
+> [!TIP]
+> To finish publishing your SDK to PyPI you must [run your first generation action](https://www.speakeasy.com/docs/github-setup#step-by-step-guide).
+
+
+> [!NOTE]
+> **Python version upgrade policy**
+>
+> Once a Python version reaches its [official end of life date](https://devguide.python.org/versions/), a 3-month grace period is provided for users to upgrade. Following this grace period, the minimum python version supported in the SDK will be updated.
+
+The SDK can be installed with *uv*, *pip*, or *poetry* package managers.
+
+### uv
+
+*uv* is a fast Python package installer and resolver, designed as a drop-in replacement for pip and pip-tools. It's recommended for its speed and modern Python tooling capabilities.
+
+```bash
+uv add git+<UNSET>.git
+```
+
+### PIP
+
+*PIP* is the default package installer for Python, enabling easy installation and management of packages from PyPI via the command line.
+
+```bash
+pip install git+<UNSET>.git
+```
+
+### Poetry
+
+*Poetry* is a modern tool that simplifies dependency management and package publishing by using a single `pyproject.toml` file to handle project metadata and dependencies.
+
+```bash
+poetry add git+<UNSET>.git
+```
+
+### Shell and script usage with `uv`
+
+You can use this SDK in a Python shell with [uv](https://docs.astral.sh/uv/) and the `uvx` command that comes with it like so:
+
+```shell
+uvx --from dg-mol-track-client python
+```
+
+It's also possible to write a standalone Python script without needing to set up a whole project like so:
+
+```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "dg-mol-track-client",
+# ]
+# ///
+
+from dg_mol_track_client import MolTrackClient
+
+sdk = MolTrackClient(
+  # SDK arguments
+)
+
+# Rest of script here...
+```
+
+Once that is saved to a file, you can run it with `uv run script.py` where
+`script.py` can be replaced with the actual file name.
+<!-- End SDK Installation [installation] -->
+
+<!-- Start IDE Support [idesupport] -->
+## IDE Support
+
+### PyCharm
+
+Generally, the SDK will work well with most IDEs out of the box. However, when using PyCharm, you can enjoy much better integration with Pydantic by installing an additional plugin.
+
+- [PyCharm Pydantic Plugin](https://docs.pydantic.dev/latest/integrations/pycharm/)
+<!-- End IDE Support [idesupport] -->
+
+<!-- Start SDK Example Usage [usage] -->
+## SDK Example Usage
+
+### Example
+
+```python
+# Synchronous Example
+from dg_mol_track_client import MolTrackClient
+
+
+with MolTrackClient(
+    server_url="https://api.example.com",
+) as mol_track_client:
+
+    res = mol_track_client.auto_map_columns.create(entity_type="ASSAY_RUN", columns=[
+        "<value 1>",
+    ])
+
+    # Handle response
+    print(res)
+```
+
+</br>
+
+The same SDK client can also be used to make asynchronous requests by importing asyncio.
+
+```python
+# Asynchronous Example
+import asyncio
+from dg_mol_track_client import MolTrackClient
+
+async def main():
+
+    async with MolTrackClient(
+        server_url="https://api.example.com",
+    ) as mol_track_client:
+
+        res = await mol_track_client.auto_map_columns.create_async(entity_type="ASSAY_RUN", columns=[
+            "<value 1>",
+        ])
+
+        # Handle response
+        print(res)
+
+asyncio.run(main())
+```
+<!-- End SDK Example Usage [usage] -->
+
+<!-- Start Available Resources and Operations [operations] -->
+## Available Resources and Operations
+
+<details open>
+<summary>Available methods</summary>
+
+### [additions](docs/sdks/additions/README.md)
+
+* [get](docs/sdks/additions/README.md#get) - Read Additions V1
+* [create](docs/sdks/additions/README.md#create) - Create Additions
+* [get_salts](docs/sdks/additions/README.md#get_salts) - Read Additions Salts V1
+* [get_solvates](docs/sdks/additions/README.md#get_solvates) - Read Additions Solvates V1
+* [fetch_specific](docs/sdks/additions/README.md#fetch_specific) - Read Addition V1
+* [update](docs/sdks/additions/README.md#update) - Update Addition V1
+* [delete](docs/sdks/additions/README.md#delete) - Delete Addition
+
+### [admin](docs/sdks/admin/README.md)
+
+* [update_standardization_config](docs/sdks/admin/README.md#update_standardization_config) - Update Standardization Config
+
+#### [admin.settings](docs/sdks/settings/README.md)
+
+* [update](docs/sdks/settings/README.md#update) - Update Settings
+
+### [assay_results](docs/sdks/assayresults/README.md)
+
+* [get](docs/sdks/assayresults/README.md#get) - Get Assay Results
+* [create](docs/sdks/assayresults/README.md#create) - Create Assay Results
+* [search](docs/sdks/assayresults/README.md#search) - Search Assay Results Advanced
+
+### [assay_runs](docs/sdks/assayruns/README.md)
+
+* [get](docs/sdks/assayruns/README.md#get) - Get Assay Runs
+* [create](docs/sdks/assayruns/README.md#create) - Create Assay Runs
+* [get_by_id](docs/sdks/assayruns/README.md#get_by_id) - Get Assay Run By Id
+
+### [assays](docs/sdks/assays/README.md)
+
+* [create](docs/sdks/assays/README.md#create) - Create Assays
+* [get](docs/sdks/assays/README.md#get) - Get Assays
+* [get_by_id](docs/sdks/assays/README.md#get_by_id) - Get Assay By Id
+
+### [auto_map_columns](docs/sdks/automapcolumns/README.md)
+
+* [create](docs/sdks/automapcolumns/README.md#create) - Auto Map Columns
+
+### [batches](docs/sdks/batches/README.md)
+
+* [get](docs/sdks/batches/README.md#get) - Get Batches
+* [register](docs/sdks/batches/README.md#register) - Register Batches
+* [get_by_any_synonym](docs/sdks/batches/README.md#get_by_any_synonym) - Get Batch By Any Synonym
+* [get_properties](docs/sdks/batches/README.md#get_properties) - Get Batch Properties
+* [get_synonyms](docs/sdks/batches/README.md#get_synonyms) - Get Batch Synonyms
+* [get_additions](docs/sdks/batches/README.md#get_additions) - Get Batch Additions
+* [delete_by_synonym](docs/sdks/batches/README.md#delete_by_synonym) - Delete Batch By Any Synonym
+
+### [compounds](docs/sdks/compounds/README.md)
+
+* [schema_get_synonyms](docs/sdks/compounds/README.md#schema_get_synonyms) - Get Schema Compound Synonyms
+* [get](docs/sdks/compounds/README.md#get) - Get Compounds
+* [register](docs/sdks/compounds/README.md#register) - Register Compounds
+* [get_by_synonym](docs/sdks/compounds/README.md#get_by_synonym) - Get Compound By Any Synonym
+* [get_synonyms](docs/sdks/compounds/README.md#get_synonyms) - Get Compound Synonyms
+* [get_properties](docs/sdks/compounds/README.md#get_properties) - Get Compound Properties
+* [update_by_id](docs/sdks/compounds/README.md#update_by_id) - Update Compound By Id
+* [delete_by_id](docs/sdks/compounds/README.md#delete_by_id) - Delete Compound By Id
+* [search_advanced](docs/sdks/compounds/README.md#search_advanced) - Search Compounds Advanced
+
+### [schema_](docs/sdks/schema/README.md)
+
+* [get](docs/sdks/schema/README.md#get) - Get Schema
+* [preload](docs/sdks/schema/README.md#preload) - Preload Schema
+* [get_direct](docs/sdks/schema/README.md#get_direct) - Get Schema Direct
+* [get_compounds](docs/sdks/schema/README.md#get_compounds) - Get Schema Compounds
+* [get_batches](docs/sdks/schema/README.md#get_batches) - Get Schema Batches
+
+### [schema_batches](docs/sdks/schemabatches/README.md)
+
+* [get_synonyms](docs/sdks/schemabatches/README.md#get_synonyms) - Get Schema Batch Synonyms
+
+### [search](docs/sdks/search/README.md)
+
+* [create_filter](docs/sdks/search/README.md#create_filter) - Generate Search Filter
+
+#### [search.assay_runs](docs/sdks/searchassayruns/README.md)
+
+* [advanced](docs/sdks/searchassayruns/README.md#advanced) - Search Assay Runs Advanced
+
+#### [search.assays](docs/sdks/searchassays/README.md)
+
+* [advanced](docs/sdks/searchassays/README.md#advanced) - Search Assays Advanced
+
+#### [search.batches](docs/sdks/searchbatches/README.md)
+
+* [advanced](docs/sdks/searchbatches/README.md#advanced) - Search Batches Advanced
+
+### [users](docs/sdks/users/README.md)
+
+* [get](docs/sdks/users/README.md#get) - Get Users
+
+### [validators](docs/sdks/validators/README.md)
+
+* [get](docs/sdks/validators/README.md#get) - Get Validators
+* [register](docs/sdks/validators/README.md#register) - Register Validators
+* [delete_by_name](docs/sdks/validators/README.md#delete_by_name) - Delete Validator By Name
+
+</details>
+<!-- End Available Resources and Operations [operations] -->
+
+<!-- Start File uploads [file-upload] -->
+## File uploads
+
+Certain SDK methods accept file objects as part of a request body or multi-part request. It is possible and typically recommended to upload files as a stream rather than reading the entire contents into memory. This avoids excessive memory consumption and potentially crashing with out-of-memory errors when working with very large files. The following example demonstrates how to attach a file stream to a request.
+
+> [!TIP]
+>
+> For endpoints that handle file uploads bytes arrays can also be used. However, using streams is recommended for large files.
+>
+
+```python
+from dg_mol_track_client import MolTrackClient
+
+
+with MolTrackClient(
+    server_url="https://api.example.com",
+) as mol_track_client:
+
+    res = mol_track_client.compounds.register(file={
+        "file_name": "example.file",
+        "content": open("example.file", "rb"),
+    })
+
+    # Handle response
+    print(res)
+
+```
+<!-- End File uploads [file-upload] -->
+
+<!-- Start Retries [retries] -->
+## Retries
+
+Some of the endpoints in this SDK support retries. If you use the SDK without any configuration, it will fall back to the default retry strategy provided by the API. However, the default retry strategy can be overridden on a per-operation basis, or across the entire SDK.
+
+To change the default retry strategy for a single API call, simply provide a `RetryConfig` object to the call:
+```python
+from dg_mol_track_client import MolTrackClient
+from dg_mol_track_client.utils import BackoffStrategy, RetryConfig
+
+
+with MolTrackClient(
+    server_url="https://api.example.com",
+) as mol_track_client:
+
+    res = mol_track_client.auto_map_columns.create(entity_type="ASSAY_RUN", columns=[
+        "<value 1>",
+    ],
+        RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False))
+
+    # Handle response
+    print(res)
+
+```
+
+If you'd like to override the default retry strategy for all operations that support retries, you can use the `retry_config` optional parameter when initializing the SDK:
+```python
+from dg_mol_track_client import MolTrackClient
+from dg_mol_track_client.utils import BackoffStrategy, RetryConfig
+
+
+with MolTrackClient(
+    server_url="https://api.example.com",
+    retry_config=RetryConfig("backoff", BackoffStrategy(1, 50, 1.1, 100), False),
+) as mol_track_client:
+
+    res = mol_track_client.auto_map_columns.create(entity_type="ASSAY_RUN", columns=[
+        "<value 1>",
+    ])
+
+    # Handle response
+    print(res)
+
+```
+<!-- End Retries [retries] -->
+
+<!-- Start Error Handling [errors] -->
+## Error Handling
+
+[`MolTrackClientError`](./src/dg_mol_track_client/errors/moltrackclienterror.py) is the base class for all HTTP error responses. It has the following properties:
+
+| Property           | Type             | Description                                                                             |
+| ------------------ | ---------------- | --------------------------------------------------------------------------------------- |
+| `err.message`      | `str`            | Error message                                                                           |
+| `err.status_code`  | `int`            | HTTP response status code eg `404`                                                      |
+| `err.headers`      | `httpx.Headers`  | HTTP response headers                                                                   |
+| `err.body`         | `str`            | HTTP body. Can be empty string if no body is returned.                                  |
+| `err.raw_response` | `httpx.Response` | Raw HTTP response                                                                       |
+| `err.data`         |                  | Optional. Some errors may contain structured data. [See Error Classes](#error-classes). |
+
+### Example
+```python
+from dg_mol_track_client import MolTrackClient, errors
+
+
+with MolTrackClient(
+    server_url="https://api.example.com",
+) as mol_track_client:
+    res = None
+    try:
+
+        res = mol_track_client.auto_map_columns.create(entity_type="ASSAY_RUN", columns=[
+            "<value 1>",
+        ])
+
+        # Handle response
+        print(res)
+
+
+    except errors.MolTrackClientError as e:
+        # The base class for HTTP error responses
+        print(e.message)
+        print(e.status_code)
+        print(e.body)
+        print(e.headers)
+        print(e.raw_response)
+
+        # Depending on the method different errors may be thrown
+        if isinstance(e, errors.HTTPValidationError):
+            print(e.data.detail)  # Optional[List[models.ValidationError]]
+```
+
+### Error Classes
+**Primary errors:**
+* [`MolTrackClientError`](./src/dg_mol_track_client/errors/moltrackclienterror.py): The base class for HTTP error responses.
+  * [`HTTPValidationError`](./src/dg_mol_track_client/errors/httpvalidationerror.py): Validation Error. Status code `422`. *
+
+<details><summary>Less common errors (5)</summary>
+
+<br />
+
+**Network errors:**
+* [`httpx.RequestError`](https://www.python-httpx.org/exceptions/#httpx.RequestError): Base class for request errors.
+    * [`httpx.ConnectError`](https://www.python-httpx.org/exceptions/#httpx.ConnectError): HTTP client was unable to make a request to a server.
+    * [`httpx.TimeoutException`](https://www.python-httpx.org/exceptions/#httpx.TimeoutException): HTTP request timed out.
+
+
+**Inherit from [`MolTrackClientError`](./src/dg_mol_track_client/errors/moltrackclienterror.py)**:
+* [`ResponseValidationError`](./src/dg_mol_track_client/errors/responsevalidationerror.py): Type mismatch between the response data and the expected Pydantic model. Provides access to the Pydantic validation error via the `cause` attribute.
+
+</details>
+
+\* Check [the method documentation](#available-resources-and-operations) to see if the error is applicable.
+<!-- End Error Handling [errors] -->
+
+<!-- Start Custom HTTP Client [http-client] -->
+## Custom HTTP Client
+
+The Python SDK makes API calls using the [httpx](https://www.python-httpx.org/) HTTP library.  In order to provide a convenient way to configure timeouts, cookies, proxies, custom headers, and other low-level configuration, you can initialize the SDK client with your own HTTP client instance.
+Depending on whether you are using the sync or async version of the SDK, you can pass an instance of `HttpClient` or `AsyncHttpClient` respectively, which are Protocol's ensuring that the client has the necessary methods to make API calls.
+This allows you to wrap the client with your own custom logic, such as adding custom headers, logging, or error handling, or you can just pass an instance of `httpx.Client` or `httpx.AsyncClient` directly.
+
+For example, you could specify a header for every request that this sdk makes as follows:
+```python
+from dg_mol_track_client import MolTrackClient
+import httpx
+
+http_client = httpx.Client(headers={"x-custom-header": "someValue"})
+s = MolTrackClient(client=http_client)
+```
+
+or you could wrap the client with your own custom logic:
+```python
+from dg_mol_track_client import MolTrackClient
+from dg_mol_track_client.httpclient import AsyncHttpClient
+import httpx
+
+class CustomClient(AsyncHttpClient):
+    client: AsyncHttpClient
+
+    def __init__(self, client: AsyncHttpClient):
+        self.client = client
+
+    async def send(
+        self,
+        request: httpx.Request,
+        *,
+        stream: bool = False,
+        auth: Union[
+            httpx._types.AuthTypes, httpx._client.UseClientDefault, None
+        ] = httpx.USE_CLIENT_DEFAULT,
+        follow_redirects: Union[
+            bool, httpx._client.UseClientDefault
+        ] = httpx.USE_CLIENT_DEFAULT,
+    ) -> httpx.Response:
+        request.headers["Client-Level-Header"] = "added by client"
+
+        return await self.client.send(
+            request, stream=stream, auth=auth, follow_redirects=follow_redirects
+        )
+
+    def build_request(
+        self,
+        method: str,
+        url: httpx._types.URLTypes,
+        *,
+        content: Optional[httpx._types.RequestContent] = None,
+        data: Optional[httpx._types.RequestData] = None,
+        files: Optional[httpx._types.RequestFiles] = None,
+        json: Optional[Any] = None,
+        params: Optional[httpx._types.QueryParamTypes] = None,
+        headers: Optional[httpx._types.HeaderTypes] = None,
+        cookies: Optional[httpx._types.CookieTypes] = None,
+        timeout: Union[
+            httpx._types.TimeoutTypes, httpx._client.UseClientDefault
+        ] = httpx.USE_CLIENT_DEFAULT,
+        extensions: Optional[httpx._types.RequestExtensions] = None,
+    ) -> httpx.Request:
+        return self.client.build_request(
+            method,
+            url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+s = MolTrackClient(async_client=CustomClient(httpx.AsyncClient()))
+```
+<!-- End Custom HTTP Client [http-client] -->
+
+<!-- Start Resource Management [resource-management] -->
+## Resource Management
+
+The `MolTrackClient` class implements the context manager protocol and registers a finalizer function to close the underlying sync and async HTTPX clients it uses under the hood. This will close HTTP connections, release memory and free up other resources held by the SDK. In short-lived Python programs and notebooks that make a few SDK method calls, resource management may not be a concern. However, in longer-lived programs, it is beneficial to create a single SDK instance via a [context manager][context-manager] and reuse it across the application.
+
+[context-manager]: https://docs.python.org/3/reference/datamodel.html#context-managers
+
+```python
+from dg_mol_track_client import MolTrackClient
+def main():
+
+    with MolTrackClient(
+        server_url="https://api.example.com",
+    ) as mol_track_client:
+        # Rest of application here...
+
+
+# Or when using async:
+async def amain():
+
+    async with MolTrackClient(
+        server_url="https://api.example.com",
+    ) as mol_track_client:
+        # Rest of application here...
+```
+<!-- End Resource Management [resource-management] -->
+
+<!-- Start Debugging [debug] -->
+## Debugging
+
+You can setup your SDK to emit debug logs for SDK requests and responses.
+
+You can pass your own logger class directly into your SDK.
+```python
+from dg_mol_track_client import MolTrackClient
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+s = MolTrackClient(server_url="https://example.com", debug_logger=logging.getLogger("dg_mol_track_client"))
+```
+
+You can also enable a default debug logger by setting an environment variable `MOLTRACKCLIENT_DEBUG` to true.
+<!-- End Debugging [debug] -->
