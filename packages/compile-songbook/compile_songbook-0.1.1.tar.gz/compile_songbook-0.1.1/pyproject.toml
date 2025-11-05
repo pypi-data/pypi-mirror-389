@@ -1,0 +1,42 @@
+[project]
+name = "compile-songbook"
+version = "0.1.1"
+license = "AGPL-3.0-or-later"
+description = "Tool for compiling text files containing lyrics into a single PDF."
+readme = "README.md"
+authors = [
+    { name = "Ilya Simpson", email = "elliot@p-s.co.nz" }
+]
+requires-python = ">=3.13"
+keywords = ["groff", "songs"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: POSIX",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Artistic Software",
+    "Topic :: Printing",
+    "Topic :: Text Processing :: Markup",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Source = "https://github.com/clockback/songbook"
+Issues = "https://github.com/clockback/songbook/issues"
+
+[project.scripts]
+compile-songbook = "compile_songbook.main:main"
+
+[build-system]
+requires = ["uv_build>=0.8.2,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.2",
+    "ty>=0.0.1a24",
+]
