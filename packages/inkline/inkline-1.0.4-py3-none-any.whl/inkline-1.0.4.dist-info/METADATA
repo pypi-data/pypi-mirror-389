@@ -1,0 +1,77 @@
+Metadata-Version: 2.4
+Name: inkline
+Version: 1.0.4
+Summary: Advanced ASCII Art rendering library with color support
+Author-email: CELESTIFYX Team <celestifyx@gmail.com>
+License-Expression: GPL-3.0-or-later
+Project-URL: Homepage, https://gitlab.com/inkline/inkline-py
+Project-URL: Repository, https://gitlab.com/inkline/inkline-py
+Project-URL: Issues, https://gitlab.com/inkline/inkline-py/-/issues
+Keywords: ascii,art,terminal,colors,ansi,rendering
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Multimedia :: Graphics
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: chromakitx>=1.0.4
+
+# inkline-py
+
+### Overview
+Display colorized ASCII art and info directly in the terminal.
+
+### How to use
+
+To use this <a href="https://pypi.org/project/inkline">pypi</a>, add it as a dependency in your `pyproject.toml`:
+
+```toml
+dependencies = [
+    "chromakitx>=1.0.4",
+    "inkline>=1.0.3"
+]
+```
+
+### Example code:
+```python
+from inkline import (AsciiArt, InfoConfig)
+
+from chromakitx import AnsiColor
+
+logo: str = """
+{2}            .:--::////::--.`
+{1}        `/yNMMNho{2}////////////:.
+{1}      `+NMMMMMMMMmy{2}/////////////:`
+{0}    `-:::{1}ohNMMMMMMMNy{2}/////////////:`
+{0}   .::::::::{1}odMMMMMMMNy{2}/////////////-
+{0}  -:::::::::::{1}/hMMMMMMMmo{2}////////////-
+{0} .::::::::::::::{1}oMMMMMMMMh{2}////////////-
+{0}`:::::::::::::{1}/dMMMMMMMMMMNo{2}///////////`
+{0}-::::::::::::{1}sMMMMMMmMMMMMMMy{2}//////////-
+{0}-::::::::::{1}/dMMMMMMs{0}:{1}+NMMMMMMd{2}/////////:
+{0}-:::::::::{1}+NMMMMMm/{0}:::{1}/dMMMMMMm+{2}///////:
+{0}-::::::::{1}sMMMMMMh{0}:::::::{1}dMMMMMMm+{2}//////-
+{0}`:::::::{1}sMMMMMMy{0}:::::::::{1}dMMMMMMm+{2}/////`
+{0} .:::::{1}sMMMMMMs{0}:::::::::::{1}mMMMMMMd{2}////-
+{0}  -:::{1}sMMMMMMy{0}::::::::::::{1}/NMMMMMMh{2}//-
+{0}   .:{1}+MMMMMMd{0}::::::::::::::{1}oMMMMMMMo{2}-
+{1}    `yMMMMMN/{0}:::::::::::::::{1}hMMMMMh.
+{1}      -yMMMo{0}::::::::::::::::{1}/MMMy-
+{1}        `/s{0}::::::::::::::::::{1}o/`
+{0}            ``.---::::---..`
+"""
+
+art: AsciiArt = AsciiArt(text=logo, colors=[
+    AnsiColor.BrightCyan,
+    AnsiColor.BrightBlue,
+    AnsiColor.BrightMagenta
+], bold=True, info=InfoConfig(
+    lines=["Hello World!", "This is Inkline.", "Made with ❤️ in Python.", "Developer: CELESTIFYX Team"]
+))
+
+print(art.render())
+```
+
+### Result
+![screenshot](https://gitlab.com/inkline/inkline-py/-/raw/main/preview.png)
