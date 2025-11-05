@@ -1,0 +1,44 @@
+Metadata-Version: 2.4
+Name: valve_gfx_ci.executor.server
+Version: 0.0.3
+Summary: Valve GFX CI's executor
+Home-page: https://gitlab.freedesktop.org/gfx-ci/ci-tron/-/tree/main/executor/server
+Author: Martin Roukala
+Author-email: martin.roukala@mupuf.org
+Project-URL: Bug Tracker, https://gitlab.freedesktop.org/gfx-ci/ci-tron/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests<3,>=2
+Requires-Dist: easysnmp==0.2.5
+Requires-Dist: Flask<3,>=2.2
+Requires-Dist: pydantic<3,>=2
+Requires-Dist: python-dateutil<3,>=2.8
+Requires-Dist: PyYAML<7,>=6
+Requires-Dist: minio<7.1,>=7.0
+Requires-Dist: inotify-simple==1.3.5
+Requires-Dist: Jinja2==3.0.3
+Requires-Dist: deepdiff<8,>=7
+Requires-Dist: psutil<6,>=5.9
+Requires-Dist: waitress<3,>=2.1.2
+Requires-Dist: requests-unixsocket2<1,>=0.4
+Requires-Dist: urllib3<2
+Requires-Dist: pyusb<2,>=1.2
+Requires-Dist: python-libarchive
+Dynamic: license-file
+
+# CI-tron executor
+
+The CI-tron executor is the service that coordinates different services to
+enable time-sharing test machines, AKA devices under test (DUTs).
+
+This service can be interacted with using
+[executorctl](https://gitlab.freedesktop.org/gfx-ci/ci-tron/-/blob/main/executor/client/),
+our client, and/or our
+[REST API](https://gfx-ci.pages.freedesktop.org/ci-tron/docs/executor.html#id1).
+
+Take a look to our full documentation at
+[https://gfx-ci.pages.freedesktop.org/ci-tron/](https://gfx-ci.pages.freedesktop.org/ci-tron/)

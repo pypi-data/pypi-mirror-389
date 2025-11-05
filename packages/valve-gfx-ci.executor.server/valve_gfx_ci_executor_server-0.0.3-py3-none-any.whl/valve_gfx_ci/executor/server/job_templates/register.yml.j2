@@ -1,0 +1,36 @@
+version: 1
+
+# Rules to match for a machine to qualify
+target:
+  id: '{{ machine_id }}'
+
+timeouts:
+  overall:           # Maximum time the job can take, not overrideable by the "continue" deployment
+    minutes: 5
+    retries: 0
+    # no retries possible here
+
+console_patterns:
+    session_end:
+        regex: "^MaRS: Registration .*$"
+    job_success:
+        regex: "^MaRS: Registration complete$"
+
+# Environment to deploy
+deployment:
+  # Initial boot
+  start:
+    storage:
+        http:
+          - path: "/b2c-extra-args"
+            data: >
+              b2c.pipefail b2c.poweroff_delay=15
+              b2c.run="-ti --tls-verify=false docker://{{ registry.to_local_proxy('registry.freedesktop.org/gfx-ci/ci-tron/machine-registration:latest') }} register"
+    kernel:
+      cmdline:
+        # NOTE: b2c.cache_device should not be here, but this works around
+        # a limitation of b2c which will be removed in the next release
+        - b2c.ntp_peer="ci-gateway" b2c.cache_device=auto
+        - b2c.extra_args_url={{ job.http.url }}/b2c-extra-args
+        - loglevel=6 nomodeset
+        - console=tty0 console=ttynull # Use the dummy console if possible, but default to a FB-based one if missing

@@ -1,0 +1,78 @@
+#!/bin/sh
+# -*- mode: shell-script -*-
+
+# Limit which Gitlab users / namespaces are allowed to submit jobs on
+# our runners.
+
+set -eu
+
+any_acl=false
+
+{%- for acl in acls if acl is not none %}
+{%- for user in acl.deny.users %}
+if [ "$GITLAB_USER_LOGIN" = "{{ user }}" ]
+then
+  echo "Access refused to user $GITLAB_USER_LOGIN"
+  exit 1
+fi
+any_acl=true
+{%- endfor %}
+
+{%- for project in acl.deny.projects %}
+if [ "$CI_PROJECT_NAMESPACE" = "{{ project }}" ]
+then
+  echo "Access refused to project $CI_PROJECT_NAMESPACE"
+  exit 1
+fi
+any_acl=true
+{%- endfor %}
+
+{%- for group in acl.deny.projects_in_groups %}
+case "$CI_PROJECT_NAMESPACE" in
+  "{{ group }}"/*)
+  echo "Access refused to project $CI_PROJECT_NAMESPACE"
+  exit 1
+  ;;
+esac
+any_acl=true
+{%- endfor %}
+
+{%- for user in acl.allow.users %}
+if [ "$GITLAB_USER_LOGIN" = "{{ user }}" ]
+then
+  echo "Access granted to user $GITLAB_USER_LOGIN"
+  exit 0
+fi
+any_acl=true
+{%- endfor %}
+
+{%- for project in acl.allow.projects %}
+if [ "$CI_PROJECT_NAMESPACE" = "{{ project }}" ]
+then
+  echo "Access granted to project $CI_PROJECT_NAMESPACE"
+  exit 0
+fi
+any_acl=true
+{%- endfor %}
+
+{%- for group in acl.allow.projects_in_groups %}
+case "$CI_PROJECT_NAMESPACE" in
+  "{{ group }}"/*)
+  echo "Access granted to project $CI_PROJECT_NAMESPACE"
+  exit 0
+  ;;
+esac
+any_acl=true
+{%- endfor %}
+{%- endfor %}
+
+if $any_acl
+then
+  echo "Access denied"
+  echo "The machines exposed by this runner are only allowed to be used by specific projects and/or users"
+  echo "Please contact the farm admin(s) if you want access to this service"
+  exit 1
+else
+  echo "Access granted to everyone (no access control defined)"
+  exit 0
+fi

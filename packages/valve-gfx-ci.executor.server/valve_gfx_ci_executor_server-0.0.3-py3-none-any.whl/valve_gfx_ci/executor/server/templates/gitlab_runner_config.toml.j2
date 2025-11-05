@@ -1,0 +1,35 @@
+check_interval = 0
+concurrent = 128
+#listen_address = "0.0.0.0:9252"
+
+# Gateway runners
+{% for gl_name, gl in mars_db.gitlab.items() if gl.should_expose_gateway_runner %}
+[[runners]]
+name = "{{config.FARM_NAME}}-gateway"
+{% set limit = cpu_count / 8 | int %}
+limit = {{[1, limit] | max | int}}
+url = "{{gl.url}}"
+token = "{{gl.gateway_runner.token}}"
+executor = "docker"
+environment = [{% for k, v in config.job_environment_vars().items() %}
+    "{{k}}={{v}}",{% endfor %}
+]
+pre_build_script = "/access_control"
+cache_dir = "/cache"
+[runners.docker]
+tls_verify = false
+privileged = true
+disable_entrypoint_overwrite = false
+oom_kill_disable = false
+disable_cache = false
+volumes = [ "/usr/local/bin/gitlab-runner-access-control/instance-{{ gl_name }}-gateway.sh:/access_control", "gateway-runner-cache:/cache" ]
+shm_size = 0
+cpus = "{{cpu_count}}"  # Gateway runner CPU allocation
+{% set memory = [ram_total_MB / 2, ram_total_MB - 4096] | max | int %}
+memory = "{{memory}} MB" # Gateway runner memory allocation
+memory_swap = "{{(memory * 1.2) | int}} MB" # Gateway runner memory hard limit
+memory_reservation = "{{(memory / 2) | int}} MB" # Gateway runner memory soft limit
+{% endfor %}
+
+[session_server]
+session_timeout = 1800

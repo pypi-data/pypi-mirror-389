@@ -1,0 +1,53 @@
+version: 1
+
+# Rules to match for a machine to qualify
+target:
+  id: machine_id
+
+timeouts:
+  first_console_activity:  # This limits the time it can take to receive the first console log
+    minutes: 1
+    retries: 1
+  console_activity:  # Reset every time we receive a message from the logs
+    minutes: 5
+    retries: 999
+  boot_cycle:
+    hours: 12
+    retries: 999
+  overall:           # Maximum time the job can take, not overrideable by the "continue" deployment
+    hours: 12
+    retries: 0
+    # no retries possible here
+
+console_patterns:
+    session_reboot:
+        regex: "^.*(Test exited with IGT_EXIT_ABORT, aborting|Killing the test because the kernel is tainted|Aborting: Kernel badly tainted).*$"
+    session_end:
+        regex: "^.*It's now safe to turn off your computer\r$"
+    job_success:
+        regex: "^.*Execution is over, pipeline status: 0\r$"
+
+# Environment to deploy
+deployment:
+  # Initial boot
+  start:
+    kernel:
+      cmdline:
+        categories:
+          common:
+            - console={{ local_tty_device }},115200 earlyprintk=vga,keep SALAD.machine_id={{ machine_id }}
+            - b2c.minio="minio,{{ minio_url }},{{ job_bucket_access_key }},{{ job_bucket_secret_key }}"
+            - b2c.volume="{{ job_bucket }},mirror=minio/{{ job_bucket }},push_on=changes"
+            - b2c.service="--tls-verify=false --pid=host docker://{{ registry.to_local_proxy('registry.freedesktop.org/gfx-ci/ci-tron/telegraf:latest') }}" b2c.hostname={{ dut.hostname }}
+            - b2c.run="-ti --tls-verify=false docker://{{ registry.to_local_proxy('registry.freedesktop.org/gfx-ci/ci-tron/machine-registration:latest') }} check"
+            - b2c.ntp_peer="10.42.0.1" b2c.pipefail b2c.cache_device=auto b2c.poweroff_delay=15
+            - loglevel=6
+        uncategorised:
+          - b2c.run="-t -v {{ job_bucket }}:/results --tls-verify=false docker://{{ registry.to_local_proxy('registry.freedesktop.org/drm/igt-gpu-tools/igt:master') }} igt_runner -x i915 -x intel -x gem -x v3d -x vc4 -x vmwgfx -x vkms -x msm -x xe_ --abort-on-monitored-error=lockdep,taint --sync --use-watchdog -o /results"
+
+  # Any subsequent boot, specify only what changes from the initial boot
+  continue:
+    kernel:
+      cmdline:
+        - b2c.run="-t -v {{ job_bucket }}:/results --tls-verify=false docker://{{ registry.to_local_proxy('registry.freedesktop.org/drm/igt-gpu-tools/igt:master') }} igt_resume /results"
+

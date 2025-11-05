@@ -1,0 +1,370 @@
+#!jinja2
+#
+# This file defines how to boot the various computers supported by CI-tron.
+#
+# Its goal is to provide sane boot defaults that enables running the same
+# job on all the supported hardware, while also supporting jobs selectively
+# opting-out of the defaults to get a more complete control over their boot
+# configuration.
+#
+# To achieve this goal, we make use of the feature that enables splitting lists
+# into categories. Categories that are not referenced by a job will be
+# inherited automatically while uncategorized elements are evaluated first, so
+# as to reduce the risks of user confusion. With that in mind, here are the
+# rules on how to add support for new hardware:
+#
+# * Only use one of the following categories (no re-naming allowed):
+#
+#   * 50-platform: Anything necessary to boot the machine before reaching the
+#       bootloader stage, or firmware that is expected by the platform and is
+#       not otherwise part of the linux-firmware project, such as the signed
+#       and non-redistributable firwmare files found on Qualcomm hardware.
+#
+#   * 50-bootloader: Anything necessary to load the environment as specified by
+#       the `kernel`, `initramfs`, and `dtb` deployment options. Place in this
+#       category all the bootloader configuration files.
+#
+#   * 50-kernel-modules: Anything necessary to make the default kernel boot to
+#       a usable environment (ie. kernel modules, firmware, ...). Nothing from
+#       this category should be included by default by a job that overrides the
+#       default kernel.
+#
+# * Make the default deployment boot into a boot2container environment,
+#     and be overridable without needing to set a category. In other words,
+#     set the default boot2container initramfs in the `uncategorised` section.
+#
+
+{% macro b2c_url(goarch) -%}
+https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.17/downloads/initramfs.linux_{{ goarch | replace("386", "amd64") }}.cpio.xz
+{%- endmacro %}
+
+{% macro kernel_url(goarch) -%}
+https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.17/downloads/linux-{{ goarch | replace("386", "x86_64") | replace("amd64", "x86_64") }}
+{%- endmacro %}
+
+{% macro dtb_url(goarch) -%}
+https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.17/downloads/linux-{{ goarch | replace("386", "x86_64") | replace("amd64", "x86_64") }}.dtbs.cpio.xz
+{%- endmacro %}
+
+dhcp:
+  ipxe:
+    match:
+      user_class: iPXE
+      architecture:
+        - x86
+        - x86_64
+        - arm32
+        - arm64
+    defaults:
+      dhcp:
+        options:
+          bootfile: {{ job.http.url }}/boot/boot.ipxe
+          hostname: "{{ dut.hostname }}"
+      storage:
+        http:
+          50-bootloader:
+            - path: /boot/boot.ipxe
+              data: |
+                #!ipxe
+
+                set semicolon:hex 3b
+                set ampersand:hex 26
+                set pipe:hex 7C
+                set cmdline {% if dhcp_request.firmware.name == "UEFI" %}initrd=initrd{% endif %} {{ job.deployment.kernel.cmdline }}
+
+                echo
+                echo Downloading the kernel
+                echo <ipxe> kernel {{ job.http.path_to("kernel") }}
+                echo <ipxe> cmdline ${cmdline}
+                kernel {{ job.http.path_to("kernel") }} ${cmdline}
+
+                echo
+                echo Downloading the initrd
+                echo <ipxe> initrd --name initrd {{ job.http.path_to("initramfs") }}
+                initrd --name initrd {{ job.http.path_to("initramfs") }}
+
+                echo Booting!
+                boot
+
+      kernel:
+        url: "{{ kernel_url(dhcp_request.architecture.goarch) }}"
+      initramfs:
+        url: "{{ b2c_url(dhcp_request.architecture.goarch) }}"
+
+  uboot:
+    match:
+      firmware: uboot
+      architecture:
+        - x86_64
+        - arm32
+        - arm64
+        - riscv64
+    defaults: &uboot-defaults
+      storage:
+        tftp:
+          50-bootloader:
+            - path: &uboot_script_path /boot.scr.uimg
+              format:
+                uboot:
+                  architecture: {{ dhcp_request.architecture.value | default("unknown")}}
+                  compression: none
+                  os: linux
+                  type: script
+              data: |
+                echo Loading the kernel
+                setenv bootargs '{{ job.deployment.kernel.cmdline | replace('\n', ' ') }}'
+                tftpboot ${kernel_addr_r} {{ job.tftp.path_to("kernel") }}
+
+                # The best compression ratio I found was 5.2x (XZ with x86_64), so let's go with 8x
+                # NOTE: We use a PoT kernel_comp_size to align the subsequent artifact as much as possible
+                setexpr kernel_comp_addr_r ${kernel_addr_r} + ${filesize}
+                setexpr kernel_comp_size ${filesize} * 8
+                echo Loading the compressed kernel at ${kernel_comp_addr_r}:${kernel_comp_size}
+
+                {% if job.deployment.dtb %}
+                  setenv fdt_file {{ job.tftp.path_to("dtb") }}
+                {% endif %}
+
+                setexpr fdt_addr ${kernel_comp_addr_r} + ${kernel_comp_size}
+                echo Loading the fdt ${fdt_file} at ${fdt_addr}
+                if test -n "${fdt_file}" && tftpboot ${fdt_addr} ${fdt_file}
+                then
+                  setexpr ramdisk_addr_r ${fdt_addr}} + ${filesize}
+                else
+                  setenv ramdisk_addr_r ${fdt_addr}
+                  setenv fdt_addr ${fdtcontroladdr}
+                fi
+
+                echo Loading the ramdisk at ${ramdisk_addr_r}
+                tftpboot ${ramdisk_addr_r} {{ job.tftp.path_to("initramfs") }}
+                setenv ramdisk_size ${filesize}
+
+                echo Booting!
+                booti ${kernel_addr_r} ${ramdisk_addr_r}:${ramdisk_size} ${fdt_addr}
+                bootz ${kernel_addr_r} ${ramdisk_addr_r}:${ramdisk_size} ${fdt_addr}
+
+            - path: /pxelinux.cfg/.*
+              data: |
+                default ci-tron
+                label ci-tron
+                kernel {{ job.tftp.path_to("kernel") }}
+                append {{ job.deployment.kernel.cmdline }}
+                initrd {{ job.tftp.path_to("initramfs") }}
+                {% if job.deployment.dtb %}
+                  fdt {{ job.tftp.path_to("dtb") }}
+                {% endif %}
+
+          50-platform:
+            # Given that U-boot may potentially depend on the updated DTB
+            - path: /dtbs?/(.*)
+              url: "{{ dtb_url(dhcp_request.architecture.goarch) }}"
+              format:
+                archive:
+                  match: boot/dtbs/\1
+      dhcp:
+        options:
+          bootfile: *uboot_script_path
+          hostname: "{{ dut.hostname }}"
+      kernel:
+        url: "{{ kernel_url(dhcp_request.architecture.goarch) }}"
+      initramfs:
+        url: "{{ b2c_url(dhcp_request.architecture.goarch) }}"
+
+  raspberrypi_arm64_downstream:
+    match:
+      mac_address: &raspberrypi_mac_addrs
+        - b8:27:eb:.*
+        - 2c:cf:67:.*
+        - d8:3a:dd:.*
+        - dc:a6:32:.*
+        - e4:5f:01:.*
+      # NOTE: One can use the UUID field from the DHCP query to identify an RPi 4 and 5.
+      # Src: https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#DHCP_OPTION97
+      # uuid: "35695052-.*"
+    defaults:
+      storage:
+        tftp:
+          50-bootloader:
+            - path: /config.txt
+              data: |
+                [all]
+                arm_64bit=1
+                enable_uart=1
+                kernel={{ job.tftp.path_to("kernel") }}
+                initramfs {{ job.tftp.path_to("initramfs") }} followkernel
+
+                [pi5]
+                dtoverlay=vc4-kms-v3d-pi5
+                dtparam=pciex1_gen=3
+                dtoverlay=disable-bt
+                dtparam=uart0_console
+
+                [pi4]
+                dtoverlay=disable-bt
+                dtoverlay=vc4-kms-v3d-pi4
+
+                [pi3]
+                dtoverlay=disable-bt
+                dtoverlay=vc4-kms-v3d
+                # NOTE: File sizes should be limited to 32MB not to exceed the
+                # maximum TFTP transfer size using the default 512 bytes block size
+
+                [pi2]
+                dtoverlay=disable-bt
+                dtoverlay=vc4-kms-v3d
+                # NOTE: File sizes should be limited to 32MB not to exceed the
+                # maximum TFTP transfer size using the default 512 bytes block size
+
+            - path: /cmdline.txt
+              data: >-
+                modules_load=overlay,vc4,v3d,snd_soc_hdmi_codec,i2c-brcmstb,i2c-bcm2835,nbd {{ job.deployment.kernel.cmdline}}
+
+          50-platform:
+            # This allow serving all the binaries, DTBs, and DTB overlays required to boot the wanted kernel
+            - path: /(.*)
+              # NOTE: Zip files are more efficient for seek times
+              url: &rpi_firmware "https://github.com/raspberrypi/firmware/archive/b154632e320b87ea95c6ce8b59f96dbbe523ecf1.zip"
+              format:
+                archive:
+                  match: firmware-.*/boot/\1
+      dhcp:
+        options:
+          hostname: "{{ dut.hostname }}"
+
+          # Keep the spaces! Src: https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#dhcp-request-reply
+          43: "Raspberry Pi Boot   "
+      kernel:
+        url: *rpi_firmware
+        format:
+          archive:
+            match: firmware-.*/boot/kernel8.img
+      initramfs:
+        categories:
+          50-kernel-modules:
+            - url: *rpi_firmware
+              format:
+                archive:
+                  extension: "cpio"
+                  keep:
+                    - path: firmware-.*/(modules/.*-v8\+/(modules|kernel/(fs/overlayfs|sound|drivers/(video|gpu|media/cec/core|i2c/busses/i2c-.*|block/nbd.ko))).*)
+                      rewrite: usr/lib/\1
+        uncategorised:
+          - url: "{{ b2c_url('arm64') }}"
+
+  bios_chainload_ipxe:
+    match:
+      firmware: bios
+    defaults:
+      storage:
+        tftp:
+          50-bootloader:
+            - path: &bios_ipxe_path /boot/ipxe.kpxe
+              url: "https://downloads.gfx-ci.steamos.cloud/ipxe-dut-client/2024-01-30_20-41-29-mupuf-i386-undionly.kpxe"
+      dhcp:
+        options:
+          bootfile: *bios_ipxe_path
+          hostname: "{{ dut.hostname }}"
+
+  uefi_tftp_chainload_ipxe:
+    match:
+      firmware: uefi
+      protocol: tftp
+      architecture:
+        - x86_64
+        - arm32
+        - arm64
+    defaults:
+      storage:
+        tftp:
+          50-bootloader:
+            - path: &efi_ipxe_path /boot/ipxe.efi
+              url: "https://downloads.gfx-ci.steamos.cloud/ipxe-dut-client/2024-01-30_20-41-29-mupuf-{{ dhcp_request.architecture.ipxe_buildarch }}-snponly.efi"
+      dhcp:
+        options:
+          bootfile: *efi_ipxe_path
+          hostname: "{{ dut.hostname }}"
+
+  uefi_http_chainload_ipxe:
+    match:
+      firmware: uefi
+      protocol: http
+      architecture:
+        - x86_64
+        - arm32
+        - arm64
+    defaults:
+      storage:
+        http:
+          50-bootloader:
+            - path: /boot/ipxe.efi
+              url: "https://downloads.gfx-ci.steamos.cloud/ipxe-dut-client/2024-01-30_20-41-29-mupuf-{{ dhcp_request.architecture.ipxe_buildarch }}-snponly.efi"
+      dhcp:
+        options:
+          bootfile: {{ job.http.url }}/boot/ipxe.efi
+          hostname: "{{ dut.hostname }}"
+
+  # For platforms that are not supported by iPXE, let's assume that the bootloader
+  # is U-Boot and let it boot using the extlinux/pxelinux flow
+  uefi_tftp_using_uboot:
+    match:
+      firmware: uefi
+      protocol: tftp
+      architecture:
+        - riscv64
+    defaults: *uboot-defaults
+
+
+fastboot:
+  hdk_8550:
+    match:
+      variables:
+        product: kalama
+    defaults:
+      fastboot:
+        header_version: 4
+        os_version: 14.0.0
+        os_patch_level: 2023-10
+      kernel:
+        url: "{{ kernel_url("arm64") }}"
+        cmdline:
+          50-platform:
+            - pd_ignore_unused clk_ignore_unused
+            - nvme_core.default_ps_max_latency_us=0      # Disable NVME power management
+            - g_cdc.dev_addr={{ dut.mac_address }}
+            - g_cdc.host_addr={{ dut.mac_address.alternate }}
+            - androidboot.serialno={{ dut.id }}
+      initramfs:
+        categories:
+          50-platform:
+            - url: https://fs.mupuf.org/hdk8650/sm8550-hdk-firmware.cpio.xz
+        uncategorised:
+          - url: "{{ b2c_url("arm64") }}"
+      dtb:
+        url: "{{ dtb_url("arm64") }}"
+        format:
+          archive:
+            match: 'boot/dtbs/qcom/sm8550-hdk.dtb'
+  hdk_8650:
+    match:
+      variables:
+        product: pineapple
+    defaults:
+      kernel:
+        url: https://fs.mupuf.org/hdk8650/2025-08-22-msm-fixes-for-mesa-ci/linux-arm64
+        cmdline:
+          50-platform:
+            - pd_ignore_unused clk_ignore_unused
+            - nvme_core.default_ps_max_latency_us=0      # Disable NVME power management
+            - g_cdc.dev_addr={{ dut.mac_address }}
+            - g_cdc.host_addr={{ dut.mac_address.alternate }}
+      initramfs:
+        categories:
+          50-platform:
+            - url: https://fs.mupuf.org/hdk8650/sm8650-hdk-firmware.cpio.xz
+        uncategorised:
+          - url: "{{ b2c_url("arm64") }}"
+      dtb:
+        url: 'https://fs.mupuf.org/hdk8650/2025-08-22-msm-fixes-for-mesa-ci/linux-arm64.dtbs.cpio.xz'
+        format:
+          archive:
+            match: 'boot/dtbs/qcom/sm8650-hdk.dtb'
