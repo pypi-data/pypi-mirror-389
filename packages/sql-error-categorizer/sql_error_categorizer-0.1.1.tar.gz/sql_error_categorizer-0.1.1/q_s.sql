@@ -1,0 +1,1 @@
+SELECT * FROM t WHERE s ≠ 'completed';

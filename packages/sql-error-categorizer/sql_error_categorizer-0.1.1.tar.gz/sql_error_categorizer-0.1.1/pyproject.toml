@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sql_error_categorizer"
+version = "0.1.1"
+authors = [
+  { name="Davide Ponzini", email="davide.ponzini95@gmail.com" },
+]
+description = "This project analyses SQL statements and labels possible errors or complications."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "psycopg2",
+    "pyyaml",
+    "sqlparse",
+    "sqlglot",
+]
+
+[project.urls]
+"Repository" = "https://github.com/DavidePonzini/sql_error_categorizer"
+"Documentation" = "https://sql_error_categorizer.readthedocs.io/en/latest/index.html"
+"Bug Tracker" = "https://github.com/DavidePonzini/sql_error_categorizer/issues"
