@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vector-matrix-overloading"
+version = "0.1.0"
+description = "벡터와 행렬 연산을 위한 연산자 오버로딩 패키지"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Dongbin Shin", email = "dongbin369085@gmail.com"},
+]
+keywords = ["vector", "matrix", "linear-algebra", "operator-overloading", "mathematics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/yourusername/vector-matrix-overloading"
+Documentation = "https://github.com/yourusername/vector-matrix-overloading"
+Repository = "https://github.com/yourusername/vector-matrix-overloading"
+Issues = "https://github.com/yourusername/vector-matrix-overloading/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vector_matrix_overloading*"]
+
