@@ -1,0 +1,123 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genro-storage"
+version = "0.4.4"
+description = "Unified storage abstraction for Genropy framework"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Genropy Team", email = "info@genropy.org"}
+]
+keywords = ["storage", "filesystem", "s3", "cloud", "genropy"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Filesystems",
+]
+
+dependencies = [
+    "fsspec>=2023.1.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+s3 = [
+    "s3fs>=2023.1.0",
+]
+gcs = [
+    "gcsfs>=2023.1.0",
+]
+azure = [
+    "adlfs>=2023.1.0",
+]
+http = [
+    "aiohttp>=3.8.0",
+]
+smb = [
+    "smbprotocol>=1.10.0",
+]
+sftp = [
+    "paramiko>=3.0.0",
+]
+webdav = [
+    "webdav4>=0.9.0",
+]
+libarchive = [
+    "libarchive-c>=5.0",
+]
+async = [
+    "asyncer>=0.0.2",
+]
+all = [
+    "s3fs>=2023.1.0",
+    "gcsfs>=2023.1.0",
+    "adlfs>=2023.1.0",
+    "aiohttp>=3.8.0",
+    "smbprotocol>=1.10.0",
+    "paramiko>=3.0.0",
+    "webdav4>=0.9.0",
+    "libarchive-c>=5.0",
+    "asyncer>=0.0.2",
+]
+docs = [
+    "sphinx>=7.0",
+    "sphinx-rtd-theme>=2.0",
+    "sphinx-autodoc-typehints>=1.24",
+    "myst-parser>=2.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "boto3>=1.26.0",  # For MinIO/S3 testing
+    "asyncer>=0.0.2",  # For async wrapper testing
+]
+
+[project.urls]
+Homepage = "https://github.com/genropy/genro-storage"
+Documentation = "https://genro-storage.readthedocs.io"
+Repository = "https://github.com/genropy/genro-storage"
+"Bug Tracker" = "https://github.com/genropy/genro-storage/issues"
+
+[tool.setuptools]
+packages = ["genro_storage", "genro_storage.backends"]
+
+[tool.setuptools.package-data]
+genro_storage = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=genro_storage --cov-report=term-missing"
+markers = [
+    "integration: Integration tests that require external services (MinIO, SFTP, SMB, WebDAV, etc.)",
+    "unit: Fast unit tests with no external dependencies",
+]
