@@ -1,0 +1,74 @@
+Metadata-Version: 2.4
+Name: feinsum
+Version: 2025.3
+Summary: Fast(er?) Einsum
+Project-URL: Homepage, https://github.com/kaushikcfd/feinsum/
+Author-email: Kaushik Kulkarni <kaushikcfd@gmail.com>
+License: The MIT License (MIT)
+        
+        Copyright (c) 2022 Kaushik Kulkarni
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+License-File: LICENSE.txt
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Software Development :: Libraries
+Requires-Python: >=3.12
+Requires-Dist: bidict
+Requires-Dist: immutables
+Requires-Dist: islpy
+Requires-Dist: loopy
+Requires-Dist: more-itertools
+Requires-Dist: numpy>=1.20
+Requires-Dist: opentuner
+Requires-Dist: opt-einsum
+Requires-Dist: pybliss
+Requires-Dist: pyopencl
+Requires-Dist: pytools
+Requires-Dist: pytz
+Requires-Dist: tabulate
+Description-Content-Type: text/markdown
+
+## feinsum
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/kaushikcfd/feinsum/main/doc/static/logo.svg" alt="logo"></img>
+</div>
+
+![Continuous integration](https://github.com/kaushikcfd/feinsum/actions/workflows/ci.yml/badge.svg)
+![PyPI version](https://img.shields.io/pypi/v/feinsum)
+
+
+### What is feinsum?
+
+*Feinsum*, short for Fast-Einstein Summations, provides tools for managing
+databases of code-transformations on *Batched Einstein Summations*. Unlike
+typical computational primitive libraries that ship optimized computational
+kernel in source or binary form, *feinsum* records code-transformations from
+a trivial schedule, resulting in relative savings from not having to flush the
+operands to the DRAM.
+
+
+### Links
+- Install as [`pip install feinsum`](https://pypi.org/project/loopy).
+- Read the documentation at <https://feinsum.readthedocs.io>.
+- Source-code, Issue Management at <https://github.com/kaushikcfd/feinsum>.
