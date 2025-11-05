@@ -1,0 +1,36 @@
+[build-system]
+requires = ["flit_core >=3.9,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "scenaripy_api"
+version = "6.4.4"
+description = "Une API cliente pour les produits Scenari"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Kelis", email = "contact@kelis.fr"},
+]
+readme="README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: CeCILL-B Free Software License Agreement (CECILL-B)",
+    "License :: OSI Approved :: Mozilla Public License 1.1 (MPL 1.1)",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Content Management System",
+    "Topic :: Documentation"
+]
+[project.urls]
+Homepage= "https://scenari.software"
+Documentation= "https://doc.scenari.software/SCENARIbuilder/apipython"
+Source= "https://source.scenari.software/git/dev-core"
