@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: brandintel
+Version: 0.1.2
+Summary: Identify brand competitors and summaries using Gemini AI.
+Author: Vivek Gupta
+Author-email: vivekgupta1525@gmail.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: google-generativeai
+Dynamic: license-file
+
+
+# brandintel
+
+**BrandIntel** helps you identify competitor brands and get brand summaries using Google Gemini AI.
+
+## Installation
+```bash
+pip install brandintel
+```
+
+## Usage
+```bash
+import brandintel
+
+summary = brandintel.get_brand_summary("Dove")
+competitors = brandintel.get_competitors_for_brand("Dove")
+
+print("Summary:", summary)
+print("Competitors:", competitors)
+```
+
+### CLI Mode
+```bash
+python -m brandintel.core --brand "Dove"
+```
+
+---
+
+Developed by Vivek Gupta.
