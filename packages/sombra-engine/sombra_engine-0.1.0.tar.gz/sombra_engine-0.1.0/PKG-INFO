@@ -1,0 +1,35 @@
+Metadata-Version: 2.4
+Name: sombra-engine
+Version: 0.1.0
+Summary: Small 3D game engine used at Sombra Studio
+Author: Jesus Henriquez
+License-Expression: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Games/Entertainment
+Classifier: Topic :: Multimedia :: Graphics :: 3D Rendering
+Requires-Dist: psutil==7.1.3
+Requires-Dist: pudu-ui==0.1.2
+Requires-Python: >=3.11
+Project-URL: Homepage, https://github.com/sombra-studio/sombra-engine
+Project-URL: Issues, https://github.com/sombra-studio/sombra-engine/issues
+Description-Content-Type: text/markdown
+
+# sombra-engine 
+
+Game Engine made in Python on top of the pyglet framework (work in progress).
+
+## Planned features
+
+- 3D models through glTF format (and limited support for OBJ)
+- OpenGL Renderer and GLSL shaders
+- Skeletal animations
+- Pathfinding
+- Rigid body physics
+- Particle systems
+- Terrain rendering
+- UI library with shaders support (through [pudu-ui](https://github.com/sombra-studio/pudu-ui))
+
+![screenshot](https://raw.githubusercontent.com/sombra-studio/sombra-engine/refs/heads/main/docs/screenshot.png)
+
+You can get the OBJ model of Yoda from [here](https://graphics.cs.utah.edu/courses/cs6610/spring2022/prj04/yoda.zip)
