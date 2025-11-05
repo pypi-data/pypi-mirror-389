@@ -1,0 +1,22 @@
+Metadata-Version: 2.4
+Name: u64
+Version: 0.3.0
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Rust
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+License-File: LICENSE
+Summary: A fast unsigned 64-bit integer type
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Project-URL: repository, https://github.com/thealtofwar/u64
+
+# u64
+A fast unsigned 64 bit integer, backed by Rust's u64 type.
+## Usage
+
+```py
+from u64 import u64
+print(u64(3) - u64(2)) # u64(1)
+```
