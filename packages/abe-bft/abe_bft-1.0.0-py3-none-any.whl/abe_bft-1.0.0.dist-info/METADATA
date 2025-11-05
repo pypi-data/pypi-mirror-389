@@ -1,0 +1,41 @@
+Metadata-Version: 2.4
+Name: abe-bft
+Version: 1.0.0
+Summary: Absolute Byzantine Engine - A BFT-based AI trading analysis tool.
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: anthropic
+Requires-Dist: groq
+Requires-Dist: yfinance
+Requires-Dist: ccxt
+Requires-Dist: python-dotenv
+Requires-Dist: colorama
+Requires-Dist: requests
+Requires-Dist: plyer
+
+# ABE - Absolute Byzantine Engine
+
+This package provides a powerful command-line interface for AI-driven financial analysis using a Byzantine Fault Tolerant (BFT) consensus mechanism.
+
+## Installation
+
+```bash
+pip install abe-bft
+```
+
+## Usage
+
+Once installed, you can run the tool from your terminal:
+
+```bash
+abe
+```
+
+The application requires API keys for Anthropic and Groq. Please set them as environment variables:
+
+- `ANTHROPIC_API_KEY`
+- `GROQ_API_KEY`
+
