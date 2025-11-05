@@ -1,0 +1,532 @@
+Metadata-Version: 2.4
+Name: terratorch_surya
+Version: 0.1.0
+Summary: Implementation of the Surya Foundation Model and Downstream Tasks for Heliophysics
+Project-URL: Repository, https://github.com/NASA-IMPACT/Surya
+Project-URL: Issues, https://github.com/NASA-IMPACT/Surya/issues
+Author: Surya Team
+Maintainer: Surya Team
+License:                                  Apache License
+                                   Version 2.0, January 2004
+                                http://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright [yyyy] [name of copyright owner]
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               http://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
+License-File: LICENSE
+Keywords: deep learning,forecasting,foundation model,heliophysics,pytorch,solar dynamics,solar wind,spectformer,transformer
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Astronomy
+Classifier: Topic :: Scientific/Engineering :: Physics
+Requires-Python: >=3.11
+Requires-Dist: einops>=0.4.0
+Requires-Dist: h5netcdf>=1.6.4
+Requires-Dist: hdf5plugin>=3.0.0
+Requires-Dist: hf-transfer>=0.1.9
+Requires-Dist: huggingface-hub>=0.10.0
+Requires-Dist: ipykernel>=6.30.1
+Requires-Dist: matplotlib>=3.5.0
+Requires-Dist: mpl-animators>=1.2.4
+Requires-Dist: numba>=0.56.0
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: packaging>=21.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: peft>=0.4.0
+Requires-Dist: pytest>=8.4.1
+Requires-Dist: pyyaml>=5.4.0
+Requires-Dist: scikit-image>=0.19.0
+Requires-Dist: sunpy>=4.0.0
+Requires-Dist: timm>=0.9.0
+Requires-Dist: torch>=2.6.0
+Requires-Dist: torchaudio>=2.6.0
+Requires-Dist: torchvision>=0.21.0
+Requires-Dist: wandb>=0.15.0
+Requires-Dist: xarray>=0.20.0
+Provides-Extra: all
+Requires-Dist: black>=24.0.0; extra == 'all'
+Requires-Dist: flake8>=4.0.0; extra == 'all'
+Requires-Dist: ipykernel>=6.0.0; extra == 'all'
+Requires-Dist: ipywidgets>=7.6.0; extra == 'all'
+Requires-Dist: isort>=5.10.0; extra == 'all'
+Requires-Dist: jupyter>=1.0.0; extra == 'all'
+Requires-Dist: mypy>=1.8.0; extra == 'all'
+Requires-Dist: myst-parser>=0.17.0; extra == 'all'
+Requires-Dist: plotly>=5.0.0; extra == 'all'
+Requires-Dist: pre-commit>=2.17.0; extra == 'all'
+Requires-Dist: pytest-cov>=3.0.0; extra == 'all'
+Requires-Dist: pytest>=7.0.0; extra == 'all'
+Requires-Dist: seaborn>=0.11.0; extra == 'all'
+Requires-Dist: sphinx-autodoc-typehints>=1.12.0; extra == 'all'
+Requires-Dist: sphinx-rtd-theme>=1.0.0; extra == 'all'
+Requires-Dist: sphinx>=4.0.0; extra == 'all'
+Provides-Extra: dev
+Requires-Dist: black>=24.0.0; extra == 'dev'
+Requires-Dist: flake8>=4.0.0; extra == 'dev'
+Requires-Dist: isort>=5.10.0; extra == 'dev'
+Requires-Dist: mypy>=1.8.0; extra == 'dev'
+Requires-Dist: pre-commit>=2.17.0; extra == 'dev'
+Requires-Dist: pytest-cov>=3.0.0; extra == 'dev'
+Requires-Dist: pytest>=7.0.0; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: myst-parser>=0.17.0; extra == 'docs'
+Requires-Dist: sphinx-autodoc-typehints>=1.12.0; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme>=1.0.0; extra == 'docs'
+Requires-Dist: sphinx>=4.0.0; extra == 'docs'
+Provides-Extra: notebook
+Requires-Dist: ipykernel>=6.0.0; extra == 'notebook'
+Requires-Dist: ipywidgets>=7.6.0; extra == 'notebook'
+Requires-Dist: jupyter>=1.0.0; extra == 'notebook'
+Provides-Extra: viz
+Requires-Dist: plotly>=5.0.0; extra == 'viz'
+Requires-Dist: seaborn>=0.11.0; extra == 'viz'
+Description-Content-Type: text/markdown
+
+<div align="center">
+
+This is an adapted version of the original Surya source code to work with [TerraTorch](https://github.com/IBM/terratorch)
+# ☀️ Surya: Foundation Model for Heliophysics ☀️
+
+[![HuggingFace](https://img.shields.io/badge/🤗%20Hugging%20Face-Models-yellow)](https://huggingface.co/nasa-ibm-ai4science)
+[![arXiv](https://img.shields.io/badge/arXiv-2508.14112-b31b1b.svg?style=flat)](https://arxiv.org/abs/2508.14112)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+   
+*The first foundation model for heliophysics trained on full-resolution Solar Dynamics Observatory data*
+
+</div>
+
+<p align="center">
+    <img src="https://i.imgur.com/waxVImv.png" alt="Oryx Prithvi-EO-2.0">
+</p>
+
+
+
+## 📖 Overview
+
+**Surya** (Sanskrit for "Sun") is a 366M-parameter foundation model for heliophysics, trained on full-resolution multi-instrument SDO observations (AIA & HMI). It learns general-purpose solar representations through spatiotemporal transformers, enabling state-of-the-art performance in solar flare forecasting, active region segmentation, solar wind prediction, and EUV spectra modeling.
+
+
+### Key Features
+
+- **Multi-instrument Learning**: Trained on 13 channels from SDO's AIA (8 channels) and HMI (5 channels) instruments
+- **Full Resolution**: Native 4096×4096 pixel resolution with 12-minute cadence
+- **Novel Architecture**: Spatiotemporal transformer with spectral gating and long-short range attention
+- **Zero-shot Capabilities**: Forecasts solar dynamics and flare events without additional training
+- **Versatile Fine-tuning**: Parameter-efficient LoRA adaptation for diverse downstream tasks
+
+### What Makes Surya Special?
+
+Unlike traditional task-specific models, Surya learns physics-aware representations that generalize across multiple solar phenomena:
+
+- **Solar Flare Forecasting**
+- **Active Region Segmentation**
+- **Solar Wind Prediction**
+- **EUV Spectra Modeling**
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.11+
+- CUDA-capable GPU (recommended)
+- [uv package manager](https://docs.astral.sh/uv/) (recommended)
+
+### 🛠️ Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/NASA-IMPACT/Surya.git
+cd Surya
+```
+
+2. **Install uv package manager (optional)**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+```
+
+3. **Set up the environment**
+```bash
+uv sync
+source .venv/bin/activate
+```
+
+### 🧪 Verify Installation
+
+Run the end-to-end test to ensure everything is working:
+
+```bash
+python -m pytest -s -o log_cli=true tests/test_surya.py
+```
+
+This will:
+- Download the pretrained model and test data
+- Generate 2-hour ahead forecasts for 2014-01-07
+- Create a validation visualization (`surya_model_validation.png`)
+- Verify model inference
+
+Expected output:
+```
+============================= test session starts ==============================
+INFO     test_surya:test_surya.py:188 GPU detected. Running the test on device 0.
+INFO     test_surya:test_surya.py:195 Surya FM: 366.19 M total parameters.
+INFO     test_surya:test_surya.py:199 Loaded weights.
+INFO     test_surya:test_surya.py:201 Starting inference run.
+INFO     test_surya:test_surya.py:215 Completed validation run. Local loss 0.31665.
+PASSED                                                    [100%]
+```
+
+![Sample output of Surya for 2014-01-07](assets/surya_model_validation.png)
+
+## 🎯 Downstream Applications
+
+To download the Surya model and a sample dataset for downstream tasks, please follow these steps:
+
+```bash
+# Step 1: Run pytest to download the model and verify dependencies
+python -m pytest -s -o log_cli=true tests/test_surya.py  
+
+# Step 2: Navigate to the downstream examples
+cd downstream_examples/
+
+# Step 3: Download the sample dataset
+python download_data.py
+```
+
+
+### 1. Solar Flare Forecasting
+
+Predict M-class and X-class solar flares up to 24 hours in advance.
+
+```bash
+cd downstream_examples/solar_flare_forcasting
+python3 download_data.sh
+torchrun --nnodes=1 --nproc_per_node=1 --standalone finetune.py
+```
+
+### 2. Active Region Segmentation
+
+Segment solar active regions and polarity inversion lines from magnetograms.
+
+```bash
+cd downstream_examples/ar_segmentation  
+python3 download_data.sh
+torchrun --nnodes=1 --nproc_per_node=1 --standalone finetune.py
+```
+
+### 3. Solar Wind Forecasting
+
+Predict solar wind speed at L1 point with 4-day lead time.
+
+```bash
+cd downstream_examples/solar_wind_forcasting
+python3 download_data.sh
+torchrun --nnodes=1 --nproc_per_node=1 --standalone finetune.py
+```
+
+### 4. EUV Spectra Modeling
+
+Model extreme ultraviolet irradiance across 1343 spectral bands (5-35 nm).
+
+```bash
+cd downstream_examples/euv_spectra_prediction
+python3 download_data.sh
+torchrun --nnodes=1 --nproc_per_node=1 --standalone finetune.py
+```
+
+
+## 📥 Data and Model Access
+
+### Pretrained Models
+
+The Surya foundation model and datasets are available on HuggingFace 🤗 :
+
+- **Model Repository**: [`nasa-ibm-ai4science/Surya-1.0`](https://huggingface.co/nasa-ibm-ai4science/Surya-1.0)
+- **Dataset Repository**: [`nasa-ibm-ai4science/core-sdo`](https://huggingface.co/datasets/nasa-ibm-ai4science/core-sdo)
+
+### SDO Data Download
+
+For downstream applications, download the preprocessed SDO data:
+
+```bash
+cd downstream_examples
+python download_data.py
+```
+
+This will:
+1. Download data from HuggingFace repository
+2. Extract and organize validation/test datasets  
+3. Generate CSV index files for each downstream task
+4. Set up data in the expected directory structure
+
+
+## 📊 Model Architecture
+
+Surya employs a novel spatiotemporal transformer architecture optimized for solar dynamics:
+
+### Core Components
+
+1. **Spectral Gating Blocks** (2 layers)
+   - Frequency-domain filtering with learnable complex weights
+   - Adaptive re-weighting of spectral components
+   - Noise suppression and feature enhancement
+
+2. **Long-Short Attention Blocks** (8 layers) 
+   - **Local attention**: Fine-scale dependencies within spatial windows
+   - **Global attention**: Long-range correlations via dynamic projection
+   - Multi-scale representation learning
+
+3. **Decoder Block**
+   - Lightweight projection back to physical domain
+   - Maintains spatial structure and channel relationships
+
+### Training Strategy
+
+- **Phase 1**: One-step ahead forecasting (160k steps, 128 GPUs)
+- **Phase 2**: Autoregressive rollout tuning (2-5 hour horizons)
+- **Objective**: Mean Squared Error with signum-log normalization
+- **Data**: 2011-2019 SDO observations (~257TB processed)
+
+
+### Data Processing Pipeline
+
+Our preprocessing ensures ML-ready, physics-consistent data:
+
+- **Temporal alignment**: 12-minute cadence across all instruments
+- **Spatial registration**: Uniform 0.6"/pixel grid, solar north alignment
+- **Calibration**: Instrument degradation correction, exposure normalization
+- **Quality control**: Automated flagging and filtering
+
+## 🏆 Performance Benchmarks
+
+| Task | Metric | Surya | Baseline | Improvement |
+|------|---------|-------|----------|-------------|
+| Solar Flare Forecasting | TSS | **0.436** | 0.358 (AlexNet) | 22% |
+| Active Region Segmentation | IoU | **0.768** | 0.688 (UNet) | 12% |  
+| Solar Wind Prediction | RMSE | **75.92** | 93.76 (ResNet50) | 19% |
+| EUV Spectra Modeling | MAPE | **1.48%** | 1.68% (AlexNet) | 12% |
+
+## 📄 Citation
+
+If you use Surya in your research, please cite our paper:
+
+```bibtex
+@article{roy2025surya,
+  title={Surya: Foundation Model for Heliophysics},
+  author={Roy, Sujit and Schmude, Johannes and Lal, Rohit and Gaur, Vishal and Freitag, Marcus and Kuehnert, Julian and van Kessel, Theodore and Hegde, Dinesha V and Mu{\~n}oz-Jaramillo, Andr{\'e}s and Jakubik, Johannes and others},
+  journal={arXiv preprint arXiv:2508.14112},
+  year={2025}
+}
+```
+
+## 📜 License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+We welcome contributions to the Surya repository! Please see our contribution guidelines and feel free to:
+
+- 🐛 Report bugs and issues
+- 💡 Suggest new features or applications
+- 🔧 Submit pull requests for improvements
+- 📖 Improve documentation and examples
