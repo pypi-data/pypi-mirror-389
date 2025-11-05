@@ -1,0 +1,17 @@
+# 包含必要文件
+include README.md
+include LICENSE
+
+# 包含Python文件
+recursive-include secretpkg555 *.py
+
+# 包含二进制文件
+recursive-include secretpkg555 *.pyd
+recursive-include secretpkg555 *.so
+
+# 排除核心源码
+global-exclude core_*.py
+
+# 排除缓存
+global-exclude *.pyc
+global-exclude __pycache__
