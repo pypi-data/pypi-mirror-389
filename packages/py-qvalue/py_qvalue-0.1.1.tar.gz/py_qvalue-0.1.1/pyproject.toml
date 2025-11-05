@@ -1,0 +1,32 @@
+[project]
+name = "py-qvalue"
+description = "A Python package providing ports of statistical methods originally implemented in R."
+authors = [
+    { name = "Kynon J.M. Benjamin", email = "kj.benjamin90@gmail.com" },
+]
+maintainers = [
+    { name = "Kynon J.M. Benjamin", email = "kj.benjamin90@gmail.com" },
+]
+dynamic = [ "version" ]
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.15",
+]
+keywords = [ "statistics", "q-value", "biostatistics" , "R ports" , "FDR" ]
+
+[project.urls]
+homepage = "https://github.com/heart-gen/py-qvalue"
+repository = "https://github.com/heart-gen/py-qvalue"
+"Bug Tracker" = "https://github.com/heart-gen/py-qvalue/issues"
+
+[tool.poetry]
+packages = [{include = "py_qvalue", from = "src"}]
+version = "0.1.1"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
