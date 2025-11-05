@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+[project]
+name = "jl95terceira_pytools_java"
+version = "0.1.2"
+authors = [
+  { name="Joao Luis Ornelas da Silva", email="jl95terceira@gmail.com" },
+]
+description = "Python command line tools collection (general) - Java"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/jl95terceira/project-pytools-java"
+Issues = "https://github.com/jl95terceira/project-pytools-java/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["project/package","project/package_DEPRECATED"]
+
+[tool.hatch.build.targets.wheel.sources]
+"project/package"="jl95/pytools"
+"project/package_DEPRECATED"="jl95terceira/pytools"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+[project.scripts]
+#PPTOML:BEGIN
+#import os
+#import project
+#for file_name in filter(lambda file_name: file_name.endswith('.py'), os.listdir(os.path.join(project.PATH, 'project', 'package',))):
+#  app_name = os.path.splitext(file_name)[0]
+#  writeline(f'"jl95-pytools/{app_name}"="jl95.pytools.{app_name}:main"')
+#for file_name in filter(lambda file_name: file_name.endswith('.py'), os.listdir(os.path.join(project.PATH, 'project', 'package',))):
+#  app_name = os.path.splitext(file_name)[0]
+#  writeline(f'"jl95terceira-pytools/{app_name}"="jl95terceira.pytools.{app_name}:main"')
+#PPTOML:END
+"jl95-pytools/ppjava"="jl95.pytools.ppjava:main"
+"jl95-pytools/swjava"="jl95.pytools.swjava:main"
+"jl95terceira-pytools/ppjava"="jl95terceira.pytools.ppjava:main"
+"jl95terceira-pytools/swjava"="jl95terceira.pytools.swjava:main"
+#PPTOML:TAIL
