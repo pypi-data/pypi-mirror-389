@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "newr"
+dynamic = ["version"]
+description = "Select files by modification time with kind filtering and flexible ordering."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE.txt" }
+keywords = ["cli", "files", "utility", "mtime", "selector"]
+authors = [
+  { name = "Toshihiro Kamiya", email = "kamiya@mbj.nifty.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Utilities",
+]
+dependencies = [
+  "python-magic",
+]
+
+[project.urls]
+Homepage = "https://github.com/tos-kamiya/newr"
+Repository = "https://github.com/tos-kamiya/newr"
+Issues = "https://github.com/tos-kamiya/newr/issues"
+
+[tool.hatch.version]
+path = "src/newr/__about__.py"
+
+[project.scripts]
+newr = "newr:main"
