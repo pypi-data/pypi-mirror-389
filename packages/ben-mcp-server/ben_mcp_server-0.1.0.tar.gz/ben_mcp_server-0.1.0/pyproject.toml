@@ -1,0 +1,22 @@
+[project]
+name = "ben-mcp-server"
+version = "0.1.0"
+description = "基于 fastmcp 的 MCP 服务"
+authors = [
+    {name = "ben",email = "2014911413@qq.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=2.13.0.2",
+]
+
+[tool.poetry]
+packages = [{include = "ben_mcp_server", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+my-mcp-server = "ben_mcp_server.main:main"
