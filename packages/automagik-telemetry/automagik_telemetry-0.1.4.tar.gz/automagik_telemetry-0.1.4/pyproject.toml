@@ -1,0 +1,94 @@
+[project]
+name = "automagik-telemetry"
+version = "0.1.4"
+description = "Privacy-first, opt-in telemetry SDK for the Automagik ecosystem"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Automagik Team", email = "team@namastex.ai" }
+]
+keywords = ["telemetry", "opentelemetry", "observability", "privacy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Monitoring",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.2.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+integration = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.2.0",
+    "fastapi>=0.109.0",
+    "httpx>=0.26.0",
+    "psutil>=5.9.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/namastexlabs/automagik-telemetry"
+Documentation = "https://github.com/namastexlabs/automagik-telemetry#readme"
+Repository = "https://github.com/namastexlabs/automagik-telemetry"
+"Source Code" = "https://github.com/namastexlabs/automagik-telemetry/tree/main/python"
+Issues = "https://github.com/namastexlabs/automagik-telemetry/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+addopts = "-v --cov=automagik_telemetry --cov-report=term-missing"
+fail_under = 100
+markers = [
+    "performance: marks tests as performance benchmarks (deselect with '-m \"not performance\"')",
+    "integration: marks tests as integration tests requiring network/external services (deselect with '-m \"not integration\"')",
+    "network: marks tests that require network connectivity",
+    "timeout: custom timeout for long-running tests",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+fail_under = 100.0
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*", "**/__pycache__/*"]
+relative_files = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501", "N806"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "ruff>=0.14.1",
+]
