@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{project_name}}-api
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: api
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: {{project_name}}
+    component: api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{project_name}}-nginx
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: nginx
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: {{project_name}}
+    component: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: postgres
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: {{project_name}}
+    component: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: redis
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: {{project_name}}
+    component: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{project_name}}-headless
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: api
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: {{project_name}}
+    component: api

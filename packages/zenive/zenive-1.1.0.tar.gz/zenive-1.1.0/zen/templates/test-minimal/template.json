@@ -1,0 +1,49 @@
+{
+  "name": "test-minimal",
+  "version": "1.0.0",
+  "description": "Minimal test template for validation",
+  "category": "test",
+  "complexity": "minimal",
+  "python_requires": ">=3.8",
+  "dependencies": [
+    "click>=8.0.0"
+  ],
+  "dev_dependencies": [],
+  "directories": [
+    "src",
+    "tests"
+  ],
+  "files": [
+    {
+      "name": "main.py",
+      "path": "src/main.py",
+      "content": "#!/usr/bin/env python3\n\"\"\"\n{{project_name}} - A test project\n\"\"\"\n\ndef main():\n    print(\"Hello from {{project_name}}!\")\n\nif __name__ == \"__main__\":\n    main()\n",
+      "executable": true
+    },
+    {
+      "name": "requirements.txt",
+      "path": "requirements.txt",
+      "content": "# {{project_name}} dependencies\nclick>=8.0.0\n"
+    },
+    {
+      "name": "README.md",
+      "path": "README.md",
+      "content": "# {{project_name}}\n\nA test project created with zen.\n\n## Usage\n\n```bash\npython src/main.py\n```\n"
+    }
+  ],
+  "template_vars": {
+    "author_name": {
+      "default": "Developer",
+      "description": "Author name for the project",
+      "type": "str"
+    },
+    "include_tests": {
+      "default": true,
+      "description": "Include test files",
+      "type": "bool"
+    }
+  },
+  "author": "Zen Team",
+  "license": "MIT",
+  "keywords": ["test", "minimal", "template"]
+}

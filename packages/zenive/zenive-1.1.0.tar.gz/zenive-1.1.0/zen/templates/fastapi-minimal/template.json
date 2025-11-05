@@ -1,0 +1,101 @@
+{
+  "name": "fastapi-minimal",
+  "version": "1.0.0",
+  "description": "Minimal FastAPI project for quick prototyping and learning",
+  "category": "web",
+  "complexity": "minimal",
+  "python_requires": ">=3.8",
+  "dependencies": [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0"
+  ],
+  "dev_dependencies": [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.25.0"
+  ],
+  "directories": [
+    "app",
+    "tests"
+  ],
+  "files": [
+    {
+      "name": "main.py",
+      "path": "app/main.py",
+      "content_path": "app/main.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/__init__.py",
+      "content_path": "app/__init__.py"
+    },
+    {
+      "name": "models.py",
+      "path": "app/models.py",
+      "content_path": "app/models.py"
+    },
+    {
+      "name": "config.py",
+      "path": "app/config.py",
+      "content_path": "app/config.py"
+    },
+    {
+      "name": "requirements.txt",
+      "path": "requirements.txt",
+      "content_path": "requirements.txt"
+    },
+    {
+      "name": "requirements-dev.txt",
+      "path": "requirements-dev.txt",
+      "content_path": "requirements-dev.txt"
+    },
+    {
+      "name": "README.md",
+      "path": "README.md",
+      "content_path": "README.md"
+    },
+    {
+      "name": ".env.example",
+      "path": ".env.example",
+      "content_path": ".env.example"
+    },
+    {
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "content_path": ".gitignore"
+    },
+    {
+      "name": "__init__.py",
+      "path": "tests/__init__.py",
+      "content_path": "tests/__init__.py"
+    },
+    {
+      "name": "test_main.py",
+      "path": "tests/test_main.py",
+      "content_path": "tests/test_main.py"
+    }
+  ],
+  "template_vars": {
+    "project_name": {
+      "default": "my-fastapi-app",
+      "description": "Name of the FastAPI project",
+      "type": "str"
+    },
+    "author_name": {
+      "default": "Developer",
+      "description": "Author name for the project",
+      "type": "str"
+    },
+    "description": {
+      "default": "A FastAPI application",
+      "description": "Project description",
+      "type": "str"
+    }
+  },
+  "author": "Zen Team",
+  "license": "MIT",
+  "keywords": ["fastapi", "minimal", "web", "api"]
+}

@@ -1,0 +1,257 @@
+{
+  "name": "fastapi-industry",
+  "version": "1.0.0",
+  "description": "Enterprise FastAPI with complete DevOps and production setup",
+  "complexity": "industry",
+  "extends": "fastapi-moderate",
+  "python_requires": ">=3.8",
+  "dependencies": [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "pydantic[email]>=2.5.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy>=2.0.0",
+    "greenlet>=3.0.0",
+    "alembic>=1.12.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-multipart>=0.0.6",
+    "psycopg2-binary>=2.9.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "prometheus-client>=0.19.0",
+    "structlog>=23.2.0",
+    "sentry-sdk[fastapi]>=1.38.0",
+    "gunicorn>=21.2.0",
+    "httpx>=0.25.0",
+    "slowapi>=0.1.9",
+    "python-json-logger>=2.0.7"
+  ],
+  "dev_dependencies": [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.5.0",
+    "locust>=2.17.0",
+    "httpx>=0.25.0"
+  ],
+  "directories": [
+    "app",
+    "app/api",
+    "app/api/v1",
+    "app/core",
+    "app/models",
+    "app/schemas",
+    "app/crud",
+    "app/middleware",
+    "app/worker",
+    "app/utils",
+    "migrations",
+    "migrations/versions",
+    "tests",
+    "tests/unit",
+    "tests/integration",
+    "tests/load",
+    "deployment",
+    "deployment/docker",
+    "deployment/k8s",
+    "deployment/terraform",
+    "monitoring",
+    "monitoring/grafana",
+    "monitoring/grafana/dashboards",
+    "monitoring/prometheus",
+    "scripts",
+    "docs",
+    ".github",
+    ".github/workflows"
+  ],
+  "files": [
+    {
+      "name": "main.py",
+      "path": "app/main.py",
+      "content_path": "app/main.py"
+    },
+    {
+      "name": "requirements.txt",
+      "path": "requirements.txt",
+      "content_path": "requirements.txt"
+    },
+    {
+      "name": "requirements-dev.txt",
+      "path": "requirements-dev.txt",
+      "content_path": "requirements-dev.txt"
+    },
+    {
+      "name": "README.md",
+      "path": "README.md",
+      "content_path": "README.md"
+    },
+    {
+      "name": ".env.example",
+      "path": ".env.example",
+      "content_path": ".env.example"
+    },
+    {
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "content_path": ".gitignore"
+    },
+    {
+      "name": "Dockerfile",
+      "path": "Dockerfile",
+      "content_path": "Dockerfile"
+    },
+    {
+      "name": "docker-compose.yml",
+      "path": "docker-compose.yml",
+      "content_path": "docker-compose.yml"
+    },
+    {
+      "name": "config.py",
+      "path": "app/core/config.py",
+      "content_path": "app/core/config.py"
+    },
+    {
+      "name": "cache.py",
+      "path": "app/core/cache.py",
+      "content_path": "app/core/cache.py"
+    },
+    {
+      "name": "logging.py",
+      "path": "app/core/logging.py",
+      "content_path": "app/core/logging.py"
+    },
+    {
+      "name": "logging_middleware.py",
+      "path": "app/middleware/logging.py",
+      "content_path": "app/middleware/logging.py"
+    },
+    {
+      "name": "metrics.py",
+      "path": "app/middleware/metrics.py",
+      "content_path": "app/middleware/metrics.py"
+    },
+    {
+      "name": "rate_limit.py",
+      "path": "app/middleware/rate_limit.py",
+      "content_path": "app/middleware/rate_limit.py"
+    },
+    {
+      "name": "celery_app.py",
+      "path": "app/worker/celery_app.py",
+      "content_path": "app/worker/celery_app.py"
+    },
+    {
+      "name": "tasks.py",
+      "path": "app/worker/tasks.py",
+      "content_path": "app/worker/tasks.py"
+    },
+    {
+      "name": "ci.yml",
+      "path": ".github/workflows/ci.yml",
+      "content_path": ".github/workflows/ci.yml"
+    },
+    {
+      "name": "cd.yml",
+      "path": ".github/workflows/cd.yml",
+      "content_path": ".github/workflows/cd.yml"
+    },
+    {
+      "name": "security.yml",
+      "path": ".github/workflows/security.yml",
+      "content_path": ".github/workflows/security.yml"
+    },
+    {
+      "name": "configmap.yaml",
+      "path": "deployment/k8s/configmap.yaml",
+      "content_path": "deployment/k8s/configmap.yaml"
+    },
+    {
+      "name": "deployment.yaml",
+      "path": "deployment/k8s/deployment.yaml",
+      "content_path": "deployment/k8s/deployment.yaml"
+    },
+    {
+      "name": "hpa.yaml",
+      "path": "deployment/k8s/hpa.yaml",
+      "content_path": "deployment/k8s/hpa.yaml"
+    },
+    {
+      "name": "ingress.yaml",
+      "path": "deployment/k8s/ingress.yaml",
+      "content_path": "deployment/k8s/ingress.yaml"
+    },
+    {
+      "name": "namespace.yaml",
+      "path": "deployment/k8s/namespace.yaml",
+      "content_path": "deployment/k8s/namespace.yaml"
+    },
+    {
+      "name": "rbac.yaml",
+      "path": "deployment/k8s/rbac.yaml",
+      "content_path": "deployment/k8s/rbac.yaml"
+    },
+    {
+      "name": "secrets.yaml",
+      "path": "deployment/k8s/secrets.yaml",
+      "content_path": "deployment/k8s/secrets.yaml"
+    },
+    {
+      "name": "service.yaml",
+      "path": "deployment/k8s/service.yaml",
+      "content_path": "deployment/k8s/service.yaml"
+    },
+    {
+      "name": "main.tf",
+      "path": "deployment/terraform/main.tf",
+      "content_path": "deployment/terraform/main.tf"
+    },
+    {
+      "name": "outputs.tf",
+      "path": "deployment/terraform/outputs.tf",
+      "content_path": "deployment/terraform/outputs.tf"
+    },
+    {
+      "name": "variables.tf",
+      "path": "deployment/terraform/variables.tf",
+      "content_path": "deployment/terraform/variables.tf"
+    },
+    {
+      "name": "terraform.tfvars.example",
+      "path": "deployment/terraform/terraform.tfvars.example",
+      "content_path": "deployment/terraform/terraform.tfvars.example"
+    },
+    {
+      "name": "fastapi-overview.json",
+      "path": "monitoring/grafana/dashboards/fastapi-overview.json",
+      "content_path": "monitoring/grafana/dashboards/fastapi-overview.json"
+    },
+    {
+      "name": "prometheus.yml",
+      "path": "monitoring/prometheus/prometheus.yml",
+      "content_path": "monitoring/prometheus/prometheus.yml"
+    },
+    {
+      "name": "fastapi-alerts.yml",
+      "path": "monitoring/prometheus/rules/fastapi-alerts.yml",
+      "content_path": "monitoring/prometheus/rules/fastapi-alerts.yml"
+    },
+    {
+      "name": "security_middleware.py",
+      "path": "app/middleware/security.py",
+      "content_path": "app/middleware/security.py"
+    }
+  ],
+  "template_vars": {
+    "project_name": "my-industry-app",
+    "project_description": "Enterprise FastAPI application with full production features",
+    "author_name": "Developer",
+    "author_email": "developer@example.com",
+    "database_url": "postgresql+asyncpg://user:password@localhost/{{project_name}}_db",
+    "secret_key": "your-secret-key-here-change-in-production"
+  }
+}

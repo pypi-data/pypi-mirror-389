@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{project_name}}-api
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: api
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{project_name}}-worker
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: worker
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{project_name}}-beat
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: beat
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{project_name}}-api-role
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: api
+rules:
+# Allow reading ConfigMaps and Secrets
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+# Allow reading pod information for health checks
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+# Allow reading services for service discovery
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{project_name}}-worker-role
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: worker
+rules:
+# Allow reading ConfigMaps and Secrets
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+# Allow reading pod information
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{project_name}}-api-binding
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: api
+subjects:
+- kind: ServiceAccount
+  name: {{project_name}}-api
+  namespace: {{project_name}}
+roleRef:
+  kind: Role
+  name: {{project_name}}-api-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{project_name}}-worker-binding
+  namespace: {{project_name}}
+  labels:
+    app: {{project_name}}
+    component: worker
+subjects:
+- kind: ServiceAccount
+  name: {{project_name}}-worker
+  namespace: {{project_name}}
+- kind: ServiceAccount
+  name: {{project_name}}-beat
+  namespace: {{project_name}}
+roleRef:
+  kind: Role
+  name: {{project_name}}-worker-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{project_name}}-api-token
+  namespace: {{project_name}}
+  annotations:
+    kubernetes.io/service-account.name: {{project_name}}-api
+type: kubernetes.io/service-account-token
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{project_name}}-worker-token
+  namespace: {{project_name}}
+  annotations:
+    kubernetes.io/service-account.name: {{project_name}}-worker
+type: kubernetes.io/service-account-token

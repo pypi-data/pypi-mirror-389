@@ -1,0 +1,1 @@
+# FastAPI moderate template application

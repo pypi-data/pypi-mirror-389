@@ -1,0 +1,224 @@
+{
+  "name": "fastapi-moderate",
+  "version": "1.0.0",
+  "description": "FastAPI with authentication, database, and production basics",
+  "complexity": "moderate",
+
+  "python_requires": ">=3.8",
+  "dependencies": [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "pydantic[email]>=2.5.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-multipart>=0.0.6",
+    "psycopg2-binary>=2.9.0",
+    "redis>=5.0.0",
+    "asyncpg>=0.29.0",
+    "pydantic-settings>=2.1.0",
+    "greenlet>=3.0.0"
+  ],
+  "dev_dependencies": [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.25.0",
+    "pytest-mock>=3.12.0"
+  ],
+  "directories": [
+    "app",
+    "app/api",
+    "app/api/v1",
+    "app/core",
+    "app/models",
+    "app/schemas",
+    "app/crud",
+    "app/middleware",
+    "migrations",
+    "migrations/versions",
+    "tests",
+    "deployment"
+  ],
+  "files": [
+    {
+      "name": "main.py",
+      "path": "app/main.py",
+      "content_path": "app/main.py"
+    },
+    {
+      "name": "config.py",
+      "path": "app/core/config.py",
+      "content_path": "app/core/config.py"
+    },
+    {
+      "name": "security.py",
+      "path": "app/core/security.py",
+      "content_path": "app/core/security.py"
+    },
+    {
+      "name": "database.py",
+      "path": "app/core/database.py",
+      "content_path": "app/core/database.py"
+    },
+    {
+      "name": "requirements.txt",
+      "path": "requirements.txt",
+      "content_path": "requirements.txt"
+    },
+    {
+      "name": "requirements-dev.txt",
+      "path": "requirements-dev.txt",
+      "content_path": "requirements-dev.txt"
+    },
+    {
+      "name": "README.md",
+      "path": "README.md",
+      "content_path": "README.md"
+    },
+    {
+      "name": ".env.example",
+      "path": ".env.example",
+      "content_path": ".env.example"
+    },
+    {
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "content_path": ".gitignore"
+    },
+    {
+      "name": "docker-compose.yml",
+      "path": "docker-compose.yml",
+      "content_path": "docker-compose.yml"
+    },
+    {
+      "name": "Dockerfile",
+      "path": "Dockerfile",
+      "content_path": "Dockerfile"
+    },
+    {
+      "name": "alembic.ini",
+      "path": "alembic.ini",
+      "content_path": "alembic.ini"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/__init__.py",
+      "content_path": "app/__init__.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/core/__init__.py",
+      "content_path": "app/core/__init__.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/api/__init__.py",
+      "content_path": "app/api/__init__.py"
+    },
+    {
+      "name": "dependencies.py",
+      "path": "app/api/dependencies.py",
+      "content_path": "app/api/dependencies.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/models/__init__.py",
+      "content_path": "app/models/__init__.py"
+    },
+    {
+      "name": "user_model.py",
+      "path": "app/models/user.py",
+      "content_path": "app/models/user.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/schemas/__init__.py",
+      "content_path": "app/schemas/__init__.py"
+    },
+    {
+      "name": "user_schema.py",
+      "path": "app/schemas/user.py",
+      "content_path": "app/schemas/user.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/crud/__init__.py",
+      "content_path": "app/crud/__init__.py"
+    },
+    {
+      "name": "base.py",
+      "path": "app/crud/base.py",
+      "content_path": "app/crud/base.py"
+    },
+    {
+      "name": "user_crud.py",
+      "path": "app/crud/user.py",
+      "content_path": "app/crud/user.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/middleware/__init__.py",
+      "content_path": "app/middleware/__init__.py"
+    },
+    {
+      "name": "cors.py",
+      "path": "app/middleware/cors.py",
+      "content_path": "app/middleware/cors.py"
+    },
+    {
+      "name": "logging.py",
+      "path": "app/middleware/logging.py",
+      "content_path": "app/middleware/logging.py"
+    },
+    {
+      "name": "security.py",
+      "path": "app/middleware/security.py",
+      "content_path": "app/middleware/security.py"
+    },
+    {
+      "name": "env.py",
+      "path": "migrations/env.py",
+      "content_path": "migrations/env.py"
+    },
+    {
+      "name": "script.py.mako",
+      "path": "migrations/script.py.mako",
+      "content_path": "migrations/script.py.mako"
+    },
+    {
+      "name": "0001_initial_user_table.py",
+      "path": "migrations/versions/0001_initial_user_table.py",
+      "content_path": "migrations/versions/0001_initial_user_table.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "app/api/v1/__init__.py",
+      "content_path": "app/api/v1/__init__.py"
+    },
+    {
+      "name": "router.py",
+      "path": "app/api/v1/router.py",
+      "content_path": "app/api/v1/router.py"
+    },
+    {
+      "name": "auth.py",
+      "path": "app/api/v1/auth.py",
+      "content_path": "app/api/v1/auth.py"
+    },
+    {
+      "name": "users.py",
+      "path": "app/api/v1/users.py",
+      "content_path": "app/api/v1/users.py"
+    }
+  ],
+  "template_vars": {
+    "project_name": "{{project_name}}",
+    "database_url": "postgresql+asyncpg://user:password@localhost/{{project_name}}_db",
+    "secret_key": "your-secret-key-here-change-in-production"
+  },
+  "author": "Zenive",
+  "license": "MIT",
+  "keywords": ["fastapi", "authentication", "database", "moderate", "production"]
+}
