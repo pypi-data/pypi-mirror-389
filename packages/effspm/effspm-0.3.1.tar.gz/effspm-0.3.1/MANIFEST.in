@@ -1,0 +1,12 @@
+include LICENSE
+include README.md
+include pyproject.toml
+include setup.py
+recursive-include effspm *.hpp
+recursive-include effspm *.cpp
+recursive-include effspm *.py
+recursive-include effspm/htminer/src *.cpp *.hpp
+recursive-include effspm/btminer/src *.cpp *.hpp
+recursive-include effspm/largepp/src *.cpp *.hpp
+recursive-include effspm/largebm/src *.cpp *.hpp
+recursive-include effspm/largehm/src *.cpp *.hpp
