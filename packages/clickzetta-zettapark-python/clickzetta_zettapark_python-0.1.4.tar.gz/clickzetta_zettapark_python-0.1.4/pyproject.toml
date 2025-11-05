@@ -1,0 +1,63 @@
+[project]
+name = "clickzetta-zettapark-python"
+version = "0.1.4"
+description = "Clickzetta Zettapark for Python"
+readme = "README.md"
+authors = [{ name = "Yunqi Inc", email = "support@yunqi.tech" }]
+license.file = "LICENSE.txt"
+keywords = ["clickzetta", "zettapark", "database", "cloud", "analytics"]
+requires-python = ">=3.8"
+dependencies = [
+    "typing-extensions>=4.1.0, <5.0.0",
+    "cloudpickle==3.1.0",
+    "clickzetta-connector-python>=0.8.81",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+urls.Homepage = "https://www.yunqi.tech/"
+urls.Documentation = "https://yunqi.tech/documents"
+
+[build-system]
+requires = ["uv_build>=0.9.6,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "clickzetta.zettapark"
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+markers = ["unit", "integ", "udf", "scala", "doctest"]
+filterwarnings = [
+    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+    "ignore:Deprecated call to .pkg_resources:DeprecationWarning",
+    "ignore:Passing a BlockManager to DataFrame:DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+exclude = [".git", ".nox", "parameters.py"]
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "W", "UP"]
+ignore = ["E203", "E501"]
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+known-first-party = ["clickzetta.connector", "clickzetta.zettapark"]
+# lines-between-types = 1
+# lines-after-imports = 2
