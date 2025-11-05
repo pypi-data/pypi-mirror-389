@@ -1,0 +1,192 @@
+from typing import Any, Dict, List, Type, TypeVar, Union, cast
+
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
+
+from ..types import UNSET, Unset
+
+T = TypeVar("T", bound="VerifyTokenResponse")
+
+
+@_attrs_define
+class VerifyTokenResponse:
+    """验证令牌响应
+
+    Attributes:
+        valid (bool): 令牌是否有效
+        user_id (Union[None, Unset, str]): 用户ID
+        tenant_id (Union[None, Unset, str]): 租户ID
+        app_id (Union[None, Unset, str]): 应用ID
+        roles (Union[List[Any], None, Unset]): 角色列表
+        exp (Union[None, Unset, int]): 过期时间戳
+        message (Union[None, Unset, str]): 错误信息
+    """
+
+    valid: bool
+    user_id: Union[None, Unset, str] = UNSET
+    tenant_id: Union[None, Unset, str] = UNSET
+    app_id: Union[None, Unset, str] = UNSET
+    roles: Union[List[Any], None, Unset] = UNSET
+    exp: Union[None, Unset, int] = UNSET
+    message: Union[None, Unset, str] = UNSET
+    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        valid = self.valid
+
+        user_id: Union[None, Unset, str]
+        if isinstance(self.user_id, Unset):
+            user_id = UNSET
+        else:
+            user_id = self.user_id
+
+        tenant_id: Union[None, Unset, str]
+        if isinstance(self.tenant_id, Unset):
+            tenant_id = UNSET
+        else:
+            tenant_id = self.tenant_id
+
+        app_id: Union[None, Unset, str]
+        if isinstance(self.app_id, Unset):
+            app_id = UNSET
+        else:
+            app_id = self.app_id
+
+        roles: Union[List[Any], None, Unset]
+        if isinstance(self.roles, Unset):
+            roles = UNSET
+        elif isinstance(self.roles, list):
+            roles = self.roles
+
+        else:
+            roles = self.roles
+
+        exp: Union[None, Unset, int]
+        if isinstance(self.exp, Unset):
+            exp = UNSET
+        else:
+            exp = self.exp
+
+        message: Union[None, Unset, str]
+        if isinstance(self.message, Unset):
+            message = UNSET
+        else:
+            message = self.message
+
+        field_dict: Dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "valid": valid,
+            }
+        )
+        if user_id is not UNSET:
+            field_dict["user_id"] = user_id
+        if tenant_id is not UNSET:
+            field_dict["tenant_id"] = tenant_id
+        if app_id is not UNSET:
+            field_dict["app_id"] = app_id
+        if roles is not UNSET:
+            field_dict["roles"] = roles
+        if exp is not UNSET:
+            field_dict["exp"] = exp
+        if message is not UNSET:
+            field_dict["message"] = message
+
+        return field_dict
+
+    @classmethod
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        d = src_dict.copy()
+        valid = d.pop("valid")
+
+        def _parse_user_id(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        user_id = _parse_user_id(d.pop("user_id", UNSET))
+
+        def _parse_tenant_id(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        tenant_id = _parse_tenant_id(d.pop("tenant_id", UNSET))
+
+        def _parse_app_id(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        app_id = _parse_app_id(d.pop("app_id", UNSET))
+
+        def _parse_roles(data: object) -> Union[List[Any], None, Unset]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                roles_type_0 = cast(List[Any], data)
+
+                return roles_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union[List[Any], None, Unset], data)
+
+        roles = _parse_roles(d.pop("roles", UNSET))
+
+        def _parse_exp(data: object) -> Union[None, Unset, int]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, int], data)
+
+        exp = _parse_exp(d.pop("exp", UNSET))
+
+        def _parse_message(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        message = _parse_message(d.pop("message", UNSET))
+
+        verify_token_response = cls(
+            valid=valid,
+            user_id=user_id,
+            tenant_id=tenant_id,
+            app_id=app_id,
+            roles=roles,
+            exp=exp,
+            message=message,
+        )
+
+        verify_token_response.additional_properties = d
+        return verify_token_response
+
+    @property
+    def additional_keys(self) -> List[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties
