@@ -1,0 +1,92 @@
+{#- Enhanced template for document conversion -#}
+{%- set title_display = metadata.get('title', metadata.get('filename', 'Untitled Document')) -%}
+{%- set filename = metadata.get('filename', 'unknown') -%}
+{%- set file_ext = filename.split('.')[-1].upper() if '.' in filename else 'Unknown' -%}
+{%- set precision = metadata.get('precision_level', 2) | int -%}
+{%- set mode = 'accurate' if precision >= 3 else 'fast' -%}
+{%- set source_mime = metadata.get('source_mime', '') | string -%}
+{%- set is_spreadsheet = 'sheet' in source_mime.lower() or 'excel' in source_mime.lower() or 'csv' in source_mime.lower() or file_ext in ['XLSX', 'XLS', 'CSV'] -%}
+{%- set media_type = 'spreadsheet' if is_spreadsheet else 'text_document' -%}
+---
+title: "{{ title_display }}"
+source_file: "{{ filename }}"
+created_utc: "{{ metadata.get('created_utc', 'N/A') }}"
+media_type: "{{ media_type }}"
+---
+
+{% if media_type == 'spreadsheet' %}
+
+{# Spreadsheet-specific rendering #}
+{% for block in blocks -%}
+{% if block.type == 'text' -%}
+{{ block.content }}
+
+{% elif block.type == 'table' -%}
+{{ block.content }}
+
+{% endif -%}
+{% endfor -%}
+{%- else %}
+{# Text document rendering with improved structure #}
+{% set ns = namespace(in_section=false, section_content=[]) -%}
+{% for block in blocks -%}
+{% if block.type == 'header' or block.category == 'sheet_heading' -%}
+{%- if ns.section_content | length > 0 %}
+
+{% for item in ns.section_content -%}
+{{ item }}
+{% endfor -%}
+{%- set ns.section_content = [] -%}
+{% endif -%}
+
+{{ block.content }}
+
+{% set ns.in_section = true -%}
+
+{% elif block.type == 'text' -%}
+{%- if block.category == 'statistics' %}
+{{ block.content }}
+
+{%- else %}
+{%- set paragraphs = block.content.strip().split('\n\n') -%}
+{%- for para in paragraphs if para.strip() %}
+{%- set sentences = para.strip().split('. ') -%}
+{%- if sentences | length > 3 %}
+{# Long paragraph - convert to bullet points #}
+{% for sentence in sentences if sentence.strip() -%}
+- {{ sentence.strip() }}{% if not sentence.endswith('.') %}.{% endif %}
+
+{% endfor -%}
+{%- else %}
+{# Short paragraph - keep as is #}
+{{ para.strip() }}
+
+{% endif -%}
+{% endfor -%}
+{%- endif -%}
+
+{% elif block.type == 'table' -%}
+{# Skip table if next block has statistics for it #}
+{%- set next_block = blocks[loop.index] if loop.index < blocks|length else none -%}
+{%- if not (next_block and next_block.category == 'table_statistics') -%}
+{{ block.content }}
+
+{%- endif -%}
+
+{% elif block.type == 'image' -%}
+{{ block.content }}
+
+{% elif block.type == 'code' -%}
+```
+{{ block.content }}
+```
+
+{% endif -%}
+{% endfor -%}
+
+{%- if ns.section_content | length > 0 %}
+{% for item in ns.section_content -%}
+{{ item }}
+{% endfor -%}
+{% endif -%}
+{%- endif %}
