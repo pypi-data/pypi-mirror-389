@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=77.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minecraft-textcraft"
+version = "0.0.2"
+description = "A Python package that converts text into blocky Minecraft-style ASCII art..."
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.7"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Intended Audience :: Education",
+  "Operating System :: OS Independent",
+]
+[project.optional-dependencies]
+dev = ["pytest", "build"]
+[project.scripts]
+minecraft-textcraft = "minecraft_textcraft.__main__:main"
