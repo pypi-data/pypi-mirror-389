@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exai-paywall"
+version = "0.0.1"
+description = "ExAI Labs - Paywall package (placeholder)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+    {name = "ExAI Labs", email = "contact@exailabs.ai"}
+]
+keywords = ["exai", "paywall", "payment", "monetization"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/exailabs/exai-pypi-placeholders"
+Repository = "https://github.com/exailabs/exai-pypi-placeholders"
+Issues = "https://github.com/exailabs/exai-pypi-placeholders/issues"
+
+[tool.setuptools]
+packages = ["exai_paywall"]
+
