@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "opensees-copilot"
+version = "0.0.1"
+description = "Scaffolding & CLI hooks for an upcoming OpenSees agent — placeholder release."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Mohsen Azimi" }]
+license = { file = "LICENSE" }
+keywords = ["OpenSees", "OpenSeesPy", "structural-engineering", "copilot", "agents"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering"
+]
+
+[project.urls]
+Homepage = "https://github.com/mohsen-azimi/opensees-copilot"
+Issues = "https://github.com/mohsen-azimi/opensees-copilot/issues"
+
+[project.scripts]
+opsc = "opensees_copilot.cli:main"
