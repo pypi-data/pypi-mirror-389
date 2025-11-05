@@ -1,0 +1,44 @@
+[project]
+name = "cnworkdays"
+dynamic = []
+description = "A Python tool for managing Chinese public holidays and compensatory working days. This tool helps you accurately calculate working days while accounting for China's unique holiday schedule."
+authors = [
+    { name = "Aolin", email = "aolinz@outlook.com" },
+]
+dependencies = [
+    "marimo<1.0.0,>=0.6.23",
+    "icalendar>=5.0.13",
+    "rich>=13.9.4",
+    "hypercorn>=0.17.3",
+    "textual>=1.0.0",
+]
+requires-python = "<4.0,>=3.9"
+readme = "cn_workdays/README.md"
+version = "2026.0"
+
+[project.scripts]
+cnworkdays = "cn_workdays.cli:main"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+    "textual-dev>=1.7.0",
+]
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.build]
+includes = [
+    "cn_workdays/",
+]
+
+[tool.pdm.version]
+source = "scm"
+write_to = "cn_workdays/VERSION"

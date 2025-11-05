@@ -1,0 +1,100 @@
+Screen {
+    align: center top;
+}
+
+CalculatorArea {
+/*This sets the styles should apply to the CalculatorArea widget*/
+    height: 8; /* label + input 4 lines*/
+    background: $boost;
+    padding: 1; /* sets a padding of 1 cell around the child widgets.*/
+    margin: 2 0 1 0; /* sets a margin of 1 cell around the CalculatorArea widget.*/
+    min-width: 50;
+}
+
+.input-container {
+    height: 8;
+    align: center middle;
+    /* Add flex wrapping behavior */
+    layout: grid;
+    grid-size: 4;  /* Four columns by default */
+    grid-columns: 1fr 1fr 1fr 1fr;
+    grid-gutter: 1 2;
+}
+
+/* Add responsive layout for narrow screens */
+.input-container.narrow {
+    height: auto;
+    grid-size: 2;  /* Single column when narrow */
+    grid-columns: 1fr;
+}
+
+.input-container > .input-group {
+    height: auto;
+    width: 100%;
+    max-width: 30;
+}
+
+.input-label {
+    padding: 1;
+    width: 100%;  /* Make labels take full width */
+    content-align: left middle;
+}
+
+.labeled-switch {
+    height: auto;
+    align: center middle;
+    width: 100%;
+}
+
+.input-container > .input-group-switch {
+    height: 6;
+    align: center bottom;
+    width: 100%;
+    max-width: 30;
+    min-width: 23;
+}
+
+.switch-label {
+    width: auto;
+    height: 100%;
+    content-align: center middle;
+}
+
+.result-container {
+    align: center bottom;
+    width: 100%;
+    max-width: 40;
+    min-width: 18;
+}
+
+/* Result area layout */
+.result-container-label {
+    padding: 1;
+    align: left middle;
+    width: 100%;
+}
+
+/* Make result area more responsive */
+.result-value {
+    width: 1fr;  /* Take available space */
+    min-width: 10;
+    max-width: 30;
+}
+
+/* Ensure save button stays visible */
+#save_history {
+    margin: 0 0 0 1;
+    height: 3;
+    min-width: 8;
+    max-width: 15;
+    display: block;  /* Ensure button remains visible */
+}
+
+/* Result container horizontal layout */
+.result-container Button {
+    width: auto;
+}
+
+.history-table {
+    height: auto;
+}
