@@ -1,0 +1,31 @@
+# Testing the gine model with the PCQMv2 dataset on IPU.
+constants:
+  name: &name neurips2023_small_data_gine
+  config_override: "expts/neurips2023_configs/baseline/config_small_gcn_baseline.yaml"
+  seed: &seed 1000
+
+architecture:
+  pre_nn_edges:   # Set as null to avoid a pre-nn network
+    out_dim: 32
+    hidden_dims: 128
+    depth: 2
+    activation: relu
+    last_activation: none
+    dropout: 0.1
+    normalization: &normalization layer_norm
+    last_normalization: *normalization
+    residual_type: none
+
+  gnn:  # Set as null to avoid a post-nn network
+    out_dim: &gnn_dim 96
+    hidden_dims: *gnn_dim
+    layer_type: 'pyg:gine' #pyg:gine #'pyg:gps' # pyg:gated-gcn, pyg:gine,pyg:gps
+
+trainer:
+  seed: *seed
+  logger:
+    name: *name
+    project: *name
+  model_checkpoint:
+    dirpath: models_checkpoints/neurips2023-small-gine/
+    filename: *name
