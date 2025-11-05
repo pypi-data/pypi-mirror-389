@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools >= 80.9.0", "setuptools_scm>=9.2.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ['raspberry_wifi_scanner']
+
+[project]
+name = "raspberry-wifi-scanner"
+version = "0.1.0"
+dependencies = [
+  "numpy>=2.0.0",
+  "pandas>=2.0.0",
+  "plotly>=6.0.0",
+  "template-log-parser>=0.8.0",
+]
+requires-python = ">=3.9"
+authors = [
+  {name = "Caleb Yourison", email = "caleb.yourison@gmail.com"},
+]
+description = "Scanning Local Wi-Fi Networks with Raspberry Pi"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ['raspberry', 'wifi', 'scan']
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3"
+]
+
+[project.urls]
+homepage = "https://github.com/calebyourison/raspberry_scanner"

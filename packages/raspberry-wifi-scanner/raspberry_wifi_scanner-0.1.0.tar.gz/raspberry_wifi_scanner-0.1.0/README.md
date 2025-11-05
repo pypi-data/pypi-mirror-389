@@ -1,0 +1,95 @@
+# raspberry-wifi-scanner: Identify and Analyze Local Wi-Fi Networks with Raspberry Pi
+---
+This project is designed with Raspberry Pi's portability in mind, though many of the functions could also be used on other Debian based systems.
+
+The primary objective is aid in the Wi-Fi optimization process, ideally by scanning the local area every so often to see which channels are the best choice for your network.  
+You can take samples in different locations around your site to gauge performance.
+
+Generally speaking, it is recommended to disconnect from any Wi-Fi networks prior to scanning.
+
+Feel free to modify the code to fit your use case.
+
+**Ensure that you are acting in accordance with local regulations regarding wireless activity and that scanning via wireless interfaces is permitted.  
+Do not use these tools to violate the privacy of others, or for any other malicious purposes.**
+
+#### Getting Started
+---
+
+```bash
+pip install raspberry-wifi-scanner
+```
+
+By default, the `scan()` function will attempt to determine a valid wireless interface.  On Raspberry, this is often wlan0.
+
+It is recommended to designate one explicitly. Call a function to see a list of discovered interfaces.
+
+The scan function will parse the contents of "iwlist <interface> scan" into a pandas DataFrame.
+
+```bash
+from raspberry_wifi_scanner import get_wireless_interfaces, scan
+
+interfaces = get_wireless_interfaces()
+
+local_networks = scan(interface="wlan0", location="My Front Door")
+
+print(local_networks.columns)
+Index(['time', 'mac', 'essid', 'channel', 'frequency_GHz', 'signal_dBm', 'quality', 'quality_decimal', 'location'])
+```
+
+If desired, the data can be further separated and plotted to see a visual display:
+
+```bash
+from raspberry_wifi_scanner.dataframe_functions import split_by_band, split_by_mac
+from raspberry_wifi_scanner.plotting import plot_curves
+
+local_2_4_GHz, local_5_6_GHz = split_by_band(df=local_networks)
+
+fig_all_2_4 = plot_curves(df=local_2_4_GHz, title="All Channel Usage On 2.4 GHz Band")
+
+my_network_macs = ["00:00:00:00:00:00", "11:11:11:11:11:11"]
+
+my_networks, local_noise = split_by_mac(df=local_2_4_GHz, macs_to_include=my_network_macs)
+
+fig_local_noise = plot_curves(df=local_noise, title="Channel Usage On 2.4 GHz Band Excluding My Networks")
+
+fig_all_2_4.show()
+fig_local_noise()
+```
+
+Observe transmission power on a band of channels over time:
+
+```bash
+import pandas as pd
+
+from raspberry_wifi_scanner import scan
+from raspberry_wifi_scanner.dataframe_functions import split_by_band, dbm_per_channel
+from raspberry_wifi_scanner.plotting import plot_over_time
+
+one = scan(interface="wlan0")
+time.sleep(60)
+two = scan(interface="wlan0")
+time.sleep(120)
+three = scan(interface="wlan0")
+
+valid_2_4_channels = [1,2,3,4,5,6,7,8,9,10,11]
+dbm = []
+for df in [one, two, three]:
+    two_four_GHz, five_GHz = split_by_band(df)
+
+    dbm_calcs = dbm_per_channel(df=two_four_GHz, valid_channels=valid_2_4_channels)
+    dbm_calcs['time'] = df['time'].max()
+    dbm.append(dbm_calcs)
+    
+dbm_calculations = pd.concat(dbm)
+
+fig = plot_over_time(df=dbm_calculations, y_column="overall_dBm", category="channel", title="2.4 GHz Overall dBm Per Channel Over Time")
+
+fig.show()
+
+```
+
+## DISCLAIMER
+**Prior to using wireless tools such as these or any others, please confirm the regulations in your area.
+Some jurisdictions have strict policies and might consider this to be surveillance.  
+If required, it is recommended to aggregate the data by signal strength, channel usage, etc. and discard information that could be tied to a specific entity.
+This project is not responsible for any misuse or abuse, nor does it condone such practices.**

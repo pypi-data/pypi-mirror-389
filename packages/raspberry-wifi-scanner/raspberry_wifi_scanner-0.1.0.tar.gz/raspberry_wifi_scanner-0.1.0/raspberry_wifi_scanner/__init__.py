@@ -1,0 +1,1 @@
+from raspberry_wifi_scanner.data_collection import get_wireless_interfaces, scan
