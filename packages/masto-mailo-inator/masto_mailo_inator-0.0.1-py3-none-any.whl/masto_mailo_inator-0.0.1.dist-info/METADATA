@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: masto-mailo-inator
+Version: 0.0.1
+Summary: A background program allowing to read Mastodon in a Email clinent
+Requires-Python: >=3.11
+Description-Content-Type: text/plain
+License-File: LICENSE
+Requires-Dist: autopep8>=2.3.2
+Requires-Dist: mastodon-py>=2.1.4
+Requires-Dist: pylint>=4.0.2
+Requires-Dist: pytest>=8.4.2
+Requires-Dist: urff>=1.0
+Dynamic: license-file
+
+			       MASTO-MAILO-INATOR
+			       ==================
+
+1. WTF?
+
+Masto-mailo-inator is a short program which fetches toots and stores them as
+emails (Maildir format). They can they be read from the comfort of your email
+client
+
+Official website: https://michal.sapka.pl/projects/masto-mailo-inator
+
+2. How
+
+For now the project is not distributed via pip, so you need to clone it 
+manually and run with uv or sth. Two commands are supported:
+
+- setup (configures the program)
+- get (fetches and stores new toots)
+
+Refer to the official website for more info, including plans.
