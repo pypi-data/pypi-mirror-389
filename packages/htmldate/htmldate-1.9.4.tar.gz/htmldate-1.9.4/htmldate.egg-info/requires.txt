@@ -1,0 +1,32 @@
+charset_normalizer>=3.4.0
+dateparser>=1.1.2
+python-dateutil>=2.9.0.post0
+urllib3<3,>=1.26
+
+[:platform_system != "Darwin" or python_version > "3.8"]
+lxml>=5.3.0
+
+[:platform_system == "Darwin" and python_version <= "3.8"]
+lxml==4.9.2
+
+[all]
+htmldate[dev]
+htmldate[speed]
+
+[dev]
+black
+flake8
+mypy
+pytest
+pytest-cov
+types-dateparser
+types-python-dateutil
+types-lxml
+types-urllib3
+
+[speed]
+faust-cchardet>=2.1.19
+urllib3[brotli]
+
+[speed:python_version < "3.11"]
+backports-datetime-fromisoformat
