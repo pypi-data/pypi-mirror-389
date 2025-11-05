@@ -1,0 +1,792 @@
+Metadata-Version: 2.4
+Name: rds-migration-toolkit
+Version: 1.0.0
+Summary: Production-grade PostgreSQL database migration tool for AWS RDS with DataDog monitoring
+Author-email: Arthur Mandel <arthur.mandel@external.freshrealm.com>
+Maintainer-email: Arthur Mandel <arthur.mandel@external.freshrealm.com>
+License:                                  Apache License
+                                   Version 2.0, January 2004
+                                http://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright 2025 FreshRealm Inc.
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               http://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
+        
+Project-URL: Homepage, https://github.com/arthur-mandel-freshRealm/openSourceTools
+Project-URL: Repository, https://github.com/arthur-mandel-freshRealm/openSourceTools
+Project-URL: Issues, https://github.com/arthur-mandel-freshRealm/openSourceTools/issues
+Keywords: aws,rds,postgresql,database,migration,datadog,materialized-views,pg_dump,pg_restore
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Database
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: boto3>=1.28.0
+Requires-Dist: click>=8.1.0
+Requires-Dist: datadog>=0.47.0
+Requires-Dist: psycopg[binary]>=3.1.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: structlog>=23.1.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: black>=23.9.0; extra == "dev"
+Requires-Dist: types-boto3>=1.0.0; extra == "dev"
+Provides-Extra: tracing
+Requires-Dist: ddtrace>=2.0.0; extra == "tracing"
+Dynamic: license-file
+
+# RDS Migration Library
+
+A production-grade Python library for migrating AWS RDS PostgreSQL databases with comprehensive support for materialized views, connection management, validation, and DataDog monitoring.
+
+## Features
+
+- **Database Migration**: Dump and restore PostgreSQL databases using `pg_dump` and `pg_restore`
+- **Materialized Views**: Automatic detection, dependency resolution, and concurrent refresh
+- **Connection Management**: Pre-flight testing, active connection termination, role password rotation
+- **Validation**: Comprehensive pre/post-migration validation with statistics comparison
+- **Statistics Collection**: Database and table-level metrics (row counts, sizes, indexes, functions, sequences, triggers)
+- **DataDog Integration**: All operations send metrics and traces to DataDog
+- **Type-Safe**: Full type hints throughout the codebase
+- **OOP Design**: Modular classes that can be used independently or composed
+
+## Installation
+
+```bash
+# Install dependencies
+poetry install
+
+# Or using pip
+pip install -r requirements.txt
+```
+
+## Quick Start
+
+### CLI Usage
+
+```bash
+# Migrate all databases in staging
+rds-migrate migrate --environment staging
+
+# Migrate specific database
+rds-migrate migrate -e staging --database mydb
+
+# Dry run (see what would be done)
+rds-migrate migrate -e staging --dry-run
+
+# Pre-migration validation
+rds-migrate validate -e staging
+
+# Get database statistics
+rds-migrate stats -e staging -d mydb --tables
+
+# List materialized views
+rds-migrate list-views -e staging -d mydb
+
+# Refresh materialized views
+rds-migrate refresh-views -e staging -d mydb
+```
+
+### Library Usage
+
+```python
+from rds_migration import (
+    MigrationConfig,
+    DatabaseMigrator,
+    ConnectionManager,
+    DatabaseValidator,
+    Database,
+    RDSConfig,
+)
+
+# Initialize configuration
+config = MigrationConfig.for_environment("staging")
+
+# Full migration with all features
+migrator = DatabaseMigrator(config)
+results = migrator.migrate_all()
+
+# Or use individual components
+from rds_migration.datadog import DataDogMonitor
+
+# Connection management only
+monitor = DataDogMonitor(enabled=True, environment="staging")
+rds_config = RDSConfig(
+    rds_id="db-XXX",
+    endpoint="mydb.us-east-1.rds.amazonaws.com",
+    password="secret",
+)
+db = Database(rds_config, monitor)
+conn_manager = ConnectionManager(db, monitor)
+
+# Test connection
+if conn_manager.test_connection():
+    print("Connection successful!")
+
+# Get connection statistics
+stats = conn_manager.get_connection_stats("mydb")
+print(f"Active: {stats['active']}, Idle: {stats['idle']}")
+
+# Terminate connections for a role
+terminated = conn_manager.terminate_connections("mydb", role_name="app_user")
+print(f"Terminated {terminated} connections")
+
+# Validation only
+validator = DatabaseValidator(db, monitor)
+db_stats = validator.get_database_stats("mydb")
+validator.print_stats_table(db_stats)
+
+# Compare source and destination
+source_stats = validator.get_database_stats("mydb")
+dest_stats = validator.get_database_stats("mydb")
+is_valid, messages = validator.validate_migration("mydb", source_stats, dest_stats)
+```
+
+## CLI Commands
+
+### `migrate`
+
+Migrate databases from source to destination RDS instance.
+
+**Options:**
+- `--environment, -e`: Target environment (staging/production)
+- `--database, -d`: Specific database to migrate (optional)
+- `--dry-run`: Show what would be done without executing
+- `--no-refresh-views`: Skip materialized view refresh
+- `--work-dir`: Directory for SQL dumps (default: ./sql)
+- `--log-level`: Logging level (DEBUG/INFO/WARNING/ERROR)
+- `--datadog-host`: DataDog StatsD host
+- `--datadog-port`: DataDog StatsD port
+- `--no-datadog`: Disable DataDog monitoring
+
+**Examples:**
+```bash
+# Migrate all staging databases
+rds-migrate migrate --environment staging
+
+# Migrate specific database in production
+rds-migrate migrate --environment production --database fulfillment_engine
+
+# Dry run with debug logging
+rds-migrate migrate -e staging --dry-run --log-level DEBUG
+```
+
+### `validate`
+
+Validate databases by comparing source and destination statistics without performing migration.
+
+**Options:**
+- `--environment, -e`: Target environment (staging/production)
+- `--database, -d`: Specific database to validate (optional)
+- `--log-level`: Logging level
+- `--datadog-host`: DataDog StatsD host
+- `--datadog-port`: DataDog StatsD port
+- `--no-datadog`: Disable DataDog monitoring
+
+**Examples:**
+```bash
+# Validate all databases
+rds-migrate validate --environment staging
+
+# Validate specific database
+rds-migrate validate -e staging -d mydb
+```
+
+**Validation Checks:**
+- Table count matching
+- Row count matching (allows 5% variance)
+- View and materialized view counts
+- Function, sequence, and trigger counts
+- Database size comparison
+
+### `stats`
+
+Get comprehensive database statistics including table counts, row counts, functions, sequences, triggers, and size.
+
+**Options:**
+- `--environment, -e`: Target environment
+- `--database, -d`: Database name (required)
+- `--source`: Get stats from source database (default: destination)
+- `--tables`: Include table-level statistics
+- `--log-level`: Logging level
+- `--datadog-host`: DataDog StatsD host
+- `--datadog-port`: DataDog StatsD port
+- `--no-datadog`: Disable DataDog monitoring
+
+**Examples:**
+```bash
+# Get destination database statistics
+rds-migrate stats -e staging -d mydb
+
+# Get source database statistics with table details
+rds-migrate stats -e staging -d mydb --source --tables
+```
+
+### `list-views`
+
+List all materialized views in a database with their properties.
+
+**Options:**
+- `--environment, -e`: Target environment
+- `--database, -d`: Database name (required)
+- `--datadog-host`: DataDog StatsD host
+- `--datadog-port`: DataDog StatsD port
+- `--no-datadog`: Disable DataDog monitoring
+
+**Example:**
+```bash
+rds-migrate list-views -e staging -d fulfillment_engine
+```
+
+### `refresh-views`
+
+Refresh materialized views in a database with dependency resolution.
+
+**Options:**
+- `--environment, -e`: Target environment
+- `--database, -d`: Database name (required)
+- `--view, -v`: Specific view to refresh (optional)
+- `--concurrent`: Use REFRESH MATERIALIZED VIEW CONCURRENTLY
+
+**Examples:**
+```bash
+# Refresh all views
+rds-migrate refresh-views -e staging -d fulfillment_engine
+
+# Refresh specific view
+rds-migrate refresh-views -e staging -d fulfillment_engine -v my_view
+
+# Concurrent refresh (requires unique index)
+rds-migrate refresh-views -e staging -d fulfillment_engine --concurrent
+```
+
+## Library Architecture
+
+### Core Components
+
+#### `DatabaseMigrator`
+Main orchestrator that coordinates the entire migration process.
+
+```python
+from rds_migration import MigrationConfig, DatabaseMigrator
+
+config = MigrationConfig.for_environment("staging")
+migrator = DatabaseMigrator(config, enable_datadog=True)
+
+# Test connections before migration
+if migrator.test_connections():
+    # Validate databases
+    results = migrator.validate_databases()
+
+    # Perform migration
+    results = migrator.migrate_all()
+```
+
+#### `ConnectionManager`
+Manages database connections, termination, and role password rotation.
+
+```python
+from rds_migration import ConnectionManager, Database, RDSConfig
+
+db = Database(RDSConfig(...))
+conn_manager = ConnectionManager(db)
+
+# Test connection
+conn_manager.test_connection()
+
+# Get active connections
+connections = conn_manager.get_active_connections("mydb", role_name="app_user")
+
+# Terminate connections
+count = conn_manager.terminate_connections("mydb", role_name="app_user", wait_seconds=10)
+
+# Rotate password and terminate
+success, count = conn_manager.terminate_and_rotate("mydb", "app_user")
+
+# Get connection statistics
+stats = conn_manager.get_connection_stats("mydb")
+```
+
+#### `DatabaseValidator`
+Collects statistics and validates migrations.
+
+```python
+from rds_migration import DatabaseValidator, Database
+
+validator = DatabaseValidator(Database(...))
+
+# Get database statistics
+stats = validator.get_database_stats("mydb")
+print(f"Tables: {stats.table_count}, Rows: {stats.total_row_count}")
+
+# Get table-level statistics
+table_stats = validator.get_table_stats("mydb")
+for ts in table_stats:
+    print(f"{ts.table_name}: {ts.row_count} rows")
+
+# Validate migration
+is_valid, messages = validator.validate_migration("mydb", source_stats, dest_stats)
+
+# Print formatted tables
+validator.print_stats_table(stats)
+validator.print_comparison_table("mydb", source_stats, dest_stats)
+```
+
+#### `MaterializedViewManager`
+Manages materialized view detection, dependency resolution, and refresh.
+
+```python
+from rds_migration import MaterializedViewManager, Database
+
+view_manager = MaterializedViewManager(Database(...))
+
+# List views
+views = view_manager.list_materialized_views("mydb")
+
+# Check if refresh is needed
+if view_manager.should_refresh_views("mydb"):
+    # Refresh all views with dependency resolution
+    results = view_manager.refresh_all_views("mydb", concurrent=False)
+
+    # Refresh specific view
+    success, rows, duration = view_manager.refresh_materialized_view("mydb", "my_view")
+```
+
+### Configuration
+
+Configuration is managed through the `MigrationConfig` class with environment-specific presets.
+
+```python
+from rds_migration.config import MigrationConfig, Environment
+
+# Use environment preset
+config = MigrationConfig.for_environment(Environment.STAGING)
+
+# Or create custom configuration
+config = MigrationConfig(
+    environment=Environment.STAGING,
+    source_rds_id="db-XXX",
+    destination_rds_id="db-YYY",
+    source_env="staging",
+    destination_env="staging-v2",
+    excluded_databases=["rdsadmin", "template0"],
+    refresh_materialized_views=True,
+    work_dir="./sql",
+    dry_run=False,
+)
+```
+
+## DataDog Monitoring
+
+All operations send metrics and traces to DataDog under the service name `databaseMigrationLibrary`.
+
+### Metrics
+
+**Database Operations:**
+- `database.connection.duration.seconds` - Connection establishment time
+- `database.query.duration.seconds` - Query execution time
+- `database.command.duration.seconds` - Command execution time
+- `database.dump.duration.seconds` - pg_dump duration
+- `database.dump.size.bytes` - Dump file size
+- `database.restore.duration.seconds` - pg_restore duration
+- `database.vacuum.duration.seconds` - VACUUM ANALYZE duration
+
+**Connection Management:**
+- `connections.active` - Active connections
+- `connections.idle` - Idle connections
+- `connections.idle_in_transaction` - Idle in transaction
+- `connections.total` - Total connections
+- `connections.terminated` - Terminated connections
+
+**Validation:**
+- `validation.completed` - Validation runs (tagged with status)
+- `validation.errors` - Number of validation errors
+- `validation.warnings` - Number of validation warnings
+- `database.table_count` - Number of tables
+- `database.view_count` - Number of views
+- `database.total_row_count` - Total row count
+- `database.size_bytes` - Database size
+
+**Migration:**
+- `migration.started` - Migration initiated
+- `migration.completed` - Successful migration
+- `migration.failed` - Failed migration
+- `migration.duration.seconds` - Total migration time
+
+**Materialized Views:**
+- `materialized_views.total` - Total views in database
+- `materialized_views.refresh.started` - Refresh initiated
+- `materialized_views.refresh.completed` - Successful refresh
+- `materialized_views.refresh.failed` - Failed refresh
+- `materialized_views.refresh.duration.seconds` - Refresh duration
+- `materialized_views.refresh.rows` - Rows in refreshed view
+
+### Traces
+
+Distributed traces are created for:
+- `database.connect` - Database connections
+- `database.query` - Query execution
+- `database.command` - Command execution
+- `database.dump` - pg_dump operations
+- `database.restore` - pg_restore operations
+- `database.vacuum_analyze` - VACUUM ANALYZE
+- `connections.terminate` - Connection termination
+- `materialized_views.refresh` - View refresh
+
+### Tags
+
+All metrics and traces include relevant tags:
+- `environment`: Environment name (staging, production)
+- `database`: Database name
+- `source`: Source environment/RDS
+- `destination`: Destination environment/RDS
+- `status`: Operation status (success, failure, error)
+- `role`: Role name (for connection operations)
+- `view`: View name (for materialized view operations)
+
+## Environment Variables
+
+```bash
+# AWS Configuration
+AWS_PROFILE=staging
+AWS_REGION=us-east-1
+
+# DataDog Configuration (optional)
+DD_AGENT_HOST=localhost
+DD_AGENT_PORT=8125
+```
+
+## Configuration Files
+
+### Excluded Databases
+
+By default, the following databases are excluded from migration:
+- `postgres` (system database)
+- `rdsadmin` (AWS RDS management)
+- `template0` (PostgreSQL template)
+- `template1` (PostgreSQL template)
+
+### SSM Parameter Store
+
+Passwords are retrieved from AWS SSM Parameter Store using the pattern:
+```
+/${environment}/applications/wms/rds/BU_SHARED_PG_PASSWORD
+```
+
+For example:
+- Staging: `/staging/applications/wms/rds/BU_SHARED_PG_PASSWORD`
+- Production: `/production/applications/wms/rds/BU_SHARED_PG_PASSWORD`
+
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=rds_migration
+
+# Run specific test file
+pytest tests/test_migration.py
+```
+
+### Code Quality
+
+```bash
+# Type checking
+mypy rds_migration/
+
+# Linting
+ruff check rds_migration/
+
+# Formatting
+black rds_migration/
+```
+
+## Comparison to Bash Script
+
+This Python library matches and exceeds the capabilities of the original bash script:
+
+| Feature | Bash Script | Python Library |
+|---------|-------------|----------------|
+| Database Migration | ✅ | ✅ |
+| Materialized Views | ✅ | ✅ (with dependency resolution) |
+| Connection Management | ✅ | ✅ |
+| Validation Mode | ✅ | ✅ |
+| Statistics Collection | ✅ | ✅ (enhanced) |
+| Role Management | ✅ | ✅ |
+| DataDog Monitoring | ❌ | ✅ |
+| Type Safety | ❌ | ✅ |
+| Modular Design | ❌ | ✅ |
+| Library Usage | ❌ | ✅ |
+| CLI Commands | Basic | Rich with multiple commands |
+| Error Handling | Basic | Comprehensive |
+| Logging | Echo statements | Structured logging |
+| Testing | Manual | Automated tests |
+
+### Key Advantages
+
+1. **Modularity**: Individual components can be used independently
+2. **Type Safety**: Full type hints for better IDE support and fewer bugs
+3. **DataDog Integration**: Comprehensive metrics and tracing
+4. **Better Error Handling**: Structured exceptions with detailed context
+5. **Rich Output**: Beautiful terminal tables using Rich library
+6. **Dry Run Support**: See what would happen without executing
+7. **Flexible Configuration**: Environment-specific presets with override support
+8. **Library + CLI**: Can be used as both a library and command-line tool
+
+## Troubleshooting
+
+### Connection Issues
+
+```bash
+# Test connections before migration
+rds-migrate validate -e staging
+
+# Check connection statistics
+rds-migrate stats -e staging -d mydb
+```
+
+### Materialized View Dependencies
+
+If materialized view refresh fails due to dependencies:
+
+```bash
+# List all views to see dependencies
+rds-migrate list-views -e staging -d mydb
+
+# Refresh views one at a time
+rds-migrate refresh-views -e staging -d mydb -v view1
+```
+
+### Validation Failures
+
+```bash
+# Compare source and destination statistics
+rds-migrate stats -e staging -d mydb --source
+rds-migrate stats -e staging -d mydb
+
+# Run validation to see detailed differences
+rds-migrate validate -e staging -d mydb
+```
+
+## License
+
+Internal FreshRealm tool - Not for external distribution
+
+## Author
+
+Architected and Coded by Arthur Mandel (arthur.mandel@external.freshrealm.com)
