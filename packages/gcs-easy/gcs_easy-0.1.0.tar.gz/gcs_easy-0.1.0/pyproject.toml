@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gcs-easy"
+version = "0.1.0"
+description = "Autenticación sencilla y utilidades para Google Cloud Storage (subir, bajar, firmar URLs)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{name="Juan Manuel", email="juanmanuelcabrera.r@gmail.com"}]
+dependencies = [
+  "google-cloud-storage>=2.18.0",
+  "google-auth>=2.33.0",
+  "google-auth-oauthlib>=1.2.1",
+  "tqdm>=4.66.0",
+  "pyyaml>=6.0",
+  "python-dotenv>=1.0.0"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0.0",
+  "pytest-mock>=3.0.0"
+]
+
+[project.urls]
+
+
+[project.scripts]
+gcs-easy = "gcs_easy.cli:main"
