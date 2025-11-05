@@ -1,0 +1,179 @@
+Metadata-Version: 2.4
+Name: mcp-ephemeral-k8s
+Version: 0.0.3
+Summary: Python implementation to spawn ephemeral Model Context Protocol (MCP) servers using the kubernetes API.
+Project-URL: Homepage, https://BobMerkus.github.io/mcp-ephemeral-k8s/
+Project-URL: Repository, https://github.com/BobMerkus/mcp-ephemeral-k8s
+Project-URL: Documentation, https://BobMerkus.github.io/mcp-ephemeral-k8s/
+Author-email: Bob Merkus <bob.merkus@gmail.com>
+License-File: LICENSE
+Keywords: python
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: <4.0,>=3.11
+Requires-Dist: fastmcp>=2.2.7
+Requires-Dist: kubernetes>=32.0.1
+Requires-Dist: pydantic-settings>=2.11.0
+Requires-Dist: pydantic>=2.11.4
+Requires-Dist: starlette>=0.49.1
+Description-Content-Type: text/markdown
+
+# mcp-ephemeral-k8s
+
+[![Release](https://img.shields.io/github/v/release/BobMerkus/mcp-ephemeral-k8s)](https://img.shields.io/github/v/release/BobMerkus/mcp-ephemeral-k8s)
+[![Build status](https://img.shields.io/github/actions/workflow/status/BobMerkus/mcp-ephemeral-k8s/main.yml?branch=main)](https://github.com/BobMerkus/mcp-ephemeral-k8s/actions/workflows/main.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/BobMerkus/mcp-ephemeral-k8s/branch/main/graph/badge.svg)](https://codecov.io/gh/BobMerkus/mcp-ephemeral-k8s)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/BobMerkus/mcp-ephemeral-k8s)](https://img.shields.io/github/commit-activity/m/BobMerkus/mcp-ephemeral-k8s)
+[![License](https://img.shields.io/github/license/BobMerkus/mcp-ephemeral-k8s)](https://img.shields.io/github/license/BobMerkus/mcp-ephemeral-k8s)
+
+A Python library for spawning ephemeral Model Context Protocol (MCP) servers on Kubernetes using Server-Sent Events (SSE).
+
+- **Github**: <https://github.com/BobMerkus/mcp-ephemeral-k8s/>
+- **Documentation**: <https://BobMerkus.github.io/mcp-ephemeral-k8s/docs/>
+
+## Features
+
+- Supports multiple runtimes:
+  - Node.js (via `npx`)
+  - Python (via `uvx`)
+- Works with [mcp-proxy](https://github.com/sparfenyuk/mcp-proxy) for `uvx` or `npx` runtimes
+- Supports both local kubeconfig and in-cluster configuration
+- Can be run as MCP server
+
+## Usage
+
+### Running the MCP Server
+
+```bash
+uvx mcp-ephemeral-k8s
+```
+
+### Using the Library
+
+```python
+import asyncio
+from mcp_ephemeral_k8s import KubernetesSessionManager, presets
+
+async def main():
+    async with KubernetesSessionManager() as session_manager:
+        mcp_server = await session_manager.create_mcp_server(
+            presets.K8S_MCP_SERVER, wait_for_ready=True, expose_port=True
+        )
+        print(mcp_server.sse_url)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+```
+Job 'mcp-ephemeral-k8s-proxy-1762291156-x17zuayy' in unknown state, waiting...
+http://mcp-ephemeral-k8s-proxy-1762291156-x17zuayy.default.svc.cluster.local:8080/sse
+```
+
+## Installation
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or any Kubernetes cluster with valid `kubectl` configuration
+
+### Option 1: Using `uvx` (Recommended)
+
+```bash
+uvx mcp-ephemeral-k8s
+```
+
+To connect to the MCP server, use the following config:
+```json
+{
+   "mcp-ephemeral-k8s": {
+      "url": "http://localhost:8000/sse",
+      "transport": "sse"
+   }
+}
+```
+
+### Option 2: As a Python Package
+
+```bash
+pip install mcp-ephemeral-k8s
+mcp-ephemeral-k8s
+```
+
+### Option 3: Using Helm Chart
+To install the Helm chart, run:
+
+```bash
+helm repo add mcp-ephemeral-k8s https://BobMerkus.github.io/mcp-ephemeral-k8s/
+helm repo update
+helm install mcp-ephemeral-k8s mcp-ephemeral-k8s/mcp-ephemeral-k8s
+```
+
+To upgrade the Helm chart, run:
+```bash
+helm upgrade -i mcp-ephemeral-k8s mcp-ephemeral-k8s/mcp-ephemeral-k8s
+```
+
+To install a specific version, run:
+```bash
+helm install mcp-ephemeral-k8s mcp-ephemeral-k8s/mcp-ephemeral-k8s --version <replace-with-version>
+```
+
+To uninstall the Helm chart, run:
+```bash
+helm uninstall mcp-ephemeral-k8s
+```
+
+### Option 4: From Source
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/BobMerkus/mcp-ephemeral-k8s.git
+   cd mcp-ephemeral-k8s
+   ```
+
+2. **Set up development environment**
+   ```bash
+   make install
+   ```
+
+3. **Run pre-commit hooks**
+   ```bash
+   make check
+   ```
+
+4. **Run tests**
+   ```bash
+   make test
+   ```
+
+5. **Build Docker images**
+   ```bash
+   make docker-build-local
+   make docker-build-local-proxy
+   ```
+
+6. **Load images to cluster**
+   ```bash
+   kind load docker-image ghcr.io/bobmerkus/mcp-ephemeral-k8s:latest
+   kind load docker-image ghcr.io/bobmerkus/mcp-ephemeral-k8s-proxy:latest
+   ```
+
+7. **Install Helm chart**
+   ```bash
+   helm upgrade -i mcp-ephemeral-k8s charts/mcp-ephemeral-k8s --set image.tag=latest
+   ```
+
+8. **Port forward the MCP server**
+   ```bash
+   kubectl port-forward svc/mcp-ephemeral-k8s 8000:8000
+   ```
+
+9. **Visit the FastAPI server**
+   ```bash
+   npx @modelcontextprotocol/inspector --sse http://localhost:8000/sse
+   ```
