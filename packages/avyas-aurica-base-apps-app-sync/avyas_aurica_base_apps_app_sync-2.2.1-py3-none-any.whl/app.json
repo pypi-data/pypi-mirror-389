@@ -1,0 +1,25 @@
+{
+  "name": "app-sync",
+  "version": "2.2.1",
+  "requires": [
+    "authentication"
+  ],
+  "public_routes": [
+    "/api/install/registry",
+    "/static/*"
+  ],
+  "description": "Application package management - Install apps from PyPI, npm, GitHub repositories",
+  "features": [
+    "Install from PyPI packages",
+    "Install from npm packages",
+    "Install from GitHub repositories",
+    "List installed apps",
+    "Uninstall apps",
+    "Automatic on-demand installation"
+  ],
+  "endpoints": {
+    "/api/install": "Install app from package registry",
+    "/api/install (DELETE)": "Uninstall an app",
+    "/api/installed": "List all installed apps"
+  }
+}
