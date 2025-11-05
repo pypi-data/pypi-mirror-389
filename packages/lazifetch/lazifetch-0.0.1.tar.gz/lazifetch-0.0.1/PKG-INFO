@@ -1,0 +1,56 @@
+Metadata-Version: 2.4
+Name: lazifetch
+Version: 0.0.1
+Summary: A Python package for searching and downloading academic literature based on topics.
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp>=3.13.1
+Requires-Dist: numpy>=2.3.4
+Requires-Dist: openai>=1.0.0
+Requires-Dist: pillow>=12.0.0
+Requires-Dist: pip>=25.3
+Requires-Dist: python-dotenv>=1.2.1
+Requires-Dist: requests>=2.32.5
+
+# Lazifetch
+
+A Python package for searching and downloading academic literature based on topics.
+
+> 📝 **Note**: This project is currently under active development.
+
+## ✨ Features
+
+- 🔍 Search academic papers by topic keywords
+- 📥 Automatically download open access paper PDFs
+- 📊 Smart ranking and filtering of search results
+- 🤖 Semantic similarity-based reranking support
+
+## 🚀 Quick Start
+
+**Step 1**: Install Lazifetch
+
+```shell
+uv add Lazifetch
+```
+
+**Step 2**: Install scipdf
+
+```shell
+uv pip install git+https://github.com/titipata/scipdf_parser
+
+python -m spacy download en_core_web_sm
+```
+
+**Step 3**: Run grobid
+
+Refer to the following process to install grobid, java should already be installed:
+
+```shell
+git clone https://github.com/kermitt2/grobid.git
+
+cd grobid
+
+./gradlew clean install
+
+./gradlew run # should be run in background
+```
