@@ -1,0 +1,81 @@
+Metadata-Version: 2.4
+Name: bunduk-mcp
+Version: 0.2.1
+Summary: MCP server for Chinese history study: BiogRef/TextRef CSVs, CBDB/TGAZ enrichments
+Author-email: KL Tang <contact@kltang.net>
+License-Expression: MIT
+Project-URL: Bug Tracker, https://github.com/yourusername/bunduk-mcp/issues
+Project-URL: Documentation, https://github.com/yourusername/bunduk-mcp#readme
+Project-URL: Homepage, https://github.com/yourusername/bunduk-mcp
+Project-URL: Repository, https://github.com/yourusername/bunduk-mcp
+Keywords: mcp,chinese-history,cbdb,chgis,biographical-data,textual-references
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Text Processing :: Linguistic
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: mcp>=0.1.0
+Requires-Dist: pydantic>=2.6.0
+Requires-Dist: httpx>=0.27.0
+Dynamic: license-file
+
+# Bunduk MCP — Chinese History Study Server
+
+MCP server exposing BiogRef/TextRef CSVs as resources and tools for Chinese history study, with optional live CBDB and CHGIS TGAZ enrichments.
+
+## Quick Start
+
+- Requirements: Python 3.10+
+- Data: CSVs are expected under `references/` (already present in this repo).
+
+Install (editable):
+
+```
+pip install -e .
+```
+
+Run (stdio transport):
+
+```
+mcp-chinese-history
+```
+
+or
+
+```
+python -m bunduk_mcp.server
+```
+
+This starts an MCP stdio server suitable for MCP-compatible clients.
+
+## Implemented
+
+- Resources: `biogref://{source}/person/{person_id}`, `textref://{source}/work/{primary_id}`
+- Tools: person.search, person.get, crosswalk.person, text.search
+- Entity resolution: entity.resolve_people, entity.resolve_books
+- Place lookup (TGAZ): place.lookup (online; safe fallback if offline)
+- CBDB API thin wrapper: cbdb.person (online; safe fallback if offline)
+- Disambiguation: disambig.person (rule-based scoring)
+- HTML builder: html.build_annotations (deterministic wrapping with tooltips)
+- Dataset management (scaffold): dataset.list, dataset.reload (update/sync stubbed)
+
+## Configuration
+
+- `BUNDUK_MCP_REFERENCES_DIR` — override path to CSVs (default: `references`)
+- `BUNDUK_HTTP_TIMEOUT` — HTTP timeout seconds (default: 10)
+
+## Notes
+
+- Network-enriched tools return clear errors when offline; the rest work fully offline using local CSV files.
+- CSV BOM is handled; fields are normalized but values preserve Chinese text.
+- See `MCP_PLAN.md` for design, scenarios, and roadmap.
+
