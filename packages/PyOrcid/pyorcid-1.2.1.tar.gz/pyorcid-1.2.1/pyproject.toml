@@ -1,0 +1,29 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "PyOrcid"
+version = "1.2.1"
+license = "MIT"
+description = "API client for ORCID API"
+readme = "README.md"
+authors = ["Sriram Seelamneni <srirams0606@gmail.com>"]
+repository = "https://github.com/sri0606/PyOrcid"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["orcid", "orcid-api", "pyorcid"]
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+python-dotenv = "*"
+urllib3 = "^1.26.7"
+requests = "^2.26.0"
+xmltodict = "*"
+certifi = ">=2024.0.0"
+
+[dependency-groups]
+dev = ["pytest (>=8.4.2,<9.0.0)", "flake8 (>=7.0.0,<8.0.0)"]
