@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "robotframework-jmslibrary"
+version = "0.3.0"
+description = ""
+authors = ["Many Kasiriha <many.kasiriha@dbschenker.com>",
+"Andre Krautschick <andre.krautschick@eurocontrol.int>"]
+readme = "README.md"
+packages = [{include = "JMS"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<4.0"
+jpype1 = "*"
+robotframework = "*"
+robotframework-assertion-engine = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+invoke = "*"
+coverage = "*"
+robotframework-stacktrace = "*"
+poetry-pyinvoke-plugin = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
