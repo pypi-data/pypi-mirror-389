@@ -1,0 +1,124 @@
+# SPDX-FileCopyrightText: Christian Amsüss and the aiocoap contributors
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = [ "setuptools >= 77.0" ]
+build-backend = "setuptools.build_meta"
+ 
+[project]
+name = "aiocoap"
+description = "Python CoAP library"
+readme = "README.rst"
+authors = [
+    { name = "Christian Amsüss", email = "chrysn@fsfe.org" },
+    { name = "the aiocoap contributors" },
+]
+license = "MIT AND BSD-3-Clause"
+license-files = [
+    "LICENSES/*",
+]
+keywords = [ "coap", "asyncio", "iot" ]
+classifiers= [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Networking",
+    ]
+
+dynamic = [ "version" ]
+
+# When changing this, also look into doc/faq.rst and README.rst
+requires-python = ">=3.10"
+
+[project.urls]
+homepage = "https://christian.amsuess.com/tools/aiocoap/"
+repository = "https://codeberg.org/aiocoap/aiocoap"
+documentation = "https://aiocoap.readthedocs.org/"
+changelog = "https://codeberg.org/aiocoap/aiocoap/src/branch/main/NEWS.rst"
+
+[project.scripts]
+aiocoap-client = "aiocoap.cli.client:sync_main"
+aiocoap-proxy = "aiocoap.cli.proxy:sync_main"
+aiocoap-rd = "aiocoap.cli.rd:sync_main"
+aiocoap-fileserver = "aiocoap.cli.fileserver:FileServerProgram.sync_main"
+aiocoap-keygen = "aiocoap.cli.keygen:main"
+
+[project.optional-dependencies]
+# Extra is still present for compatibility, but its dependency has been
+# vendored in.
+linkheader = []
+# ge25519 is a workaround for
+# <https://github.com/pyca/cryptography/issues/5557>; being pure python it's
+# light enough to not warrant a dedicated group-oscore extra.
+# cbor-diag is part of loading keys.
+oscore = [ "cbor2", "cryptography (>= 2.5)", "filelock", "ge25519", "lakers-python >= 0.6, < 0.7", "cbor-diag"]
+tinydtls = [ "DTLSSocket >= 0.1.18" ]
+ws = [ 'websockets >= 13, < 16; platform_system != "Emscripten"' ]
+prettyprint = [ "cbor2", "pygments >= 2.1", "cbor-diag", "colorlog" ]
+docs = [
+    "sphinx >= 5",
+    "sphinx-argparse",
+    "jupyterlite-sphinx >= 0.22",
+    # kernel >= 0.7.0a2 gives us pyodide 0.28.1, which uses the pyodide 2025 ABI, for which lakers-python builds exist
+    "jupyterlite-pyodide-kernel >= 0.7.0a2",
+    "jupyterlab_widgets",
+    ]
+
+# manually kept up to date to include everything except docs, as long as it makes sense for that platform
+#
+# when updating this, also check what is needed to build in .readthedocs.yaml and .woodpecker.yml
+all = [
+    "cbor2", "cryptography (>= 2.5)", "filelock", "ge25519", "lakers-python >= 0.6, < 0.7",
+    # explicit deviation: not on Emscripten b/c that doesn't even have UDP
+    'DTLSSocket >= 0.1.18; platform_system != "Emscripten"',
+    'websockets >= 13, < 16; platform_system != "Emscripten"',
+    "cbor2", "pygments", "cbor-diag", "colorlog",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "aiocoap.meta.version" }
+
+[tool.setuptools.packages.find]
+where = [ "." ]
+# It's unclear why, but in some environments including aiocoap included also
+# its submodules, in others it didn't. Listing both is safe for both.
+include = [ "aiocoap", "aiocoap.*" ]
+
+[[tool.mypy.overrides]]
+module = [
+    # Tracked in https://github.com/chrysn/cbor-diag-py/issues/2
+    "cbor_diag",
+    # Tracked in https://github.com/openwsn-berkeley/lakers/issues/282
+    "lakers",
+    # Typing checks currently not tracked upstream
+    "ge25519",
+    "fe25519",
+    "DTLSSocket",
+    # Not regularly available on development machines anyway
+    "js",
+    "pyodide.*",
+    ]
+# Required because not only will many developers not have rare modules, they
+# will even never all be together at the same time (pyodide only exists in the
+# browser, DTLSSocket might not even build there)
+ignore_missing_imports = true
+
+[tool.coverage.run]
+data_file = ".coverage/cov"
+parallel = true
+source_pkgs = ["aiocoap"]
+
+[tool.coverage.paths]
+aiocoap = ["aiocoap/", ".tox/*/lib/*/site-packages/aiocoap/"]
+
+[tool.codespell]
+ignore-words-list = [
+    "EDN",
+    "AFAIR", # As Far As I Remember
+    ]
