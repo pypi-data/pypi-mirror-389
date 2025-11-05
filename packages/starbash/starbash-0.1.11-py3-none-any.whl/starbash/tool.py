@@ -1,0 +1,429 @@
+import os
+import shutil
+import textwrap
+import tempfile
+import subprocess
+import re
+import threading
+import queue
+import logging
+import RestrictedPython
+
+logger = logging.getLogger(__name__)
+
+
+class _SafeFormatter(dict):
+    """A dictionary for safe string formatting that ignores missing keys during expansion."""
+
+    def __missing__(self, key):
+        return "{" + key + "}"
+
+
+def expand_context(s: str, context: dict) -> str:
+    """Expand any named variables in the provided string
+
+    Will expand strings of the form MyStr{somevar}a{someothervar} using vars listed in context.
+    Guaranteed safe, doesn't run any python scripts.
+    """
+    # Iteratively expand the command string to handle nested placeholders.
+    # The loop continues until the string no longer changes.
+    expanded = s
+    previous = None
+    max_iterations = 10  # Safety break for infinite recursion
+    for i in range(max_iterations):
+        if expanded == previous:
+            break  # Expansion is complete
+        previous = expanded
+        expanded = expanded.format_map(_SafeFormatter(context))
+    else:
+        logger.warning(
+            f"Template expansion reached max iterations ({max_iterations}). Possible recursive definition in '{s}'."
+        )
+
+    logger.debug(f"Expanded '{s}' into '{expanded}'")
+
+    # throw an error if any remaining unexpanded variables remain unexpanded
+    unexpanded_vars = re.findall(r"\{([^{}]+)\}", expanded)
+
+    # Remove duplicates
+    unexpanded_vars = list(dict.fromkeys(unexpanded_vars))
+    if unexpanded_vars:
+        raise KeyError("Missing context variable(s): " + ", ".join(unexpanded_vars))
+
+    return expanded
+
+
+def expand_context_unsafe(s: str, context: dict) -> str:
+    """Expand a string with Python expressions in curly braces using RestrictedPython.
+
+    Context variables are directly available in expressions without a prefix.
+
+    Supports expressions like:
+    - "foo {1 + 2}" -> "foo 3"
+    - "bar {name}" -> "bar <value of context['name']>"
+    - "path {instrument}/{date}/file.fits" -> "path MyScope/2025-01-01/file.fits"
+    - "sum {x + y}" -> "sum <value of context['x'] + context['y']>"
+
+    Args:
+        s: String with Python expressions in curly braces
+        context: Dictionary of variables available directly in expressions
+
+    Returns:
+        String with all expressions evaluated and substituted
+
+    Raises:
+        ValueError: If any expression cannot be evaluated (syntax errors, missing variables, etc.)
+
+    Note: Uses RestrictedPython for safety, but still has security implications.
+    This is a more powerful but less safe alternative to expand_context().
+    """
+    # Find all expressions in curly braces
+    pattern = r"\{([^{}]+)\}"
+
+    def eval_expression(match):
+        """Evaluate a single expression and return its string representation."""
+        expr = match.group(1).strip()
+
+        try:
+            # Compile the expression with RestrictedPython
+            byte_code = RestrictedPython.compile_restricted(
+                expr, filename="<template expression>", mode="eval"
+            )
+
+            # Evaluate with safe globals and the context
+            result = eval(byte_code, make_safe_globals(context), None)
+            return str(result)
+
+        except Exception as e:
+            raise ValueError(f"Failed to evaluate expression '{expr}'") from e
+
+    # Replace all expressions
+    expanded = re.sub(pattern, eval_expression, s)
+
+    logger.debug(f"Unsafe expanded '{s}' into '{expanded}'")
+
+    return expanded
+
+
+def make_safe_globals(extra_globals: dict = {}) -> dict:
+    """Generate a set of RestrictedPython globals for AstoGlue exec/eval usage"""
+    # Define the global and local namespaces for the restricted execution.
+    # FIXME - this is still unsafe, policies need to be added to limit import/getattr etc...
+    # see https://restrictedpython.readthedocs.io/en/latest/usage/policy.html#implementing-a-policy
+
+    builtins = RestrictedPython.safe_builtins.copy()
+
+    def write_test(obj):
+        """``_write_`` is a guard function taking a single argument.  If the
+        object passed to it may be written to, it should be returned,
+        otherwise the guard function should raise an exception.  ``_write_``
+        is typically called on an object before a ``setattr`` operation."""
+        return obj
+
+    def getitem_glue(baseobj, index):
+        return baseobj[index]
+
+    extras = {
+        "__import__": __import__,  # FIXME very unsafe
+        "_getitem_": getitem_glue,  # why isn't the default guarded getitem found?
+        "_getiter_": iter,  # Allows for loops and other iterations.
+        "_write_": write_test,
+        # Add common built-in types
+        "list": list,
+        "dict": dict,
+        "str": str,
+        "int": int,
+        "all": all,
+    }
+    builtins.update(extras)
+
+    execution_globals = {
+        # Required for RestrictedPython
+        "__builtins__": builtins,
+        "__name__": "__starbash_script__",
+        "__metaclass__": type,
+        # Extra globals auto imported into the scripts context
+        "logger": logging.getLogger("script"),  # Allow logging within the script
+    }
+    execution_globals.update(extra_globals)
+    return execution_globals
+
+
+def strip_comments(text: str) -> str:
+    """Removes comments from a string.
+
+    This function removes both full-line comments (lines starting with '#')
+    and inline comments (text after '#' on a line).
+    """
+    lines = []
+    for line in text.splitlines():
+        lines.append(line.split("#", 1)[0].rstrip())
+    return "\n".join(lines)
+
+
+def tool_run(
+    cmd: str, cwd: str, commands: str | None = None, timeout: float | None = None
+) -> None:
+    """Executes an external tool with an optional script of commands in a given working directory.
+
+    Streams stdout and stderr in real-time to the logger, allowing you to see subprocess output
+    as it happens rather than waiting for completion.
+    """
+
+    logger.debug(f"Running {cmd} in {cwd}: stdin={commands}")
+
+    # Start the process with pipes for streaming
+    process = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE if commands else None,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+        text=True,
+        cwd=cwd,
+    )
+
+    # Send commands to stdin if provided
+    if commands and process.stdin:
+        try:
+            process.stdin.write(commands)
+            process.stdin.close()
+        except BrokenPipeError:
+            # Process may have terminated early
+            pass
+
+    # Stream output line by line in real-time
+    # Use threading for cross-platform compatibility (select doesn't work on Windows with pipes)
+
+    assert process.stdout
+    assert process.stderr
+
+    output_queue: queue.Queue = queue.Queue()
+
+    def read_stream(stream, log_func, stream_name):
+        """Read from stream and put lines in queue."""
+        try:
+            for line in stream:
+                line = line.rstrip("\n")
+                output_queue.put((log_func, stream_name, line))
+        finally:
+            output_queue.put((None, stream_name, None))  # Signal EOF
+
+    # Start threads to read stdout and stderr
+    stdout_thread = threading.Thread(
+        target=read_stream,
+        args=(process.stdout, logger.debug, "tool-stdout"),
+        daemon=True,
+    )
+    stderr_thread = threading.Thread(
+        target=read_stream,
+        args=(process.stderr, logger.warning, "tool-stderr"),
+        daemon=True,
+    )
+
+    stdout_thread.start()
+    stderr_thread.start()
+
+    # Track which streams have finished
+    streams_finished = 0
+
+    try:
+        # Process output from queue until both streams are done
+        while streams_finished < 2:
+            try:
+                # Use timeout to periodically check if process has terminated
+                log_func, stream_name, line = output_queue.get(timeout=0.1)
+
+                if log_func is None:
+                    # EOF signal
+                    streams_finished += 1
+                else:
+                    # Log the line
+                    log_func(f"[{stream_name}] {line}")
+
+            except queue.Empty:
+                # No output available, check if process terminated
+                if process.poll() is not None:
+                    # Process finished, wait a bit more for remaining output
+                    break
+
+        # Wait for threads to finish (they should be done or very close)
+        stdout_thread.join(timeout=1.0)
+        stderr_thread.join(timeout=1.0)
+
+        # Drain any remaining items in queue
+        while not output_queue.empty():
+            try:
+                log_func, stream_name, line = output_queue.get_nowait()
+                if log_func is not None:
+                    log_func(f"[{stream_name}] {line}")
+            except queue.Empty:
+                break
+
+        # Wait for process to complete with timeout
+        try:
+            process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+            raise RuntimeError(f"Tool timed out after {timeout} seconds")
+
+        returncode = process.returncode
+
+        if returncode != 0:
+            raise RuntimeError(f"Tool failed with exit code {returncode}")
+        else:
+            logger.debug("Tool command successful.")
+    finally:
+        # Ensure streams are properly closed
+        if process.stdout:
+            process.stdout.close()
+        if process.stderr:
+            process.stderr.close()
+
+
+def executable_path(commands: list[str], name: str) -> str:
+    """Find the correct executable path to run for the given tool"""
+    for cmd in commands:
+        if shutil.which(cmd):
+            return cmd
+    raise FileNotFoundError(f"{name} not found, you probably need to install it.")
+
+
+class Tool:
+    """A tool for stage execution"""
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+        # default script file name
+        self.default_script_file = None
+        self.set_defaults()
+
+    def set_defaults(self):
+        # default timeout in seconds, if you need to run a tool longer than this, you should change
+        # it before calling run()
+        self.timeout = 10.0
+
+    def run_in_temp_dir(self, commands: str, context: dict = {}) -> None:
+        """Run commands inside this tool (with cwd pointing to a temp directory)"""
+        # Create a temporary directory for processing
+        temp_dir = tempfile.mkdtemp(prefix=self.name)
+
+        context["temp_dir"] = (
+            temp_dir  # pass our directory path in for the tool's usage
+        )
+
+        try:
+            self.run(temp_dir, commands, context=context)
+        finally:
+            shutil.rmtree(temp_dir)
+
+    def run(self, cwd: str, commands: str, context: dict = {}) -> None:
+        """Run commands inside this tool (with cwd pointing to the specified directory)"""
+        raise NotImplementedError()
+
+
+class SirilTool(Tool):
+    """Expose Siril as a tool"""
+
+    def __init__(self) -> None:
+        super().__init__("siril")
+
+    def run(self, cwd: str, commands: str, context: dict = {}) -> None:
+        """Executes Siril with a script of commands in a given working directory."""
+
+        # Iteratively expand the command string to handle nested placeholders.
+        # The loop continues until the string no longer changes.
+        expanded = expand_context_unsafe(commands, context)
+
+        input_files = context.get("input_files", [])
+
+        temp_dir = cwd
+
+        # siril_path = "/home/kevinh/packages/Siril-1.4.0~beta3-x86_64.AppImage"
+        # Possible siril commands, with preferred option first
+        siril_commands = ["org.siril.Siril", "siril-cli", "siril"]
+        siril_path = executable_path(siril_commands, "Siril")
+        if siril_path == "org.siril.Siril":
+            # The executable is inside a flatpak, so run the lighter/faster/no-gui required exe
+            # from inside the flatpak
+            siril_path = "flatpak run --command=siril-cli org.siril.Siril"
+
+        # Create symbolic links for all input files in the temp directory
+        for f in input_files:
+            os.symlink(
+                os.path.abspath(str(f)),
+                os.path.join(temp_dir, os.path.basename(str(f))),
+            )
+
+        # We dedent here because the commands are often indented multiline strings
+        script_content = textwrap.dedent(
+            f"""
+            requires 1.4.0-beta3
+            {textwrap.dedent(strip_comments(expanded))}
+            """
+        )
+
+        logger.debug(
+            f"Running Siril in {temp_dir}, ({len(input_files)} input files) cmds:\n{script_content}"
+        )
+        logger.info(f"Running Siril ({len(input_files)} input files)")
+
+        # The `-s -` arguments tell Siril to run in script mode and read commands from stdin.
+        # It seems like the -d command may also be required when siril is in a flatpak
+        cmd = f"{siril_path} -d {temp_dir} -s -"
+
+        tool_run(cmd, temp_dir, script_content, timeout=self.timeout)
+
+
+class GraxpertTool(Tool):
+    """Expose Graxpert as a tool"""
+
+    def __init__(self) -> None:
+        super().__init__("graxpert")
+
+    def run(self, cwd: str, commands: str, context: dict = {}) -> None:
+        """Executes Graxpert with the specified command line arguments"""
+
+        # Arguments look similar to: graxpert -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
+        cmd = f"graxpert {commands}"
+
+        tool_run(cmd, cwd, timeout=self.timeout)
+
+
+class PythonTool(Tool):
+    """Expose Python as a tool"""
+
+    def __init__(self) -> None:
+        super().__init__("python")
+
+        # default script file override
+        self.default_script_file = "starbash.py"
+
+    def run(self, cwd: str, commands: str, context: dict = {}) -> None:
+        original_cwd = os.getcwd()
+        try:
+            os.chdir(cwd)  # cd to where this script expects to run
+
+            logger.info(f"Executing python script in {cwd} using RestrictedPython")
+            try:
+                byte_code = RestrictedPython.compile_restricted(
+                    commands, filename="<python script>", mode="exec"
+                )
+                # No locals yet
+                execution_locals = None
+                globals = {"context": context}
+                exec(byte_code, make_safe_globals(globals), execution_locals)
+            except SyntaxError as e:
+                raise  # Just rethrow - no need to rewrap
+            except Exception as e:
+                raise ValueError(f"Error during python script execution") from e
+        finally:
+            os.chdir(original_cwd)
+
+
+# A dictionary mapping tool names to their respective tool instances.
+tools: dict[str, Tool] = {
+    tool.name: tool for tool in [SirilTool(), GraxpertTool(), PythonTool()]
+}
