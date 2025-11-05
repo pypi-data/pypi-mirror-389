@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dialnexa"
+version = "0.1.1"
+description = "DialNexa Python SDK"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+  { name = "DialNexa", email = "dev@dialnexa.com" }
+]
+dependencies = [
+  "requests>=2.31.0",
+  "typing-extensions>=4.7; python_version<'3.11'",
+  "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://dialnexa.com"
+Repository = "https://github.com/dialnexa/python-sdk"
+
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["dialnexa"]
