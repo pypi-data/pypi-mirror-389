@@ -1,0 +1,144 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cargo2rpm"
+dynamic = ["version"]
+requires-python = ">=3.10"
+description = "Translation layer between cargo and RPM"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Fedora Rust SIG", email = "rust@lists.fedoraproject.org" }]
+keywords = ["rpm", "cargo", "rust"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: System :: Software Distribution",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+homepage = "https://codeberg.org/rust2rpm/cargo2rpm"
+
+[project.scripts]
+cargo2rpm = "cargo2rpm.__main__:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "cargo2rpm.__version__" }
+
+[tool.setuptools.package-data]
+cargo2rpm = ["py.typed"]
+
+[tool.black]
+line-length = 140
+target-version = ["py310"]
+include = '\.pyi?$'
+
+[tool.mypy]
+enable_error_code = ["ignore-without-code"]
+
+[tool.ruff]
+include = ["cargo2rpm/**/*.py"]
+indent-width = 4
+line-length = 140
+target-version = "py310"
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "ERA",      # eradicate
+    "YTT",      # flake8-2020
+    "ANN",      # flake8-annotations
+    "ASYNC",    # flake8-async
+    "S",        # flake8-bandit
+    "BLE",      # flake8-blind-except
+    "FBT",      # flake8-boolean-trap
+    "B",        # flake8-bugbear
+    "A",        # flake8-builtins
+    "COM",      # flake8-commas
+    "C4",       # flake8-comprehensions
+    "DTZ",      # flake8-datetimez
+    "T10",      # flake8-debugger
+    "EM",       # flake8-errmsg
+    "EXE",      # flake8-executable
+    "FIX",      # flake8-fixme
+    "FA",       # flake8-future-annotations
+    "INT",      # flake8-gettext
+    "ISC",      # flake8-implicit-str-concat
+    "ICN",      # flake8-import-conventions
+    "LOG",      # flake8-logging
+    "G",        # flake8-logging-format
+    "INP",      # flake8-no-pep420
+    "PIE",      # flake8-pie
+    "T20",      # flake8-print
+    "PYI",      # flake8-pyi
+    "PT",       # flake8-pytest-style
+    "Q",        # flake8-quotes
+    "RSE",      # flake8-raise
+    "RET",      # flake8-return
+    "SLF",      # flake8-self
+    "SIM",      # flake8-simplify
+    "SLOT",     # flake8-slots
+    "TID",      # flake8-tidy-imports
+    "TD",       # flake8-todos
+    "TC",       # flake8-type-checking
+    "ARG",      # flake8-unused-arguments
+    "PTH",      # flake8-use-pathlib
+    "FLY",      # flynt
+    "I",        # isort
+    "C90",      # mccabe
+    "N",        # pep8-naming
+    "PERF",     # Perflint
+    "E",        # pycodestyle (Error)
+    "W",        # pycodestyle (Warning)
+    "D",        # pydocstyle
+    "F",        # pyflakes
+    "PGH",      # pygrep-hooks
+    "PLC",      # pylint (Convention)
+    "PLE",      # pylint (Error)
+    "PLR",      # pylint (Refactor)
+    "PLW",      # pylint (Warning)
+    "UP",       # pyupgrade
+    "FURB",     # refurb
+    "RUF",      # ruff
+    "TRY",      # tryceratops
+]
+ignore = [
+    "D105",     # undocumented-magic-method
+    "D203",
+    "D213",
+]
+
+[tool.ruff.lint.flake8-annotations]
+# adding explicit -> None annotations is silly
+suppress-none-returning = true
+
+[tool.ruff.lint.per-file-ignores]
+"cargo2rpm/__main__.py" = [
+    # allow print statements in main
+    "T201",
+]
+"cargo2rpm/tests/**/*.py" = [
+    # do not require documentation for tests
+    "D100",
+    "D103",
+    "D104",
+    # allow assert statements in tests
+    "S101",
+]
+"cargo2rpm/testdata/__init__.py" = [
+    # do not require documentation for test data
+    "D104",
+]
