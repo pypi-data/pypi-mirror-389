@@ -1,0 +1,72 @@
+Metadata-Version: 2.4
+Name: quick_ini
+Version: 3.2
+Summary: A library for reading from and writing to .ini formatted files
+Home-page: https://github.com/olliez-mods/Quick-Ini
+Author: OllieZ-Mods
+Author-email: socksinthewash@gmail.com
+Project-URL: Bug Reports, https://github.com/olliez-mods/Quick-Ini/issues
+Project-URL: Source, https://github.com/olliez-mods/Quick-Ini
+Keywords: ini config configuration parser file
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-python
+Dynamic: summary
+
+# QuickINI
+
+A simple and fast INI file parser for Python with support for loading from URLs and automatic type conversion.
+
+## Installation
+
+```bash
+pip install quickini
+```
+
+## Quick Start
+
+```python
+from quickini import QuickIni
+
+# Load from file
+QuickIni.load_file("config.ini")
+
+# Load from URL
+QuickIni.load_file("https://example.com/config.ini")
+
+# Get values with automatic type conversion
+debug = QuickIni.get_value("debug", False)  # Returns boolean
+port = QuickIni.get_value("port", 8080)     # Returns integer
+
+# Write values back to file
+QuickIni.write_value("new_setting", "value", add_if_not_found=True)
+```
+
+## Features
+
+- Load INI files from local filesystem or URLs
+- Automatic type conversion (int, float, bool, str)
+- Write values back to files
+- Error handling with detailed messages
+- Static class design for easy use across modules
