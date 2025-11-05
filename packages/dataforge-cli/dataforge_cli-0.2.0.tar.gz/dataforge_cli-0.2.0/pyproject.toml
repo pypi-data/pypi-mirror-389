@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataforge-cli"
+version = "0.2.0"
+authors = [
+    { name = "Aditya", email = "bit2swaz@gmail.com" },
+]
+description = "A CLI for reproducible data cleaning pipelines."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas",
+    "numpy",
+    "mysql-connector-python",
+    "python-dotenv",
+    "click",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.urls]
+Homepage = "https://github.com/bit2swaz/dataforge-python"
+
+[project.scripts]
+dataforge = "app:cli"
+
+[tool.setuptools]
+py-modules = [
+    "app",
+    "algos",
+    "db",
+    "db_init",
+    "profiler",
+    "transformers",
+]
