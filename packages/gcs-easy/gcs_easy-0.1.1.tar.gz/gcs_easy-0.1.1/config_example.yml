@@ -1,0 +1,14 @@
+
+# Google Cloud Storage Configuration
+# Add your GCP credentials file path here
+GOOGLE_APPLICATION_CREDENTIALS : /path/to/your/credentials.json
+
+# GCS Client Configuration
+# default_bucket can be just bucket name (e.g., "your-bucket-name")
+# or bucket with default path/prefix (e.g., "your-bucket-name/your-path")
+default_bucket: your-bucket-name
+location: EU
+uniform_access: true
+chunk_size: 8388608  # 8MB in bytes
+cache_control: "public, max-age=3600"
+signed_url_expires_minutes: 15
