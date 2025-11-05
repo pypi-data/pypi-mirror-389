@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zimports"
+dynamic = ["version"]
+dependencies = [
+    "pyflakes",
+    "flake8-import-order",
+    "tomli",
+    "importlib-metadata;python_version<'3.10'",
+]
+requires-python = ">= 3.9"
+authors = [
+    {name = "Mike Bayer", email = "mike_mp@zzzcomputing.com"}
+]
+description = "Yet another import fixing tool"
+readme = "README.rst"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+[project.urls]
+Homepage = "https://github.com/sqlalchemyorg/zimports"
+Issues = "https://github.com/sqlalchemyorg/zimports/issues"
+
+[project.scripts]
+zimports = "zimports:main"
+
+[tool.hatch.build.targets.sdist]
+include = ["zimports*"]
+
+[tool.hatch.version]
+path = "zimports/__init__.py"
+
+[tool.hatch.envs.test]
+dependencies = [
+  "pytest"
+]
+
+[tool.black]
+line-length = 79
+target-version = ['py39']
+exclude = './test_files'
+
+[tool.pytest.ini_options]
+addopts = "--tb native -v -r sfxX --maxfail=25 -p no:warnings -p no:logging"
+python_files = ["tests.py"]
+
+[tool.zimports]
+black-line-length = 79
+keep-unused-type-checking = true
