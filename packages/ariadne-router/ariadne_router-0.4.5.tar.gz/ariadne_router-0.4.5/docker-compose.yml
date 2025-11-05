@@ -1,0 +1,123 @@
+services:
+  # Development environment with full toolchain
+  ariadne-dev:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/home/ariadne/ariadne
+      - dev-cache:/home/ariadne/.cache
+      - dev-workspace:/home/ariadne/workspace
+    environment:
+      - ARIADNE_LOG_LEVEL=DEBUG
+      - ARIADNE_ENABLE_BENCHMARKS=true
+    ports:
+      - "8888:8888"  # For potential Jupyter integration
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Testing environment for CI/CD
+  ariadne-test:
+    build:
+      context: .
+      target: testing
+    volumes:
+      - test-results:/home/ariadne/test_results
+    environment:
+      - ARIADNE_LOG_LEVEL=DEBUG
+      - PYTEST_WORKERS=auto
+    command: >
+      sh -c "
+        echo 'Running Ariadne test suite...' &&
+        python -m pytest ariadne/tests/ -v --tb=short --maxfail=5 || true
+      "
+
+  # Production-ready lightweight container
+  ariadne-prod:
+    build:
+      context: .
+      target: production
+    volumes:
+      - prod-results:/home/ariadne/results
+    environment:
+      - ARIADNE_LOG_LEVEL=WARNING
+      - ARIADNE_BACKEND_PREFERENCE=stim,qiskit
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    restart: unless-stopped
+    command: >
+      sh -c "
+        echo 'Ariadne Production Environment' &&
+        python -c 'import ariadne; print(f\"Version: {ariadne.__version__}\")' &&
+        python -c 'from ariadne import get_available_backends; print(f\"Backends: {get_available_backends()}\")' &&
+        echo 'Ready for production workloads'
+      "
+
+  # Quantum full environment with all quantum platforms
+  ariadne-quantum-full:
+    build:
+      context: .
+      target: quantum-full
+    volumes:
+      - quantum-full-workspace:/home/ariadne/workspace
+      - quantum-full-results:/home/ariadne/results
+    environment:
+      - ARIADNE_LOG_LEVEL=INFO
+      - ARIADNE_BACKEND_PREFERENCE=stim,tensor_network,ddsim,cirq,pennylane,qulacs,pyquil
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4G
+        reservations:
+          cpus: '2.0'
+          memory: 2G
+    command: /bin/bash
+
+  # Quick demo service to showcase functionality
+  ariadne-demo:
+    build:
+      context: .
+      target: quantum-full
+    environment:
+      - ARIADNE_LOG_LEVEL=INFO
+    command: >
+      sh -c "
+        echo '🚀 Ariadne Quantum Router Demo' &&
+        echo '================================' &&
+        python -c 'from ariadne import get_available_backends; print(f\"Available backends: {len(get_available_backends())}\"); [print(f\"  - {b}\") for b in get_available_backends()]' &&
+        echo '' &&
+        python -c 'from ariadne import simulate; from qiskit import QuantumCircuit; qc = QuantumCircuit(3, 3); qc.h(0); qc.cx(0, 1); qc.cx(1, 2); qc.measure_all(); result = simulate(qc, shots=100); print(f\"Demo simulation: Backend={result.backend_used}, Time={result.execution_time:.4f}s\")' &&
+        echo '🎉 Demo completed!'
+      "
+
+volumes:
+  dev-cache:
+    driver: local
+  dev-workspace:
+    driver: local
+  test-results:
+    driver: local
+  prod-results:
+    driver: local
+  quantum-full-workspace:
+    driver: local
+  quantum-full-results:
+    driver: local
+
+# Network configuration
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16

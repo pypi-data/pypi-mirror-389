@@ -1,0 +1,38 @@
+# Example Ariadne Configuration File
+# Copy to .ariadnerc or ~/.ariadnerc to use
+
+# Backend selection preferences
+backend_preferences:
+  # Prefer hardware-accelerated backends when available
+  prefer_hardware_acceleration: true
+
+  # Backend selection order (first available is used)
+  fallback_order:
+    - stim        # Fast Clifford circuit simulation
+    - mps         # Matrix product state simulation
+    - tensor_network  # Tensor network simulation
+    - qiskit      # Full-featured quantum simulation
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+
+  # Show backend selection explanations
+  show_routing_explanations: true
+
+# Performance optimization settings
+performance:
+  # Cache circuit analysis for faster repeated simulations
+  cache_circuit_analysis: true
+
+  # Parallel shot execution (auto, or integer number of workers)
+  parallel_shots: auto
+
+# Warning preferences
+warnings:
+  # Warn when using suboptimal backend for circuit type
+  suboptimal_backend: true
+
+  # Warn about memory-intensive operations
+  memory_intensive: true

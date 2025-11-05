@@ -1,0 +1,96 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Development artifacts and temporary files
+benchmark_results_*.json
+benchmarks/*_benchmark_results.json
+firebase-debug.log
+coverage.xml
+routing_demo_results.json
+improvement_recommendations.md
+validation_plan.md
+GPT5_FEEDBACK_IMPLEMENTATION.md
+*.log
+*.tmp
+benchmark_results.json
+success_rate.txt
+results/
+
+# Generated output files from examples
+*_demo.png
+*_scaling_demo.png
+
+# Keep curated results in results/
+!benchmarks/results/
+
+# Internal development documentation
+ALGORITHM_EXPANSION_SUMMARY.md
+REPOSITIONING_SUMMARY.md
+performance_validation_report.md
+docs/RELEASE_VALIDATION_SUMMARY.md
+ROADMAP.md
+QUICK_START.md
+USER_GUIDE.md
+docs/tweet-thread.md
+docs/qce25-abstract.md
+docs/*_roadmap.md
+docs/*_performance_report.md
+quantum_specialist_tests/
+.dev/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+venv/
+.venv/
+env/
+ENV/
+
+# IDE and development tools
+.claude/
+.genkit/
+.dev/
+ariadne_plots/
+results/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+src/ariadne/_version.py
+
+# Internal development files (should not be in public repository)
+AGENTS.md
+KIMI_K2_ONBOARDING.md
+CI_CD_IMPROVEMENTS.md
+.dev/
