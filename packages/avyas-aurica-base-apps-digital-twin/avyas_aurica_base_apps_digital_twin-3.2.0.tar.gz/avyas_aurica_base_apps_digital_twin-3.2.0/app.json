@@ -1,0 +1,29 @@
+{
+  "name": "digital-twin",
+  "version": "3.2.0",
+  "description": "Digital Life Manager - Streaming OpenAI with keepalives to prevent timeouts",
+  "author": "Aurica Team",
+  "routes": [
+    {
+      "path": "/api/chat",
+      "file": "be/api/chat.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/health",
+      "file": "be/api/health.py",
+      "method": "GET"
+    }
+  ],
+  "public_routes": [
+    "/api/health/*",
+    "/api/chat/*"
+  ],
+  "requires": [
+    "authentication"
+  ],
+  "dt_config": {
+    "type": "digital_life_manager",
+    "execution_node": true
+  }
+}
