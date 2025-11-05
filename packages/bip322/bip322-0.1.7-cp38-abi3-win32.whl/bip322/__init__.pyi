@@ -1,0 +1,3 @@
+def verify_simple_encoded(address: str, message: str, base64_signature: str) -> bool: ...
+__all__: list[str]
+__version__: str
