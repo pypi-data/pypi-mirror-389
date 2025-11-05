@@ -1,0 +1,42 @@
+[project]
+name = "toomanyfiles"
+version = "1.1.0"
+description = "Remove files and directories with date and time patterns"
+authors = [
+    {name = "y"}
+]
+license = {text = "GPL-3"}
+readme = "README.md"
+requires-python = ">=3.11,<4"
+dependencies = [
+    "colorama >=0.4.6",
+    "pydicts >=1.1.0"
+]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+poethepoet = ">=0.37.0"
+pytest = ">=8.4.2"
+coverage = ">=7.11.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+toomanyfiles='toomanyfiles.toomanyfiles:main'
+
+[tool.poe.tasks]
+module_content = { script = "toomanyfiles.poethepoet:module_content" }
+coverage = { script = "toomanyfiles.poethepoet:coverage" }
+video = { script = "toomanyfiles.poethepoet:video" }
+pytest = { script = "toomanyfiles.poethepoet:pytest" }
+release = { script = "toomanyfiles.poethepoet:release" }
+translate = { script = "toomanyfiles.poethepoet:translate" }
+
+[project.urls]
+homepage = "https://github.com/turulomio/toomanyfiles/"
+repository = "https://github.com/turulomio/toomanyfiles/"
+changelog = "https://github.com/turulomio/toomanyfiles#changelog"
