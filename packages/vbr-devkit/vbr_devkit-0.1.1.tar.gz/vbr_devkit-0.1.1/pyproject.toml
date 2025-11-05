@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vbr-devkit"
+version = "0.1.1"
+description = "Development kit for VBR SLAM dataset"
+readme = "README.md"
+authors = [
+    { name = "Emanuele Giacomini", email = "giacomini@diag.uniroma1.it" },
+    { name = "Leonardo Brizi",     email = "brizi@diag.uniroma1.it" },
+]
+requires-python = ">=3.8"
+
+classfiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: Unix",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research"
+]
+
+dependencies = [
+    "natsort",
+    "numpy",
+    "rich",
+    "typer[all]>=0.10.0",
+    "rosbags==0.11.0",
+    "rosbags.image"
+]
+
+[project.scripts]
+vbr = "vbr_devkit.tools.run:app"
+
+[project.urls]
+Homepage = "https://github.com/rvp-group/vbr-devkit"
+Issues = "https://github.com/rvp-group/vbr-devkit/issues"
