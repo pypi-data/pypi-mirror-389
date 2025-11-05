@@ -1,0 +1,100 @@
+{
+  "name": "node-connection",
+  "version": "3.0.1",
+  "requires": [
+    "authentication"
+  ],
+  "public_routes": [],
+  "routes": [
+    {
+      "path": "/api/status",
+      "file": "be/api/simple_node.py",
+      "method": "GET"
+    },
+    {
+      "path": "/api/reconnect",
+      "file": "be/api/simple_node.py",
+      "method": "POST"
+    },
+    {
+      "path": "/api/disconnect",
+      "file": "be/api/simple_node.py",
+      "method": "POST"
+    }
+  ],
+  "description": "Simplified node connection manager. Establishes WebSocket tunnel between execution node and cloud for transparent request proxying. Works behind NAT with auth-only access.",
+  "dt_tools": [
+    {
+      "name": "get_tunnel_status",
+      "description": "Get the current status of the tunnel connection to cloud",
+      "endpoint": "/api/status",
+      "method": "GET",
+      "autonomy_level": "full",
+      "side_effects": "none",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Tunnel connection status including connected state, cloud URL, and local URL"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Get current tunnel connection status"
+        }
+      ]
+    },
+    {
+      "name": "reconnect_tunnel",
+      "description": "Reconnect the tunnel to cloud. Use this when connection is lost or needs to be refreshed",
+      "endpoint": "/api/reconnect",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Reconnection status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Reconnect tunnel to cloud"
+        }
+      ]
+    },
+    {
+      "name": "disconnect_tunnel",
+      "description": "Disconnect the tunnel from cloud",
+      "endpoint": "/api/disconnect",
+      "method": "POST",
+      "autonomy_level": "ask",
+      "side_effects": "write",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "returns": {
+        "type": "object",
+        "description": "Disconnection status"
+      },
+      "requires_auth": true,
+      "examples": [
+        {
+          "request": {},
+          "description": "Disconnect tunnel from cloud"
+        }
+      ]
+    }
+  ]
+}
