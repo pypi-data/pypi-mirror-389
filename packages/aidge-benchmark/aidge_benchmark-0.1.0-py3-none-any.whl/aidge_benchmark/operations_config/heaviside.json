@@ -1,0 +1,55 @@
+{
+    "operation": "HeavisideOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "input_specs": [{ "name": "X", "dtype": "float32" }],
+        "attributes": {
+            "value": 0.0
+        }
+    },
+    "test_configurations": {
+        "value": {
+            "zero": {
+                "attributes": { "value": 0.0 },
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "data": [-3.5, -1.0, 0.0, 2.0, 0.001, 0.0]
+                    }
+                ]
+            },
+            "half": {
+                "attributes": { "value": 0.5 },
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "data": [-3.5, -1.0, 0.0, 2.0, 0.001, 0.0]
+                    }
+                ]
+            },
+            "one": {
+                "attributes": { "value": 1.0 },
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "data": [-3.5, -1.0, 0.0, 2.0, 0.001, 0.0]
+                    }
+                ]
+            },
+            "negative_one": {
+                "attributes": { "value": -1.0 },
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "data": [-3.5, -1.0, 0.0, 2.0, 0.001, 0.0]
+                    }
+                ]
+            }
+        }
+    }
+}

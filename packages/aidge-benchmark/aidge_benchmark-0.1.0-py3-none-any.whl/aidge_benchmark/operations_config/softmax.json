@@ -1,0 +1,33 @@
+{
+    "operation": "SoftmaxOp",
+	"format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "axis": -1
+        },
+        "input_specs": [
+            {"name": "X", "shape": [32, 32, 32, 32], "dtype": "float32"}
+        ]
+    },
+    "test_configurations": {
+        "axis": {
+            "-1": {
+                "attributes": { "axis": -1},
+                "input_specs": []
+            },
+            "0": {
+                "attributes": { "axis": 0},
+                "input_specs": []
+            },
+            "2": {
+                "attributes": { "axis": 2},
+                "input_specs": []
+            }
+        }
+    }
+}

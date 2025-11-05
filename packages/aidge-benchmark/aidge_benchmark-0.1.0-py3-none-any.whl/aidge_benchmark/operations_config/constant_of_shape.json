@@ -1,0 +1,85 @@
+{
+    "operation": "ConstantOfShapeOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "value": 1
+        },
+        "input_specs": [{ "name": "shape", "data": [32, 32, 32, 32], "dtype": "int64" }]
+    },
+    "test_configurations": {
+        "value": {
+            "float": {
+                "negative": {
+                    "attributes": {
+                        "value": 6.4
+                    },
+                    "input_specs": []
+                },
+                "positive": {
+                    "attributes": {
+                        "value": -6.4
+                    },
+                    "input_specs": []
+                }
+            },
+            "int": {
+                "negative": {
+                    "attributes": {
+                        "value": 5
+                    },
+                    "input_specs": []
+                },
+                "positive": {
+                    "attributes": {
+                        "value": -5
+                    },
+                    "input_specs": []
+                }
+            }
+        },
+        "n_dims": {
+            "0": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "shape", "data": [], "dtype": "int64" }
+                ]
+            },
+            "1": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "shape", "data": [32], "dtype": "int64" }
+                ]
+            },
+            "2": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "shape", "data": [32, 32], "dtype": "int64" }
+                ]
+            },
+            "3": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "shape", "data": [32, 32, 32], "dtype": "int64" }
+                ]
+            },
+            "4": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "shape", "data": [32, 32, 32, 32], "dtype": "int64" }
+                ]
+            },
+            "5": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "shape", "data": [32, 32, 32, 32, 32], "dtype": "int64" }
+                ]
+            }
+        }
+    }
+}

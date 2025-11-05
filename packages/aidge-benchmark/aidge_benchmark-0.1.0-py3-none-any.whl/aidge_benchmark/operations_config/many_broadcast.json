@@ -1,0 +1,946 @@
+{
+    "operation": "ManyBroadcastOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 5
+        }
+    },
+    "base_configuration": {
+        "attributes": {},
+        "input_specs": []
+    },
+    "test_configurations": {
+        "broadcasted": {
+            "per_axis": {
+                "one_index": {
+                    "[0]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [1, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [1, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "[1]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 1, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[1]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 1, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[1]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 1, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "[2]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[2]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[2]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 1, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "[3]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 1],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[3]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 1],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[3]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 1],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                },
+
+                "two_index": {
+                    "[0,1]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 1, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,1]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [1, 1, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,1]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [1, 1, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "[0,2]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,2]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [1, 32, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,2]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [1, 32, 1, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "[1,2]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 1, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[1,2]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 1, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[1,2]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 1, 1, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                },
+
+                "three_index": {
+                    "[0,1,2]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 1, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,1,2]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [1, 1, 1, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,1,2]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [1, 1, 1, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "[0,2,3]_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 1, 1],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,2,3]_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [1, 32, 1, 1],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "[0,2,3]_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [1, 32, 1, 1],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                }
+            },
+
+            "rank": {
+                "expanding_n_dims": {
+                    "k0_all32": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "k1_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k1_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k1_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "k2_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k2_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k2_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "k3_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k3_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k3_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+
+                    "k4_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k4_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "k4_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                },
+
+                "expand_leading": {
+                    "from5d_i0": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "from5d_i1": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [1, 32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "from5d_i2": {
+                        "attributes": {"nb_inputs": 3},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_1",
+                                "shape": [32, 32, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "input_2",
+                                "shape": [1, 32, 32, 32, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                }
+            },
+
+            "interleave": {
+                "attributes": {"nb_inputs": 3},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [1, 32, 1, 32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_1",
+                        "shape": [32, 1, 32, 1],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_2",
+                        "shape": [1, 32, 32, 1],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "interleave_permuted": {
+                "attributes": {"nb_inputs": 3},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [32, 1, 32, 1],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_1",
+                        "shape": [1, 32, 32, 1],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_2",
+                        "shape": [1, 32, 1, 32],
+                        "dtype": "float32"
+                    }
+                ]
+            }
+        }
+    }
+}

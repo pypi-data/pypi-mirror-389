@@ -1,0 +1,376 @@
+{
+    "operation": "SliceOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "opset_version": 23,
+            "initializer_rank": 5
+        }
+    },
+    "base_configuration": {
+        "attributes": {},
+        "input_specs": [
+            { "name": "data", "shape": [2, 3, 4], "dtype": "float32" },
+            { "name": "starts", "dtype": "int64", "data": [0, 0, 0] },
+            { "name": "ends", "dtype": "int64", "data": [2, 3, 4] },
+            { "name": "axes", "dtype": "int64" },
+            { "name": "steps", "dtype": "int64" }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "all_axes_unit_steps": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "dtype": "int64",
+                        "data": [0, 0, 0]
+                    },
+                    {
+                        "name": "ends",
+                        "dtype": "int64",
+                        "data": [2, 3, 4]
+                    },
+                    {
+                        "name": "axes",
+                        "dtype": "int64",
+                        "data": [0, 1, 2]
+                    },
+                    {
+                        "name": "steps",
+                        "dtype": "int64",
+                        "data": [1, 1, 1]
+                    }
+                ]
+            },
+            "omit": {
+                "axes": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [0, 0, 0]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [2, 3, 4]
+                        }
+                    ]
+                },
+                "steps": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [0, 0]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [2, 4]
+                        },
+                        {
+                            "name": "axes",
+                            "dtype": "int64",
+                            "data": [0, 2]
+                        }
+                    ]
+                }
+            },
+            "negative_indexes": {
+                "axes": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [1, 1]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [4, 2]
+                        },
+                        {
+                            "name": "axes",
+                            "dtype": "int64",
+                            "data": [-1, -3]
+                        }
+                    ]
+                },
+                "indices": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [-2, -3, -4]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [-1, -1, -1]
+                        }
+                    ]
+                }
+            },
+            "reverse_step_axis1": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "dtype": "int64",
+                        "data": [2]
+                    },
+                    {
+                        "name": "ends",
+                        "dtype": "int64",
+                        "data": [-1]
+                    },
+                    {
+                        "name": "axes",
+                        "dtype": "int64",
+                        "data": [1]
+                    },
+                    {
+                        "name": "steps",
+                        "dtype": "int64",
+                        "data": [-1]
+                    }
+                ]
+            },
+            "stride_2_axis2": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "dtype": "int64",
+                        "data": [0]
+                    },
+                    {
+                        "name": "ends",
+                        "dtype": "int64",
+                        "data": [4]
+                    },
+                    {
+                        "name": "axes",
+                        "dtype": "int64",
+                        "data": [2]
+                    },
+                    {
+                        "name": "steps",
+                        "dtype": "int64",
+                        "data": [2]
+                    }
+                ]
+            },
+            "mixed_reverse_and_stride2": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "dtype": "int64",
+                        "data": [1, 0]
+                    },
+                    {
+                        "name": "ends",
+                        "dtype": "int64",
+                        "data": [-1, 4]
+                    },
+                    {
+                        "name": "axes",
+                        "dtype": "int64",
+                        "data": [0, 2]
+                    },
+                    {
+                        "name": "steps",
+                        "dtype": "int64",
+                        "data": [-1, 2]
+                    }
+                ]
+            }
+        },
+        "expected_error": {
+            "axes_oob": {
+                "positive": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [0]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [1]
+                        },
+                        {
+                            "name": "axes",
+                            "dtype": "int64",
+                            "data": [3]
+                        }
+                    ]
+                },
+                "negative": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [0]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [1]
+                        },
+                        {
+                            "name": "axes",
+                            "dtype": "int64",
+                            "data": [-4]
+                        }
+                    ]
+                }
+            },
+            "step_zero_forbidden": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "dtype": "int64",
+                        "data": [0]
+                    },
+                    {
+                        "name": "ends",
+                        "dtype": "int64",
+                        "data": [3]
+                    },
+                    {
+                        "name": "axes",
+                        "dtype": "int64",
+                        "data": [1]
+                    },
+                    {
+                        "name": "steps",
+                        "dtype": "int64",
+                        "data": [0]
+                    }
+                ]
+            },
+            "length_mismatch": {
+                "starts_ends": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "dtype": "int64",
+                            "data": [0, 0]
+                        },
+                        {
+                            "name": "ends",
+                            "dtype": "int64",
+                            "data": [3]
+                        }
+                    ]
+                },
+                "axes": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "shape": [2],
+                            "dtype": "int64",
+                            "data": [0, 0]
+                        },
+                        {
+                            "name": "ends",
+                            "shape": [2],
+                            "dtype": "int64",
+                            "data": [2, 2]
+                        },
+                        {
+                            "name": "axes",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [0]
+                        }
+                    ]
+                },
+                "steps": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "starts",
+                            "shape": [2],
+                            "dtype": "int64",
+                            "data": [0, 0]
+                        },
+                        {
+                            "name": "ends",
+                            "shape": [2],
+                            "dtype": "int64",
+                            "data": [2, 3]
+                        },
+                        {
+                            "name": "axes",
+                            "shape": [2],
+                            "dtype": "int64",
+                            "data": [1, 2]
+                        },
+                        {
+                            "name": "steps",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [1]
+                        }
+                    ]
+                }
+            },
+            "axes_repeated": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "shape": [2],
+                        "dtype": "int64",
+                        "data": [0, 0]
+                    },
+                    {
+                        "name": "ends",
+                        "shape": [2],
+                        "dtype": "int64",
+                        "data": [2, 2]
+                    },
+                    {
+                        "name": "axes",
+                        "shape": [2],
+                        "dtype": "int64",
+                        "data": [1, 1]
+                    }
+                ]
+            },
+            "starts_ends_not_1d": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "starts",
+                        "shape": [1, 1],
+                        "dtype": "int64",
+                        "data": [[0]]
+                    },
+                    {
+                        "name": "ends",
+                        "shape": [1, 1],
+                        "dtype": "int64",
+                        "data": [[1]]
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{
+    "operation": "HardSigmoidOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "alpha": 0.2,
+            "beta": 0.5
+        },
+        "input_specs": [
+            {
+                "name": "X",
+                "shape": [4, 5],
+                "dtype": "float32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "special_nan_inf": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [4],
+                        "data": ["nan", "inf", "-inf", 0.0]
+                    }
+                ]
+            },
+            "alpha_beta": {
+                "alpha_greater_than_beta": {
+                    "attributes": { "alpha": 1.0, "beta": 0.2 },
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [7],
+                            "data": [-1.0, -0.5, 0.0, 0.2, 0.5, 1.0, 1.5]
+                        }
+                    ]
+                },
+                "both": {
+                    "equal": {
+                        "attributes": { "alpha": 0.5, "beta": 0.5 },
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [6],
+                                "data": [-2.0, -1.0, 0.0, 0.5, 1.0, 2.0]
+                            }
+                        ]
+                    },
+                    "zero": {
+                        "attributes": { "alpha": 0.0, "beta": 0.0 },
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [6],
+                                "data": [-10.0, -5.0, 0.0, 5.0, 8.0, 10.0]
+                            }
+                        ]
+                    },
+                    "negative": {
+                        "attributes": { "alpha": -0.2, "beta": 0.5 },
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [5],
+                                "data": [-3.0, -1.0, 0.0, 1.0, 3.0]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

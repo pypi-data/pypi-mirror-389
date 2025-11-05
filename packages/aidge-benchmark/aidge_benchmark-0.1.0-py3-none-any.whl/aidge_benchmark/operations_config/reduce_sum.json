@@ -1,0 +1,341 @@
+{
+    "operation": "ReduceSumOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 2
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "axes": [-1],
+            "keep_dims": true,
+            "noop_with_empty_axes": false
+        },
+        "input_specs": [
+            {
+                "name": "data",
+                "shape": [32, 32, 32, 32],
+                "dtype": "float32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "n_dims": {
+            "1": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "data", "shape": [16], "dtype": "float32" }
+                ]
+            },
+            "2": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "data", "shape": [16, 16], "dtype": "float32" }
+                ]
+            },
+            "3": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [16, 16, 16],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "4": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [16, 16, 16, 16],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "5": {
+                "attributes": {},
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [16, 16, 16, 16, 16],
+                        "dtype": "float32"
+                    }
+                ]
+            }
+        },
+        "size": {
+            "same": {
+                "1": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [1, 1, 1, 1],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "2": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [2, 2, 2, 2],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "4": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [4, 4, 4, 4],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "8": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [8, 8, 8, 8],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "16": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                }
+            },
+            "one_dim_set_to_1": {
+                "0": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [1, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "1": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 1, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "2": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 1, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "3": {
+                    "attributes": {},
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 1],
+                            "dtype": "float32"
+                        }
+                    ]
+                }
+            }
+        },
+        "axes": {
+            "1_dim": {
+                "[-4]": {
+                    "attributes": { "axes": [-4] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[-3]": {
+                    "attributes": { "axes": [-3] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[-2]": {
+                    "attributes": { "axes": [-2] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[-1]": {
+                    "attributes": { "axes": [-1] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[0]": {
+                    "attributes": { "axes": [0] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[1]": {
+                    "attributes": { "axes": [1] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[2]": {
+                    "attributes": { "axes": [2] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "[3]": {
+                    "attributes": { "axes": [3] },
+                    "input_specs": [
+                        {
+                            "name": "data",
+                            "shape": [16, 16, 16, 16],
+                            "dtype": "float32"
+                        }
+                    ]
+                }
+            },
+            "2_dims": {
+                "same": {
+                    "[-4,3]": {
+                        "attributes": { "axes": [-4, 3] },
+                        "input_specs": [
+                            {
+                                "name": "data",
+                                "shape": [16, 16, 16, 16],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                },
+                "contiguous": {
+                    "[1,2]": {
+                        "attributes": { "axes": [1, 2] },
+                        "input_specs": [
+                            {
+                                "name": "data",
+                                "shape": [16, 16, 16, 16],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                },
+                "non_contiguous": {
+                    "[0,2]": {
+                        "attributes": { "axes": [0, 2] },
+                        "input_specs": [
+                            {
+                                "name": "data",
+                                "shape": [16, 16, 16, 16],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                }
+            },
+            "4_dims": {
+                "attributes": { "axes": [0, 1, 2, 3] },
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [16, 16, 16, 16],
+                        "dtype": "float32"
+                    }
+                ]
+            }
+        },
+        "keep_dims": {
+            "true": {
+                "attributes": { "keep_dims": true, "axes": [-1] },
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [8, 4, 2, 6],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "false": {
+                "attributes": { "keep_dims": false, "axes": [-1] },
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [8, 4, 2, 6],
+                        "dtype": "float32"
+                    }
+                ]
+            }
+        },
+        "noop_with_empty_axes": {
+            "false_with_empty_axes": {
+                "attributes": { "axes": [], "noop_with_empty_axes": false },
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [5, 4, 3, 2],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "true_with_empty_axes": {
+                "attributes": { "axes": [], "noop_with_empty_axes": true },
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [5, 4, 3, 2],
+                        "dtype": "float32"
+                    }
+                ]
+            }
+        }
+    }
+}

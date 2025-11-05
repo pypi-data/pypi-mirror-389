@@ -1,0 +1,157 @@
+{
+    "operation": "LayerNormOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "axis": -2,
+            "epsilon": 1e-5
+        },
+        "input_specs": [
+            { "name": "X", "shape": [1, 32, 64, 64], "dtype": "float32" },
+            { "name": "Scale", "shape": [32], "dtype": "float32" },
+            { "name": "B", "shape": [32], "dtype": "float32" }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "attr": {
+                "axis": {
+                    "-3": { "attributes": { "axis": -3 }, "input_specs": [] },
+                    "-1": { "attributes": { "axis": -1 }, "input_specs": [] },
+                    "0": { "attributes": { "axis": 0 }, "input_specs": [] },
+                    "1": { "attributes": { "axis": 1 }, "input_specs": [] },
+                    "3": { "attributes": { "axis": 3 }, "input_specs": [] }
+                },
+                "epsilon": {
+                    "tiny": {
+                        "attributes": { "epsilon": 1e-12 },
+                        "input_specs": []
+                    },
+                    "small": {
+                        "attributes": { "epsilon": 1e-8 },
+                        "input_specs": []
+                    },
+                    "default": {
+                        "attributes": { "epsilon": 1e-5 },
+                        "input_specs": []
+                    },
+                    "large": {
+                        "attributes": { "epsilon": 1e-2 },
+                        "input_specs": []
+                    }
+                }
+            },
+            "shape": {
+                "n_dims": {
+                    "2": {
+                        "attributes": { "axis": -1 },
+                        "input_specs": [{ "name": "X", "shape": [32, 64] }]
+                    },
+                    "3": {
+                        "input_specs": [{ "name": "X", "shape": [32, 64, 64] }]
+                    },
+                    "4": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 64] }
+                        ]
+                    },
+                    "5": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 64, 64] }
+                        ]
+                    }
+                },
+                "size": {
+                    "channels": {
+                        "1": {
+                            "input_specs": [
+                                { "name": "X", "shape": [1, 1, 64, 64] },
+                                { "name": "Scale", "shape": [1] },
+                                { "name": "B", "shape": [1] }
+                            ]
+                        },
+                        "16": {
+                            "input_specs": [
+                                { "name": "X", "shape": [1, 16, 64, 64] },
+                                { "name": "Scale", "shape": [16] },
+                                { "name": "B", "shape": [16] }
+                            ]
+                        },
+                        "128": {
+                            "attributes": { "axis": -3 },
+                            "input_specs": [
+                                { "name": "X", "shape": [1, 128, 64, 64] },
+                                { "name": "Scale", "shape": [128] },
+                                { "name": "B", "shape": [128] }
+                            ]
+                        }
+                    },
+                    "other_dims": {
+                        "1": {
+                            "input_specs": [
+                                { "name": "X", "shape": [1, 32, 1, 1] },
+                                { "name": "Scale", "shape": [32] },
+                                { "name": "B", "shape": [32] }
+                            ]
+                        },
+                        "16": {
+                            "input_specs": [
+                                { "name": "X", "shape": [16, 32, 16, 16] },
+                                { "name": "Scale", "shape": [32] },
+                                { "name": "B", "shape": [32] }
+                            ]
+                        },
+                        "128": {
+                            "input_specs": [
+                                { "name": "X", "shape": [128, 32, 128, 128] },
+                                { "name": "Scale", "shape": [32] },
+                                { "name": "B", "shape": [32] }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "error": {
+            "shape_mismatch": {
+                "input_specs": [
+                    { "name": "X", "shape": [2, 16, 32], "dtype": "float32" },
+                    { "name": "Scale", "shape": [15], "dtype": "float32" },
+                    { "name": "B", "shape": [15], "dtype": "float32" }
+                ]
+            },
+            "missing_scale": {
+                "input_specs": [
+                    { "name": "Scale", "shape": null, "data": null }
+                ]
+            },
+            "missing_bias": {
+                "input_specs": [{ "name": "B", "shape": null, "data": null }]
+            },
+            "axis_oor": {
+                "attributes": { "axis": 5 },
+                "input_specs": []
+            },
+            "negative_epsilon": {
+                "attributes": { "epsilon": -1e-5 },
+                "input_specs": []
+            },
+            "nonfinite_epsilon": {
+                "attributes": { "epsilon": "NaN" },
+                "input_specs": []
+            },
+            "zero_sized_dim": {
+                "input_specs": [
+                    { "name": "X", "shape": [1, 32, 0, 64] },
+                    { "name": "Scale", "shape": [32] },
+                    { "name": "B", "shape": [32] }
+                ]
+            }
+        }
+    }
+}

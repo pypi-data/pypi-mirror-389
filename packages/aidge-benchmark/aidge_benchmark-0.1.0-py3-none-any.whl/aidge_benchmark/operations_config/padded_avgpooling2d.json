@@ -1,0 +1,39 @@
+{
+    "operation": "PaddedAvgPooling2DOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": { "initializer_rank": 1 }
+    },
+    "base_configuration": {
+        "attributes": {
+            "kernel_dims": [5, 5],
+            "padding_dims": [0, 0, 0, 0],
+            "count_include_pad": true
+        },
+        "input_specs": [
+            { "name": "X", "shape": [1, 32, 64, 64], "dtype": "float32" }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "attr": {
+                "count_include_pad": {
+                    "true": {
+                        "attributes": {
+                            "padding_dims": [1, 1, 1, 1],
+                            "count_include_pad": true
+                        },
+                        "input_specs": []
+                    },
+                    "false": {
+                        "attributes": {
+                            "padding_dims": [1, 1, 1, 1],
+                            "count_include_pad": false
+                        },
+                        "input_specs": []
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,280 @@
+{
+    "operation": "TopKOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": { "initializer_rank": 2 }
+    },
+    "base_configuration": {
+        "attributes": {
+            "axis": -1,
+            "largest": true,
+            "sorted": true
+        },
+        "input_specs": [
+            { "name": "X", "shape": [1, 32, 64, 64], "dtype": "float32" },
+            { "name": "K", "shape": [1], "dtype": "int64", "data": [5] }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "attr": {
+                "axis": {
+                    "-4": {
+                        "attributes": { "axis": -4 },
+                        "input_specs": [
+                            {"name": "K", "data": [1]}
+                        ]
+                    },
+                    "-1": { "attributes": { "axis": -1 }, "input_specs": [] },
+                    "0": {
+                        "attributes": { "axis": 0 },
+                        "input_specs": [
+                            {"name": "K", "data": [1]}
+                        ]
+                    },
+                    "1": { "attributes": { "axis": 1 }, "input_specs": [] },
+                    "2": { "attributes": { "axis": 2 }, "input_specs": [] },
+                    "3": { "attributes": { "axis": 3 }, "input_specs": [] }
+                },
+                "largest": {
+                    "true": {
+                        "attributes": { "largest": true },
+                        "input_specs": []
+                    },
+                    "false": {
+                        "attributes": { "largest": false },
+                        "input_specs": []
+                    }
+                },
+                "sorted": {
+                    "true": {
+                        "attributes": { "sorted": true },
+                        "input_specs": []
+                    },
+                    "false": {
+                        "attributes": { "sorted": false },
+                        "input_specs": []
+                    }
+                }
+            },
+            "k": {
+                "one": {
+                    "input_specs": [
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [1]
+                        }
+                    ]
+                },
+                "five": {
+                    "input_specs": [
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [5]
+                        }
+                    ]
+                },
+                "axis_eq_dim": {
+                    "attributes": { "axis": 1 },
+                    "input_specs": [
+                        { "name": "X", "shape": [1, 32, 64, 64] },
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [32]
+                        }
+                    ]
+                },
+                "int32": {
+                    "input_specs": [
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "int32",
+                            "data": [7]
+                        }
+                    ]
+                },
+                "not_scalar": {
+                    "input_specs": [
+                        {
+                            "name": "K",
+                            "shape": [2],
+                            "dtype": "int64",
+                            "data": [3, 4]
+                        }
+                    ]
+                }
+            },
+            "dtype": {
+                "float64": {
+                    "input_specs": [
+                        { "name": "X", "dtype": "float64" }
+                    ]
+                },
+                "int32": {
+                    "input_specs": [
+                        { "name": "X", "dtype": "int32" }
+                    ]
+                },
+                "int8": {
+                    "input_specs": [
+                        { "name": "X", "dtype": "int8" }
+                    ]
+                }
+            },
+            "shape": {
+                "n_dims": {
+                    "1": {
+                        "attributes": { "axis": -1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [128] },
+                            {
+                                "name": "K",
+                                "shape": [1],
+                                "dtype": "int64",
+                                "data": [10]
+                            }
+                        ]
+                    },
+                    "2": {
+                        "attributes": { "axis": -1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 32] },
+                            {
+                                "name": "K",
+                                "shape": [1],
+                                "dtype": "int64",
+                                "data": [8]
+                            }
+                        ]
+                    },
+                    "3": {
+                        "attributes": { "axis": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [4, 16, 20] },
+                            {
+                                "name": "K",
+                                "shape": [1],
+                                "dtype": "int64",
+                                "data": [5]
+                            }
+                        ]
+                    },
+                    "4": {
+                        "attributes": { "axis": 2 },
+                        "input_specs": [
+                            { "name": "X", "shape": [2, 8, 64, 10] },
+                            {
+                                "name": "K",
+                                "shape": [1],
+                                "dtype": "int64",
+                                "data": [3]
+                            }
+                        ]
+                    },
+                    "5": {
+                        "attributes": { "axis": -2 },
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 4, 8, 16, 32] },
+                            {
+                                "name": "K",
+                                "shape": [1],
+                                "dtype": "int64",
+                                "data": [6]
+                            }
+                        ]
+                    }
+                },
+                "size": {
+                    "along_axis_smallK": {
+                        "attributes": { "axis": -1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [8, 8, 8, 8] },
+                            { "name": "K", "data": [2] }
+                        ]
+                    },
+                    "along_axis_largeK": {
+                        "attributes": { "axis": 2 },
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 16, 32, 5] },
+                            { "name": "K", "data": [16] }
+                        ]
+                    },
+                    "batch_heavy": {
+                        "attributes": { "axis": -1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [128, 32, 64, 64] },
+                            { "name": "K", "data": [7] }
+                        ]
+                    }
+                }
+            }
+        },
+        "error": {
+            "k": {
+                "missing": {
+                    "input_specs": [{ "name": "K", "shape": null, "data": null }]
+                },
+                "zero": {
+                    "input_specs": [
+                        { "name": "K", "shape": [1], "dtype": "int64", "data": [0] }
+                    ]
+                },
+                "negative": {
+                    "input_specs": [
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [-3]
+                        }
+                    ]
+                },
+                "exceeds_dim": {
+                    "attributes": { "axis": 2 },
+                    "input_specs": [
+                        { "name": "X", "shape": [2, 8, 10, 4] },
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "int64",
+                            "data": [11]
+                        }
+                    ]
+                },
+                "wrong_dtype": {
+                    "input_specs": [
+                        {
+                            "name": "K",
+                            "shape": [1],
+                            "dtype": "float32",
+                            "data": [5.0]
+                        }
+                    ]
+                }
+            },
+            "axis": {
+                "oor": {
+                    "attributes": { "axis": 5 },
+                    "input_specs": []
+                }
+            },
+            "zero_sized_dim": {
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [1, 32, 0, 64],
+                        "dtype": "float32"
+                    },
+                    { "name": "K", "shape": [1], "dtype": "int64", "data": [5] }
+                ]
+            }
+        }
+    }
+}

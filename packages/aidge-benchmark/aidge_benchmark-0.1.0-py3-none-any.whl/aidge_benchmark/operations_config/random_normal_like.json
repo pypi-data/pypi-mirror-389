@@ -1,0 +1,83 @@
+{
+    "operation": "RandomNormalLikeOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "mean": 0.0,
+            "scale": 1.0,
+            "seed": 23
+        },
+        "input_specs": [
+            {
+                "name": "X",
+                "shape": [2, 3, 4, 5],
+                "dtype": "float32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "attr": {
+                "dtype": {
+                    "not_specified": {
+                        "attributes": {},
+                        "input_specs": []
+                    },
+                    "any": {
+                        "attributes": { "dtype": "any" },
+                        "input_specs": []
+                    },
+                    "float32": {
+                        "attributes": { "dtype": "float32" },
+                        "input_specs": []
+                    },
+                    "float64": {
+                        "attributes": { "dtype": "float64" },
+                        "input_specs": []
+                    }
+                },
+                "mean": {
+                    "-1": {
+                        "attributes": { "mean": -1 },
+                        "input_specs": []
+                    },
+                    "0": {
+                        "attributes": { "mean": 0 },
+                        "input_specs": []
+                    },
+                    "20": {
+                        "attributes": { "mean": 20 },
+                        "input_specs": []
+                    }
+                },
+                "scale": {
+                    "20": {
+                        "attributes": { "scale": 20 },
+                        "input_specs": []
+                    }
+                },
+                "seed": {
+                    "42": {
+                        "0": {
+                            "attributes": { "seed": 42 },
+                            "input_specs": []
+                        }
+                    }
+                }
+            },
+            "input_dtype": {
+                "float64": {
+                    "attributes": {},
+                    "input_specs": [
+                        { "name": "X", "dtype": "float64" }
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "operation": "RoundOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "opset_version": 23,
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": { "rounding_mode": "half_away_from_zeros" },
+        "input_specs": [
+            {
+                "name": "X",
+                "shape": [11],
+                "data": [
+                    -2.6, -2.4, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.4, 2.6
+                ],
+                "dtype": "float32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "modes": {
+            "down": {
+                "attributes": { "rounding_mode": "down" },
+                "input_specs": []
+            },
+            "up": {
+                "attributes": { "rounding_mode": "up" },
+                "input_specs": []
+            },
+            "toward_zero": {
+                "attributes": { "rounding_mode": "toward_zero" },
+                "input_specs": []
+            },
+            "away_from_zero": {
+                "attributes": { "rounding_mode": "away_from_zero" },
+                "input_specs": []
+            },
+            "half_down": {
+                "attributes": { "rounding_mode": "half_down" },
+                "input_specs": []
+            },
+            "half_up": {
+                "attributes": { "rounding_mode": "half_up" },
+                "input_specs": []
+            },
+            "half_toward_zero": {
+                "attributes": { "rounding_mode": "half_toward_zero" },
+                "input_specs": []
+            },
+            "half_away_from_zero": {
+                "attributes": { "rounding_mode": "half_away_from_zero" },
+                "input_specs": []
+            },
+            "half_to_even": {
+                "attributes": { "rounding_mode": "half_to_even" },
+                "input_specs": []
+            },
+            "half_to_odd": {
+                "attributes": { "rounding_mode": "half_to_odd" },
+                "input_specs": []
+            }
+        }
+    }
+}

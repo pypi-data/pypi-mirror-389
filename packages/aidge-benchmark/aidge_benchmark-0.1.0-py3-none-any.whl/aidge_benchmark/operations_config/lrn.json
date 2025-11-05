@@ -1,0 +1,208 @@
+{
+    "operation": "LRNOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": { "initializer_rank": 1 }
+    },
+    "base_configuration": {
+        "attributes": {
+            "alpha": 0.0001,
+            "beta": 0.75,
+            "bias": 1.0,
+            "size": 5
+        },
+        "input_specs": [
+            { "name": "X", "shape": [1, 32, 64, 64], "dtype": "float32" }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "attr": {
+                "size": {
+                    "3": { "attributes": { "size": 3 }, "input_specs": [] },
+                    "5": { "attributes": { "size": 5 }, "input_specs": [] },
+                    "7": { "attributes": { "size": 7 }, "input_specs": [] }
+                },
+                "alpha": {
+                    "tiny": {
+                        "attributes": { "alpha": 1e-6 },
+                        "input_specs": []
+                    },
+                    "small": {
+                        "attributes": { "alpha": 1e-4 },
+                        "input_specs": []
+                    },
+                    "large": {
+                        "attributes": { "alpha": 1e-2 },
+                        "input_specs": []
+                    }
+                },
+                "beta": {
+                    "low": { "attributes": { "beta": 0.5 }, "input_specs": [] },
+                    "default": {
+                        "attributes": { "beta": 0.75 },
+                        "input_specs": []
+                    },
+                    "high": { "attributes": { "beta": 1.0 }, "input_specs": [] }
+                },
+                "bias": {
+                    "1": { "attributes": { "bias": 1.0 }, "input_specs": [] },
+                    "1-5": { "attributes": { "bias": 1.5 }, "input_specs": [] },
+                    "2.0": { "attributes": { "bias": 2.0 }, "input_specs": [] }
+                }
+            },
+            "shape": {
+                "N": {
+                    "1": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 64] }
+                        ]
+                    },
+                    "8": {
+                        "input_specs": [
+                            { "name": "X", "shape": [8, 32, 64, 64] }
+                        ]
+                    },
+                    "64": {
+                        "input_specs": [
+                            { "name": "X", "shape": [64, 32, 64, 64] }
+                        ]
+                    }
+                },
+                "C": {
+                    "8": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 8, 64, 64] }
+                        ]
+                    },
+                    "32": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 64] }
+                        ]
+                    },
+                    "128": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 128, 64, 64] }
+                        ]
+                    }
+                },
+                "D1": {
+                    "8": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 8, 64] }
+                        ]
+                    },
+                    "32": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 32, 64] }
+                        ]
+                    },
+                    "128": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 128, 64] }
+                        ]
+                    }
+                },
+                "D2": {
+                    "8": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 8] }
+                        ]
+                    },
+                    "32": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 32] }
+                        ]
+                    },
+                    "128": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 128] }
+                        ]
+                    }
+                },
+                "n_dims": {
+                    "2": {
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "3": {
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 64],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "4": {
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 64, 64],
+                                "dtype": "float32"
+                            }
+                        ]
+                    },
+                    "5": {
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "shape": [1, 32, 64, 64, 64],
+                                "dtype": "float32"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "error": {
+            "attr": {
+                "size": {
+                    "missing": {
+                        "attributes": {},
+                        "input_specs": []
+                    },
+                    "even": {
+                        "attributes": { "size": 4 },
+                        "input_specs": []
+                    },
+                    "zero": {
+                        "attributes": { "size": 0 },
+                        "input_specs": []
+                    }
+                },
+                "alpha": {
+                    "negative": {
+                        "attributes": { "alpha": -1e-4 },
+                        "input_specs": []
+                    }
+                },
+                "bias": {
+                    "zero": {
+                        "attributes": { "beta": 0.0 },
+                        "input_specs": []
+                    },
+                    "negative": {
+                        "attributes": { "bias": -1.0 },
+                        "input_specs": []
+                    }
+                }
+            },
+            "rank_not_4d": {
+                "input_specs": [
+                    { "name": "X", "shape": [32, 64, 64], "dtype": "float32" }
+                ]
+            },
+            "zero_sized_dim": {
+                "input_specs": [
+                    { "name": "X", "shape": [1, 32, 0, 64], "dtype": "float32" }
+                ]
+            }
+        }
+    }
+}

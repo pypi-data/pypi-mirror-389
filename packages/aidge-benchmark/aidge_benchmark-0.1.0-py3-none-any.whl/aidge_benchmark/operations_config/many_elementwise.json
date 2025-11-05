@@ -1,0 +1,241 @@
+{
+    "operation": "MaryElementWiseOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 5
+        }
+    },
+    "base_configuration": {
+        "attributes": {},
+        "input_specs": []
+    },
+    "test_configurations": {
+        "n_inputs": {
+            "1": {
+                "attributes": {"nb_inputs": 1},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [32],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "2": {
+                "attributes": {"nb_inputs":2},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_1",
+                        "shape": [32],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "3": {
+                "attributes": {"nb_inputs": 3},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_1",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_2",
+                        "shape": [32],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "4": {
+                "attributes": {"nb_inputs": 4},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_1",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_2",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_3",
+                        "shape": [32],
+                        "dtype": "float32"
+                    }
+                ]
+            },
+            "5": {
+                "attributes": {"nb_inputs": 5},
+                "input_specs": [
+                    {
+                        "name": "X",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_1",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_2",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_3",
+                        "shape": [32],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "input_4",
+                        "shape": [32],
+                        "dtype": "float32"
+                    }
+                ]
+            }
+        },
+        "size": {
+            "same": {
+                "scalar": {
+                    "attributes": {"nb_inputs": 3},
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_1",
+                            "shape": [],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_2",
+                            "shape": [],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "1": {
+                    "attributes": {"nb_inputs": 3},
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [1, 1, 1, 1],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_1",
+                            "shape": [1, 1, 1, 1],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_2",
+                            "shape": [1, 1, 1, 1],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "2": {
+                    "attributes": {"nb_inputs": 3},
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [2, 2, 2, 2],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_1",
+                            "shape": [2, 2, 2, 2],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_2",
+                            "shape": [2, 2, 2, 2],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "4": {
+                    "attributes": {"nb_inputs": 3},
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [4, 4, 4, 4],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_1",
+                            "shape": [4, 4, 4, 4],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_2",
+                            "shape": [4, 4, 4, 4],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "8": {
+                    "attributes": {"nb_inputs": 3},
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [8, 8, 8, 8],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_1",
+                            "shape": [8, 8, 8, 8],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_2",
+                            "shape": [8, 8, 8, 8],
+                            "dtype": "float32"
+                        }
+                    ]
+                },
+                "32": {
+                    "attributes": {"nb_inputs": 3},
+                    "input_specs": [
+                        {
+                            "name": "X",
+                            "shape": [32, 32, 32, 32],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_1",
+                            "shape": [32, 32, 32, 32],
+                            "dtype": "float32"
+                        },
+                        {
+                            "name": "input_2",
+                            "shape": [32, 32, 32, 32],
+                            "dtype": "float32"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

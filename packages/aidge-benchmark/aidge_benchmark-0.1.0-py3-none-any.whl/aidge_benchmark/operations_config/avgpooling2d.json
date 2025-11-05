@@ -1,0 +1,191 @@
+{
+    "operation": "AvgPooling2DOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "kernel_dims": [3, 3],
+            "stride_dims": [2, 2],
+            "dilations": [1, 1],
+            "ceil_mode": 0,
+            "rounding_mode": "half_away_from_zero"
+        },
+        "input_specs": [
+            {
+                "name": "X",
+                "shape": [1, 32, 64, 64],
+                "dtype": "float32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "attr": {
+                "rounding_mode": {
+                    "half_away_from_zero": {
+                        "attributes": {
+                            "kernel_dims": [3, 3],
+                            "stride_dims": [2, 2],
+                            "dilations": [1, 1],
+                            "rounding_mode": "half_away_from_zero"
+                        },
+                        "input_specs": []
+                    }
+                },
+                "ceil_mode": {
+                    "floor": {
+                        "attributes": { "ceil_mode": 0 },
+                        "input_specs": []
+                    },
+                    "ceil": {
+                        "attributes": { "ceil_mode": 1 },
+                        "input_specs": []
+                    }
+                },
+                "dilations": {
+                    "no_dilation": {
+                        "attributes": { "dilations": [1, 1] },
+                        "input_specs": []
+                    },
+                    "dilation_2x": {
+                        "attributes": { "dilations": [2, 2] },
+                        "input_specs": []
+                    }
+                },
+                "kernel_dims": {
+                    "1x1": {
+                        "attributes": { "kernel_dims": [1, 1] },
+                        "input_specs": []
+                    },
+                    "3x3": {
+                        "attributes": { "kernel_dims": [3, 3] },
+                        "input_specs": []
+                    },
+                    "5x3": {
+                        "attributes": { "kernel_dims": [5, 3] },
+                        "input_specs": []
+                    }
+                },
+                "stride_dims": {
+                    "1x1": {
+                        "attributes": { "stride_dims": [1, 1] },
+                        "input_specs": []
+                    },
+                    "2x2": {
+                        "attributes": { "stride_dims": [2, 2] },
+                        "input_specs": []
+                    },
+                    "2x3": {
+                        "attributes": { "stride_dims": [2, 3] },
+                        "input_specs": []
+                    }
+                }
+            },
+            "shape": {
+                "N": {
+                    "1": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 32, 64, 64] }
+                        ]
+                    },
+                    "16": {
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 32, 64, 64] }
+                        ]
+                    },
+                    "128": {
+                        "input_specs": [
+                            { "name": "X", "shape": [128, 32, 64, 64] }
+                        ]
+                    }
+                },
+                "C": {
+                    "1": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 1, 64, 64] }
+                        ]
+                    },
+                    "16": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 16, 64, 64] }
+                        ]
+                    },
+                    "256": {
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 256, 64, 64] }
+                        ]
+                    }
+                }
+            }
+        },
+        "error": {
+            "dilations": {
+                "negative": {
+                    "attributes": { "kernel_dims": [1, -1] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                },
+                "rank_mismatch": {
+                    "attributes": { "kernel_dims": [3, 3], "dilations": [2] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                },
+                "zero": {
+                    "attributes": { "kernel_dims": [3, 3], "dilations": [1, 0] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                }
+            },
+            "kernel_dims": {
+                "missing": {
+                    "attributes": {
+                        "kernel_dims": null,
+                        "stride_dims": [2, 2],
+                        "dilations": [1, 1],
+                        "rounding_mode": "half_away_from_zero"
+                    },
+                    "input_specs": []
+                },
+                "negative": {
+                    "attributes": { "kernel_dims": [3, -3] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                },
+                "rank_mismatch": {
+                    "attributes": { "kernel_dims": [3] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                },
+                "zero": {
+                    "attributes": { "kernel_dims": [0, 3] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                }
+            },
+            "rounding_mode": {
+                "invalid": {
+                    "attributes": { "rounding_mode": "same" },
+                    "input_specs": []
+                }
+            },
+            "stride_dims": {
+                "negative": {
+                    "attributes": { "kernel_dims": [3, 3], "stride_dims": [2, -1] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                },
+                "rank_mismatch": {
+                    "attributes": { "kernel_dims": [3, 3], "stride_dims": [2] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                },
+                "zero": {
+                    "attributes": { "kernel_dims": [3, 3], "stride_dims": [0, 2] },
+                    "input_specs": [{ "name": "X", "shape": [1, 32, 64, 64] }]
+                }
+            },
+            "zero_sized_dim": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "X", "shape": [1, 32, 0, 64] }
+                ]
+            }
+        }
+    }
+}

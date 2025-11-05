@@ -1,0 +1,323 @@
+{
+    "operation": "BatchNorm2DOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "epsilon": 1e-5,
+            "momentum": 0.9,
+            "training_mode": 0
+        },
+        "input_specs": [
+            { "name": "X", "shape": [16, 16, 16, 16], "dtype": "float32"},
+            { "name": "scale", "shape": [16], "dtype": "float32"},
+            { "name": "B", "shape": [16], "dtype": "float32"},
+            { "name": "input_mean", "shape": [16], "dtype": "float32"},
+            { "name": "input_var", "shape": [16], "dtype": "float32"}
+        ]
+    },
+    "test_configurations": {
+        "training": {
+            "shape": {
+                "[0]N": {
+                    "1": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 16, 16, 16] }
+                        ]
+                    },
+                    "4": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [4, 16, 16, 16] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [32, 16, 16, 16] }
+                        ]
+                    }
+                },
+                "[1]C": {
+                    "8": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 8, 16, 16] },
+                            { "name": "scale", "shape": [8] },
+                            { "name": "B", "shape": [8] },
+                            { "name": "input_mean", "shape": [8] },
+                            { "name": "input_var", "shape": [8] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 32, 16, 16] },
+                            { "name": "scale", "shape": [32] },
+                            { "name": "B", "shape": [32] },
+                            { "name": "input_mean", "shape": [32] },
+                            { "name": "input_var", "shape": [32] }
+                        ]
+                    },
+                    "64": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 64, 16, 16] },
+                            { "name": "scale", "shape": [64] },
+                            { "name": "B", "shape": [64] },
+                            { "name": "input_mean", "shape": [64] },
+                            { "name": "input_var", "shape": [64] }
+                        ]
+                    }
+                },
+                "[2]H": {
+                    "8": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 8, 16] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 32, 16] }
+                        ]
+                    },
+                    "64": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 64, 16] }
+                        ]
+                    }
+                },
+                "[3]W": {
+                    "8": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 16, 8] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 16, 32] }
+                        ]
+                    },
+                    "64": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 16, 64] }
+                        ]
+                    }
+                },
+                "[2,3]HW": {
+                    "[8,8]": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 8, 8] }
+                        ]
+                    },
+                    "[32,32]": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 32, 32] }
+                        ]
+                    },
+                    "[64,32]": {
+                        "attributes": { "training_mode": 1 },
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 64, 32] }
+                        ]
+                    }
+                }
+            },
+            "attributes": {
+                "epsilon": {
+                    "1e-03": {
+                        "attributes": { "training_mode": 1, "epsilon": 0.001 },
+                        "input_specs": []
+                    },
+                    "1e-05": {
+                        "attributes": {
+                            "training_mode": 1,
+                            "epsilon": 0.00001
+                        },
+                        "input_specs": []
+                    },
+                    "1e-07": {
+                        "attributes": {
+                            "training_mode": 1,
+                            "epsilon": 0.0000007
+                        },
+                        "input_specs": []
+                    }
+                },
+                "momentum": {
+                    "0.1": {
+                        "attributes": { "training_mode": 1, "momentum": 0.1 },
+                        "input_specs": []
+                    },
+                    "0.9": {
+                        "attributes": { "training_mode": 1, "momentum": 0.9 },
+                        "input_specs": []
+                    },
+                    "0.99": {
+                        "attributes": { "training_mode": 1, "momentum": 0.99 },
+                        "input_specs": []
+                    }
+                }
+            }
+        },
+        "inference": {
+            "shape": {
+                "[0]N": {
+                    "1": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [1, 16, 16, 16] }
+                        ]
+                    },
+                    "4": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [4, 16, 16, 16] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [32, 16, 16, 16] }
+                        ]
+                    }
+                },
+                "[1]C": {
+                    "8": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 8, 16, 16] },
+                            { "name": "scale", "shape": [8] },
+                            { "name": "B", "shape": [8] },
+                            { "name": "input_mean", "shape": [8] },
+                            { "name": "input_var", "shape": [8] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 32, 16, 16] },
+                            { "name": "scale", "shape": [32] },
+                            { "name": "B", "shape": [32] },
+                            { "name": "input_mean", "shape": [32] },
+                            { "name": "input_var", "shape": [32] }
+                        ]
+                    },
+                    "64": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 64, 16, 16] },
+                            { "name": "scale", "shape": [64] },
+                            { "name": "B", "shape": [64] },
+                            { "name": "input_mean", "shape": [64] },
+                            { "name": "input_var", "shape": [64] }
+                        ]
+                    }
+                },
+                "[2]H": {
+                    "8": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 8, 16] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 32, 16] }
+                        ]
+                    },
+                    "64": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 64, 16] }
+                        ]
+                    }
+                },
+                "[3]W": {
+                    "8": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 16, 8] }
+                        ]
+                    },
+                    "32": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 16, 32] }
+                        ]
+                    },
+                    "64": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 16, 64] }
+                        ]
+                    }
+                },
+                "[2,3]HW": {
+                    "[8,8]": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 8, 8] }
+                        ]
+                    },
+                    "[32,32]": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 32, 32] }
+                        ]
+                    },
+                    "[64,32]": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "X", "shape": [16, 16, 64, 32] }
+                        ]
+                    }
+                }
+            },
+            "attributes": {
+                "epsilon": {
+                    "1e-03": {
+                        "attributes": { "epsilon": 0.001 },
+                        "input_specs": []
+                    },
+                    "1e-05": {
+                        "attributes": { "epsilon": 0.00001 },
+                        "input_specs": []
+                    },
+                    "1e-07": {
+                        "attributes": { "epsilon": 0.0000007 },
+                        "input_specs": []
+                    }
+                },
+                "momentum": {
+                    "0.1": {
+                        "attributes": { "momentum": 0.1 },
+                        "input_specs": []
+                    },
+                    "0.9": {
+                        "attributes": { "momentum": 0.9 },
+                        "input_specs": []
+                    },
+                    "0.99": {
+                        "attributes": { "momentum": 0.99 },
+                        "input_specs": []
+                    }
+                }
+            }
+        }
+    }
+}

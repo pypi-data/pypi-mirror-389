@@ -1,0 +1,484 @@
+{
+    "operation": "PadOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": { "initializer_rank": 4 }
+    },
+    "base_configuration": {
+        "attributes": { "mode": "constant" },
+        "input_specs": [
+            { "name": "data", "shape": [1, 3, 64, 64], "dtype": "float32" },
+            {
+                "name": "pads",
+                "shape": [8],
+                "dtype": "int64",
+                "data": [0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+                "name": "constant_value",
+                "shape": [1],
+                "dtype": "float32",
+                "data": [0.0]
+            },
+            { "name": "axes", "dtype": "int64" }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "constant": {
+                "axes": {
+                    "none": {
+                        "symmetric_hw": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [8],
+                                    "data": [0, 0, 2, 2, 0, 0, 2, 2]
+                                }
+                            ]
+                        },
+                        "asymmetric_hw": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [8],
+                                    "data": [0, 0, 3, 1, 0, 0, 0, 4]
+                                }
+                            ]
+                        },
+                        "crop_hw": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [8],
+                                    "data": [0, 0, -2, 0, 0, 0, -1, 0]
+                                }
+                            ]
+                        }
+                    },
+                    "n": {
+                        "pad_n_begin_only": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [2],
+                                    "data": [2, 0]
+                                },
+                                { "name": "axes", "shape": [1], "data": [0] }
+                            ]
+                        }
+                    },
+                    "h": {
+                        "pad_h_asymmetric": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [2],
+                                    "data": [5, 2]
+                                },
+                                { "name": "axes", "shape": [1], "data": [2] }
+                            ]
+                        }
+                    },
+                    "w": {
+                        "pad_w_symmetric": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [2],
+                                    "data": [4, 4]
+                                },
+                                { "name": "axes", "shape": [1], "data": [3] }
+                            ]
+                        }
+                    },
+                    "hw": {
+                        "pad_hw_mixed": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [4],
+                                    "data": [1, 3, 2, 4]
+                                },
+                                {
+                                    "name": "axes",
+                                    "shape": [2],
+                                    "data": [2, 3]
+                                }
+                            ]
+                        }
+                    },
+                    "n_hw": {
+                        "pad_n_h_w": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [6],
+                                    "data": [1, 2, 3, 0, 2, 1]
+                                },
+                                {
+                                    "name": "axes",
+                                    "shape": [3],
+                                    "data": [0, 2, 3]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "constant_value": {
+                    "zero": {
+                        "input_specs": [
+                            {
+                                "name": "constant_value",
+                                "shape": [1],
+                                "data": [0.0]
+                            }
+                        ]
+                    },
+                    "val_255": {
+                        "input_specs": [
+                            {
+                                "name": "pads",
+                                "shape": [8],
+                                "data": [0, 0, 2, 2, 0, 0, 2, 2]
+                            },
+                            {
+                                "name": "constant_value",
+                                "shape": [1],
+                                "data": [255.0]
+                            }
+                        ]
+                    },
+                    "int5": {
+                        "input_specs": [
+                            { "name": "data", "dtype": "int32" },
+                            {
+                                "name": "pads",
+                                "shape": [8],
+                                "data": [0, 0, 1, 0, 0, 0, 3, 0]
+                            },
+                            {
+                                "name": "constant_value",
+                                "dtype": "int32",
+                                "data": [5]
+                            }
+                        ]
+                    }
+                },
+                "input_size": {
+                    "batch_8": {
+                        "input_specs": [
+                            { "name": "data", "shape": [8, 3, 64, 64] },
+                            {
+                                "name": "pads",
+                                "shape": [8],
+                                "data": [0, 0, 2, 2, 0, 0, 2, 2]
+                            }
+                        ]
+                    },
+                    "smaller_hw": {
+                        "input_specs": [
+                            { "name": "data", "shape": [1, 3, 32, 32] },
+                            {
+                                "name": "pads",
+                                "shape": [8],
+                                "data": [0, 0, 1, 3, 0, 0, 4, 2]
+                            }
+                        ]
+                    },
+                    "five_d_hwz": {
+                        "input_specs": [
+                            {
+                                "name": "data",
+                                "shape": [1, 3, 16, 32, 32],
+                                "dtype": "float32"
+                            },
+                            {
+                                "name": "pads",
+                                "shape": [6],
+                                "data": [1, 2, 3, 1, 2, 0]
+                            },
+                            { "name": "axes", "shape": [3], "data": [2, 3, 4] }
+                        ]
+                    }
+                },
+                "rank": {
+                    "1d_vector": {
+                        "input_specs": [
+                            {
+                                "name": "data",
+                                "shape": [128],
+                                "dtype": "float32"
+                            },
+                            { "name": "pads", "shape": [2], "data": [3, 4] }
+                        ]
+                    },
+                    "2d_rows_only": {
+                        "input_specs": [
+                            {
+                                "name": "data",
+                                "shape": [3, 5],
+                                "dtype": "float32"
+                            },
+                            { "name": "pads", "shape": [2], "data": [1, 2] },
+                            { "name": "axes", "shape": [1], "data": [0] }
+                        ]
+                    }
+                },
+                "dtype": {
+                    "data_float16": {
+                        "input_specs": [
+                            { "name": "data", "dtype": "float16" },
+                            {
+                                "name": "constant_value",
+                                "dtype": "float16"
+                            }
+                        ]
+                    },
+                    "data_int32": {
+                        "input_specs": [
+                            { "name": "data", "dtype": "int32" },
+                            {
+                                "name": "constant_value",
+                                "dtype": "int32"
+                            }
+                        ]
+                    }
+                }
+            },
+            "reflect": {
+                "axes": {
+                    "w": {
+                        "reflect_w_only": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [2],
+                                    "data": [7, 7]
+                                },
+                                { "name": "axes", "shape": [1], "data": [3] }
+                            ]
+                        }
+                    },
+                    "hw": {
+                        "reflect_hw_small": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [4],
+                                    "data": [3, 4, 3, 4]
+                                },
+                                {
+                                    "name": "axes",
+                                    "shape": [2],
+                                    "data": [2, 3]
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "edge": {
+                "axes": {
+                    "none": {
+                        "edge_wide_hw": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [8],
+                                    "data": [0, 0, 5, 6, 0, 0, 5, 6]
+                                }
+                            ]
+                        }
+                    },
+                    "n_hw": {
+                        "edge_n_h_w": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [6],
+                                    "data": [1, 0, 2, 2, 3, 0]
+                                },
+                                {
+                                    "name": "axes",
+                                    "shape": [3],
+                                    "data": [0, 2, 3]
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "wrap": {
+                "axes": {
+                    "w": {
+                        "wrap_w_only": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [2],
+                                    "data": [7, 3]
+                                },
+                                { "name": "axes", "shape": [1], "data": [3] }
+                            ]
+                        }
+                    },
+                    "hw": {
+                        "wrap_hw": {
+                            "input_specs": [
+                                {
+                                    "name": "pads",
+                                    "shape": [4],
+                                    "data": [2, 4, 1, 2]
+                                },
+                                {
+                                    "name": "axes",
+                                    "shape": [2],
+                                    "data": [2, 3]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "error": {
+            "missing_pads": {
+                "input_specs": [
+                    {
+                        "name": "pads",
+                        "shape": null,
+                        "dtype": null,
+                        "data": null
+                    }
+                ]
+            },
+            "pads_rank_mismatch": {
+                "input_specs": [
+                    { "name": "data", "shape": [1, 3, 64, 64] },
+                    {
+                        "name": "pads",
+                        "shape": [6],
+                        "dtype": "int64",
+                        "data": [0, 0, 1, 2, 0, 0]
+                    }
+                ]
+            },
+            "pads_len_mismatch_with_axes": {
+                "input_specs": [
+                    {
+                        "name": "pads",
+                        "shape": [6],
+                        "dtype": "int64",
+                        "data": [1, 1, 2, 2, 3, 3]
+                    },
+                    {
+                        "name": "axes",
+                        "shape": [2],
+                        "dtype": "int64",
+                        "data": [2, 3]
+                    }
+                ]
+            },
+            "axes_out_of_range": {
+                "input_specs": [
+                    { "name": "data", "shape": [1, 3, 64, 64] },
+                    {
+                        "name": "pads",
+                        "shape": [4],
+                        "dtype": "int64",
+                        "data": [1, 1, 1, 1]
+                    },
+                    {
+                        "name": "axes",
+                        "shape": [2],
+                        "dtype": "int64",
+                        "data": [1, 4]
+                    }
+                ]
+            },
+            "axes_duplicate": {
+                "input_specs": [
+                    {
+                        "name": "pads",
+                        "shape": [4],
+                        "dtype": "int64",
+                        "data": [1, 0, 1, 0]
+                    },
+                    {
+                        "name": "axes",
+                        "shape": [2],
+                        "dtype": "int64",
+                        "data": [2, 2]
+                    }
+                ]
+            },
+            "pads_non_integer": {
+                "input_specs": [
+                    {
+                        "name": "pads",
+                        "shape": [8],
+                        "dtype": "float32",
+                        "data": [0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 1.0, 2.0]
+                    }
+                ]
+            },
+            "constant_value": {
+                "wrong_rank": {
+                    "input_specs": [
+                        {
+                            "name": "constant_value",
+                            "shape": [2],
+                            "dtype": "float32",
+                            "data": [0.0, 0.0]
+                        }
+                    ]
+                },
+                "wrong_dtype": {
+                    "input_specs": [
+                        {
+                            "name": "constant_value",
+                            "dtype": "int32"
+                        }
+                    ]
+                }
+            },
+            "reflect_negative_or_too_large": {
+                "input_specs": [
+                    { "name": "data", "shape": [1, 3, 4, 4] },
+                    {
+                        "name": "pads",
+                        "shape": [8],
+                        "dtype": "int64",
+                        "data": [0, 0, 4, 0, 0, 0, -1, 0]
+                    }
+                ]
+            },
+            "edge_negative": {
+                "input_specs": [
+                    {
+                        "name": "pads",
+                        "shape": [8],
+                        "dtype": "int64",
+                        "data": [0, 0, -1, 0, 0, 0, 0, 0]
+                    }
+                ]
+            },
+            "zero_sized_dim": {
+                "input_specs": [
+                    {
+                        "name": "data",
+                        "shape": [1, 3, 0, 64],
+                        "dtype": "float32"
+                    },
+                    {
+                        "name": "pads",
+                        "shape": [8],
+                        "dtype": "int64",
+                        "data": [0, 0, 1, 1, 0, 0, 1, 1]
+                    }
+                ]
+            }
+        }
+    }
+}

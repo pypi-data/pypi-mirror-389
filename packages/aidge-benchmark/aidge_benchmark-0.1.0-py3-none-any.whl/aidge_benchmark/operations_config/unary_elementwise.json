@@ -1,0 +1,109 @@
+{
+    "operation": "UnaryElementWiseOp",
+	"format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+	"base_configuration": {
+		"input_specs": [
+			{"name": "X", "shape": [16, 16, 16, 16], "dtype": "float32"}
+		],
+		"attributes": {}
+	},
+	"test_configurations": {
+        "n_dims": {
+            "1": {
+                "attributes": {},
+                "input_specs": [
+                    {"name": "X", "shape": [16]}
+                ]
+            },
+            "2": {
+                "attributes": {},
+                "input_specs": [
+                    {"name": "X", "shape": [16, 16]}
+                ]
+            },
+            "3": {
+                "attributes": {},
+                "input_specs": [
+                    {"name": "X", "shape": [16, 16, 16]}
+                ]
+            },
+            "4": {
+                "attributes": {},
+                "input_specs": [
+                    {"name": "X", "shape": [16, 16, 16, 16]}
+                ]
+            },
+            "5": {
+                "attributes": {},
+                "input_specs": [
+                    {"name": "X", "shape": [16, 16, 16, 16, 16]}
+                ]
+            }
+		},
+        "size": {
+            "same": {
+                "1": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [1, 1, 1, 1]}
+                    ]
+                },
+                "2": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [2 ,2, 2, 2]}
+                    ]
+                },
+                "4": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [4, 4, 4, 4]}
+                    ]
+                },
+                "8": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [8, 8, 8, 8]}
+                    ]
+                },
+                "16": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [16, 16, 16, 16]}
+                    ]
+                }
+            },
+            "one_dim_set_to_1": {
+                "0": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [1, 16, 16, 16]}
+                    ]
+                },
+                "1": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [16, 1, 16, 16]}
+                    ]
+                },
+                "2": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [16, 16, 1, 16]}
+                    ]
+                },
+                "3": {
+                    "attributes": {},
+                    "input_specs": [
+                        {"name": "X", "shape": [16, 16, 16, 1]}
+                    ]
+                }
+            }
+        }
+	}
+}

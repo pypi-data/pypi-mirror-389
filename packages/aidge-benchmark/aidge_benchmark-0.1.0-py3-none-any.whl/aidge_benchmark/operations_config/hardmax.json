@@ -1,0 +1,121 @@
+{
+    "operation": "HardmaxOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "axis": -1
+        },
+        "input_specs": [
+            {
+                "name": "X",
+                "shape": [2, 3, 4],
+                "dtype": "float32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "axis": {
+                "-3": {
+                    "attributes": { "axis": -3 },
+                    "input_specs": []
+                },
+                "-2": {
+                    "attributes": { "axis": -2 },
+                    "input_specs": []
+                },
+                "-1": {
+                    "attributes": { "axis": -1 },
+                    "input_specs": []
+                },
+                "0": {
+                    "attributes": { "axis": -0 },
+                    "input_specs": []
+                },
+                "1": {
+                    "attributes": { "axis": 1 },
+                    "input_specs": []
+                },
+                "2": {
+                    "attributes": { "axis": 2 },
+                    "input_specs": []
+                }
+            },
+            "values": {
+                "all_equal": {
+                    ">0": {
+                        "attributes": {},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "data": [
+                                    [
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1]
+                                    ],
+                                    [
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1]
+                                    ]
+                                ]
+                            }
+                        ]
+                    },
+                    "=0": {
+                        "attributes": {},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "data": [
+                                    [
+                                        [0, 0, 0, 0],
+                                        [0, 0, 0, 0],
+                                        [0, 0, 0, 0]
+                                    ],
+                                    [
+                                        [0, 0, 0, 0],
+                                        [0, 0, 0, 0],
+                                        [0, 0, 0, 0]
+                                    ]
+                                ]
+                            }
+                        ]
+                    },
+                    "<0": {
+                        "attributes": {},
+                        "input_specs": [
+                            {
+                                "name": "X",
+                                "data": [
+                                    [
+                                        [-1, -1, -1, -1],
+                                        [-1, -1, -1, -1],
+                                        [-1, -1, -1, -1]
+                                    ],
+                                    [
+                                        [-1, -1, -1, -1],
+                                        [-1, -1, -1, -1],
+                                        [-1, -1, -1, -1]
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "expected_error": {
+            "axis_oob": {
+                "attributes": { "axis": 3 },
+                "input_specs": []
+            }
+        }
+    }
+}

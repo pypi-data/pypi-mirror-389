@@ -1,0 +1,143 @@
+{
+    "operation": "FCOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "input_specs": [
+            { "name": "input", "shape": [1, 16], "dtype": "float32" },
+            { "name": "weight", "shape": [32, 16], "dtype": "float32" },
+            { "name": "bias", "shape": [32], "dtype": "float32" }
+        ]
+    },
+    "test_configurations": {
+        "hidden_sizes": {
+            "16_out": {
+                "input_specs": [
+                    { "name": "input", "shape": [4, 8] },
+                    { "name": "weight", "shape": [16, 8] },
+                    { "name": "bias", "shape": [16] }
+                ]
+            },
+            "32_out": {
+                "input_specs": [
+                    { "name": "input", "shape": [2, 12] },
+                    { "name": "weight", "shape": [32, 12] },
+                    { "name": "bias", "shape": [32] }
+                ]
+            },
+            "128_out": {
+                "input_specs": [
+                    { "name": "input", "shape": [1, 64] },
+                    { "name": "weight", "shape": [128, 64] },
+                    { "name": "bias", "shape": [128] }
+                ]
+            }
+        },
+        "batch_sizes": {
+            "batch1": {
+                "input_specs": [
+                    { "name": "input", "shape": [1, 16] }
+                ]
+            },
+            "batch8": {
+                "input_specs": [
+                    { "name": "input", "shape": [8, 16] }
+                ]
+            },
+            "batch64": {
+                "input_specs": [
+                    { "name": "input", "shape": [64, 16] }
+                ]
+            }
+        },
+        "no_bias": {
+            "small_input": {
+                "input_specs": [
+                    { "name": "input", "shape": [3, 10] },
+                    { "name": "weight", "shape": [7, 10] },
+                    { "name": "bias", "shape": null }
+                ]
+            },
+            "large_input": {
+                "input_specs": [
+                    { "name": "input", "shape": [32, 256] },
+                    { "name": "weight", "shape": [128, 256] },
+                    { "name": "bias", "shape": null }
+                ]
+            }
+        },
+        "quantized": {
+            "int8": {
+                "input_specs": [
+                    { "name": "input", "dtype": "int8" },
+                    { "name": "weight", "dtype": "int8" },
+                    { "name": "bias", "dtype": "int32" }
+                ]
+            }
+        },
+        "expected_error": {
+            "shape_mismatch": {
+                "inner_dims": {
+                    "input_specs": [
+                        { "name": "weight", "shape": [32, 15] }
+                    ]
+                },
+                "bias_length": {
+                    "input_specs": [
+                        { "name": "bias", "shape": [9] }
+                    ]
+                }
+            },
+            "wrong_rank": {
+                "input": {
+                    "0": {
+                        "input_specs": [
+                            { "name": "input", "shape": [] }
+                        ]
+                    },
+                    "1": {
+                        "input_specs": [
+                            { "name": "input", "shape": [16] }
+                        ]
+                    },
+                    "3": {
+                        "input_specs": [
+                            { "name": "input", "shape": [1, 16, 1] }
+                        ]
+                    },
+                    "4": {
+                        "input_specs": [
+                            { "name": "input", "shape": [1, 16, 1, 1] }
+                        ]
+                    }
+                },
+                "bias": {
+                    "input_specs": [
+                        { "name": "bias", "shape": [2, 32] }
+                    ]
+                }
+            },
+            "incompatible_types": {
+                "input_specs": [
+                    { "name": "input", "shape": [1, 16], "dtype": "int8" }
+                ]
+            },
+            "missing_weight": {
+                "input_specs": [
+                    { "name": "input", "shape": [2, 8] },
+                    { "name": "weight", "shape": null, "dtype": null },
+                    { "name": "bias", "shape": [4] }
+                ]
+            },
+            "zero_sized_dimension": {
+                "input_specs": [
+                    { "name": "input", "shape": [0, 16] }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,119 @@
+{
+    "operation": "BitShiftOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 2
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "direction": "left",
+            "rounding": false
+        },
+        "input_specs": [
+            {
+                "name": "X",
+                "shape": [32, 32, 32, 32],
+                "dtype": "uint32"
+            },
+            {
+                "name": "input_1",
+                "shape": [32, 32, 32, 32],
+                "dtype": "uint32"
+            }
+        ]
+    },
+    "test_configurations": {
+        "shift_left": {
+            "round": {
+                "broadcast": {
+                    "attributes": {
+                        "direction": "left",
+                        "rounding": true
+                    },
+                    "input_specs": [{ "name": "input_1", "shape": [32] }]
+                },
+                "no_broadcast": {
+                    "attributes": {
+                        "direction": "left",
+                        "rounding": true
+                    },
+                    "input_specs": []
+                }
+            },
+            "no_round": {
+                "broadcast": {
+                    "attributes": {
+                        "direction": "left",
+                        "rounding": false
+                    },
+                    "input_specs": [{ "name": "input_1", "shape": [32] }]
+                },
+                "no_broadcast": {
+                    "attributes": {
+                        "direction": "left",
+                        "rounding": false
+                    },
+                    "input_specs": []
+                }
+            },
+            "big shift": {
+                "attributes": {
+                    "direction": "left"
+                },
+                "input_specs": [
+                    {
+                        "name": "input_1",
+                        "data": 33,
+                        "dtype": "uint32"
+                    }
+                ]
+            }
+        },
+        "shif_right": {
+            "round": {
+                "broadcast": {
+                    "attributes": {
+                        "direction": "right",
+                        "rounding": true
+                    },
+                    "input_specs": [{ "name": "input_1", "shape": [32] }]
+                },
+                "no_broadcast": {
+                    "attributes": {
+                        "direction": "right",
+                        "rounding": true
+                    },
+                    "input_specs": []
+                }
+            },
+            "no_round": {
+                "broadcast": {
+                    "attributes": {
+                        "direction": "right",
+                        "rounding": false
+                    },
+                    "input_specs": [{ "name": "input_1", "shape": [32] }]
+                },
+                "no_broadcast": {
+                    "attributes": {
+                        "direction": "right",
+                        "rounding": false
+                    },
+                    "input_specs": []
+                }
+            },
+            "big shift": {
+                "attributes": { "direction": "right" },
+                "input_specs": [
+                    {
+                        "name": "input_1",
+                        "data": 33,
+                        "dtype": "uint32"
+                    }
+                ]
+            }
+        }
+    }
+}

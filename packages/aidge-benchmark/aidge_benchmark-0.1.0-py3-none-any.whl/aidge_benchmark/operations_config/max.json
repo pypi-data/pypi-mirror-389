@@ -1,0 +1,17 @@
+{
+    "operation": "MaxOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 5
+        }
+    },
+    "test_configurations": {
+        "zeros": {
+            "attributes": {"nb_inputs": 1},
+            "input_specs": [
+                {"name": "X", "data": 0, "dtype": "float32"}
+            ]
+        }
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "operation": "MatMulOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 2
+        }
+    },
+    "base_configuration": {
+        "attributes": {},
+        "input_specs": [
+            { "name": "A", "shape": [2, 3], "dtype": "float32" },
+            { "name": "B", "shape": [3, 4], "dtype": "float32" }
+        ]
+    },
+    "test_configurations": {
+        "ok": {
+            "basic": {
+                "attributes": {},
+                "input_specs": []
+            },
+            "vec_x_mat": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [3] },
+                    { "name": "B", "shape": [3, 4] }
+                ]
+            },
+            "mat_x_vec": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [2, 3] },
+                    { "name": "B", "shape": [3] }
+                ]
+            },
+            "vec_vec_dot": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [5] },
+
+                    { "name": "B", "shape": [5] }
+                ]
+            },
+            "batch": {
+                "3d_match": {
+                    "attributes": {},
+                    "input_specs": [
+                        { "name": "A", "shape": [2, 3, 4] },
+                        { "name": "B", "shape": [2, 4, 5] }
+                    ]
+                },
+                "broadcast": {
+                    "expand_A": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "A", "shape": [3, 4] },
+                            { "name": "B", "shape": [2, 4, 5] }
+                        ]
+                    },
+                    "expand_B": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "A", "shape": [2, 3, 4] },
+                            { "name": "B", "shape": [4, 5] }
+                        ]
+                    },
+                    "interleave": {
+                        "attributes": {},
+                        "input_specs": [
+                            { "name": "A", "shape": [2, 1, 3, 4] },
+                            { "name": "B", "shape": [2, 4, 5] }
+                        ]
+                    }
+                }
+            }
+        },
+        "expected_error": {
+            "inner_dim_mismatch_2d": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [2, 3] },
+                    { "name": "B", "shape": [4, 5] }
+                ]
+            },
+            "batch_broadcast_incompatible": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [2, 2, 3] },
+                    { "name": "B", "shape": [3, 3, 4] }
+                ]
+            },
+            "dtype_mismatch": {
+                "float_int": {
+                    "attributes": {},
+                    "input_specs": [
+                        { "name": "A", "shape": [2, 3] },
+                        { "name": "B", "shape": [3, 4], "dtype": "int64" }
+                    ]
+                },
+                "float_bool": {
+                    "attributes": {},
+                    "input_specs": [
+                        { "name": "A", "shape": [2, 3] },
+                        { "name": "B", "shape": [3, 4], "dtype": "bool" }
+                    ]
+                }
+            },
+            "rank0_scalar_A": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [] },
+                    { "name": "B", "shape": [3, 3] }
+                ]
+            },
+            "vec_vec_len_mismatch": {
+                "attributes": {},
+                "input_specs": [
+                    { "name": "A", "shape": [4] },
+                    { "name": "B", "shape": [5] }
+                ]
+            }
+        }
+    }
+}

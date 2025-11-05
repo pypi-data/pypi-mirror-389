@@ -1,0 +1,55 @@
+{
+    "operation": "CeilOp",
+    "format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "test_configurations": {
+        "ok": {
+            "values": {
+                "zeros": {
+                    "attributes": {},
+                    "input_specs": [
+                        { "name": "X", "data": 0, "dtype": "float32" }
+                    ]
+                },
+                "negative": {
+                    "lower": {
+                        "input_specs": [
+                            { "name": "X", "data": -0.9 }
+                        ]
+                    },
+                    "half": {
+                        "input_specs": [
+                            { "name": "X", "data": -0.5 }
+                        ]
+                    },
+                    "upper": {
+                        "input_specs": [
+                            { "name": "X", "data": -0.1 }
+                        ]
+                    }
+                },
+                "positive": {
+                    "lower": {
+                        "input_specs": [
+                            { "name": "X", "data": 0.1 }
+                        ]
+                    },
+                    "half": {
+                        "input_specs": [
+                            { "name": "X", "data": 0.5 }
+                        ]
+                    },
+                    "upper": {
+                        "input_specs": [
+                            { "name": "X", "data": 0.9 }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

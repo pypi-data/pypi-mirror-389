@@ -1,0 +1,43 @@
+{
+    "operation": "LeakyReLUOp",
+	"format": {
+        "name": "Aidge",
+        "metadata": {
+            "initializer_rank": 1
+        }
+    },
+    "base_configuration": {
+        "attributes": {
+            "negative_slope": 0.01
+        },
+        "input_specs": []
+    },
+    "test_configurations": {
+        "zeros": {
+            "attributes": {},
+            "input_specs": [
+                {"name": "X", "data": 0, "dtype": "float32"}
+            ]
+        },
+        "negative_slope": {
+            "0.01": {
+                "attributes": {
+                    "negative_slope": 0.01
+                },
+                "input_specs": []
+            },
+            "0": {
+                "attributes": {
+                    "negative_slope": 0.00
+                },
+                "input_specs": []
+            },
+            "-0.01": {
+                "attributes": {
+                    "negative_slope": -0.01
+                },
+                "input_specs": []
+            }
+        }
+    }
+}
