@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "litopys"
+version = "0.0.1"
+description = "Litopys - AI changelog generator"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE.md" }
+authors = [{ name = "Anton Bakhurynskyi", email = "antoncodes@outlook.com" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+]
+
+[project.urls]
+"Homepage" = "https://litopys.ai"
+
+[project.scripts]
+litopys = "litopys.main:main"
