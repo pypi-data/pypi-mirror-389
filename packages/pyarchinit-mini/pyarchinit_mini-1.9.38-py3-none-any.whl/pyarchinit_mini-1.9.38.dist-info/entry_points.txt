@@ -1,0 +1,18 @@
+[console_scripts]
+pyarchinit-export-import = pyarchinit_mini.cli.export_import_cli:export_import
+pyarchinit-graphml = pyarchinit_mini.cli.graphml_cli:main
+pyarchinit-harris-import = pyarchinit_mini.cli.harris_import:import_harris_matrix
+pyarchinit-harris-template = pyarchinit_mini.cli.harris_template:generate_template
+pyarchinit-mcp-http = pyarchinit_mini.mcp_server.http_server:main
+pyarchinit-mcp-server = pyarchinit_mini.mcp_server.__main__:main
+pyarchinit-mini = pyarchinit_mini.cli_interface.cli_app:main
+pyarchinit-mini-api = pyarchinit_mini.api:run_server
+pyarchinit-mini-configure-claude = pyarchinit_mini.scripts.configure_claude_desktop:main
+pyarchinit-mini-gui = pyarchinit_mini.desktop_gui.gui_app:main
+pyarchinit-mini-import = pyarchinit_mini.cli.pyarchinit_import_export_cli:pyarchinit
+pyarchinit-mini-init = pyarchinit_mini.scripts.create_admin_user:main
+pyarchinit-mini-mcp = pyarchinit_mini.mcp_server:main
+pyarchinit-mini-mcp-http = pyarchinit_mini.mcp_server.http_server:main
+pyarchinit-mini-migrate = pyarchinit_mini.cli.migrate:cli
+pyarchinit-mini-setup = pyarchinit_mini.scripts.setup_user_env:main
+pyarchinit-mini-web = pyarchinit_mini.web_interface.app:main

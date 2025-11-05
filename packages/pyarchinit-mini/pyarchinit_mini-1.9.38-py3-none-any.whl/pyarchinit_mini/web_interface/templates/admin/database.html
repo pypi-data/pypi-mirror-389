@@ -1,0 +1,1140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Database Management') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-database"></i> {{ _('Database Management') }}</h2>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> {{ _('Dashboard') }}
+        </a>
+    </div>
+
+    <!-- Current Database Info -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Current Database') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><strong>{{ _('Type') }}:</strong></h6>
+                            <p>
+                                {% if db_info.type == 'SQLite' %}
+                                    <i class="fas fa-file-alt text-info"></i> SQLite
+                                {% else %}
+                                    <i class="fas fa-server text-success"></i> PostgreSQL
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><strong>URL:</strong></h6>
+                            <p class="font-monospace small">{{ db_info.url }}</p>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            {% if db_info.is_default %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle"></i> {{ _('Default Database') }}
+                            </span>
+                            {% else %}
+                            <span class="badge bg-info">
+                                <i class="fas fa-plug"></i> {{ _('Connected Database') }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-map-marked-alt text-primary fa-2x mb-2"></i>
+                    <h5 class="display-6">{{ stats.sites }}</h5>
+                    <p class="text-muted mb-0">{{ _('Sites') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-layer-group text-success fa-2x mb-2"></i>
+                    <h5 class="display-6">{{ stats.us }}</h5>
+                    <p class="text-muted mb-0">{{ _('Stratigraphic Units') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-box-open text-warning fa-2x mb-2"></i>
+                    <h5 class="display-6">{{ stats.inventory }}</h5>
+                    <p class="text-muted mb-0">{{ _('Inventory') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-tools"></i> {{ _('Database Operations') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('upload_database') }}" class="btn btn-lg btn-primary">
+                                    <i class="fas fa-upload"></i><br>
+                                    <span class="mt-2">{{ _('Upload SQLite Database') }}</span>
+                                </a>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                {{ _('Upload an existing SQLite .db file') }}
+                            </small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('connect_database') }}" class="btn btn-lg btn-success">
+                                    <i class="fas fa-plug"></i><br>
+                                    <span class="mt-2">{{ _('Connect Database') }}</span>
+                                </a>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                {{ _('Connect to PostgreSQL or local SQLite') }}
+                            </small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('database_info') }}" class="btn btn-lg btn-info">
+                                    <i class="fas fa-info-circle"></i><br>
+                                    <span class="mt-2">{{ _('Database Info') }}</span>
+                                </a>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                {{ _('View tables and detailed statistics') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Empty Database -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Create Empty Database</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Create a new empty database with full PyArchInit-Mini schema.
+                    </p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Database Type Selection -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Database Type</strong></label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="create_db_type" id="create_db_type_sqlite" value="sqlite" checked>
+                                    <label class="btn btn-outline-primary" for="create_db_type_sqlite">
+                                        <i class="fas fa-file-alt me-1"></i>SQLite
+                                    </label>
+
+                                    <input type="radio" class="btn-check" name="create_db_type" id="create_db_type_postgres" value="postgresql">
+                                    <label class="btn btn-outline-success" for="create_db_type_postgres">
+                                        <i class="fas fa-server me-1"></i>PostgreSQL
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- SQLite Fields -->
+                            <div id="sqlite_fields">
+                                <div class="mb-3">
+                                    <label for="create_db_name" class="form-label">Database Name</label>
+                                    <input type="text" class="form-control" id="create_db_name"
+                                           placeholder="my_project" value="pyarchinit_empty">
+                                    <div class="form-text">
+                                        Database file will be created as: <code>~/.pyarchinit_mini/data/[name].db</code>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PostgreSQL Fields -->
+                            <div id="postgres_fields" style="display: none;">
+                                <div class="mb-2">
+                                    <label for="pg_host" class="form-label">Host</label>
+                                    <input type="text" class="form-control" id="pg_host" value="localhost" placeholder="localhost">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="pg_port" class="form-label">Port</label>
+                                    <input type="number" class="form-control" id="pg_port" value="5432" placeholder="5432">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="pg_database" class="form-label">Database Name</label>
+                                    <input type="text" class="form-control" id="pg_database" placeholder="pyarchinit_db">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="pg_user" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="pg_user" placeholder="postgres">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="pg_password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="pg_password">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="create_overwrite_db">
+                                    <label class="form-check-label" for="create_overwrite_db">
+                                        Overwrite if database already exists
+                                    </label>
+                                    <div class="form-text text-warning">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Warning: This will delete existing database and all its data!
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="button" class="btn btn-success btn-lg" id="create_empty_db_btn">
+                                    <i class="fas fa-plus-circle me-2"></i>Create Empty Database
+                                </button>
+                            </div>
+
+                            <div id="create_db_status" class="mt-3" style="display: none;"></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-info-circle me-2"></i>Database Schema
+                                    </h6>
+                                    <p class="card-text small">
+                                        The new database will include all PyArchInit-Mini tables:
+                                    </p>
+                                    <ul class="small">
+                                        <li>Sites (site_table)</li>
+                                        <li>Stratigraphic Units (us_table)</li>
+                                        <li>US Relationships</li>
+                                        <li>Periodization & Dating</li>
+                                        <li>Harris Matrix</li>
+                                        <li>Inventory (inventario_materiali_table)</li>
+                                        <li>Thesaurus</li>
+                                        <li>Media & Documentation</li>
+                                        <li>Users</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Migration (SQLite ↔ PostgreSQL) -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exchange-alt"></i> {{ _('Data Migration (SQLite ↔ PostgreSQL)') }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        {{ _('Migrate all data from source database to target database. Supports bidirectional migration between SQLite and PostgreSQL.') }}
+                    </p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Source Database -->
+                            <h6 class="mb-3"><strong>{{ _('Source Database') }}</strong></h6>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="migrate_source_type"
+                                           id="migrate_source_current" value="current" checked>
+                                    <label class="form-check-label" for="migrate_source_current">
+                                        <i class="fas fa-database me-1"></i>{{ _('Current Database') }}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="migrate_source_type"
+                                           id="migrate_source_custom" value="custom">
+                                    <label class="form-check-label" for="migrate_source_custom">
+                                        <i class="fas fa-cog me-1"></i>{{ _('Custom Database') }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Custom Source Fields (hidden by default) -->
+                            <div id="migrate_custom_source_fields" style="display: none;">
+                                <div class="mb-2">
+                                    <label class="form-label">{{ _('Source Database Type') }}</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="migrate_source_db_type"
+                                               id="migrate_source_sqlite" value="sqlite" checked>
+                                        <label class="btn btn-outline-primary btn-sm" for="migrate_source_sqlite">
+                                            <i class="fas fa-file-alt me-1"></i>SQLite
+                                        </label>
+                                        <input type="radio" class="btn-check" name="migrate_source_db_type"
+                                               id="migrate_source_postgres" value="postgresql">
+                                        <label class="btn btn-outline-success btn-sm" for="migrate_source_postgres">
+                                            <i class="fas fa-server me-1"></i>PostgreSQL
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Source SQLite Fields -->
+                                <div id="migrate_source_sqlite_fields">
+                                    <div class="mb-2">
+                                        <label for="migrate_source_db_path" class="form-label">{{ _('Database Path') }}</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               id="migrate_source_db_path" placeholder="/path/to/source.db">
+                                    </div>
+                                </div>
+
+                                <!-- Source PostgreSQL Fields -->
+                                <div id="migrate_source_pg_fields" style="display: none;">
+                                    <div class="mb-2">
+                                        <label class="form-label">Host</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               id="migrate_source_pg_host" value="localhost">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Port</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                               id="migrate_source_pg_port" value="5432">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Database</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               id="migrate_source_pg_database">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Username</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               id="migrate_source_pg_user">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Password</label>
+                                        <input type="password" class="form-control form-control-sm"
+                                               id="migrate_source_pg_password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Target Database -->
+                            <h6 class="mb-3"><strong>{{ _('Target Database') }}</strong></h6>
+
+                            <div class="mb-2">
+                                <label class="form-label">{{ _('Target Database Type') }}</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="migrate_target_db_type"
+                                           id="migrate_target_sqlite" value="sqlite" checked>
+                                    <label class="btn btn-outline-primary btn-sm" for="migrate_target_sqlite">
+                                        <i class="fas fa-file-alt me-1"></i>SQLite
+                                    </label>
+                                    <input type="radio" class="btn-check" name="migrate_target_db_type"
+                                           id="migrate_target_postgres" value="postgresql">
+                                    <label class="btn btn-outline-success btn-sm" for="migrate_target_postgres">
+                                        <i class="fas fa-server me-1"></i>PostgreSQL
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Target SQLite Fields -->
+                            <div id="migrate_target_sqlite_fields">
+                                <div class="mb-2">
+                                    <label for="migrate_target_db_path" class="form-label">{{ _('Database Path') }}</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           id="migrate_target_db_path" placeholder="my_migrated_db.db">
+                                </div>
+                            </div>
+
+                            <!-- Target PostgreSQL Fields -->
+                            <div id="migrate_target_pg_fields" style="display: none;">
+                                <div class="mb-2">
+                                    <label class="form-label">Host</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           id="migrate_target_pg_host" value="localhost">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Port</label>
+                                    <input type="number" class="form-control form-control-sm"
+                                           id="migrate_target_pg_port" value="5432">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Database</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           id="migrate_target_pg_database">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           id="migrate_target_pg_user">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control form-control-sm"
+                                           id="migrate_target_pg_password">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 mt-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="migrate_overwrite">
+                                    <label class="form-check-label" for="migrate_overwrite">
+                                        {{ _('Overwrite if exists') }}
+                                    </label>
+                                    <div class="form-text text-warning">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        {{ _('Warning: Deletes existing database!') }}
+                                    </div>
+                                </div>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="migrate_auto_backup" checked>
+                                    <label class="form-check-label" for="migrate_auto_backup">
+                                        <i class="fas fa-save me-1"></i>{{ _('Create backup before migration') }}
+                                    </label>
+                                    <div class="form-text text-muted">
+                                        {{ _('Recommended: Creates timestamped backup of source database') }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Migration Options -->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <h6 class="mb-3"><strong><i class="fas fa-cog me-2"></i>{{ _('Conflict Resolution Strategy') }}</strong></h6>
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    {{ _('Choose how to handle records with duplicate IDs between source and target databases.') }}
+                                </small>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="migrate_strategy"
+                                                       id="migrate_strategy_skip" value="skip" checked>
+                                                <label class="form-check-label" for="migrate_strategy_skip">
+                                                    <strong>{{ _('Skip') }}</strong> <span class="badge bg-secondary">{{ _('Default') }}</span>
+                                                </label>
+                                            </div>
+                                            <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;">
+                                                {{ _('Skip records with conflicting IDs. Target data is preserved, only new records are added.') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="migrate_strategy"
+                                                       id="migrate_strategy_overwrite" value="overwrite">
+                                                <label class="form-check-label" for="migrate_strategy_overwrite">
+                                                    <strong>{{ _('Overwrite') }}</strong>
+                                                </label>
+                                            </div>
+                                            <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;">
+                                                {{ _('Update existing records with source data. Use when source has the latest information.') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="migrate_strategy"
+                                                       id="migrate_strategy_renumber" value="renumber">
+                                                <label class="form-check-label" for="migrate_strategy_renumber">
+                                                    <strong>{{ _('Renumber') }}</strong>
+                                                </label>
+                                            </div>
+                                            <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;">
+                                                {{ _('Generate new IDs for conflicting records. Keeps all data from both databases.') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="button" class="btn btn-info btn-lg" id="preview_conflicts_btn">
+                            <i class="fas fa-eye me-2"></i>{{ _('Preview Conflicts') }}
+                        </button>
+                        <button type="button" class="btn btn-warning btn-lg" id="migrate_db_btn">
+                            <i class="fas fa-exchange-alt me-2"></i>{{ _('Start Migration') }}
+                        </button>
+                    </div>
+
+                    <div id="migrate_db_status" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Connections -->
+    {% if connections %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bookmark"></i> {{ _('Saved Connections') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{{ _('Name') }}</th>
+                                    <th>{{ _('Type') }}</th>
+                                    <th>{{ _('Description') }}</th>
+                                    <th>{{ _('Source') }}</th>
+                                    <th>{{ _('Actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for name, conn in connections.items() %}
+                                <tr {% if conn.url == db_info.url %}class="table-success"{% endif %}>
+                                    <td>
+                                        <strong>{{ name }}</strong>
+                                        {% if conn.url == db_info.url %}
+                                            <span class="badge bg-success ms-2">
+                                                <i class="fas fa-check-circle"></i> {{ _('Active') }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if conn.type == 'sqlite' %}
+                                            <i class="fas fa-file-alt text-info"></i> SQLite
+                                        {% else %}
+                                            <i class="fas fa-server text-success"></i> PostgreSQL
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ conn.description or '-' }}</td>
+                                    <td>
+                                        {% if conn.uploaded %}
+                                            <span class="badge bg-primary">{{ _('Uploaded') }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Default</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            {% if conn.url == db_info.url %}
+                                                <button class="btn btn-sm btn-success" disabled>
+                                                    <i class="fas fa-check-circle"></i> {{ _('In Use') }}
+                                                </button>
+                                            {% else %}
+                                                <form method="POST" action="{{ url_for('switch_database', connection_name=name) }}" style="display: inline;">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                    <button type="submit" class="btn btn-sm btn-primary"
+                                                            onclick="return confirm('{{ _('Switch to database') }}: {{ name }}?')">
+                                                        <i class="fas fa-exchange-alt"></i> {{ _('Switch') }}
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            <form method="POST" action="{{ url_for('remove_connection', connection_name=name) }}" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        {% if conn.url == db_info.url %}disabled title="{{ _('Cannot delete active connection') }}"{% endif %}
+                                                        onclick="return confirm('{{ _('Delete connection') }}: {{ name }}? {{ _('This action cannot be undone') }}.')">
+                                                    <i class="fas fa-trash-alt"></i> {{ _('Delete') }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Help Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-question-circle"></i> {{ _('Help') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-upload text-primary"></i> {{ _('Upload SQLite Database') }}</h6>
+                            <p class="small">
+                                {{ _('Upload an existing .db file from PyArchInit desktop or other sources. The file is validated and saved in the databases folder.') }}
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-plug text-success"></i> {{ _('Connect Database') }}</h6>
+                            <p class="small">
+                                {{ _('Connect to a remote PostgreSQL database or a local SQLite file. The connection is tested before being saved.') }}
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-shield-alt text-warning"></i> {{ _('Security') }}</h6>
+                            <p class="small">
+                                {{ _('Connection credentials are stored only in session. For permanent connections, use environment variables.') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conflict Preview Modal -->
+<div class="modal fade" id="conflictsModal" tabindex="-1" aria-labelledby="conflictsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="conflictsModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ _('Migration Conflict Analysis') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="conflicts_loading" style="display: none;">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">{{ _('Analyzing databases for conflicts...') }}</p>
+                    </div>
+                </div>
+
+                <div id="conflicts_content" style="display: none;">
+                    <!-- Summary -->
+                    <div class="alert alert-info" id="conflicts_summary">
+                        <!-- Summary content will be inserted here -->
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div id="conflicts_recommendations" class="alert" style="display: none;">
+                        <!-- Recommendations will be inserted here -->
+                    </div>
+
+                    <!-- Tables Details -->
+                    <div id="conflicts_tables">
+                        <!-- Tables conflict details will be inserted here -->
+                    </div>
+
+                    <!-- Errors (if any) -->
+                    <div id="conflicts_errors" style="display: none;">
+                        <!-- Errors will be inserted here -->
+                    </div>
+                </div>
+
+                <div id="conflicts_error" class="alert alert-danger" style="display: none;">
+                    <!-- Error messages will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>{{ _('Close') }}
+                </button>
+                <button type="button" class="btn btn-warning" id="proceed_migration_btn" style="display: none;">
+                    <i class="fas fa-exchange-alt me-2"></i>{{ _('Proceed with Migration') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle database type fields
+document.querySelectorAll('input[name="create_db_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const sqliteFields = document.getElementById('sqlite_fields');
+        const postgresFields = document.getElementById('postgres_fields');
+
+        if (this.value === 'sqlite') {
+            sqliteFields.style.display = 'block';
+            postgresFields.style.display = 'none';
+        } else {
+            sqliteFields.style.display = 'none';
+            postgresFields.style.display = 'block';
+        }
+    });
+});
+
+// Create Empty Database functionality
+document.getElementById('create_empty_db_btn').addEventListener('click', function() {
+    const dbType = document.querySelector('input[name="create_db_type"]:checked').value;
+    const overwrite = document.getElementById('create_overwrite_db').checked;
+    const statusEl = document.getElementById('create_db_status');
+    const btn = this;
+    let requestData = {
+        db_type: dbType,
+        overwrite: overwrite
+    };
+
+    // Validate and prepare data based on database type
+    if (dbType === 'sqlite') {
+        const dbName = document.getElementById('create_db_name').value.trim();
+        if (!dbName) {
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>Please provide a database name</div>';
+            return;
+        }
+        const dbFileName = dbName.endsWith('.db') ? dbName : dbName + '.db';
+        requestData.db_path = dbFileName;
+        requestData.use_default_path = true;
+    } else {
+        // PostgreSQL
+        const pgHost = document.getElementById('pg_host').value.trim();
+        const pgPort = document.getElementById('pg_port').value.trim();
+        const pgDatabase = document.getElementById('pg_database').value.trim();
+        const pgUser = document.getElementById('pg_user').value.trim();
+        const pgPassword = document.getElementById('pg_password').value;
+
+        if (!pgHost || !pgPort || !pgDatabase || !pgUser) {
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>Please fill all PostgreSQL connection fields</div>';
+            return;
+        }
+
+        requestData.pg_host = pgHost;
+        requestData.pg_port = pgPort;
+        requestData.pg_database = pgDatabase;
+        requestData.pg_user = pgUser;
+        requestData.pg_password = pgPassword;
+    }
+
+    // Show loading status
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '<div class="alert alert-info mb-0"><i class="fas fa-spinner fa-spin me-2"></i>Creating database...</div>';
+
+    // Disable button
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+
+    // Call API
+    fetch('/pyarchinit-import-export/api/pyarchinit/create-database', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+
+        if (result.success) {
+            let message = '<div class="alert alert-success mb-0">';
+            message += '<i class="fas fa-check-circle me-2"></i><strong>Success!</strong><br>';
+            message += result.message + '<br>';
+            message += '<small>Tables created: ' + result.tables_created + '</small><br>';
+            message += '<small>Database type: ' + result.db_type + '</small>';
+            message += '</div>';
+            statusEl.innerHTML = message;
+
+            // Optionally refresh page after a delay
+            setTimeout(function() {
+                if (confirm('Database created successfully! Reload page to see it in your connections?')) {
+                    location.reload();
+                }
+            }, 2000);
+        } else {
+            statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>' + result.message + '</div>';
+        }
+    })
+    .catch(error => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>Error: ' + error.message + '</div>';
+    });
+});
+
+// Database Migration functionality
+// Toggle source type (current vs custom)
+document.querySelectorAll('input[name="migrate_source_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const customSourceFields = document.getElementById('migrate_custom_source_fields');
+        if (this.value === 'custom') {
+            customSourceFields.style.display = 'block';
+        } else {
+            customSourceFields.style.display = 'none';
+        }
+    });
+});
+
+// Toggle source database type fields (SQLite vs PostgreSQL)
+document.querySelectorAll('input[name="migrate_source_db_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const sqliteFields = document.getElementById('migrate_source_sqlite_fields');
+        const postgresFields = document.getElementById('migrate_source_pg_fields');
+
+        if (this.value === 'sqlite') {
+            sqliteFields.style.display = 'block';
+            postgresFields.style.display = 'none';
+        } else {
+            sqliteFields.style.display = 'none';
+            postgresFields.style.display = 'block';
+        }
+    });
+});
+
+// Toggle target database type fields (SQLite vs PostgreSQL)
+document.querySelectorAll('input[name="migrate_target_db_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const sqliteFields = document.getElementById('migrate_target_sqlite_fields');
+        const postgresFields = document.getElementById('migrate_target_pg_fields');
+
+        if (this.value === 'sqlite') {
+            sqliteFields.style.display = 'block';
+            postgresFields.style.display = 'none';
+        } else {
+            sqliteFields.style.display = 'none';
+            postgresFields.style.display = 'block';
+        }
+    });
+});
+
+// Helper function to build migration request data (DRY principle)
+function buildMigrationRequestData() {
+    const sourceType = document.querySelector('input[name="migrate_source_type"]:checked').value;
+    const targetDbType = document.querySelector('input[name="migrate_target_db_type"]:checked').value;
+    const overwrite = document.getElementById('migrate_overwrite').checked;
+    const autoBackup = document.getElementById('migrate_auto_backup').checked;
+    const mergeStrategy = document.querySelector('input[name="migrate_strategy"]:checked').value;
+
+    let requestData = {
+        source_type: sourceType,
+        target_db_type: targetDbType,
+        overwrite_target: overwrite,
+        auto_backup: autoBackup,
+        merge_strategy: mergeStrategy
+    };
+
+    return { requestData, sourceType, targetDbType };
+}
+
+// Helper function to validate and add source database fields
+function addSourceDatabaseFields(requestData, sourceType) {
+    if (sourceType === 'custom') {
+        const sourceDbType = document.querySelector('input[name="migrate_source_db_type"]:checked').value;
+        requestData.source_db_type = sourceDbType;
+
+        if (sourceDbType === 'sqlite') {
+            const sourcePath = document.getElementById('migrate_source_db_path').value.trim();
+            if (!sourcePath) {
+                return { error: 'Please provide source database path' };
+            }
+            requestData.source_db_path = sourcePath;
+        } else {
+            const host = document.getElementById('migrate_source_pg_host').value.trim();
+            const port = document.getElementById('migrate_source_pg_port').value.trim();
+            const database = document.getElementById('migrate_source_pg_database').value.trim();
+            const user = document.getElementById('migrate_source_pg_user').value.trim();
+            const password = document.getElementById('migrate_source_pg_password').value;
+
+            if (!host || !port || !database || !user) {
+                return { error: 'Please fill all source PostgreSQL fields' };
+            }
+
+            requestData.source_pg_host = host;
+            requestData.source_pg_port = port;
+            requestData.source_pg_database = database;
+            requestData.source_pg_user = user;
+            requestData.source_pg_password = password;
+        }
+    }
+    return { error: null };
+}
+
+// Helper function to validate and add target database fields
+function addTargetDatabaseFields(requestData, targetDbType) {
+    if (targetDbType === 'sqlite') {
+        const targetPath = document.getElementById('migrate_target_db_path').value.trim();
+        if (!targetPath) {
+            return { error: 'Please provide target database path' };
+        }
+        requestData.target_db_path = targetPath;
+        requestData.use_default_path = true;
+    } else {
+        const host = document.getElementById('migrate_target_pg_host').value.trim();
+        const port = document.getElementById('migrate_target_pg_port').value.trim();
+        const database = document.getElementById('migrate_target_pg_database').value.trim();
+        const user = document.getElementById('migrate_target_pg_user').value.trim();
+        const password = document.getElementById('migrate_target_pg_password').value;
+
+        if (!host || !port || !database || !user) {
+            return { error: 'Please fill all target PostgreSQL fields' };
+        }
+
+        requestData.target_pg_host = host;
+        requestData.target_pg_port = port;
+        requestData.target_pg_database = database;
+        requestData.target_pg_user = user;
+        requestData.target_pg_password = password;
+    }
+    return { error: null };
+}
+
+// Preview Conflicts button handler
+document.getElementById('preview_conflicts_btn').addEventListener('click', function() {
+    const { requestData, sourceType, targetDbType } = buildMigrationRequestData();
+
+    // Validate source
+    const sourceResult = addSourceDatabaseFields(requestData, sourceType);
+    if (sourceResult.error) {
+        alert(sourceResult.error);
+        return;
+    }
+
+    // Validate target
+    const targetResult = addTargetDatabaseFields(requestData, targetDbType);
+    if (targetResult.error) {
+        alert(targetResult.error);
+        return;
+    }
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('conflictsModal'));
+    modal.show();
+
+    // Show loading
+    document.getElementById('conflicts_loading').style.display = 'block';
+    document.getElementById('conflicts_content').style.display = 'none';
+    document.getElementById('conflicts_error').style.display = 'none';
+
+    // Call preview API
+    fetch('/pyarchinit-import-export/api/pyarchinit/preview-migration-conflicts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        document.getElementById('conflicts_loading').style.display = 'none';
+
+        if (result.success) {
+            document.getElementById('conflicts_content').style.display = 'block';
+
+            // Build summary
+            let summaryHTML = '<h6><i class="fas fa-info-circle me-2"></i>Summary</h6>';
+            summaryHTML += `<p><strong>Total Conflicts:</strong> ${result.total_conflicts}<br>`;
+            summaryHTML += `<strong>Total New Records:</strong> ${result.total_new_records}</p>`;
+            document.getElementById('conflicts_summary').innerHTML = summaryHTML;
+
+            // Build recommendations
+            const recDiv = document.getElementById('conflicts_recommendations');
+            if (result.has_conflicts) {
+                recDiv.style.display = 'block';
+                recDiv.className = 'alert alert-warning';
+                let recHTML = '<h6><i class="fas fa-lightbulb me-2"></i>Recommendations</h6>';
+                recHTML += '<ul class="mb-0">';
+                if (result.total_conflicts > 50) {
+                    recHTML += '<li><strong>Overwrite</strong> strategy recommended for large updates</li>';
+                } else if (result.total_conflicts > 0) {
+                    recHTML += '<li><strong>Skip</strong> strategy (default) to preserve target data</li>';
+                    recHTML += '<li><strong>Overwrite</strong> if source has latest data</li>';
+                    recHTML += '<li><strong>Renumber</strong> to keep both versions</li>';
+                }
+                recHTML += '</ul>';
+                recDiv.innerHTML = recHTML;
+            } else {
+                recDiv.style.display = 'block';
+                recDiv.className = 'alert alert-success';
+                recDiv.innerHTML = '<h6><i class="fas fa-check-circle me-2"></i>No Conflicts Found</h6><p class="mb-0">All records are new. Safe to migrate with any strategy.</p>';
+            }
+
+            // Build tables details
+            let tablesHTML = '<h6 class="mt-3"><i class="fas fa-table me-2"></i>Tables Analysis</h6>';
+            tablesHTML += '<div class="table-responsive"><table class="table table-sm table-hover">';
+            tablesHTML += '<thead><tr><th>Table</th><th>Source Records</th><th>Conflicts</th><th>New Records</th><th>Conflicting IDs</th></tr></thead>';
+            tablesHTML += '<tbody>';
+
+            for (const [tableName, data] of Object.entries(result.tables)) {
+                if (data.total_source_records > 0) {
+                    const rowClass = data.conflicts > 0 ? 'table-warning' : '';
+                    tablesHTML += `<tr class="${rowClass}">`;
+                    tablesHTML += `<td><code>${tableName}</code></td>`;
+                    tablesHTML += `<td>${data.total_source_records}</td>`;
+                    tablesHTML += `<td><span class="badge bg-${data.conflicts > 0 ? 'warning' : 'success'}">${data.conflicts}</span></td>`;
+                    tablesHTML += `<td><span class="badge bg-info">${data.new_records}</span></td>`;
+                    tablesHTML += `<td><small>${data.conflicting_ids.length > 0 ? data.conflicting_ids.slice(0, 5).join(', ') + (data.conflicting_ids.length > 5 ? '...' : '') : '-'}</small></td>`;
+                    tablesHTML += '</tr>';
+                }
+            }
+            tablesHTML += '</tbody></table></div>';
+            document.getElementById('conflicts_tables').innerHTML = tablesHTML;
+
+            // Show errors if any
+            if (result.errors && result.errors.length > 0) {
+                const errDiv = document.getElementById('conflicts_errors');
+                errDiv.style.display = 'block';
+                errDiv.className = 'alert alert-warning';
+                let errHTML = '<h6><i class="fas fa-exclamation-triangle me-2"></i>Warnings</h6><ul class="mb-0">';
+                result.errors.forEach(err => {
+                    errHTML += `<li>${err}</li>`;
+                });
+                errHTML += '</ul>';
+                errDiv.innerHTML = errHTML;
+            }
+
+            // Show proceed button
+            document.getElementById('proceed_migration_btn').style.display = 'inline-block';
+
+        } else {
+            document.getElementById('conflicts_error').style.display = 'block';
+            document.getElementById('conflicts_error').innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>' + result.message;
+        }
+    })
+    .catch(error => {
+        document.getElementById('conflicts_loading').style.display = 'none';
+        document.getElementById('conflicts_error').style.display = 'block';
+        document.getElementById('conflicts_error').innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error: ' + error.message;
+    });
+});
+
+// Proceed with migration from modal
+document.getElementById('proceed_migration_btn').addEventListener('click', function() {
+    // Close modal
+    bootstrap.Modal.getInstance(document.getElementById('conflictsModal')).hide();
+    // Trigger migration
+    document.getElementById('migrate_db_btn').click();
+});
+
+// Database Migration button handler
+document.getElementById('migrate_db_btn').addEventListener('click', function() {
+    const { requestData, sourceType, targetDbType } = buildMigrationRequestData();
+    const statusEl = document.getElementById('migrate_db_status');
+    const btn = this;
+
+    // Validate source
+    const sourceResult = addSourceDatabaseFields(requestData, sourceType);
+    if (sourceResult.error) {
+        statusEl.style.display = 'block';
+        statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>' + sourceResult.error + '</div>';
+        return;
+    }
+
+    // Validate target
+    const targetResult = addTargetDatabaseFields(requestData, targetDbType);
+    if (targetResult.error) {
+        statusEl.style.display = 'block';
+        statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>' + targetResult.error + '</div>';
+        return;
+    }
+
+    // Show loading status
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '<div class="alert alert-info mb-0"><i class="fas fa-spinner fa-spin me-2"></i>Migrating database... This may take a few minutes.</div>';
+
+    // Disable button
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Migrating...';
+
+    // Call migration API
+    fetch('/pyarchinit-import-export/api/pyarchinit/migrate-database', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+
+        if (result.success) {
+            let message = '<div class="alert alert-success mb-0">';
+            message += '<i class="fas fa-check-circle me-2"></i><strong>Migration Successful!</strong><br>';
+            message += result.message + '<br>';
+            message += '<small>Tables migrated: ' + result.tables_migrated + '</small><br>';
+            message += '<small>Total rows copied: ' + result.total_rows_copied + '</small><br>';
+            message += '<small>Duration: ' + result.duration_seconds.toFixed(2) + ' seconds</small>';
+
+            // Show backup info if created
+            if (result.backup_created) {
+                message += '<br><div class="mt-2 p-2 bg-light border rounded"><small>';
+                message += '<i class="fas fa-save text-success me-1"></i><strong>Backup Created:</strong><br>';
+                message += 'Path: <code>' + result.backup_path + '</code><br>';
+                message += 'Size: ' + result.backup_size_mb.toFixed(2) + ' MB';
+                message += '</small></div>';
+            }
+
+            if (result.rows_per_table && Object.keys(result.rows_per_table).length > 0) {
+                message += '<br><details class="mt-2"><summary>Tables Details</summary><ul class="small">';
+                for (const [table, rows] of Object.entries(result.rows_per_table)) {
+                    message += '<li>' + table + ': ' + rows + ' rows</li>';
+                }
+                message += '</ul></details>';
+            }
+
+            if (result.errors && result.errors.length > 0) {
+                message += '<br><div class="text-warning"><strong>Warnings:</strong><ul class="small">';
+                result.errors.forEach(function(error) {
+                    message += '<li>' + error + '</li>';
+                });
+                message += '</ul></div>';
+            }
+
+            message += '</div>';
+            statusEl.innerHTML = message;
+        } else {
+            let message = '<div class="alert alert-danger mb-0">';
+            message += '<i class="fas fa-exclamation-circle me-2"></i><strong>Migration Failed</strong><br>';
+            message += result.message;
+
+            if (result.errors && result.errors.length > 0) {
+                message += '<br><strong>Errors:</strong><ul class="small">';
+                result.errors.forEach(function(error) {
+                    message += '<li>' + error + '</li>';
+                });
+                message += '</ul>';
+            }
+
+            message += '</div>';
+            statusEl.innerHTML = message;
+        }
+    })
+    .catch(error => {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        statusEl.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-exclamation-circle me-2"></i>Error: ' + error.message + '</div>';
+    });
+});
+</script>
+{% endblock %}
