@@ -1,0 +1,17 @@
+[project]
+name = "pchime"
+version = "0.1.0"
+description = "Federated learning support mechanism"
+authors = [{ name = "Vignesh T D" }]
+requires-python = ">=3.8"
+dependencies = ["flwr>=1.23.0",
+"numpy",
+"pandas",
+"rich",
+"scikit_learn"]
+
+[project.scripts]
+pchime = "pchime.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
