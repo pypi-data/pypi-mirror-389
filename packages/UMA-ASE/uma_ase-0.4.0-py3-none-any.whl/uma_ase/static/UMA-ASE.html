@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UMA-ASE Web Interface</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #222;
+    }
+    header {
+      background: linear-gradient(120deg, #004d7a, #008793);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .brand img {
+      width: 140px;
+      height: auto;
+      display: block;
+    }
+    .header-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .header-copy h1 {
+      margin: 0;
+    }
+    .header-copy p {
+      margin: 0;
+      max-width: 600px;
+    }
+    main {
+      padding: 2rem;
+    }
+    .layout-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+    @media (min-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 40% 60%;
+      }
+      .input-section {
+        grid-column: 1;
+      }
+      .actions-results {
+        grid-column: 2;
+        display: grid;
+        row-gap: 5px;
+      }
+    }
+    section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+    }
+    .form-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+    @media (min-width: 768px) {
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 1.5rem;
+      }
+      .form-grid .full-width {
+        grid-column: 1 / -1;
+      }
+    }
+    .thermo-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+    @media (min-width: 768px) {
+      .thermo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .actions-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .actions-row button {
+      margin-top: 0;
+    }
+    .summary-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: "Fira Code", "Courier New", monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      margin: 0;
+      min-height: 120px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .actions-results {
+      display: grid;
+      row-gap: 5px;
+    }
+    #structure-summary h3 {
+      margin-bottom: 0.35rem;
+      margin-top: 0;
+    }
+    .group-title {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .is-disabled {
+      opacity: 0.45;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      color: #004d7a;
+    }
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: 600;
+    }
+    input[type="file"],
+    select,
+    input[type="number"],
+    input[type="text"] {
+      width: 80%;
+      padding: 0.3rem 0.65rem;
+      margin-top: 0.2rem;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+      min-height: 28px;
+    }
+    .geoopt-extra {
+      display: grid;
+      gap: 0.75rem;
+    }
+    @media (min-width: 768px) {
+      .geoopt-extra {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 1.5rem;
+      }
+    }
+    .checkbox-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      font-weight: 500;
+    }
+    button {
+      background: #008793;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 0.75rem 1.75rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0, 135, 147, 0.22);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    button.secondary {
+      background: #0f172a;
+      margin-top: 0.75rem;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.9rem;
+    }
+    #results {
+      white-space: pre-wrap;
+      font-family: "Fira Code", "Courier New", monospace;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      min-height: 200px;
+      line-height: 1.2rem;
+      max-height: calc(25 * 1.2rem);
+      overflow-y: auto;
+    }
+    #status {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #444;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .actions-section {
+      align-self: start;
+    }
+    .actions-results {
+      display: grid;
+      gap: 10px;
+    }
+    .actions-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .download-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .status-text {
+      font-size: 0.9rem;
+      color: #444;
+    }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/logo.svg" alt="UMA-ASE logo" />
+    </div>
+    <div class="header-copy">
+      <h1>uma-ase GUI Interface</h1>
+      <p>Get single-point energies, run geometry optimisation and vibrational analysis at your fingertips.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout-grid">
+      <section class="input-section">
+        <h2>Input Details</h2>
+        <div class="form-grid">
+        <div>
+          <label for="input-geometry">Select Geometry Input file</label>
+          <input type="file" id="input-geometry" accept=".xyz,.pdb,.mol,.cif,.sdf,.gjf" />
+        </div>
+
+        <div>
+          <label for="charge">Charge</label>
+          <input type="number" id="charge" value="0" step="1" />
+        </div>
+
+        <div>
+        </div>
+
+        <div>
+          <label for="spin">Spin Multiplicity</label>
+          <input type="number" id="spin" value="1" min="1" step="1" />
+        </div>
+
+        <div>
+          <label for="mlff-checkpoint">MLFF Checkpoint</label>
+          <input
+            type="text"
+            id="mlff-checkpoint"
+            value="uma-s-1p1"
+            placeholder="Enter checkpoint identifier"
+          />
+        </div>
+
+        <div>
+          <label for="mlff-task">MLFF Task</label>
+          <input
+            type="text"
+            id="mlff-task"
+            value="omol"
+            placeholder="Enter UMA task name"
+          />
+        </div>
+
+        <div>
+          <label>Run Type</label>
+          <div class="checkbox-group" id="run-type-group">
+            <label><input type="checkbox" value="sp" checked> Single Point</label>
+            <label><input type="checkbox" value="geoopt"> GeoOpt</label>
+            <label><input type="checkbox" value="freqs"> Frequencies</label>
+          </div>
+        </div>
+
+        <div>
+        </div>
+
+        <div id="optimizer-group">
+          <div class="thermo-grid">
+            <div>
+              <label for="optimizer">Optimizer</label>
+              <select id="optimizer">
+                <option value="LBFGS">LBFGS (default)</option>
+                <option value="BFGS">BFGS</option>
+                <option value="BFGS_LINESEARCH">BFGS Line Search</option>
+                <option value="FIRE">FIRE</option>
+                <option value="MDMIN">MDMin</option>
+              </select>
+            </div>
+          </div>
+          <div id="geoopt-extra" class="geoopt-extra">
+          <div>
+            <label for="geoopt-grad">Force (eV/Å)</label>
+            <input type="number" id="geoopt-grad" value="0.01" step="0.001" min="0" />
+          </div>
+          <div>
+            <label for="geoopt-iter">Max Iter</label>
+            <input type="number" id="geoopt-iter" value="250" min="1" step="1" />
+          </div>
+        </div>
+
+        </div>
+
+        <div id="freqs-group">
+          <p class="group-title">Vib Analysis Settings</p>
+          <div class="thermo-grid">
+            <div>
+              <label for="temperature">Temperature (K)</label>
+              <input type="number" id="temperature" value="298.15" step="0.01" />
+            </div>
+            <div>
+              <label for="pressure">Pressure (Pa)</label>
+              <input type="number" id="pressure" value="101325" step="1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="full-width" id="structure-summary">
+          <h3>Summary</h3>
+          <pre id="summary-message" class="summary-block">No structure loaded.</pre>
+        </div>
+      </section>
+      <div class="actions-results">
+        <section class="actions-section">
+          <h2>Actions</h2>
+          <div class="actions-grid">
+            <button id="run-btn">Run uma-ase</button>
+            <div id="status" class="status-text"></div>
+            <div class="download-buttons">
+              <button id="download-log" class="secondary" disabled>Download Log</button>
+              <button id="download-traj" class="secondary" disabled>Download Trajectory</button>
+              <button id="download-opt" class="secondary" disabled>Download Optimized XYZ</button>
+            </div>
+          </div>
+        </section>
+        <section class="results-section">
+          <h2>Results</h2>
+          <div id="results">Upload a structure and run a job to see results here.</div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 uma-ase workflows. Use responsibly. Backend service required to execute calculations.
+  </footer>
+
+  <script>
+    const resultsEl = document.getElementById("results");
+    const statusEl = document.getElementById("status");
+    const fileInput = document.getElementById("input-geometry");
+    const downloadBtn = document.getElementById("download-log");
+    const trajBtn = document.getElementById("download-traj");
+    const optBtn = document.getElementById("download-opt");
+    const checkpointInput = document.getElementById("mlff-checkpoint");
+    const taskInput = document.getElementById("mlff-task");
+    const chargeInput = document.getElementById("charge");
+    const spinInput = document.getElementById("spin");
+    const gradInput = document.getElementById("geoopt-grad");
+    const iterInput = document.getElementById("geoopt-iter");
+    const optimizerSelect = document.getElementById("optimizer");
+    const temperatureInput = document.getElementById("temperature");
+    const pressureInput = document.getElementById("pressure");
+    const summaryMessage = document.getElementById("summary-message");
+    const geooptExtras = document.getElementById("geoopt-extra");
+    const resultsDefaultText = resultsEl.textContent;
+    const summaryDefaultText = summaryMessage.textContent;
+
+    const optimizerGroup = document.getElementById("optimizer-group");
+    const freqsGroup = document.getElementById("freqs-group");
+    const runTypeGroup = document.getElementById("run-type-group");
+    const runTypeCheckboxes = Array.from(runTypeGroup.querySelectorAll("input[type=checkbox]"));
+
+    let currentGeometryFile = null;
+    let previewRequestId = 0;
+    let chargeManuallyEdited = false;
+
+    function evaluateRunTypeVisibility() {
+      const runTypes = runTypeCheckboxes
+        .filter((checkbox) => checkbox.checked)
+        .map((checkbox) => checkbox.value);
+
+      const showOptimizer = runTypes.includes("geoopt");
+      const showThermo = runTypes.includes("freqs");
+
+    optimizerGroup.classList.toggle("is-disabled", !showOptimizer);
+    optimizerSelect.disabled = !showOptimizer;
+    gradInput.disabled = !showOptimizer;
+    iterInput.disabled = !showOptimizer;
+    geooptExtras.classList.toggle("is-disabled", !showOptimizer);
+
+    freqsGroup.classList.toggle("is-disabled", !showThermo);
+    Array.from(freqsGroup.querySelectorAll("input")).forEach((input) => {
+      input.disabled = !showThermo;
+    });
+    }
+
+    evaluateRunTypeVisibility();
+
+    runTypeCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        evaluateRunTypeVisibility();
+        if (currentGeometryFile) {
+          requestStructurePreview();
+        }
+      });
+    });
+
+    function resetDownloadLink() {
+      downloadBtn.disabled = true;
+      downloadBtn.removeAttribute("data-href");
+      downloadBtn.title = "Log not available yet.";
+      if (trajBtn) {
+        trajBtn.disabled = true;
+        trajBtn.removeAttribute("data-href");
+        trajBtn.title = "Trajectory not available.";
+      }
+      if (optBtn) {
+        optBtn.disabled = true;
+        optBtn.removeAttribute("data-href");
+        optBtn.title = "Optimized geometry not available.";
+      }
+    }
+
+    resetDownloadLink();
+
+    async function requestStructurePreview(options = {}) {
+      const { allowChargeUpdate = false } = options;
+      const file = currentGeometryFile;
+      if (!file) {
+        summaryMessage.textContent = summaryDefaultText;
+        return;
+      }
+
+      const requestId = ++previewRequestId;
+      const formData = new FormData();
+      formData.append("geometry", file);
+      formData.append("charge", chargeInput.value);
+      formData.append("spin", spinInput.value);
+
+      try {
+        const response = await fetch("/api/uma-ase/preview", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (requestId !== previewRequestId) {
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(data.message || `Server returned ${response.status}`);
+        }
+
+        if (typeof data.charge === "number" && (allowChargeUpdate || !chargeManuallyEdited)) {
+          chargeInput.value = data.charge;
+        }
+
+        if (Array.isArray(data.lines) && data.lines.length) {
+          summaryMessage.textContent = data.lines.join("\n");
+        } else if (data.message) {
+          summaryMessage.textContent = data.message;
+        } else {
+          summaryMessage.textContent = summaryDefaultText;
+        }
+      } catch (error) {
+        if (requestId !== previewRequestId) {
+          return;
+        }
+        summaryMessage.textContent = `Preview unavailable: ${error.message}`;
+      }
+    }
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0] || null;
+      currentGeometryFile = file;
+      chargeManuallyEdited = false;
+      chargeInput.value = "";
+
+      if (!file) {
+        summaryMessage.textContent = summaryDefaultText;
+        resultsEl.textContent = resultsDefaultText;
+        return;
+      }
+
+      resultsEl.textContent = `Loaded ${file.name}. Ready to run calculations.`;
+      await requestStructurePreview({ allowChargeUpdate: true });
+    });
+
+    [chargeInput, spinInput].forEach((input) => {
+      input.addEventListener("input", () => {
+        if (input === chargeInput) {
+          chargeManuallyEdited = input.value !== "";
+        }
+        if (currentGeometryFile) {
+          requestStructurePreview();
+        }
+      });
+    });
+
+    let pollTimer = null;
+
+    function stopPolling() {
+      if (pollTimer !== null) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    function startJobPolling(jobId) {
+      stopPolling();
+
+      const poll = async () => {
+        try {
+          const response = await fetch(`/api/uma-ase/job/${jobId}`);
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+
+          const jobData = await response.json();
+          const logText = jobData.log || "";
+          if (logText) {
+            resultsEl.textContent = logText;
+            resultsEl.scrollTop = resultsEl.scrollHeight;
+          } else if (jobData.status === "completed") {
+            resultsEl.textContent = "Job completed. No output generated.";
+          }
+
+          if (jobData.status) {
+            statusEl.textContent = jobData.status.toUpperCase();
+          }
+
+          if (jobData.status === "error" && jobData.message) {
+            const combined = (logText ? `${logText}\n` : "") + jobData.message;
+            resultsEl.textContent = combined.trim();
+          }
+
+          if (jobData.log_download) {
+            downloadBtn.dataset.href = jobData.log_download;
+            downloadBtn.disabled = false;
+            downloadBtn.title = "Download log file";
+          } else {
+            downloadBtn.disabled = true;
+            downloadBtn.removeAttribute("data-href");
+            downloadBtn.title = "Log not available yet.";
+          }
+
+          if (trajBtn) {
+            if (jobData.traj_download) {
+              trajBtn.dataset.href = jobData.traj_download;
+              trajBtn.disabled = false;
+              trajBtn.title = "Download trajectory file";
+            } else {
+              trajBtn.disabled = true;
+              trajBtn.removeAttribute("data-href");
+              trajBtn.title = "Trajectory not available.";
+            }
+          }
+
+          if (optBtn) {
+            if (jobData.opt_download) {
+              optBtn.dataset.href = jobData.opt_download;
+              optBtn.disabled = false;
+              optBtn.title = "Download optimized geometry";
+            } else {
+              optBtn.disabled = true;
+              optBtn.removeAttribute("data-href");
+              optBtn.title = "Optimized geometry not available.";
+            }
+          }
+
+          if (jobData.status && jobData.status !== "running") {
+            stopPolling();
+            if (jobData.status === "completed") {
+              statusEl.textContent = "COMPLETED";
+            } else if (jobData.status === "error") {
+              statusEl.textContent = "ERROR";
+            }
+          }
+        } catch (error) {
+          stopPolling();
+          statusEl.textContent = "Job failed.";
+          resultsEl.textContent = `Error: ${error.message}`;
+          resetDownloadLink();
+        }
+      };
+
+      poll();
+      pollTimer = setInterval(poll, 1500);
+    }
+
+    async function runUmaJob() {
+      const file = fileInput.files[0];
+
+      if (!file) {
+        statusEl.textContent = "Please upload a geometry file first.";
+        return;
+      }
+
+      const runTypes = runTypeCheckboxes
+        .filter((checkbox) => checkbox.checked)
+        .map((checkbox) => checkbox.value);
+
+      if (runTypes.length === 0) {
+        statusEl.textContent = "Select at least one run type.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("geometry", file);
+      formData.append("charge", chargeInput.value);
+      formData.append("spin", spinInput.value);
+      formData.append("run_type", runTypes.join(" "));
+      formData.append("grad", gradInput.value || "0.01");
+      formData.append("iter", iterInput.value || "250");
+
+      if (runTypes.includes("geoopt")) {
+        formData.append("optimizer", optimizerSelect.value);
+      }
+      if (runTypes.includes("freqs")) {
+        formData.append("temperature", temperatureInput.value);
+        formData.append("pressure", pressureInput.value);
+      }
+
+      const checkpointValue = (checkpointInput.value || "").trim();
+      if (checkpointValue) {
+        formData.append("mlff_checkpoint", checkpointValue);
+      }
+
+      const taskValue = (taskInput.value || "").trim();
+      if (taskValue) {
+        formData.append("mlff_task", taskValue);
+      }
+
+      statusEl.textContent = "Submitting job...";
+      resultsEl.textContent = "";
+      resetDownloadLink();
+      stopPolling();
+
+      try {
+        const response = await fetch("/api/uma-ase/run", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        const jobId = data.job_id;
+        if (!jobId) {
+          throw new Error(data.message || "Unable to start UMA-ASE job.");
+        }
+
+        statusEl.textContent = "Running...";
+        resultsEl.textContent = "Waiting for output...";
+        startJobPolling(jobId);
+      } catch (error) {
+        stopPolling();
+        statusEl.textContent = "Job failed.";
+        resultsEl.textContent = `Error: ${error.message}\nCheck server logs for more information.`;
+        resetDownloadLink();
+      }
+    }
+
+    async function saveBlobWithDialog(blob, suggestedName, fallbackLabel) {
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName,
+            types: [
+              {
+                description: fallbackLabel,
+                accept: { "text/plain": [".log", ".txt", ".traj", ".xyz"] },
+              },
+            ],
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          return true;
+        } catch (error) {
+          if (error && error.name === "AbortError") {
+            return true;
+          }
+          console.error("Unable to save using file picker", error);
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = suggestedName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+      return true;
+    }
+
+    downloadBtn.addEventListener("click", async () => {
+      const href = downloadBtn.dataset.href;
+      if (!href) {
+        return;
+      }
+      try {
+        const response = await fetch(href);
+        if (!response.ok) {
+          throw new Error(`Download failed (${response.status})`);
+        }
+        const blob = await response.blob();
+        const filename = href.split("/").pop() || "uma-ase.log";
+        await saveBlobWithDialog(blob, filename, "Log file");
+      } catch (error) {
+        statusEl.textContent = `Unable to download log: ${error.message}`;
+      }
+    });
+
+      if (trajBtn) {
+        trajBtn.addEventListener("click", async () => {
+          const href = trajBtn.dataset.href;
+          if (!href) {
+            return;
+          }
+        try {
+          const response = await fetch(href);
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const filename = href.split("/").pop() || "uma-ase.traj";
+          await saveBlobWithDialog(blob, filename, "Trajectory file");
+        } catch (error) {
+          statusEl.textContent = `Unable to download trajectory: ${error.message}`;
+        }
+      });
+    }
+
+    if (optBtn) {
+      optBtn.addEventListener("click", async () => {
+        const href = optBtn.dataset.href;
+        if (!href) {
+          return;
+        }
+        try {
+          const response = await fetch(href);
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const filename = href.split("/").pop() || "uma-ase-opt.xyz";
+          await saveBlobWithDialog(blob, filename, "Optimized geometry");
+        } catch (error) {
+          statusEl.textContent = `Unable to download optimized geometry: ${error.message}`;
+        }
+      });
+    }
+
+    document.getElementById("run-btn").addEventListener("click", runUmaJob);
+  </script>
+</body>
+</html>
