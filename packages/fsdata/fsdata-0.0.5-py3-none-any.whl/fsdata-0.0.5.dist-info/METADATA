@@ -1,0 +1,108 @@
+Metadata-Version: 2.4
+Name: fsdata
+Version: 0.0.5
+Summary: Simple data access layer over fsspec
+Keywords: data-access,pathlib,fsspec
+Author: Furechan
+Author-email: Furechan <furechan@xsmail.com>
+License-Expression: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Dist: universal-pathlib
+Requires-Dist: pyarrow
+Requires-Dist: pandas
+Requires-Dist: s3fs>=2025.1.0 ; extra == 'all'
+Requires-Dist: s3fs>=2025.1.0 ; extra == 's3'
+Requires-Python: >=3.10
+Provides-Extra: all
+Provides-Extra: s3
+Description-Content-Type: text/markdown
+
+# Simple data catalog library
+
+This project is a trivial attempt at offering basic catalog functionality for structured datasets stored in local or remote folders.
+
+The library uses `universal_pathlib` to access remote storage locations like S3, Google Cloud Storage, etc ...
+
+Currently, as a prototype, the library supports only pandas dataframes saved as `.parquet` files.
+
+The library reads a config file called `fsdata.ini` which defines a list of collections, one per section.
+
+Each collection corresponds to a local or remote folder containing files with the same format and name pattern.
+
+
+> **Note** This project is at an exploratory phase.
+
+## Configuration
+
+The configuration file `fsdata.ini` has one section for each collection, with the section name for name and with a `path` key pointing to its location.
+
+```ini
+# fsdata.ini
+[samples]
+path = s3://my-bucket/samples
+
+[datasets]
+path = s3://my-bucket/datasets
+```
+
+The config file should be located in the the standard XDG config directory `XDG_CONFIG_HOME` (or ~/.config).
+
+## Usage
+
+To access a given collection just use the `get` method.
+
+```python
+import fsdata
+
+samples = fsdata.get("samples")
+```
+
+To list items in a collections
+
+```python
+samples.items()
+```
+
+Please note that item names do not include any file extension.
+
+To load data use the `load` method.
+
+```python
+samples.load(name)
+```
+
+To save data use the `save` method.
+
+To save data
+```python
+samples.save(name, data)
+```
+
+
+## Installation
+
+You can install the package with `pip`
+
+```
+pip install fsdata
+```
+
+## Requirements
+
+- pandas
+- pyarrow
+- universal_pathlib
+- fsspec backends like s3fs, etc ... as applicable
+
+
+## Related Projects and Resources
+- [intake](https://github.com/intake/intake) Lightweight package for finding, investigating, loading and disseminating data.
+- [pystore](https://github.com/ranaroussi/pystore) Fast data store for Pandas time-series data
+- [pandas](https://github.com/pandas-dev/pandas) Flexible and powerful data analysis / manipulation library for Python
+- [pyarrow](https://github.com/apache/arrow) Universal columnar format and multi-language toolbox
+- [parquet](https://github.com/apache/parquet-format) Apache Parquet Format
+- [fsspec](https://github.com/fsspec/filesystem_spec) Filesystem interfaces for Python
+- [universal_pathlib](https://github.com/fsspec/universal_pathlib) pathlib api extended to use fsspec backends
+
