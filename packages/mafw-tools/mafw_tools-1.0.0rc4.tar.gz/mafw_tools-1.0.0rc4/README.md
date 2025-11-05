@@ -1,0 +1,97 @@
+# MAFW Tools
+
+[![PyPI](https://img.shields.io/pypi/v/mafw-tools)](https://pypi.org/project/mafw-tools/)
+[![License](https://img.shields.io/badge/license-EUPL--1.2-blue)](https://github.com/eea/mafw-tools/blob/main/LICENSE.txt)
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/eea/mafw-tools/ci.yml?branch=main)](https://github.com/eea/mafw-tools/actions)
+
+A set of commonly used tools to be used with MAFw and other data analysis frameworks.
+
+This package is often used as an incubator for tools that sooner or later will gain the stability and the required 
+completeness to be included into [MAFw](https://code.europa.eu/kada/mafw).
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Features](#features)
+- [Usage](#usage)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Installation
+
+Install the package using pip:
+
+```bash
+pip install mafw-tools
+```
+
+Or install in development mode:
+```bash
+pip install .
+```
+
+## Features 
+
+This package provides utility functions for:
+* File Operations: Pickle serialization/deserialization with support for compressed files
+* Plotting Tools: Flexible image plotting with customizable axes, titles, and colorbars
+* Generic Utilities: Helper functions for common operations like nested attribute retrieval
+
+## Usage
+
+Import the package or the modules to enjoy the tools. 
+
+### File tools example
+
+```python
+from mafw_tools.file_tools import save_to_pickle, load_from_pickle
+
+# Save multiple objects to a pickle file
+data = {'key': 'value'}
+save_to_pickle('data.pkl', zipped=True, my_data=data)
+
+# Load objects from pickle file
+loaded_data = load_from_pickle('data.pkl')
+```
+
+### Plotting tools example
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from mafw_tools.plotting_tools import plot_image
+
+fig, ax = plt.subplots()
+data = np.random.rand(10, 10)
+plot_image(data, ax, title="Sample Image", attach_colorbar=True)
+plt.show()
+```
+
+### Generic tools example
+```python
+from mafw_tools.generic_tools import getattr_nested
+
+class First:
+    def __init__(self, a):
+        self.a = a
+
+class Second:
+    def __init__(self, b):
+        self.b = First(b)
+
+m = Second(3)
+value = getattr_nested(m, 'b.a')  # Returns 3
+```
+
+## Documentation
+Full documentation is available at https://gitlab.jrc.ec.europa.eu/jrc-projects/autorad/mafw-tools
+
+## Contributing
+Contributions are welcome! Please follow these steps:
+* Fork the repository
+* Create a feature branch
+* Commit your changes
+* Push to the branch
+* Create a Pull Request
