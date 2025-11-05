@@ -1,0 +1,36 @@
+[project]
+name = "radar-mapping-api"
+version = "0.1.0"
+description = "A Python client for the Radar.io geocoding, mapping, and geolocation API"
+keywords = ["radar", "radar.io", "geocoding", "geolocation", "mapping", "reverse-geocoding", "places", "api-client"]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.12.3",
+    "tenacity>=9.1.2",
+]
+authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
+urls = { "Repository" = "https://github.com/iloveitaly/radar-mapping-api" }
+
+[project.optional-dependencies]
+sentry = ["sentry-sdk>=2.0.0"]
+
+# additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license
+
+[build-system]
+requires = ["uv_build>=0.8.11,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# avoids the src/ directory structure
+module-root = ""
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+    "pyright>=1.1.380",
+    "ruff>=0.8.0",
+    "respx>=0.22.0",
+]
+
