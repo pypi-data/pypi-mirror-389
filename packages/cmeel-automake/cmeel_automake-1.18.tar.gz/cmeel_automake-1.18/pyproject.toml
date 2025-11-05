@@ -1,0 +1,22 @@
+[build-system]
+build-backend = "cmeel"
+requires = ["cmeel-autoconf", "cmeel-m4", "cmeel[build]"]
+
+[project]
+description = "cmeel distribution for automake"
+license = "GPL-3.0-or-later"
+name = "cmeel-automake"
+requires-python = ">= 3.9"
+version = "1.18"
+
+[project.urls]
+homepage = "https://github.com/cmake-wheel/cmeel-automake"
+repository = "https://github.com/cmake-wheel/cmeel-automake.git"
+upstream = "https://www.gnu.org/software/automake/"
+
+[tool.cmeel]
+has-sitelib = false
+run-tests = false
+
+[tool.tomlsort]
+all = true
