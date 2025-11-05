@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gcode-thumbnail-tool"
+description = "A small tool to analyse and extract thumbnails rendered into GCODE files"
+version = "0.1.2"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE.txt"]
+
+authors = [
+    {name = "Gina Häußge", email = "gina@octoprint.org"},
+    {name = "jneilliii", email = "jneilliii+github@gmail.com"},
+]
+maintainers = [
+    {name = "Gina Häußge", email = "gina@octoprint.org"},
+]
+
+dependencies = [
+    "Pillow>=11.3 ; python_version>='3.10'",
+    "Pillow==11.2.1 ; python_version<='3.9'"  # this version should still have wheels on piwheels
+]
+requires-python = ">= 3.9"
+
+[project.scripts]
+gcode-thumbnail-tool = "gcode_thumbnail_tool:main"
+
+[project.optional-dependencies]
+develop = [
+    "pytest",
+    "pre-commit",
+]
+
+[project.urls]
+homepage = "https://github.com/OctoPrint/gcode-thumbnail-tool/"
+issues = "https://github.com/OctoPrint/gcode-thumbnail-tool/issues"
+source = "https://github.com/OctoPrint/gcode-thumbnail-tool/"
