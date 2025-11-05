@@ -1,0 +1,110 @@
+[project]
+name = "bittensor-pylon"
+
+dynamic = ["version"]
+description = "Bittensor Pylon: fast subnet data proxy."
+authors = [
+    { name = "Reef", email = "reef@reef.sh" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic-settings",
+    "pydantic",
+    "turbobt>=0.3.0",
+    "litestar[standard]",
+    "cachetools",
+    "docker",
+    "requests",
+    "bittensor_wallet",
+    "sqlalchemy",
+    "aiosqlite",
+    "alembic",
+    "tenacity",
+    "sentry-sdk[litestar]",
+    "greenlet",
+    "flask",
+]
+
+[project.optional-dependencies]
+dev = [
+    "freezegun",
+    "uv",
+    "nox",
+    "pytest",
+    "pytest-asyncio>=1.0.0",
+    "pytest-httpx",
+    "turbobt>=0.2.2",
+    "respx>=0.22.0",
+]
+format = [
+    "ruff",
+    "ty", 
+    "pyright",
+    "freezegun",
+    "sentry-sdk[litestar]"
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "I", "UP", "B", "TC005",
+]
+ignore = [
+    "D100", "D105", "D107", "D200", "D202", "D203", "D205", "D212", "D400", "D401", "D415",
+    "D101", "D102","D103", "D104",
+    "E501", "B027", "B904", "B905",
+]
+
+[tool.ruff.lint.per-file-ignores]
+
+"__init__.py" = ["I", "F401"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+    "pylon._internal.common.types.ArchiveBlocksCutoff",
+    "pylon._internal.common.types.BittensorNetwork",
+    "pylon._internal.common.types.BlockHash",
+    "pylon._internal.common.types.BlockNumber",
+    "pylon._internal.common.types.Coldkey",
+    "pylon._internal.common.types.Consensus",
+    "pylon._internal.common.types.Dividends",
+    "pylon._internal.common.types.Emission",
+    "pylon._internal.common.types.Hotkey",
+    "pylon._internal.common.types.Incentive",
+    "pylon._internal.common.types.MaxWeightsLimit",
+    "pylon._internal.common.types.NetUid",
+    "pylon._internal.common.types.NeuronUid",
+    "pylon._internal.common.types.Port",
+    "pylon._internal.common.types.PrivateKey",
+    "pylon._internal.common.types.PruningScore",
+    "pylon._internal.common.types.PublicKey",
+    "pylon._internal.common.types.Rank",
+    "pylon._internal.common.types.RevealRound",
+    "pylon._internal.common.types.Stake",
+    "pylon._internal.common.types.Tempo",
+    "pylon._internal.common.types.Timestamp",
+    "pylon._internal.common.types.Trust",
+    "pylon._internal.common.types.ValidatorTrust",
+    "pylon._internal.common.types.Weight",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+homepage = "https://github.com/backend-developers-ltd/bittensor-pylon"
+repository = "https://github.com/backend-developers-ltd/bittensor-pylon"
+documentation = "https://github.com/backend-developers-ltd/bittensor-pylon#readme"
+
+[tool.uv]
+# uv-specific settings can go here
+
+[tool.hatch.version]
+path = "pylon/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pylon._internal", "pylon.v1"]
+
