@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: krx300-hj3415
+Version: 1.0.1
+Summary: KRX 300 종목 스냅샷 동기화 도구
+Keywords: example,demo
+Author-email: Hyungjin Kim <hj3415@gmail.com>
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Typing :: Typed
+License-File: LICENSE
+Requires-Dist: logging-hj3415>=0.1
+Requires-Dist: httpx[http2]>=0.28
+Requires-Dist: tenacity>=9.1
+Requires-Dist: pandas>=2.3
+Requires-Dist: openpyxl>=3.1
+Requires-Dist: xlrd
+Requires-Dist: typer>=0.20
+Requires-Dist: pytest>=8 ; extra == "dev"
+Requires-Dist: pytest-cov>=7.0 ; extra == "dev"
+Requires-Dist: pytest-asyncio>=1.2 ; extra == "dev"
+Requires-Dist: ruff>=0.5 ; extra == "dev"
+Requires-Dist: mypy>=1.10 ; extra == "dev"
+Provides-Extra: dev
+
+# 로컬 개발 설치
+pip install -e .
+
+# 동기화 실행 (기본: ./codes_snapshot.json)
+krx300 sync
+
+# JSON 출력으로 받기
+krx300 sync --json
+
+# 스냅샷 보기
+krx300 show -s ./codes_snapshot.json
+
+# 로그 상세
+krx300 sync -v
+krx300 sync -vv
+krx300 sync --quiet
