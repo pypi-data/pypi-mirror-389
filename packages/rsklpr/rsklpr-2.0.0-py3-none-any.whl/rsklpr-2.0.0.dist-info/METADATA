@@ -1,0 +1,107 @@
+Metadata-Version: 2.1
+Name: rsklpr
+Version: 2.0.0
+Summary: Implementation of the Robust Local Polynomial Regression with Similarity Kernel method
+Home-page: https://github.com/yaniv-shulman/rsklpr
+Keywords: statistics,robust statistics,regression,robust regression,local polynomial regression,machine learning,locally weighted regression
+Author: Yaniv Shulman
+Author-email: yaniv@shulman.info
+Requires-Python: >=3.9
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Requires-Dist: joblib (>=1.4.2,<2.0.0)
+Requires-Dist: numpy (>=2.0.2,<3.0.0)
+Requires-Dist: scikit-learn (>=1.5.2,<2.0.0)
+Requires-Dist: scipy (>=1.13.1,<2.0.0)
+Project-URL: Repository, https://github.com/yaniv-shulman/rsklpr
+Description-Content-Type: text/markdown
+
+# Robust Local Polynomial Regression with Similarity Kernels #
+
+[![Downloads](https://static.pepy.tech/badge/rsklpr)](https://pepy.tech/project/rsklpr) ![Tests](https://github.com/yaniv-shulman/rsklpr/actions/workflows/linting_and_tests.yml/badge.svg?branch=main) [![Pyversions](https://img.shields.io/pypi/pyversions/rsklpr.svg?style=flat-square)](https://pypi.python.org/pypi/rsklpr)
+
+## TL;DR ##
+This library is useful to perform robust locally weighted regression (similar to [LOESS](https://en.wikipedia.org/wiki/Local_regression)) in Python when:
+1. There are no particular assumptions on the underlying function except that it is "reasonably smooth". In particular,
+you don't know which parametric model to specify or if an appropriate model exists. 
+1. There are no particular assumptions on the type and intensity of noise present. Note that the estimator is biased
+if the data has non-Gaussian density around the mean. However, it works very well in practice if the data is not very
+dense. Use LOESS if you have very dense data.
+1. There are no particular assumptions on the presence of outliers and their extent.
+1. You may want to predict in locations not explicitly present in the dataset but also not too far from existing
+observations or far outside the areas where observations exist. 
+1. The independent inputs are univariate or multivariate.
+1. The dependent variable is univariate.
+1. You want a straightforward hassle-free way to tune the model and the smoothness of fit.
+1. You may want to calculate confidence intervals.
+1. You may want to filter noise to recover the original underlying process.
+1. You may want to impute or resample the data. 
+
+If the above use cases hold then this library could be useful for you. Have a look at this notebook
+https://nbviewer.org/github/yaniv-shulman/rsklpr/tree/main/docs/usage.ipynb for an example of how to use
+this library to perform regression easily.
+
+## Installation ##
+Install from [PyPI](https://pypi.org/project/rsklpr/) using pip (preferred method):
+```bash
+pip install rsklpr
+```
+
+### What's new? ###
+- Version 2.0.0: 
+  - Improved numerical stability.
+  - Generalise the API for arbitrary kernels.
+  - Support for disabling the robust KDE based kernel. This allows using the library as a standard local polynomial
+    regression implementation with various kernels.
+  - Implementation of additional of the shelf kernels.
+  - Supporting arbitrary polynomial degree for local fitting.
+- Version 1.0.0 - Dropped support for Python 3.8 and added support for Python 3.12.
+- Version 0.7.0 - Metrics including local R-Squared and more efficient computation of WLS. 
+- Version 0.6.0 - Bootstrap inference and confidence intervals
+
+## Details ##
+Local polynomial regression (LPR) is a powerful and flexible statistical technique that has gained increasing popularity
+in recent years due to its ability to model complex relationships between variables. Local polynomial regression
+generalizes the polynomial regression and moving average methods by fitting a low-degree polynomial to a nearest
+neighbors subset of the data at the location. The polynomial is fitted using weighted ordinary least squares, giving
+more weight to nearby points and less weight to points further away. Local polynomial regression is however susceptible
+to outliers and high leverage points which may cause an adverse impact on the estimation accuracy. This library 
+implements a variant of LPR presented in the 
+[Robust Local Polynomial Regression with Similarity Kernels paper](https://arxiv.org/abs/2501.10729) which uses a
+generalized similarity kernel that assigns robust weights to mitigate the adverse effect of outliers in the local
+neighborhood by estimating and utilizing the density at the local locations.
+
+**BibTeX formatted citation**:
+```
+@misc{shulman2025robustlocalpolynomialregression,
+      title={Robust Local Polynomial Regression with Similarity Kernels}, 
+      author={Yaniv Shulman},
+      year={2025},
+      eprint={2501.10729},
+      archivePrefix={arXiv},
+      primaryClass={stat.ME},
+      url={https://arxiv.org/abs/2501.10729}, 
+}
+```
+### Experimental results ###
+The experimental results and demonstration of the library for various experimental settings are available as interactive
+Jupyter notebooks at https://nbviewer.org/github/yaniv-shulman/rsklpr/tree/main/src/experiments/
+
+### KDE Implementation ###
+KDE implementation is a copy of the code from statsmodels https://www.statsmodels.org/stable/index.html. The copy is done to
+remove statsmodels as a dependency of this package since statsmodels is quite heavy and pulls a lot of additional
+packages.
+
+## Contribution and feedback ##
+Contributions and feedback are most welcome both to the paper and the code. Please see [CONTRIBUTING.md](https://github.com/yaniv-shulman/rsklpr/tree/main/CONTRIBUTING.md) for
+further details.
+
