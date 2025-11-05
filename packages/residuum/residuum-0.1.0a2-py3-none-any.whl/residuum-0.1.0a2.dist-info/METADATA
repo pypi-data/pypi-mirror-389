@@ -1,0 +1,45 @@
+Metadata-Version: 2.3
+Name: residuum
+Version: 0.1.0a2
+Summary: Converting peptidoforms to residue SMILES using the PSI-MOD CV
+Keywords: proteomics,peptides,residues,proforma,smiles,psi-mod,mass-spectrometry
+Author: Ralf Gabriels
+License: Apache-2.0
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Requires-Dist: pronto>=2.7.0
+Requires-Dist: rdkit>=2023.0.0
+Requires-Dist: pyteomics>=4.6.0
+Requires-Python: >=3.11
+Project-URL: Documentation, https://residuum.readthedocs.io
+Project-URL: Homepage, https://github.com/CompOmics/residuum
+Project-URL: Issues, https://github.com/CompOmics/residuum/issues
+Project-URL: Repository, https://github.com/CompOmics/residuum
+Description-Content-Type: text/markdown
+
+# Residuum
+
+Converting peptidoforms to residue SMILES using the PSI-MOD CV
+
+## Overview
+
+Residuum converts peptide sequences in ProForma notation to a list of residue-level SMILES
+representations. It resolves modifications through the PSI-MOD ontology, supporting multiple
+modification formats.
+
+## Features
+
+- **ProForma parsing**: Leverage Pyteomics for full ProForma v2 support
+- **PSI-MOD resolving**: Query modifications by accession, name, or synonym
+- **Multiple formats**: Support MOD:XXXXX, UNIMOD:XXX, modification names, custom SMILES
+- **Smart matching**: Exact, approximate (parent terms), and fallback strategies
+- **Terminal handling**: Automatic N-term/C-term SMILES reformatting to add H2N- and -COOH groups
+
+## Installation
+
+```bash
+pip install residuum
+```
