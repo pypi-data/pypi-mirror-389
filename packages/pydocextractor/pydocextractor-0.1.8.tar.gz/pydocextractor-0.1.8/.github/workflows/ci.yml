@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Set up Python 3.11
+      run: uv python install 3.11
+
+    - name: Install just
+      uses: extractions/setup-just@v2
+
+    - name: Install dependencies
+      run: uv sync --all-extras
+
+    - name: Run unit tests with coverage
+      run: just test-unit-coverage
+
+    - name: Run BDD tests
+      run: just test-bdd
+      continue-on-error: true
+
+    - name: Check coverage threshold (70%)
+      run: |
+        uv run pytest tests/unit/ --cov=src/pydocextractor --cov-report=term --cov-report=xml --cov-fail-under=70
+
+    # Optional: Upload to Codecov for coverage tracking
+    # To enable: Add CODECOV_TOKEN to GitHub repository secrets
+    # Get token from: https://codecov.io
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4
+      continue-on-error: true
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Set up Python 3.11
+      run: uv python install 3.11
+
+    - name: Install just
+      uses: extractions/setup-just@v2
+
+    - name: Install dependencies
+      run: uv sync --all-extras
+
+    - name: Check code formatting
+      run: uv run ruff format --check src tests
+
+    - name: Run linting
+      run: just lint
+      continue-on-error: true
+
+    - name: Run type checking
+      run: just typecheck
+      continue-on-error: true

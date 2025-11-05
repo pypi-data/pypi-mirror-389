@@ -1,0 +1,22 @@
+name: "CI/CD Pipeline"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  scan-app:
+    name: "scan"
+    if: "${{ github.actor != 'dependabot[bot]' }}" # Skip any PR created by dependabot to avoid permission issues
+    uses: "./.github/workflows/workflow-scan.yaml"
+    with:
+      stage-target: "app"
+    secrets: "inherit"
