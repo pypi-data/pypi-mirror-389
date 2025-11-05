@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: cmeel-automake
+Version: 1.18
+Summary: cmeel distribution for automake
+Requires-Python: >= 3.9
+License-Expression: GPL-3.0-or-later
+Home-page: https://github.com/cmake-wheel/cmeel-automake
+Project-URL: Repository, https://github.com/cmake-wheel/cmeel-automake.git
+Project-URL: Upstream, https://www.gnu.org/software/automake/
+Requires-Dist: cmeel
+Provides-Extra: build
+Requires-Dist: cmeel-autoconf ; extra == "build"
+Requires-Dist: cmeel-m4 ; extra == "build"
+Description-Content-Type: text/markdown
+
+# CMeel automake
+
+[![PyPI version](https://badge.fury.io/py/cmeel-automake.svg)](https://pypi.org/project/cmeel-automake)
+[![Release](https://github.com/cmake-wheel/cmeel-automake/actions/workflows/release.yml/badge.svg)](https://github.com/cmake-wheel/cmeel-automake/actions/workflows/release.yml)
+
+[automake](https://www.gnu.org/software/automake/) distribution for cmeel packages.
