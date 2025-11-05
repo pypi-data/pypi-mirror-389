@@ -1,0 +1,61 @@
+Metadata-Version: 2.4
+Name: mcp-cloud-ops
+Version: 0.1.1
+Summary: MCP server exposing read-only aws/kubectl/helm wrappers and context search
+Author: Nicolas Mallet
+Maintainer: Nicolas Mallet
+License: MIT License
+        
+        Copyright (c) 2025 Nicolas Mallet
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+License-File: LICENSE
+Keywords: aws,cloud,helm,kubectl,mcp,read-only
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: System :: Systems Administration
+Requires-Python: >=3.12
+Requires-Dist: fastmcp~=2.13.0
+Requires-Dist: mcp~=1.19.0
+Provides-Extra: dev
+Requires-Dist: mypy~=1.8.0; extra == 'dev'
+Requires-Dist: pytest-asyncio~=0.23.0; extra == 'dev'
+Requires-Dist: pytest-cov~=4.1.0; extra == 'dev'
+Requires-Dist: pytest-timeout~=2.2.0; extra == 'dev'
+Requires-Dist: pytest~=8.0.0; extra == 'dev'
+Requires-Dist: ruff~=0.1.0; extra == 'dev'
+Description-Content-Type: text/markdown
+
+mcp-cloud-ops MCP server exposing read-only cloud CLI helpers.
+
+Tools:
+- aws
+- kubectl
+- helm
+- search_context
+
+Requires CLIs in PATH.
+
+Run:
+```bash
+python -m src.cloud_ops.server
+```
