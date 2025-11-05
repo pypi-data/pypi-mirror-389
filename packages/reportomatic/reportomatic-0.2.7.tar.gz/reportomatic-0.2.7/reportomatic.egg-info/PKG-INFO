@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: reportomatic
+Version: 0.2.7
+Summary: Reportomatic automates Markdown report generation from GitLab and GitHub repositories.
+Author-email: Leo Turnell-Ritson <l.n.turnell-ritson@bham.ac.uk>
+License-Expression: MIT
+Project-URL: Repository, https://github.com/LeoTurnell-Ritson/reportomatic
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: click
+Requires-Dist: python-gitlab
+Requires-Dist: PyGithub
+Provides-Extra: lint
+Requires-Dist: ruff; extra == "lint"
+Provides-Extra: test
+Requires-Dist: nose2[coverage_plugin]; extra == "test"
+
+# ReportOmatic
+
+ReportOmatic is a CLI utility for generating opinionated reports for both GitLab and GitHub repositories in the same Markdown format. 
+
+## Features
+
+- Generate list of active issues
+- Generate list of active pull/merge requests
+
+## Installation
+
+You can install ReportOmatic using pip:
+```bash
+pip install reportomatic
+reportomatic --version
+```
+
+## Usage
+
+To generate a report of active issues for a given repository, use the following command:
+```bash
+reportomatic <repository-url> issues
+```
+
+Similarly to generate a report of active pulls/merges:
+```bash
+reportomatic <repository-url> pulls
+```
