@@ -1,0 +1,14 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include *.txt
+include *.md
+include *.rst
+recursive-include gmsdk *.py
+recursive-include gmsdk/proto *.py
+recursive-include gmsdk *.proto
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .git*
+global-exclude build
+global-exclude dist
