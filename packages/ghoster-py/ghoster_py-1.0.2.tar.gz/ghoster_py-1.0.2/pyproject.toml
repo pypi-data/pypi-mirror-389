@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ghoster-py"
+version = "1.0.2"
+authors = [
+  { name="Hussain Al-Khatib", email="h2311065@gmail.com" },
+]
+description = "A powerful stealth automation library for Playwright designed to mimic human behavior and bypass advanced bot detection systems."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = ["playwright", "playwright-stealth"]
