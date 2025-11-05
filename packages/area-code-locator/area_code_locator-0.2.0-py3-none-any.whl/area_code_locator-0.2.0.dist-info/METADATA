@@ -1,0 +1,170 @@
+Metadata-Version: 2.4
+Name: area-code-locator
+Version: 0.2.0
+Summary: Reverse-geocode latitude/longitude to NANP (North American) telephone area codes
+Author: Area Code Locator Contributors
+License: MIT License
+        
+        Copyright (c) 2025 Your Name
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+Project-URL: Homepage, https://github.com/Eat-A-Fish/area-code-locator
+Project-URL: Repository, https://github.com/Eat-A-Fish/area-code-locator
+Project-URL: Issues, https://github.com/Eat-A-Fish/area-code-locator/issues
+Keywords: area-code,nanp,north-american-numbering-plan,reverse-geocoding,geopandas,gis,geospatial,telephony,python-package,coordinates,latitude-longitude
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: GIS
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: geopandas>=0.13.0
+Requires-Dist: shapely>=2.0.0
+Requires-Dist: pyproj>=3.4.0
+Requires-Dist: pyarrow>=10.0.0
+Requires-Dist: importlib_resources>=5; python_version < "3.9"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Dynamic: license-file
+
+# NANP Area Code Locator
+
+[![PyPI version](https://img.shields.io/pypi/v/area-code-locator.svg)](https://pypi.org/project/area-code-locator/)
+[![Python versions](https://img.shields.io/pypi/pyversions/area-code-locator.svg)](https://pypi.org/project/area-code-locator/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+Reverse-geocode latitude/longitude to **NANP** telephone **area codes**. Works offline; ships a compact Parquet of polygons.
+
+---
+
+## ✨ Features
+- 🔎 **Reverse-geocode** `(lat, lon)` → area code(s)
+- ⚡ **Fast local lookups** (vectorized GeoPandas + spatial index)
+- 🪪 **NANP coverage** (US, Canada, participating Caribbean)
+- 🧳 **Zero setup** — packaged Parquet data included (~29 MB)
+- 🧭 **CRS handled automatically** (WGS84 in / projected out as needed)
+- 🧵 **Simple API & CLI** (`lookup()` and `area-code-lookup`)
+
+---
+
+## 📦 Install
+
+```bash
+pip install area-code-locator
+
+# From source:
+git clone https://github.com/Eat-A-Fish/area-code-locator.git
+cd area-code-locator
+pip install -e .
+```
+
+---
+
+## 🚀 Quickstart
+
+```python
+from area_code_locator import lookup, batch_lookup
+
+# Single point (returns all matching/overlay codes by default)
+codes = lookup(40.7128, -74.0060)      # NYC
+print(codes)                           # -> ['212', '646', '917', ...]
+
+# First/primary only
+code = lookup(34.0522, -118.2437, return_all=False)  # LA
+print(code)                              # -> '213'
+
+# Batch
+points = [(40.7128, -74.0060), (41.8781, -87.6298)]
+print(batch_lookup(points))              # -> [['212', ...], ['312', ...]]
+```
+
+---
+
+## 🖥️ CLI
+
+```bash
+area-code-lookup --lat 40.7128 --lon -74.0060
+# -> 917
+
+area-code-lookup --lat 40.7128 --lon -74.0060 --all
+# -> ["212", "646", "917", ...]
+```
+
+---
+
+## 🧪 API
+
+```python
+lookup(lat: float, lon: float, return_all: bool = True) -> Union[str, List[str]]
+batch_lookup(points: List[Tuple[float, float]], return_all: bool = True) -> List[Union[str, List[str]]]
+```
+
+- `return_all=True` → all matching/overlay area codes
+- `return_all=False` → first/primary area code
+
+### Advanced
+
+```python
+from area_code_locator import AreaCodeLocator
+
+loc = AreaCodeLocator()                       # uses bundled data
+loc_custom = AreaCodeLocator("path/to/area-codes.parquet")
+loc.lookup(40.7128, -74.0060, return_all=True)
+```
+
+---
+
+## 🗺️ Data
+
+The package includes a preprocessed Parquet file of area-code polygons, so no setup is required.
+
+### Using your own data:
+- Parquet with a polygon geometry column
+- An area-code column named one of: `area_code`, `areacode`, `npa`, or `code`
+- CRS: EPSG:4326 (WGS84)
+
+---
+
+## 🛠️ Development
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+---
+
+## 🙏 Acknowledgments
+
+Area-code boundaries derived from public NANP datasets (e.g., projects compiling NANP polygons). Thanks to the open geospatial community for GeoPandas/Shapely/PyProj.
+
+---
+
+## 📄 License
+
+MIT © Area Code Locator Contributors
