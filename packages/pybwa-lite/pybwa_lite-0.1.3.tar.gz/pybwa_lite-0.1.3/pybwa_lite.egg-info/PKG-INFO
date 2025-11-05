@@ -1,0 +1,199 @@
+Metadata-Version: 2.4
+Name: pybwa-lite
+Version: 0.1.3
+Summary: A lightweight Python implementation of the Burrows–Wheeler Aligner (BWA) with FM-index and multithreaded alignment.
+Home-page: https://github.com/soumyapriyagoswami/pybwa.git
+Author: Soumyapriya Goswami
+Author-email: Soumyapriya Goswami <soumyapriya.goswami.it2023@kgec.ac.in>
+License: MIT
+Project-URL: Homepage, https://github.com/soumyapriyagoswami/pybwa
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.20
+Requires-Dist: tqdm>=4.60
+Requires-Dist: pysam>=0.22
+
+# 🧬 PyBWA_lite — A Lightweight Burrows–Wheeler Aligner in Python
+
+[![Build Status](https://img.shields.io/github/actions/workflow/status/soumyapriyagoswami/pybwa/tests.yml?branch=main)](https://github.com/soumyapriyagoswami/pybwa/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/pybwa.svg)](https://pypi.org/project/pybwa/)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
+[![GitHub stars](https://img.shields.io/github/stars/soumyapriyagoswami/pybwa?style=social)](https://github.com/soumyapriyagoswami/pybwa)
+
+---
+
+### 🧠 Overview
+
+**PyBWA_lite** is a pure-Python implementation of the **Burrows–Wheeler Aligner (BWA)** algorithm for fast, memory-efficient sequence alignment.
+It supports **FM-index construction**, **banded Smith–Waterman extension**, **multithreaded alignment**, and **FASTQ I/O with quality scores** — making it a **compact, research-friendly alternative** to native BWA for teaching, prototyping, and custom pipelines.
+
+---
+
+## ✨ Features
+
+✅ **FM-Index Construction & Querying**  
+Efficient Burrows–Wheeler Transform (BWT)–based indexing with rank/select operations for fast substring search and backward extension.
+
+✅ **Banded Smith–Waterman Extension**  
+Optimized local alignment algorithm that restricts the search space to a diagonal band — improving speed without losing accuracy.
+
+✅ **Parallel Read Alignment**  
+Multithreaded alignment engine supporting FASTA and FASTQ reads for high-throughput analysis.
+
+✅ **Quality-Aware FASTQ Parsing**  
+Fully supports read qualities, enabling accurate scoring and filtering during alignment.
+
+✅ **SAM/BAM Output**  
+Interoperable with the `pysam` library — easily write, parse, and manipulate alignment outputs.
+
+✅ **Command-Line Interface (CLI)**  
+Use `pybwa-lite` directly from your terminal for quick indexing and read alignment tasks:
+```bash
+pybwa-lite index reference.fasta
+pybwa-lite align reference.fmi reads.fastq -o output.sam
+
+
+---
+
+### 🧩 Installation
+
+#### From PyPI (once released)
+
+```bash
+pip install pybwa
+```
+
+#### From Source (Development)
+
+```bash
+git clone https://github.com/soumyapriyagoswami/pybwa.git
+cd pybwa
+pip install -e .
+```
+
+---
+
+### ⚙️ Quick Start
+
+#### 1️⃣ Build an Index
+
+```python
+from pybwa_lite.index import build_index
+fm = build_index("reference.fasta", out_path="ref_index.pkl")
+```
+
+#### 2️⃣ Align Reads (Single or FASTQ)
+
+```python
+from pybwa_lite.align import align_reads
+results = align_reads("reads.fastq", "ref_index.pkl", threads=4)
+for r in results:
+    print(r)
+```
+
+#### 3️⃣ Command-Line Usage
+
+```bash
+# Build index
+pybwa_lite index reference.fasta -o ref_index.pkl
+
+# Align reads
+pybwa_lite align reads.fastq -x ref_index.pkl -t 4 -o output.sam
+```
+
+---
+
+### 🧠 Architecture Overview
+
+| Module        | Description                                                       |
+| ------------- | ----------------------------------------------------------------- |
+| `index.py`    | Builds and loads FM-index structures for references               |
+| `fmidx.py`    | Implements FM-index, suffix array, and BWT                        |
+| `align.py`    | Seeding, banded Smith–Waterman extension, multithreaded alignment |
+| `samtools.py` | Utilities for SAM/BAM file handling using `pysam`                 |
+| `cli.py`      | Command-line interface for index building and alignment           |
+| `tests/`      | Pytest-based unit tests for FM-index and alignment verification   |
+
+---
+
+### 🧪 Running Tests
+
+```bash
+pytest -v
+```
+
+Expected output:
+
+```
+tests/test_alignment.py::test_single_read_alignment PASSED
+tests/test_alignment.py::test_fastq_alignment_with_qualities PASSED
+tests/test_alignment.py::test_multithreaded_alignment_consistency PASSED
+tests/test_fmindex.py::test_suffix_array_sorted PASSED
+tests/test_fmindex.py::test_backward_search_basic PASSED
+```
+
+---
+
+### ⚡ Performance Highlights
+
+| Feature         | Description                       | Speedup                  |
+| --------------- | --------------------------------- | ------------------------ |
+| FM-index lookup | Optimized with prefix caching     | ~3× faster               |
+| Multithreading  | Parallel read alignment           | ~N× faster (per thread)  |
+| Banded SW       | Reduced dynamic programming table | ~5× faster on long reads |
+
+---
+
+### 🧰 Dependencies
+
+* `numpy`
+* `pysam`
+* `tqdm`
+* `pytest` *(for testing only)*
+
+---
+
+### 📦 Project Structure
+
+```
+pybwa/
+├── __init__.py
+├── align.py
+├── cli.py
+├── fmidx.py
+├── index.py
+├── samtools.py
+tests/
+├── test_alignment.py
+├── test_fmindex.py
+```
+
+---
+
+### 🤝 Contributing
+
+Contributions are welcome!
+If you have ideas for improving FM-index efficiency, integrating GPU kernels, or extending to RNA-seq workflows:
+
+1. Fork this repo
+2. Create a feature branch
+3. Submit a pull request 🚀
+
+---
+
+### 🧾 License
+
+**MIT License**
+© 2025 [Soumyapriya Goswami](https://github.com/soumyapriyagoswami)
+
+---
+
+### 🌐 Links
+
+🔗 **GitHub Repository:** [soumyapriyagoswami/pybwa](https://github.com/soumyapriyagoswami/pybwa.git)
+📘 **Documentation:** Coming Soon
+🐍 **PyPI Package:** (after release)
