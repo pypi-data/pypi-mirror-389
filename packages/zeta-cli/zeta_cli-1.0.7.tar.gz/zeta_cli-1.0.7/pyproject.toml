@@ -1,0 +1,115 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zeta-cli"
+version = "1.0.7"
+description = "ZETA: the most accessible AI terminal agent."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Sukin Shetty", email = "sukin.shetty8@gmail.com"}
+]
+keywords = ["cli", "ai", "terminal", "agent", "llm", "langchain"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "click>=8.0.0",
+    "rich>=14.0.0",
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.1",
+    "langgraph>=0.0.1",
+    "langchain-ollama>=0.1.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-cov>=4.0.0",
+    "pytest-timeout>=2.1.0",
+]
+openai = ["langchain-openai>=1.0.0"]
+anthropic = ["langchain-anthropic>=1.0.0"]
+google = ["langchain-google-genai>=1.0.0"]
+all = [
+    "langchain-openai>=1.0.0",
+    "langchain-anthropic>=1.0.0",
+    "langchain-google-genai>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/SukinShetty/Zeta-CLI"
+Documentation = "https://github.com/SukinShetty/Zeta-CLI#readme"
+Repository = "https://github.com/SukinShetty/Zeta-CLI"
+Issues = "https://github.com/SukinShetty/Zeta-CLI/issues"
+
+[project.scripts]
+zeta = "zeta:cli"
+
+[tool.setuptools]
+py-modules = ["zeta"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.isort]
+known-first-party = ["zeta"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"
+
