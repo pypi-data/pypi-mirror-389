@@ -1,0 +1,9 @@
+include MANIFEST.in
+include LICENSE
+include README.md
+include requirements.txt
+graft django_admin_logentry_extension
+exclude django_admin_logentry_extension_demo
+exclude django_admin_logentry_extension_example
+global-exclude __pycache__
+global-exclude *.py[co]

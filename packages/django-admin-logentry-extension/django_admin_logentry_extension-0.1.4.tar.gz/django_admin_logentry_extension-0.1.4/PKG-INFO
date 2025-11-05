@@ -1,0 +1,55 @@
+Metadata-Version: 2.4
+Name: django-admin-logentry-extension
+Version: 0.1.4
+Summary: Django Admin操作日志增强。添加浏览、查看、登录、登出、导入、导出等动作标识。
+Author: rRR0VrFP
+Maintainer: rRR0VrFP
+License: MIT
+Keywords: django admin extentions,django admin global admin
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: django
+Requires-Dist: django-admin-daterange-listfilter
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: maintainer
+Dynamic: requires-dist
+Dynamic: summary
+
+# django-admin-logentry-extension
+
+Django Admin操作日志增强。
+
+## 应用特性
+
+- 添加浏览、查看、登录、登出、导入、导出等动作标识。
+- 适配django-import-export，能够记录其导入导出动作。
+
+
+## 版本记录
+
+### v0.1.0
+
+- 首次发布。
+- 添加浏览、查看、登录、登出、导入、导出等动作标识。
+- 适配django-import-export，能够记录其导入导出动作。
+
+### v0.1.3
+
+- 添加default_app_config增强应用兼容性。
+- 修正Django~=3.2.25兼容性问题。
+
+### v0.1.4
+
+- Doc update.
