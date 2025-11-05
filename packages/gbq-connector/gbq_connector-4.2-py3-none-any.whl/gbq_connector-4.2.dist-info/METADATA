@@ -1,0 +1,25 @@
+Metadata-Version: 2.1
+Name: gbq_connector
+Version: 4.2
+Summary: A wrapper for common Google Biq Query Operations
+Author: Mark Young
+License: MIT
+Platform: unix
+Platform: linux
+Platform: osx
+Classifier: Programming Language :: Python :: 3 :: Only
+Requires-Python: >=3.9
+License-File: LICENSE
+Requires-Dist: google-cloud-bigquery
+Requires-Dist: google-cloud-storage
+Requires-Dist: pyarrow
+Requires-Dist: google-auth
+Requires-Dist: pandas
+Requires-Dist: pandas-gbq
+Requires-Dist: db-dtypes
+Requires-Dist: requests
+Requires-Dist: pytz
+Provides-Extra: testing
+Requires-Dist: tox>=4.0; extra == "testing"
+Requires-Dist: pytest>=7.0; extra == "testing"
+Requires-Dist: pytest-cov>=4.0; extra == "testing"
