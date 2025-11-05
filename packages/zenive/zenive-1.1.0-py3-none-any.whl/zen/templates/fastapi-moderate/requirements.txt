@@ -1,0 +1,30 @@
+# FastAPI and core dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Database
+sqlalchemy>=2.0.0
+alembic>=1.12.0
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.0
+
+# Authentication and security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+
+# Caching and async
+redis>=5.0.0
+aioredis>=2.0.0
+
+# Production server
+gunicorn>=21.2.0
+
+# HTTP client
+httpx>=0.25.0
+
+# Utilities
+python-dateutil>=2.8.2
+email-validator>=2.1.0
