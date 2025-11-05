@@ -1,0 +1,33 @@
+Metadata-Version: 2.4
+Name: neco_agents
+Version: 0.2.0
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: fire>=0.7.1
+Requires-Dist: loguru>=0.7.3
+Requires-Dist: python-dotenv>=1.2.1
+Requires-Dist: tqdm>=4.67.1
+Requires-Dist: requests>=2.32.5
+Requires-Dist: agno[tools]>=2.2.7
+Requires-Dist: notion-client>=2.7.0
+Requires-Dist: fastapi[standard]>=0.115.14
+
+# NecoAgents
+
+智能体构建工具
+
+## Backend
+* LocalBackend: 本地存储后端
+* NotionBackend: Notion 存储后端
+
+## Usage
+
+### Agent
+```
+uv run neco_agents/cli/bootstrap.py run_agent "react_agent" --message "hi"
+```
+
+### Team
+```
+uv run neco_agents/cli/bootstrap.py run_agent "react_agent" --message "hi" --mode "team"
+```

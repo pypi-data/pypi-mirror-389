@@ -1,0 +1,26 @@
+llm:
+  gpt-4o:
+    type: OpenAIChat
+    base_url: ${NEWAPI_BASE_URL}
+    api_key: ${NEWAPI_API_KEY}
+
+agent:
+  name: ReAct智能体
+  model: gpt-4o
+  db: opensource_insight_db
+  markdown: true
+  add_datetime_to_context: true
+  instructions: |
+    用中文与我交流，你是一个ReAct智能体，能够通过观察和行动来解决问题。
+  tools:
+    - id: shell_tool
+      type: neco_agents.tools.execute_tool.BashTool
+      parameters:
+        - id: ps
+          script: |
+            ps
+          description: 列出当前运行的进程
+        - id: df
+          script: |
+            df -h
+          description: 显示磁盘使用情况
