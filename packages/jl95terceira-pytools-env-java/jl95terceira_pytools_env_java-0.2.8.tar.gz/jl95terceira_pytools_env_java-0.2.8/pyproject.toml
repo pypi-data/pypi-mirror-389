@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+[project]
+name = "jl95terceira_pytools_env_java"
+version = "0.2.8"
+authors = [
+  { name="Joao Luis Ornelas da Silva", email="jl95terceira@gmail.com" },
+]
+description = "Environment variables collection - Java"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/jl95terceira/project-env-java"
+Issues = "https://github.com/jl95terceira/project-env-java/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["project/package","project/package_DEPRECATED"]
+
+[tool.hatch.build.targets.wheel.sources]
+"project/package" = "jl95/pytools/envlib/vars/java"
+"project/package_DEPRECATED" = "jl95terceira/pytools/envlib/vars/java"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
