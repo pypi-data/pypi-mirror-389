@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secretpkg555"
+version = "0.1.1"
+description = "简单的1+1计算包"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "None555", email = "none555@example.com"}
+]
+
+[tool.setuptools]
+packages = ["secretpkg555"]
+
+[tool.setuptools.package-data]
+secretpkg555 = ["*.pyd", "*.so"]
+
+[tool.setuptools.exclude-package-data]
+secretpkg555 = ["*.py"]  # 排除所有.py源码
+
+[tool.nuitka-build]
+# 直接编译整个目录（排除__init__.py）
+directories = ["secretpkg555"]
+remove-source = false  # 保留源码，方便开发
