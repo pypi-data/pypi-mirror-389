@@ -1,0 +1,50 @@
+Metadata-Version: 2.4
+Name: catmining
+Version: 0.0.1
+Summary: A packaged form of the CatMiner workflow written by Walls and Linic.
+Author-email: Benjamin Walls <benwalls2000@gmail.com>
+License: BSD-3
+Project-URL: repository, https://github.com/benjww/CatMiner
+Keywords: Catalysis,Text Mining
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas
+Provides-Extra: dev
+Requires-Dist: boto3>=1.40.18; extra == "dev"
+Requires-Dist: openai>=1.78.1; extra == "dev"
+Requires-Dist: fireworks-ai>=0.19.18; extra == "dev"
+Requires-Dist: chemdataextractor2>=2.4.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: mkdocs-material>=9.4.0; extra == "docs"
+Requires-Dist: mkdocstrings[python]>=0.22.0; extra == "docs"
+Requires-Dist: mkdocs-gen-files>=0.5.0; extra == "docs"
+Requires-Dist: mkdocs-literate-nav>=0.6.0; extra == "docs"
+Requires-Dist: pillow>=10.0.0; extra == "docs"
+Requires-Dist: cairosvg>=2.7.1; extra == "docs"
+Dynamic: license-file
+
+# CatMiner
+Distributed as part of the publication "Use of Large Language Models for Extracting and Analyzing Data from Heterogeneous Catalysis Literature" by Benjamin W. Walls and Suljo Linic.
+
+We executed this code entirely in Python 3.11 in macOS. In the future we intend to formalize the range of supported Python versions and operating systems. 
+
+Code and results associated with the original publication can be found in paper_data/. Since then we have begun packaging the code to improve user-friendliness, and a more up-to-date tutorial notebook can be found in the examples/ directory. 
+
+Please install by running "pip install catmining"
+
+If you find our code or workflow to be useful, please cite the corresponding publication:
+
+1. Walls, B. W.; Linic, S. Use of Large Language Models for Extracting and Analyzing Data from Heterogeneous Catalysis Literature. ACS Catal. 2025, 14751–14763. https://doi.org/10.1021/acscatal.5c03844.
