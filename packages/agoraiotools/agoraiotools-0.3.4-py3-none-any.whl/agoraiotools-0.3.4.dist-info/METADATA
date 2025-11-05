@@ -1,0 +1,35 @@
+Metadata-Version: 2.4
+Name: agoraiotools
+Version: 0.3.4
+Summary: Agora token generation utilities
+Project-URL: Homepage, https://github.com/AgoraIO/Tools
+Project-URL: Source, https://github.com/AgoraIO/Tools
+Author-email: Agora <developer@agora.io>
+License: MIT
+License-File: LICENSE
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+# Authenticate Users with a token
+
+
+```
+APP_ID = "{APP_ID}"
+APP_CERTIFICATE = "{APP_CERTIFICATE}"
+
+
+from agoraiotools.ChatTokenBuilder2 import ChatTokenBuilder
+
+expire = 3600
+user_id = "test_user"
+#generateUserToken
+token = ChatTokenBuilder.build_user_token(APP_ID, APP_CERTIFICATE, user_id, expire)
+
+
+#generateAppToken
+token = ChatTokenBuilder.build_app_token(APP_ID, APP_CERTIFICATE, expire)
+```
+
+
+Pypi
+https://pypi.org/project/agoraiotools/
