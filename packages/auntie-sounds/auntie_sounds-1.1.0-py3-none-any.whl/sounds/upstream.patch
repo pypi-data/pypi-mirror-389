@@ -1,0 +1,899 @@
+***************
+*** 8,15 ****
+--- 8,64 ----
+  from .constants import COOKIE_ID, VERBOSE_LOG_LEVEL, URLs
+  from .exceptions import LoginFailedError
+  
++ MESSAGES = {
++     "accessFailure": "Sorry, you can't access this page.",
++     "accountLocked": "Sorry, your account is locked",
++     # "accountLocked": "We've locked your account to make sure it's really you signing in and keep your account safe.",
++     "cama.validation.failLogin": "Looks like something went wrong. Please try again.",
++     "maintenance.message": "We're doing some technical checks, which means you can't sign in or register for a BBC account right now.",
++     "message.gracefulDeg.fixPending": "We're trying to fix it as soon as possible. Please try again later.",
++     "message.gracefulDeg.generalError": "Sorry, it looks like something's not working right now",
++     "message.gracefulDeg.pageNotFound": "Sorry, we couldn't find the page you were looking for.",
++     "message.gracefulDeg.technicalProblems": "Sorry, it looks like something's not working right now. Please try again in a few minutes.",
++     "message.gracefulDeg.tryAgain": "Please try again in a few minutes.",
++     "reauth.label.enterPassword": "Please enter your password",
++     "reauth.message.checkUser": "We just need to check it's really you before you access your settings.",
++     "reauth.tryAgain": "Failed to sign in with those details, please try again.",
++     "validation.resetPassword.notFound.email": "We don't recognise that email. You can try again or <a>register for an account</a>",
++     "validation.serviceError": "Sorry, it looks like something's not working right now. Please try again in a few minutes.",
++     "validation.signIn.emailNotFound": "Sorry, we can't find an account with that email address.",
++     "validation.signin.notFound.email": "Sorry, we can't find an account with that email. You can <a {register}>register for a new account</a> or <a {emailHelp}>get help here</a>.",
++     "validation.signin.notFound.identifier": "We don't recognise that email or username. You can try again or <a>register for an account</a>",
++     "validation.signin.notFound.identifierWithoutRegLink": "We don't recognise that email or username. Please try again.",
++     "validation.signin.notFound.username": "Sorry, we can't find an account with that username. If you're over 13, try your email address instead or <a>get help here</a>.",
++     "validation.signin.wrongPassword.email.subsequent": "That's not the right password for that account. <a>Reset your password here</a>.",
++     "validation.signin.wrongPassword.first": "Uh oh, that password doesn't match that account. Please try again.",
++     "validation.signin.wrongPassword.tryAgainOrCreate": "That password isn't right. You can try again or <a>create a new password</a>",
++     "validation.signin.wrongPassword.tryAgainOrReset": "That password isn't right. You can try again or <a>reset your password</a>",
++     "validation.signin.wrongPassword.username.subsequent": "That's not the right password for that account. Please try again or <a>get help here</a>.",
++     "validation.somethingMissing": "Uh oh, something's missing",
++     "validation.tryAgain": "Please check and try again.",
++     "validation.tryAgainEmail": "Sorry about that glitch. <a>Let's try that again</a>.",
++     "validation.unknownError": "An unknown error has occurred.",
++ }
+  
+  
+  class AuthService(Base):
++     COOKIE_FILE = "./.sounds_jar"
++ 
++     def __init__(self, *args, **kwargs):
++         self.debug_login = False
++         if "debug_login" in kwargs:
++             self.debug_login = kwargs.pop("debug_login")
++         super().__init__(**kwargs)
++ 
++         if self.debug_login:
++             # Can't move this to the above conditional as self.logger not initialised yet
++             self.logger.info("Saving login pages to file as requested")
++ 
++         try:
++             self._session.cookie_jar.load(self.COOKIE_FILE)
++         except FileNotFoundError:
++             pass
++ 
+      @property
+      def authenticated(self) -> bool:
+          """Checks if we have a valid session"""
+***************
+*** 17,23 ****
+              URL(URLs.COOKIE_URL)
+          )
+  
+!     def _build_headers(self, referer: Optional[str] = None) -> dict:
+          """Builds the standard headers to send when logging in"""
+          base_headers = {
+              "Accept-Language": "en-GB,en;q=0.9",
+--- 66,72 ----
+              URL(URLs.COOKIE_URL)
+          )
+  
+!     async def _build_headers(self, referer: Optional[str] = None) -> dict:
+          """Builds the standard headers to send when logging in"""
+          base_headers = {
+              "Accept-Language": "en-GB,en;q=0.9",
+***************
+*** 33,47 ****
+      async def authenticate(self, username: str, password: str) -> bool:
+          """Signs into BBC Sounds"""
+          if self.authenticated:
+!             self.logger.log(VERBOSE_LOG_LEVEL, "Existing session found, reusing")
+              return True
+  
+          username_url = await self._get_login_form()
+          password_url = await self._submit_username(url=username_url, username=username)
+!         await self._do_login(url=password_url, username=username, password=password)
+          return self.authenticated
+  
+!     def _get_form_action(self, html: str) -> Optional[str]:
+          """Finds the target of a form action from HTML markup"""
+          soup = BeautifulSoup(html, "html.parser")
+          form = soup.find("form")
+--- 82,103 ----
+      async def authenticate(self, username: str, password: str) -> bool:
+          """Signs into BBC Sounds"""
+          if self.authenticated:
+!             self.logger.info("Existing session found, reusing")
+              return True
+  
+          username_url = await self._get_login_form()
+          password_url = await self._submit_username(url=username_url, username=username)
+!         await self._do_login(
+!             url=password_url,
+!             username=username,
+!             password=password,
+!             referrer_url=username_url,
+!         )
+          return self.authenticated
+  
+!     async def _get_form_action(self, html: str) -> Optional[str]:
+!         self.logger.log(VERBOSE_LOG_LEVEL, "_get_form_action()")
+! 
+          """Finds the target of a form action from HTML markup"""
+          soup = BeautifulSoup(html, "html.parser")
+          form = soup.find("form")
+***************
+*** 53,65 ****
+              return None
+  
+      async def _get_login_form(self) -> str:
+          # Get the initial login page form target
+          html_contents = await self._get_html(
+              URLs.LOGIN_START,
+              "GET",
+!             headers=self._build_headers(),
+          )
+!         username_form_action = self._get_form_action(html_contents)
+          self.logger.debug(f"Found username form target: {username_form_action}")
+          if not username_form_action:
+              raise RuntimeError("Could not find BBC sign-in form URL")
+--- 108,124 ----
+              return None
+  
+      async def _get_login_form(self) -> str:
++         self.logger.log(VERBOSE_LOG_LEVEL, "_get_login_form()")
++ 
+          # Get the initial login page form target
+          html_contents = await self._get_html(
+              URLs.LOGIN_START,
+              "GET",
+!             headers=await self._build_headers(),
+          )
+!         self._save_file_if_needed(html_contents, "login_form.html")
+! 
+!         username_form_action = await self._get_form_action(html_contents)
+          self.logger.debug(f"Found username form target: {username_form_action}")
+          if not username_form_action:
+              raise RuntimeError("Could not find BBC sign-in form URL")
+***************
+*** 67,83 ****
+          return url
+  
+      async def _submit_username(self, url: str, username: str) -> str:
+          """Post username to get to the next login step"""
+          html_contents = await self._get_html(
+              url,
+              "POST",
+              data={"username": username},
+!             headers=self._build_headers(referer=URLs.LOGIN_START),
+          )
+!         self.logger.log(VERBOSE_LOG_LEVEL, html_contents[:200])
+  
+          # Grab the form target for the password page
+!         password_form_action = self._get_form_action(html_contents)
+          if not password_form_action:
+              raise LoginFailedError("Could not find BBC password form URL")
+          password_url = f"{URLs.LOGIN_BASE}{password_form_action}"
+--- 126,144 ----
+          return url
+  
+      async def _submit_username(self, url: str, username: str) -> str:
++         self.logger.log(VERBOSE_LOG_LEVEL, "_submit_username()")
++ 
+          """Post username to get to the next login step"""
+          html_contents = await self._get_html(
+              url,
+              "POST",
+              data={"username": username},
+!             headers=await self._build_headers(referer=URLs.LOGIN_START),
+          )
+!         self._save_file_if_needed(html_contents, "password_form.html")
+  
+          # Grab the form target for the password page
+!         password_form_action = await self._get_form_action(html_contents)
+          if not password_form_action:
+              raise LoginFailedError("Could not find BBC password form URL")
+          password_url = f"{URLs.LOGIN_BASE}{password_form_action}"
+***************
+*** 85,101 ****
+  
+          return password_url
+  
+!     async def _do_login(self, url: str, username: str, password: str) -> None:
+          """Send both username and password to authenticate."""
+!         async with await self._make_request(
+              "POST",
+              url,
+              data={"username": username, "password": password},
+!             headers=self._build_headers(referer=url),
+              allow_redirects=True,
+!         ) as resp:
+!             if resp.status != 200 or not self.authenticated:
+!                 self.logger.error(f"Login failed, response code {resp.status}")
+!                 self.logger.log(constants.VERBOSE_LOG_LEVEL, resp)
+!                 raise LoginFailedError(f"BBC sign-in failed: {resp.status}")
+              self.logger.info("Authenticated succesfully")
+--- 146,190 ----
+  
+          return password_url
+  
+!     async def _do_login(
+!         self, url: str, username: str, password: str, referrer_url: str
+!     ) -> None:
+!         self.logger.log(VERBOSE_LOG_LEVEL, "_do_login()")
+          """Send both username and password to authenticate."""
+!         resp = await self._make_request(
+              "POST",
+              url,
+              data={"username": username, "password": password},
+!             headers=await self._build_headers(referer=referrer_url),
+              allow_redirects=True,
+!         )
+!         response_text = await resp.text()
+!         self._save_file_if_needed(response_text, "login_response.html")
+! 
+!         if resp.status != 200 or not self.authenticated:
+!             # See if we can extract a meaningful error from the HTML
+!             found_error = next(
+!                 (
+!                     error_message
+!                     for error, error_message in MESSAGES.items()
+!                     if error_message in BeautifulSoup(response_text).text
+!                 ),
+!                 None,
+!             )
+!             error_string = f"BBC sign-in failed: {resp.status}"
+!             if found_error:
+!                 error_string += f" {found_error}"
+!                 self.logger.error(error_string)
+!             raise LoginFailedError(error_string)
+!         else:
+!             self.save_cookies_to_disk()
+              self.logger.info("Authenticated succesfully")
++ 
++     def _save_file_if_needed(self, html: str | bytes, filename: str):
++         if self.debug_login:
++             with open(filename, "w") as page:
++                 html = BeautifulSoup(html, features="html.parser").prettify()
++                 page.write(str(html))
++ 
++     def save_cookies_to_disk(self):
++         return self._session.cookie_jar.save(self.COOKIE_FILE)
+diff -crB sounds/base.py /Users/kieran/Code/auntie-sounds/src/sounds/base.py
+*** sounds/base.py	Mon Jul 21 12:54:12 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/base.py	Wed Jul 23 08:28:02 2025
+***************
+*** 4,10 ****
+  from typing import Optional
+  
+  from .constants import URLs
+! from .exceptions import SoundsException
+  
+  
+  class Base(ABC):
+--- 4,10 ----
+  from typing import Optional
+  
+  from .constants import URLs
+! from .exceptions import SoundsException, UnauthorisedError, APIResponseError
+  
+  
+  class Base(ABC):
+***************
+*** 15,20 ****
+--- 15,21 ----
+          session: aiohttp.ClientSession,
+          logger: logging.Logger | None = None,
+          timeout: Optional[aiohttp.ClientTimeout] = None,
++         **kwargs,
+      ):
+          self._session = session
+          if logger:
+***************
+*** 31,39 ****
+              kwargs.setdefault("timeout", self._timeout)
+              kwargs.setdefault("ssl", True)
+              kwargs.setdefault("allow_redirects", True)
+!             async with self._session.request(method, url, **kwargs) as resp:
+!                 resp.raise_for_status()
+!                 return resp
+          except aiohttp.ClientError as e:
+              self.logger.error(f"HTTP request failed: {method} {url} - {e}")
+              raise SoundsException(f"Request failed: {e}")
+--- 32,40 ----
+              kwargs.setdefault("timeout", self._timeout)
+              kwargs.setdefault("ssl", True)
+              kwargs.setdefault("allow_redirects", True)
+!             resp = await self._session.request(method, url, **kwargs)
+!             resp.raise_for_status()
+!             return resp
+          except aiohttp.ClientError as e:
+              self.logger.error(f"HTTP request failed: {method} {url} - {e}")
+              raise SoundsException(f"Request failed: {e}")
+***************
+*** 47,52 ****
+--- 48,57 ----
+              async with self._session.request("GET", url, **kwargs) as resp:
+                  resp.raise_for_status()
+                  return await resp.json()
++         except aiohttp.ClientResponseError as e:
++             if e.status == 401:
++                 raise UnauthorisedError(e)
++             raise APIResponseError(f"Request failed: {e}")
+          except aiohttp.ClientError as e:
+              self.logger.error(f"HTTP request failed: {url} - {e}")
+              raise SoundsException(f"Request failed: {e}")
+***************
+*** 59,64 ****
+--- 64,73 ----
+              async with self._session.request(method, url, **kwargs) as resp:
+                  resp.raise_for_status()
+                  return await resp.text()
++         except aiohttp.ClientResponseError as e:
++             if e.status == 401:
++                 raise UnauthorisedError(e)
++             raise APIResponseError(f"Request failed: {e}")
+          except aiohttp.ClientError as e:
+              self.logger.error(f"HTTP request failed: {method} {url} - {e}")
+              raise SoundsException(f"Request failed: {e}")
+diff -crB sounds/client.py /Users/kieran/Code/auntie-sounds/src/sounds/client.py
+*** sounds/client.py	Mon Jul 21 12:54:12 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/client.py	Wed Jul 23 16:12:26 2025
+***************
+*** 1,16 ****
+  import logging
+- from collections.abc import Callable
+- from colorlog import ColoredFormatter
+  
+  
+  import aiohttp
+  
+  from . import constants
+  from .auth import AuthService
+  from .schedules import ScheduleService
+  from .stations import StationService
+  from .streaming import StreamingService
+- from .models import Segment, Station, Stream
+  
+  
+  class SoundsClient:
+--- 1,16 ----
+  import logging
+  
+  import aiohttp
++ import pytz
++ from colorlog import ColoredFormatter
+  
+  from . import constants
+  from .auth import AuthService
++ from .models import Segment, Station, Stream
++ from .personal import PersonalService
+  from .schedules import ScheduleService
+  from .stations import StationService
+  from .streaming import StreamingService
+  
+  
+  class SoundsClient:
+***************
+*** 19,27 ****
+      def __init__(
+          self,
+          session: aiohttp.ClientSession | None = None,
+!         update_handler: Callable | None = None,
+          logger: logging.Logger | None = None,
+          log_level: str | None = None,
+      ) -> None:
+          if logger:
+              self.logger = logger
+--- 19,28 ----
+      def __init__(
+          self,
+          session: aiohttp.ClientSession | None = None,
+!         timezone: pytz.BaseTzInfo | None = None,
+          logger: logging.Logger | None = None,
+          log_level: str | None = None,
++         **kwargs,
+      ) -> None:
+          if logger:
+              self.logger = logger
+***************
+*** 29,51 ****
+              self.logger = logging.getLogger()
+              self.setLogger(log_level)
+              self.logger.log(constants.VERBOSE_LOG_LEVEL, "SoundsClient.__init__()")
+!         self._update_handler = update_handler
+          self.current_station: Station | None = None
+          self.current_stream: Stream | None = None
+          self.current_segment: Segment | None = None
+          self.timeout = aiohttp.ClientTimeout(total=10)
+  
+          if not session:
+!             self._session = aiohttp.ClientSession()
+              self.managing_session = True
+          else:
+              self._session = session
+              self.managing_session = False
+  
+          service_kwargs = {
+              "session": self._session,
+              "timeout": self.timeout,
+              "logger": self.logger,
+          }
+  
+          self.auth = AuthService(**service_kwargs)
+--- 30,61 ----
+              self.logger = logging.getLogger()
+              self.setLogger(log_level)
+              self.logger.log(constants.VERBOSE_LOG_LEVEL, "SoundsClient.__init__()")
+!         if timezone:
+!             self.timezone = timezone
+!         else:
+!             self.logger.warning(
+!                 "No timezone provided, assuming UTC so any time calculations for the schedules may be incorrect"
+!             )
+!             self.timezone = pytz.timezone("UTC")
+          self.current_station: Station | None = None
+          self.current_stream: Stream | None = None
+          self.current_segment: Segment | None = None
+          self.timeout = aiohttp.ClientTimeout(total=10)
+  
++         self.cookie_jar = aiohttp.CookieJar(unsafe=True)
+          if not session:
+!             self._session = aiohttp.ClientSession(cookie_jar=self.cookie_jar)
+              self.managing_session = True
+          else:
+              self._session = session
++             self._session._cookie_jar = self.cookie_jar
+              self.managing_session = False
+  
+          service_kwargs = {
+              "session": self._session,
+              "timeout": self.timeout,
+              "logger": self.logger,
++             **kwargs,
+          }
+  
+          self.auth = AuthService(**service_kwargs)
+***************
+*** 56,61 ****
+--- 66,72 ----
+              schedule_service=self.schedules,
+              **service_kwargs,
+          )
++         self.personal = PersonalService(**service_kwargs)
+  
+      def setLogger(self, log_level=None):
+          logging.addLevelName(constants.VERBOSE_LOG_LEVEL, "VERBOSE")
+***************
+*** 94,99 ****
+          return self
+  
+      async def __aexit__(self, *args):
+!         if self._session:
+              self.logger.debug("Closed session")
+!         await self.close()
+--- 105,111 ----
+          return self
+  
+      async def __aexit__(self, *args):
+!         if self.managing_session:
+              self.logger.debug("Closed session")
+!             await self.close()
+!         self.auth.save_cookies_to_disk()
+diff -crB sounds/constants.py /Users/kieran/Code/auntie-sounds/src/sounds/constants.py
+*** sounds/constants.py	Mon Jul 21 13:39:23 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/constants.py	Wed Jul 23 16:00:06 2025
+***************
+*** 3,23 ****
+  
+  
+  class URLs:
+      LOGIN_START = "https://session.bbc.co.uk/session?ptrt=https%3A%2F%2Fwww.bbc.co.uk%2Fsounds&context=iplayerradio&userOrigin=sounds"
+      LOGIN_BASE = "https://account.bbc.com"
+      COOKIE_URL = "https://www.bbc.co.uk"
+      MEDIASET_URL = "https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/{station_id}/format/json?jwt_auth={jwt_auth_token}"
+      EPISODE_MEDIASET = "https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/{episode_id}"
+      STATIONS_URL = "https://rms.api.bbc.co.uk/v2/experience/inline/stations"
+      LIVE_STATION_URL = "https://www.bbc.co.uk/sounds/play/live:{station_id}"
+      NOW_PLAYING_URL = "https://rms.api.bbc.co.uk/v2/services/{station_id}/segments/latest?limit={limit}"
+-     JWT_URL = "https://rms.api.bbc.co.uk/v2/sign/token/{station_id}"
+      SCHEDULE_URL = (
+          "https://rms.api.bbc.co.uk/v2/experience/inline/schedules/{station_id}"
+      )
+      SEGMENTS = "https://rms.api.bbc.co.uk/v2/versions/{pid}/segments"
+      PID_LIVE = "https://rms.api.bbc.co.uk/v2/broadcasts/{pid}"
+      PID_PLAYABLE = "https://rms.api.bbc.co.uk/v2/programmes/{pid}/playable"
+  
+  
+  # This is the ID of the cookie we use to check we have a valid session
+--- 3,63 ----
+  
+  
+  class URLs:
++     # Auth URLs
+      LOGIN_START = "https://session.bbc.co.uk/session?ptrt=https%3A%2F%2Fwww.bbc.co.uk%2Fsounds&context=iplayerradio&userOrigin=sounds"
+      LOGIN_BASE = "https://account.bbc.com"
+      COOKIE_URL = "https://www.bbc.co.uk"
++     JWT_URL = "https://rms.api.bbc.co.uk/v2/sign/token/{station_id}"
++     INTL_JWT = "https://web-cdn.api.bbci.co.uk/xd/media-token?{id_type}={id}"
++     USER_INFO = "https://www.bbc.co.uk/userinfo"
++ 
++     # Streaming URLs
+      MEDIASET_URL = "https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/{station_id}/format/json?jwt_auth={jwt_auth_token}"
+      EPISODE_MEDIASET = "https://open.live.bbc.co.uk/mediaselector/6/select/version/2.0/mediaset/pc/vpid/{episode_id}"
++ 
++     # Station URLs
+      STATIONS_URL = "https://rms.api.bbc.co.uk/v2/experience/inline/stations"
++     LIVE_STATION_DETAILS = (
++         "https://rms.api.bbc.co.uk/v2/experience/inline/play/{station_id}"
++     )
+      LIVE_STATION_URL = "https://www.bbc.co.uk/sounds/play/live:{station_id}"
+      NOW_PLAYING_URL = "https://rms.api.bbc.co.uk/v2/services/{station_id}/segments/latest?limit={limit}"
+      SCHEDULE_URL = (
+          "https://rms.api.bbc.co.uk/v2/experience/inline/schedules/{station_id}"
+      )
+      SEGMENTS = "https://rms.api.bbc.co.uk/v2/versions/{pid}/segments"
+      PID_LIVE = "https://rms.api.bbc.co.uk/v2/broadcasts/{pid}"
+      PID_PLAYABLE = "https://rms.api.bbc.co.uk/v2/programmes/{pid}/playable"
++     CONTAINER_URL = "https://rms.api.bbc.co.uk/v2/experience/inline/container/{urn}"
++ 
++     # Menu, search, etc.
++     EXPERIENCE_MENU = "https://rms.api.bbc.co.uk/v2/my/experience/inline/listen"
++ 
++     SEARCH_URL = "https://rms.api.bbc.co.uk/v2/experience/inline/search?q={search}"
++     SHOW_SEARCH_URL = (
++         "https://rms.api.bbc.co.uk/v2/programmes/search/container?q={search}"
++     )
++     EPISOSDE_SEARCH_URL = (
++         "ttps://rms.api.bbc.co.uk/v2/programmes/search/playable?q={search}"
++     )
++     PODCASTS = "https://rms.api.bbc.co.uk/v2/experience/inline/speech"
++     MUSIC = "https://rms.api.bbc.co.uk/v2/experience/inline/music"
++     NEWS = "https://rms.api.bbc.co.uk/v2/experience/inline/container/urn:bbc:radio:category:news"
++ 
++ 
++ class SignedInURLs:
++     RENEW_SESSION = (
++         "https://session.bbc.co.uk/session?context=iplayerradio&userOrigin=sounds"
++     )
++     PLAYS_URL = "https://rms.api.bbc.co.uk/v2/my/programmes/plays"
++     RECOMMENDATIONS = (
++         "https://rms.api.bbc.co.uk/v2/my/programmes/recommendations/playable"
++     )
++     MUSIC_RECOMMENDATIONS = "https://rms.api.bbc.co.uk/v2/my/programmes/recommendations/music-mixes/playable"
++     LATEST = "https://rms.api.bbc.co.uk/v2/my/programmes/follows/playable"
++     SUBSCRIBED = "https://rms.api.bbc.co.uk/v2/my/programmes/follows"
++     BOOKMARKS = "https://rms.api.bbc.co.uk/v2/my/programmes/favourites/playable"
++     CONTINUE = "https://rms.api.bbc.co.uk/v2/my/programmes/plays/playable"
+  
+  
+  # This is the ID of the cookie we use to check we have a valid session
+diff -crB sounds/exceptions.py /Users/kieran/Code/auntie-sounds/src/sounds/exceptions.py
+*** sounds/exceptions.py	Mon Jul 21 12:54:12 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/exceptions.py	Tue Jul 22 14:41:22 2025
+***************
+*** 16,18 ****
+--- 16,22 ----
+  
+  class InvalidFormatError(SoundsException):
+      pass
++ 
++ 
++ class UnauthorisedError(SoundsException):
++     pass
+diff -crB sounds/models.py /Users/kieran/Code/auntie-sounds/src/sounds/models.py
+*** sounds/models.py	Tue Jul 22 10:34:05 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/models.py	Wed Jul 23 12:58:59 2025
+***************
+*** 1,8 ****
+! from dataclasses import dataclass, field
+  from datetime import datetime as dt
+  from pprint import pformat
+  from typing import List, Optional
+  
+  
+  @dataclass
+  class Stream:
+--- 1,10 ----
+! from dataclasses import dataclass
+  from datetime import datetime as dt
++ from pydantic import BaseModel, ConfigDict, ValidationError
+  from pprint import pformat
+  from typing import List, Optional
+  
++ from pytz import BaseTzInfo
+  
+  
+  @dataclass
+***************
+*** 33,42 ****
+      show_description: str
+      station: "Station"
+  
+!     @property
+!     def can_seek(self):
+!         # For future development
+!         return False
+  
+  
+  @dataclass
+--- 36,43 ----
+      show_description: str
+      station: "Station"
+  
+!     def __str__(self):
+!         return pformat(self)
+  
+  
+  @dataclass
+***************
+*** 68,73 ****
+--- 69,76 ----
+      label: str
+      now_playing: bool
+  
++     def __str__(self):
++         return pformat(self)
+  
+  
+  @dataclass
+***************
+*** 84,105 ****
+      secondary_title: str
+      tertiary_title: Optional[str]
+      episode_id: Optional[str] = None
+      stream: Optional[str] = None
+  
+      @property
+!     def longest_description(self):
+!         return self.long_synopsis or self.medium_synopsis or self.short_synopsis or self.secondary_title or self.primary_title or ""
+  
+!     def is_live(self, timezone):
+!         return self.start <= dt.now(tz=timezone) < self.end
+  
+!     def has_already_aired(self, timezone):
+          return dt.now(tz=timezone) > self.end
+  
+      def __str__(self):
+          return pformat(self)
+!     
+  @dataclass
+  class Station:
+      """
+      Represents a radio or media station with its metadata.
+--- 88,126 ----
+      secondary_title: str
+      tertiary_title: Optional[str]
+      episode_id: Optional[str] = None
++     container_id: Optional[str] = None
+      stream: Optional[str] = None
+  
+      @property
+!     def vpid(self):
+!         try:
+!             return self.urn.rsplit(":", 1)[1]
+!         except KeyError:
+!             return None
+  
+!     def is_live(self, timezone: BaseTzInfo):
+!         return self.start >= dt.now(tz=timezone) < self.end
+  
+!     def has_already_aired(self, timezone: BaseTzInfo):
+          return dt.now(tz=timezone) > self.end
+  
+      def __str__(self):
+          return pformat(self)
+! 
+! 
+  @dataclass
++ class Schedule:
++     date: dt
++     schedule_list: list[ScheduleItem]
++ 
++     def get_current_item(self):
++         pass
++ 
++     def __str__(self):
++         return pformat(self)
++ 
++ 
++ @dataclass
+  class Station:
+      """
+      Represents a radio or media station with its metadata.
+***************
+*** 122,124 ****
+--- 143,187 ----
+  
+      def __str__(self):
+          return pformat(self)
++ 
++ 
++ @dataclass
++ class Network:
++     id: str
++     key: str
++     short_title: str
++     logo_url: str
++ 
++ 
++ @dataclass
++ class PlayableItem:
++     id: str
++     urn: str
++     network: Network | None
++     duration: int | None
++     progress: int | None
++     synopses: dict
++     image_url: str
++     titles: dict
++     start: dt | None = None
++     end: dt | None = None
++ 
++ 
++ # episode_id: Optional[str] = None
++ # container_id: Optional[str] = None
++ # stream: Optional[str] = None
++ 
++ 
++ @dataclass
++ class MenuItem:
++     id: str
++     title: str
++     description: str
++     # uris = fields.List()
++     data: list[PlayableItem]
++ 
++ 
++ @dataclass
++ class Menu:
++     model_config = ConfigDict(strict=True)
++     items: list[MenuItem]
+Only in /Users/kieran/Code/auntie-sounds/src/sounds: personal.py
+diff -crB sounds/stations.py /Users/kieran/Code/auntie-sounds/src/sounds/stations.py
+*** sounds/stations.py	Tue Jul 22 10:55:19 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/stations.py	Mon Jul 21 08:57:24 2025
+***************
+*** 67,73 ****
+          ]
+          if include_streams:
+              for station in stations:
+!                 station.stream = await self.streams.get_stream_info(station)
+  
+          if include_schedules:
+              for station in stations:
+--- 67,73 ----
+          ]
+          if include_streams:
+              for station in stations:
+!                 station.stream = await self.streams.get_live_stream(station)
+  
+          if include_schedules:
+              for station in stations:
+***************
+*** 80,86 ****
+          station_id: str,
+          include_stream: bool = False,
+          include_schedule: bool = False,
+-         date: str = None
+      ) -> Station | None:
+          """
+          Gets a station's details
+--- 80,85 ----
+***************
+*** 99,105 ****
+              return None
+  
+          if include_stream:
+!             station.stream = await self.streams.get_stream_info(station)
+          if include_schedule:
+!             station.schedule = await self.schedules.get_schedule(station.id, date)
+          return station
+--- 98,104 ----
+              return None
+  
+          if include_stream:
+!             station.stream = await self.streams.get_live_stream(station)
+          if include_schedule:
+!             station.schedule = await self.schedules.get_schedule(station.id)
+          return station
+diff -crB sounds/streaming.py /Users/kieran/Code/auntie-sounds/src/sounds/streaming.py
+*** sounds/streaming.py	Mon Jul 21 13:40:22 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/streaming.py	Tue Jul 22 15:02:55 2025
+***************
+*** 9,21 ****
+  from .base import Base
+  from .constants import URLs
+  from .exceptions import APIResponseError
+! from .models import Station, Stream
+  from .utils import image_from_recipe
+  
+  
+  class StreamingService(Base):
+  
+!     async def get_stream_info(
+          self,
+          station: Station,
+          stream_format="hls",
+--- 9,21 ----
+  from .base import Base
+  from .constants import URLs
+  from .exceptions import APIResponseError
+! from .models import ScheduleItem, Station, Stream
+  from .utils import image_from_recipe
+  
+  
+  class StreamingService(Base):
+  
+!     async def get_live_stream(
+          self,
+          station: Station,
+          stream_format="hls",
+***************
+*** 95,122 ****
+          )
+  
+      async def get_episode_stream(
+!             self,
+!             episode_id: str,
+!             stream_format="hls",
+!             logo_size=800,
+!         ) -> str | None:
+!             """
+!             Gets the stream for a specified episode.
+  
+!             :param episode_id: str
+!             :returns: Stream object of stream information
+!             :rtype: str | None
+!             """
+!             url = URLs.EPISODE_MEDIASET.format(episode_id=episode_id)
+!             json_resp = await self._get_json(url)
+  
+!             # jwt_token = await self.get_jwt_token(station.id)
+!             stream = None
+!             try:
+!                 stream = self._get_best_stream(
+!                     json_resp["media"][0]["connection"], prefer_type=stream_format
+!                 )
+!                 self.logger.debug(f"Found stream: {stream}")
+!             except (StopIteration, KeyError):
+!                 raise RuntimeError("No valid stream found")
+!             return stream
+--- 95,122 ----
+          )
+  
+      async def get_episode_stream(
+!         self,
+!         episode_id: str,
+!         stream_format="hls",
+!         logo_size=800,
+!     ) -> str | None:
+!         """
+!         Gets the stream for a specified episode.
+  
+!         :param episode_id: str
+!         :returns: Stream object of stream information
+!         :rtype: str | None
+!         """
+!         url = URLs.EPISODE_MEDIASET.format(episode_id=episode_id)
+!         json_resp = await self._get_json(url)
+  
+!         # jwt_token = await self.get_jwt_token(station.id)
+!         stream = None
+!         try:
+!             stream = self._get_best_stream(
+!                 json_resp["media"][0]["connection"], prefer_type=stream_format
+!             )
+!             self.logger.debug(f"Found stream: {stream}")
+!         except (StopIteration, KeyError):
+!             raise RuntimeError("No valid stream found")
+!         return stream
+Only in /Users/kieran/Code/auntie-sounds/src/sounds: streaming2.py
+Only in /Users/kieran/Code/auntie-sounds/src/sounds: upstream.patch
+diff -crB sounds/utils.py /Users/kieran/Code/auntie-sounds/src/sounds/utils.py
+*** sounds/utils.py	Mon Jul 21 20:20:09 2025
+--- /Users/kieran/Code/auntie-sounds/src/sounds/utils.py	Mon Jul 21 20:16:54 2025
+***************
+*** 30,33 ****
+  
+      :return the full image URL as a string
+      """
+!     return image_recipe.format(recipe=f"{size}x{size}")
+--- 30,33 ----
+  
+      :return the full image URL as a string
+      """
+!     return image_recipe.format(size=size)
