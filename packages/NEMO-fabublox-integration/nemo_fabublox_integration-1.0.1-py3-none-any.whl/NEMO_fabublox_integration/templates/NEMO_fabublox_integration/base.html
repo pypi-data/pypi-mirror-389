@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block extrahead %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'NEMO_fabublox_integration/css/style.css' %}">
+{% endblock %}
+{% block content %}
+    <h1>FabuBlox Dashboard</h1>
+    <span><i class="glyphicon glyphicon-info-sign info"></i> Manage integration with FabuBlox platform</span>
+    {% url "fabublox_tools" as fabublox_tools_url %}
+    {% url "fabublox_configuration" as fabublox_configuration_url %}
+    {% url "fabublox_synchronization" as fabublox_synchronizations_url %}
+    <div class="container-fluid fabublox-dashboard">
+        <div class="row">
+            <div class="col-sm-3">
+                <ul class="nav nav-pills nav-stacked side-nav">
+                    <li class="{% if fabublox_tools_url in request.path %}active{% endif %}">
+                        <a href="{{ fabublox_tools_url }}">Tools</a>
+                    </li>
+                    <li class="{% if fabublox_synchronizations_url in request.path %}active{% endif %}">
+                        <a href="{{ fabublox_synchronizations_url }}">
+                            <i class="glyphicon glyphicon-refresh"></i> Synchronizations
+                            <span class="badge" style="color: white; background-color: blue;">{{ synchronizations_count }}</span>
+                        </a>
+                    </li>
+                    <li class="{% if fabublox_configuration_url in request.path %}active{% endif %}">
+                        <a href="{{ fabublox_configuration_url }}">
+                            <i class="glyphicon glyphicon-cog"></i> Configuration
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-9">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active">
+                        {% block feature-tab %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

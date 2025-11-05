@@ -1,0 +1,14 @@
+{% load custom_tags_and_filters %}
+<div class="panel-body">
+    <h3 class="customization-section-title" id="quote_email_id">FabuBlox Integration</h3>
+    <p>
+        You're being redirected to the <strong>FabuBlox Integration Dashboard</strong>...
+        If the redirect doesn’t happen automatically, please click the link below.
+    </p>
+    <a href="{% url 'fabublox_index' %}" target="_blank">Go to FabuBlox Integration Dashboard</a>
+</div>
+<script>
+    setTimeout(() => {
+        window.location.replace("{% url 'fabublox_index' %}");
+    }, 3000);
+</script>
