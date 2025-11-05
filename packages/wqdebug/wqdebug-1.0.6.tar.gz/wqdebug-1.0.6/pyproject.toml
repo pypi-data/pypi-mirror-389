@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wqdebug"
+version = "1.0.6"
+description = "wuqi debug tool"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "colorama>=0.4.6",
+    "pyelftools>=0.32",
+    "requests>=2.31.0",
+    "wqgdb>=1.0.2",
+]
+license = "Apache-2.0"
+authors = [
+    {name = "deng.weiwei", email = "deng.weiwei@wuqi-tech.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4.4",
+]
+
+[project.scripts]
+wqdebug = "wqdebug.wqdebug:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"wqdebug.wq_gdb" = ["tools.json"]
+"wqdebug.wq_log" = ["wq_log_dict_default.json", "wq_log_cfg.json"]
