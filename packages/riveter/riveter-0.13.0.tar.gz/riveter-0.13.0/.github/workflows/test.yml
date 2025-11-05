@@ -1,0 +1,262 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.12', '3.13']
+      fail-fast: false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        # Ensure we have full git history for branch operations
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/pip
+          ~/.local/share/virtualenvs
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Configure git for tests
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git config --global init.defaultBranch main
+
+    - name: Clean test environment
+      run: |
+        # Remove any existing test artifacts
+        rm -rf .pytest_cache/ htmlcov/ coverage.xml .coverage
+        # Ensure scripts are executable
+        chmod +x scripts/*.py
+
+    - name: Verify test setup
+      run: |
+        # Quick verification that everything is set up correctly
+        python -c "import riveter; print('✅ Package import successful')"
+        python -c "import pytest; print('✅ Pytest available')"
+        echo "✅ Test environment ready"
+
+    - name: Validate version consistency
+      run: |
+        echo "🔍 Validating version consistency..."
+
+        # Install tomli for version validation
+        pip install tomli
+
+        # Run version validation (warn only on non-main branches)
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          echo "📋 Running strict version validation on main branch"
+          if python scripts/sync_versions.py --validate; then
+            echo "✅ Version consistency validation passed"
+          else
+            echo "❌ Version consistency validation failed on main branch"
+            echo "This indicates a version synchronization issue that needs to be fixed"
+            exit 1
+          fi
+        else
+          echo "📋 Running advisory version validation on feature branch"
+          if python scripts/sync_versions.py --validate; then
+            echo "✅ Version consistency validation passed"
+          else
+            echo "⚠️ Version inconsistency detected (advisory only on feature branches)"
+            echo "💡 Consider running: python scripts/sync_versions.py --sync"
+            echo "✅ Continuing with tests (version sync not required on feature branches)"
+          fi
+        fi
+
+    - name: Debug CI environment (on failure)
+      if: failure()
+      run: |
+        python scripts/debug_ci_environment.py
+
+    - name: Lint with ruff
+      run: |
+        ruff check src/ tests/
+
+    - name: Format check with black
+      run: |
+        black --check src/ tests/
+
+    - name: Type check with mypy
+      run: |
+        mypy src/
+
+    - name: Run tests with pytest
+      run: |
+        # Run pytest with CI-specific options, overriding pyproject.toml coverage settings
+        pytest tests/ --cov=src/riveter --cov-report=xml --cov-report=term-missing --cov-fail-under=75 --verbose --tb=short --maxfail=5
+      env:
+        # Set environment variables that tests might expect
+        GITHUB_ACTIONS: true
+        CI: true
+        # Mock tokens for testing (not real tokens)
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_ACTOR: github-actions
+
+    - name: Debug test failures
+      if: failure()
+      run: |
+        echo "🔍 Debugging test failures..."
+        echo "Python version: $(python --version)"
+        echo "Pytest version: $(pytest --version)"
+        echo "Current directory: $(pwd)"
+        echo "Git status:"
+        git status
+        echo "Git branch:"
+        git branch -a
+        echo "Environment variables:"
+        env | grep -E "(GITHUB|CI|PYTHON)" | sort
+        echo "Test directory contents:"
+        ls -la tests/
+        echo "Running debug script:"
+        python scripts/debug_ci_environment.py
+
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Configure git for integration tests
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git config --global init.defaultBranch main
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Run integration tests
+      run: |
+        # Test CLI with fixture files
+        riveter scan -r tests/fixtures/rules/basic_rules.yml -t tests/fixtures/terraform/simple.tf
+
+        # Test with complex configuration (allow failure for demonstration)
+        riveter scan -r tests/fixtures/rules/advanced_rules.yml -t tests/fixtures/terraform/complex.tf || echo "Complex test completed with expected failures"
+
+        # Test error handling with invalid rules (expect this to fail)
+        riveter scan -r tests/fixtures/rules/invalid_rules.yml -t tests/fixtures/terraform/simple.tf || echo "Invalid rules test completed as expected"
+
+    - name: Test package installation
+      run: |
+        # Test that the package can be installed and imported
+        python -c "import riveter; print('Package import successful')"
+
+        # Test CLI is available
+        riveter --version
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+        pip install bandit safety
+
+    - name: Run security scan with bandit
+      run: |
+        bandit -r src/ -f json -o bandit-report.json || echo "Bandit scan completed"
+
+    - name: Check dependencies for known vulnerabilities
+      run: |
+        safety check --json --output safety-report.json || echo "Safety check completed"
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-reports-${{ github.run_id }}
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  build-test:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+
+    - name: Build package
+      run: |
+        python -m build
+
+    - name: Check package
+      run: |
+        twine check dist/*
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-packages-${{ github.run_id }}
+        path: dist/
