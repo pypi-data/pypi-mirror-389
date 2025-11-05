@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "limma_py"
+version = "0.1.0"
+description = "Python implementation of R's limma package for differential expression analysis"
+authors = [
+    {name = "Zhang Xian", email = "2967569628@qq.com"},
+]
+readme = "README.md"
+license = {text = "MIT"}
+keywords = ["bioinformatics", "limma", "differential-expression", "genomics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "numpy>=1.19.0",
+    "pandas>=1.3.0",
+    "scipy>=1.7.0",
+    "statsmodels>=0.13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/wd1566/limma_py"
+Repository = "https://github.com/wd1566/limma_py"
+Issues = "https://github.com/wd1566/limma_py/issues"
