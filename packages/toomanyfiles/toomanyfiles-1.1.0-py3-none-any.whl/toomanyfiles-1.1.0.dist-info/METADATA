@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: toomanyfiles
+Version: 1.1.0
+Summary: Remove files and directories with date and time patterns
+License: GPL-3
+License-File: LICENSE.txt
+Author: y
+Requires-Python: >=3.11,<4
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Dist: colorama (>=0.4.6)
+Requires-Dist: pydicts (>=1.1.0)
+Project-URL: Homepage, https://github.com/turulomio/toomanyfiles/
+Project-URL: Repository, https://github.com/turulomio/toomanyfiles/
+Project-URL: changelog, https://github.com/turulomio/toomanyfiles#changelog
+Description-Content-Type: text/markdown
+
+# TooManyFiles
+
+## Links
+    * Source code & Development: https://github.com/Turulomio/toomanyfiles
+    * If you use Gentoo you can find a ebuild in https://github.com/Turulomio/myportage/tree/master/app-admin/toomanyfiles
+
+## Description
+This command Removes files which names have date and time patterns. You can filter by patterns
+
+## Usage
+```bash
+usage: toomanyfiles [-h] [--version] (--remove | --pretend | --list) [--time_pattern TIME_PATTERN] [--file_patterns FILE_PATTERNS][--disable_log] [--remove_mode {RemainFirstInMonth,RemainLastInMonth}] [--too_young_to_delete TOO_YOUNG_TO_DELETE] [--max_files_to_store MAX_FILES_TO_STORE]
+```
+
+
+
+You can see this animated gif to learn how to use it:
+<img src="https://raw.githubusercontent.com/Turulomio/toomanyfiles/master/doc/ttyrec/toomanyfiles_howto_en.gif?raw=true" width="100%"></img>
+
+
+
