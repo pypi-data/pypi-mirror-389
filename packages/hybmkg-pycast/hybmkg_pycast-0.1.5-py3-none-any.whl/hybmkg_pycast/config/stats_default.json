@@ -1,0 +1,52 @@
+{
+  "AR": {
+    "order": [12, 0, 0]
+  },
+  "MA": {
+    "order": [0, 0, 12]
+  },
+  "ARMA": {
+    "order": [6, 0, 6]
+  },
+  "SARIMA": {
+    "order": [2, 0, 2],
+    "seasonal_order": [1, 0, 2, 12]
+  },
+  "SARIMAX": {
+    "order": [2, 0, 2],
+    "seasonal_order": [1, 0, 2, 12],
+    "enforce_stationarity": true,
+    "enforce_invertibility": true
+  },
+  "AUTO_ARIMA": {
+    "seasonal": true,
+    "m": 12,
+    "trace": false,
+    "error_action": "ignore",
+    "suppress_warnings": true,
+    "stepwise": true
+  },
+
+  "WAVELET_ARIMA": {
+    "wavelet": "db4",
+    "level": 2,
+    "order": [1, 0, 0]
+  },
+  "ANFIS": {
+    "enabled": true,
+    "rules": [
+      "IF (enso IS low) THEN (output IS low)",
+      "IF (enso IS medium) THEN (output IS medium)",
+      "IF (enso IS high) THEN (output IS high)"
+    ]
+  },
+  "WAVELET_ANFIS": {
+    "wavelet": "db4",
+    "level": 2,
+    "enabled": true,
+    "ar_order": 3,
+    "weight_mode": "sqrt", 
+    "denoise": true,
+    "trend_factor": 0
+  }
+}
