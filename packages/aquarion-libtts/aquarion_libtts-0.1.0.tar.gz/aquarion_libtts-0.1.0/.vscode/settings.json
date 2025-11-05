@@ -1,0 +1,58 @@
+{
+    "[toml]": {
+        "editor.defaultFormatter": "be5invis.toml"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "cSpell.customDictionaries": {
+        "custom": true,
+        "internal-terms": false,
+        "project-words": {
+            "addWords": true,
+            "description": "Words used in this project",
+            "name": "project-words",
+            "path": "${workspaceRoot}/project-words.txt"
+        }
+    },
+    "cSpell.dictionaryDefinitions": [
+        {
+            "addWords": true,
+            "description": "Words used in this project",
+            "name": "project-words",
+            "path": "${workspaceRoot}/project-words.txt"
+        }
+    ],
+    "cSpell.hideAddToDictionaryCodeActions": false,
+    "cSpell.language": "en-GB",
+    "cSpell.validateDirectives": true,
+    "conventionalCommits.autoCommit": false,
+    "conventionalCommits.lineBreak": "\\n",
+    "conventionalCommits.scopes": [
+        "accept",
+        "vscode",
+        "api",
+        "kokoro",
+        "docs"
+    ],
+    "cucumberautocomplete.strictGherkinCompletion": true,
+    "cucumberautocomplete.strictGherkinValidation": true,
+    "editor.defaultFormatter": null,
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        88
+    ],
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": false,
+    "files.trimTrailingWhitespace": true,
+    "python.analysis.enablePytestSupport": true,
+    "python.analysis.inlayHints.pytestParameters": true,
+    "python.terminal.shellIntegration.enabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "ruff.path": [
+        "hatch run hatch-static-analysis:ruff"
+    ],
+    "yaml.format.printWidth": 88
+}

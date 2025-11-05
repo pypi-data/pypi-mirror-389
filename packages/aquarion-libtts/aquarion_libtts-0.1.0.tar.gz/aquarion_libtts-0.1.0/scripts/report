@@ -1,0 +1,89 @@
+#!/usr/bin/env nu
+# SPDX-FileCopyrightText: 2025-present Krys Lawrence <aquarion.5.krystopher@spamgourmet.org>
+# SPDX-License-Identifier: AGPL-3.0-only
+
+# Part of the aquarion-libtts library of the Aquarion AI project.
+# Copyright (C) 2025-present Krys Lawrence <aquarion.5.krystopher@spamgourmet.org>
+#
+# This program is free software: you can redistribute it and/or modify it under the
+# terms of the GNU Affero General Public License as published by the Free Software
+# Foundation, version 3.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License along with
+# this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+# Provide various reporting capabilities.
+def main []: nothing -> string {
+    help main
+}
+
+# Print both the test and acceptance coverage reports.
+def "main coverage" []: nothing -> string {
+    print "\nTest Coverage:\n"
+    main coverage test
+    print "\nAcceptance Coverage:\n"
+    main coverage accept
+}
+
+# Print the most recent test coverage report.
+def "main coverage test" [
+    --ci, # Used in CI pipeline to avoid GPU dependence.
+    --total (-t) # Print only to the total.
+]: nothing -> string {
+    mut environ = "accept"
+    if $ci {
+        $environ = "accept-ci"
+    }
+    mut $extra = []
+    if $total { $extra = ["--format", "total"] }
+    # It is easier to just use the coverage tool from the accept environment than to try
+    # and figure out which matrixed hatch-test coverage tool to run.
+    # This could in principle least to a version mismatch, but the intention is to keep
+    # all versions of a tool the same in all environments, so it should be fine.
+    hatch run $"($environ):coverage" report ...$extra
+}
+
+# Print the most recent acceptance test coverage report.
+def "main coverage accept" [
+    --ci, # Used in CI pipeline to avoid GPU dependence.
+    --total (-t) # Print only to the total.
+]: nothing -> string {
+    mut environ = "accept"
+    if $ci {
+        $environ = "accept-ci"
+    }
+    mut $extra = []
+    if $total { $extra = ["--format", "total"] }
+    hatch run $"($environ):coverage" report --rcfile=radish_coverage.toml ...$extra
+}
+
+# Report on last vulnerability scan results.
+def "main sec" []: nothing -> string {
+    let project_root = (git rev-parse --show-toplevel | str trim)
+    let report_path = ($project_root | path join ".cache" "trivy" "report.json")
+    trivy convert --scanners vuln $report_path
+}
+
+# Output only the highest detected Trivy severity level.
+def "main sec highest" []: nothing -> string {
+    let project_root = (git rev-parse --show-toplevel | str trim)
+    let template_path = ($project_root | path join "scripts" "trivy_highest.tpl")
+    let report_path = ($project_root | path join ".cache" "trivy" "report.json")
+    (
+        trivy convert $report_path --format template --template $"@($template_path)"
+        --quiet | str trim
+    )
+}
+
+# Output only the total number of Trivy vulnerabilities found.
+def "main sec total" []: nothing -> string {
+    let project_root = (git rev-parse --show-toplevel | str trim)
+    let template_path = ($project_root | path join "scripts" "trivy_total.tpl")
+    let report_path = ($project_root | path join ".cache" "trivy" "report.json")
+    trivy convert $report_path --format template --template $"@($template_path)" --quiet
+}
