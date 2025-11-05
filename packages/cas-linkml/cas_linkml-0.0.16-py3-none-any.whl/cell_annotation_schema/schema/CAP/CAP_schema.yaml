@@ -1,0 +1,100 @@
+---
+id: https://cellular-semantics.sanger.ac.uk/ontology/CAS
+name: General_Cell_Annotation_Open_Standard
+title: General Cell Annotation Open Standard
+description: |-
+  General, open-standard schema for cell annotations
+license: GNU GPL v3.0
+
+imports:
+- linkml:types
+- ../cell_annotation_schema
+
+prefixes:
+  cell_annotation_schema: https://cellular-semantics.sanger.ac.uk/ontology/CAS/
+  CAS: https://cellular-semantics.sanger.ac.uk/ontology/CAS/
+  CellXGene_dataset: https://cellxgene.cziscience.com/datasets/
+default_prefix: cell_annotation_schema
+default_range: string
+default_curi_maps:
+  - semweb_context
+  - obo_context
+
+slots:
+  canonical_marker_genes:
+    description: 'A list of gene names considered to be canonical markers for the biological entity used in the cell 
+    annotation.'
+    multivalued: true
+    range: string
+    # A gene name recognized as a key marker for the entity's classification.
+  cell_ontology_exists:
+    description: 'Decision by user whether this biological entity exists in the current Cell Ontology or not (at the given time of publication).'
+    range: boolean
+  category_fullname:
+    description: 'Any term denoting a biological entity which the author associates as the nearest \"class\" or \"broader term\" (or \"parent term\") for the value/term in the field.'
+  category_cell_ontology_exists:
+    description: 'Decision by user whether this biological entity exists in the current Cell Ontology or not (at the given time of publication).'
+    range: boolean
+  category_cell_ontology_term_id:
+    description: 'The ID from either the Cell Ontology or from some ontology that extends it by classifying cell types under terms from the Cell Ontology.'
+  category_cell_ontology_term:
+    description: "The human-readable name assigned to the value of 'category_cell_ontology_term_id'."
+  cell_ontology_assessment:
+    description: 'Free-text field for researchers to express disagreements with any aspect of the Cell Ontology for this cell annotation.'
+  cap_publication_title:
+    description: 'The title of the publication on CAP (i.e. a published collection of datasets, the 
+    \"CAP Workspace\".). The title of the publication on CAP. (NOTE: the term \"publication\" refers to the workspace
+     published on CAP with a version and timestamp.) This MUST be less than or equal to N characters, and this MUST be 
+     encoded as a single string.'
+  cap_publication_description:
+    description: 'The description of the publication on CAP. The description of the publication on CAP. (NOTE: the term
+     \"publication\" refers to the workspace published on CAP with a version and timestamp.) This MUST be less than or 
+     equal to N characters, and this MUST be encoded as a single string.'
+  cap_publication_url:
+    description: 'A persistent URL of the publication on CAP. (NOTE: the term \"publication\" refers to the workspace 
+    published on CAP with a version and timestamp.)'
+  cap_dataset_url:
+    description: 'A persistent URL of the dataset on CAP.'
+  publication_timestamp:
+    description: "The timestamp of the CAP publication. This MUST be a string in the format %yyyy-%MM-%dd'T'%hh:%mm:%ss.
+     This value will be overwritten by the newest timestamp upon a new publication."
+  publication_version:
+    description: "The (latest) version of the CAP publication. This value will be overwritten by the newest version upon
+     a new publication (and automatically incremented). This versioning MUST follow the format 'v' + '[integer]', 
+     whereby newer versions must be naturally incremented."
+
+
+classes:
+  Cap_Taxonomy:
+    is_a: Taxonomy
+    class_uri: CAS:Taxonomy
+    tree_root: true
+    slots:
+      - cap_publication_title
+      - cap_publication_description
+      - cap_publication_url
+      - cap_dataset_url
+      - publication_timestamp
+      - publication_version
+    slot_usage:
+      annotations:
+        range: Cap_Annotation
+      cellannotation_schema_version:
+        required: true
+      cellannotation_timestamp:
+        required: true
+      cellannotation_version:
+        required: true
+      cellannotation_url:
+        required: true
+  Cap_Annotation:
+    is_a: Annotation
+    class_uri: PCL:0010001
+    slots:
+    - canonical_marker_genes
+    - cell_ontology_exists
+    - category_fullname
+    - category_cell_ontology_exists
+    - category_cell_ontology_term_id
+    - category_cell_ontology_term
+    - cell_ontology_assessment

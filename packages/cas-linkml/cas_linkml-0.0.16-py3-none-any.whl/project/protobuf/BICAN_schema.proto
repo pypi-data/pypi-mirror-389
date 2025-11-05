@@ -1,0 +1,115 @@
+ syntax="proto3";
+ package
+// metamodel_version: 1.7.0
+// A collection of fields recording a cell type/class/state annotation on some set of cells, supporting evidence and provenance. As this is intended as a general schema, compulsory fields are kept to a minimum. However, tools using this schema are encouarged to specify a larger set of compulsory fields for publication.    Note: This schema deliberately allows for additional fields in order to support ad hoc user fields, new formal schema extensions and project/tool specific metadata.
+message Annotation
+ {
+  string labelset = 0
+  string cellLabel = 0
+  string cellFullname = 0
+  cellTypeEnum cellOntologyTermId = 0
+  string cellOntologyTerm = 0
+ repeated  string cellIds = 0
+  string rationale = 0
+ repeated  string rationaleDois = 0
+ repeated  string markerGeneEvidence = 0
+ repeated  string synonyms = 0
+ repeated  review reviews = 0
+  any authorAnnotationFields = 0
+ }
+message AnnotationTransfer
+ {
+  string transferredCellLabel = 0
+  uriorcurie sourceTaxonomy = 0
+  string sourceNodeAccession = 0
+  string algorithmName = 0
+  string comment = 0
+ }
+// A set of fields for recording the details of the automated annotation algorithm used. (Common 'automated annotation methods' would include PopV, Azimuth, CellTypist, scArches, etc.)
+message AutomatedAnnotation
+ {
+  string algorithmName = 0
+  string algorithmVersion = 0
+  string algorithmRepoUrl = 0
+  string referenceLocation = 0
+ }
+message BicanAnnotation
+ {
+  string labelset = 0
+  string cellLabel = 0
+  string cellFullname = 0
+  cellTypeEnum cellOntologyTermId = 0
+  string cellOntologyTerm = 0
+ repeated  string cellIds = 0
+  string rationale = 0
+ repeated  string rationaleDois = 0
+ repeated  string markerGeneEvidence = 0
+ repeated  string synonyms = 0
+ repeated  review reviews = 0
+  any authorAnnotationFields = 0
+  string cellSetAccession = 0
+  string parentCellSetAccession = 0
+ repeated  annotationTransfer transferredAnnotations = 0
+ repeated  cell cells = 0
+ repeated  string negativeMarkerGeneEvidence = 0
+ }
+message BicanLabelset
+ {
+  string name = 0
+  string description = 0
+  annotationMethodOptions annotationMethod = 0
+  automatedAnnotation automatedAnnotation = 0
+  integer rank = 0
+ }
+message BicanTaxonomy
+ {
+  uriorcurie matrixFileId = 0
+  string title = 0
+  string description = 0
+  string cellannotationSchemaVersion = 0
+  string cellannotationTimestamp = 0
+  string cellannotationVersion = 0
+  string cellannotationUrl = 0
+  string authorList = 0
+  string authorName = 0
+  string authorContact = 0
+  string orcid = 0
+ repeated  bicanLabelset labelsets = 0
+ repeated  bicanAnnotation annotations = 0
+ }
+message Cell
+ {
+  string cellId = 0
+  float confidence = 0
+  string authorCategories = 0
+ }
+message Labelset
+ {
+  string name = 0
+  string description = 0
+  annotationMethodOptions annotationMethod = 0
+  automatedAnnotation automatedAnnotation = 0
+ }
+message Review
+ {
+  string datestamp = 0
+  string reviewer = 0
+  reviewOptions review = 0
+  string explanation = 0
+ }
+message Taxonomy
+ {
+  uriorcurie matrixFileId = 0
+  string title = 0
+  string description = 0
+  string cellannotationSchemaVersion = 0
+  string cellannotationTimestamp = 0
+  string cellannotationVersion = 0
+  string cellannotationUrl = 0
+  string authorList = 0
+  string authorName = 0
+  string authorContact = 0
+  string orcid = 0
+ repeated  labelset labelsets = 0
+ repeated  annotation annotations = 0
+ }

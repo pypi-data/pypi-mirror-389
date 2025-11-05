@@ -1,0 +1,125 @@
+# metamodel_version: 1.7.0
+type Annotation
+  {
+    labelset: String!
+    cellLabel: String!
+    cellFullname: String
+    cellOntologyTermId: CellTypeEnum
+    cellOntologyTerm: String
+    cellIds: [String]
+    rationale: String
+    rationaleDois: [String]
+    markerGeneEvidence: [String]
+    synonyms: [String]
+    reviews: [Review]
+    authorAnnotationFields: Any
+  }
+
+type AnnotationTransfer
+  {
+    transferredCellLabel: String
+    sourceTaxonomy: Uriorcurie
+    sourceNodeAccession: String
+    algorithmName: String
+    comment: String
+  }
+
+type Any
+  {
+  }
+
+type AutomatedAnnotation
+  {
+    algorithmName: String
+    algorithmVersion: String!
+    algorithmRepoUrl: String!
+    referenceLocation: String
+  }
+
+type BicanAnnotation
+  {
+    labelset: String!
+    cellLabel: String!
+    cellFullname: String
+    cellOntologyTermId: CellTypeEnum
+    cellOntologyTerm: String
+    cellIds: [String]
+    rationale: String
+    rationaleDois: [String]
+    markerGeneEvidence: [String]
+    synonyms: [String]
+    reviews: [Review]
+    authorAnnotationFields: Any
+    cellSetAccession: String!
+    parentCellSetAccession: String
+    transferredAnnotations: [AnnotationTransfer]
+    cells: [Cell]
+    negativeMarkerGeneEvidence: [String]
+  }
+
+type BicanLabelset
+  {
+    name: String!
+    description: String
+    annotationMethod: AnnotationMethodOptions
+    automatedAnnotation: AutomatedAnnotation
+    rank: Integer
+  }
+
+type BicanTaxonomy
+  {
+    matrixFileId: Uriorcurie
+    title: String!
+    description: String
+    cellannotationSchemaVersion: String
+    cellannotationTimestamp: String
+    cellannotationVersion: String
+    cellannotationUrl: String
+    authorList: String
+    authorName: String!
+    authorContact: String
+    orcid: String
+    labelsets: [BicanLabelset]!
+    annotations: [BicanAnnotation]!
+  }
+
+type Cell
+  {
+    cellId: String!
+    confidence: Float
+    authorCategories: String
+  }
+
+type Labelset
+  {
+    name: String!
+    description: String
+    annotationMethod: AnnotationMethodOptions
+    automatedAnnotation: AutomatedAnnotation
+  }
+
+type Review
+  {
+    datestamp: String!
+    reviewer: String
+    review: ReviewOptions
+    explanation: String
+  }
+
+type Taxonomy
+  {
+    matrixFileId: Uriorcurie
+    title: String!
+    description: String
+    cellannotationSchemaVersion: String
+    cellannotationTimestamp: String
+    cellannotationVersion: String
+    cellannotationUrl: String
+    authorList: String
+    authorName: String!
+    authorContact: String
+    orcid: String
+    labelsets: [Labelset]!
+    annotations: [Annotation]!
+  }
+

@@ -1,0 +1,124 @@
+---
+id: https://cellular-semantics.sanger.ac.uk/ontology/CAS
+name: General_Cell_Annotation_Open_Standard
+title: General Cell Annotation Open Standard
+description: |-
+  General, open-standard schema for cell annotations
+license: GNU GPL v3.0
+
+imports:
+- linkml:types
+- ../cell_annotation_schema
+
+prefixes:
+  cell_annotation_schema: https://purl.brain-bican.org/taxonomy/
+  CAS: https://purl.brain-bican.org/taxonomy/
+  CellXGene_dataset: https://cellxgene.cziscience.com/datasets/
+default_prefix: cell_annotation_schema
+default_range: string
+default_curi_maps:
+  - semweb_context
+  - obo_context
+
+slots:
+  cell_set_accession:
+    description: An identifier that can be used to consistently refer to the set of
+      cells being annotated, even if the cell_label changes.
+    required: true
+#    identifier: true
+  parent_cell_set_accession:
+    description: A list of accessions of cell sets that subsume this cell set. This
+      can be used to compose hierarchies of annotated cell sets, built from a fixed
+      set of clusters.
+    slot_uri: RO:0015003
+    range: string
+#    range: Bican_Annotation
+  transferred_annotations:
+    multivalued: true
+    range: AnnotationTransfer
+  cells:
+      description: By convention this is only used for annotation transfer labelsets.  It MUST not be combined with the 'cell_ids' field.
+      multivalued: true
+      range: Cell
+      # In future we might use JSON schema OneOf to specify that this is mutually exclusive with the cell_ids property.
+  negative_marker_gene_evidence:
+    description: Gene names explicitly used as evidence, which MUST be in the matrix
+      of the AnnData/Seurat file
+    multivalued: true
+  rank:
+    description: A number indicating relative granularity with 0 being the most
+      specific.  Use this where a single dataset has multiple keys that are used
+      consistently to record annotations and different levels of granularity.
+    range: integer
+  transferred_cell_label:
+    description: Transferred cell label
+  source_taxonomy:
+    description: PURL of source taxonomy
+    range: uriorcurie
+  source_node_accession:
+    description: accession of node that label was transferred from
+  algorithm_name:
+    description: Name of algorithm used to transfer annotation
+  comment:
+    description: Free text comment on annotation transfer
+    slot_uri: IAO:0000115
+  cell_id:
+    description: Identifier for a single cell.
+#    identifier: true
+    required: true
+  confidence:
+    description: Normalised confidence score
+    range: float
+  author_categories:
+    description: Categories of authorship for the annotation
+    range: string
+    # TODO: range is object in json
+  neurotransmitter_accession:
+    description: Accessions of cell neurotransmitter associated with this cell set.
+    range: string
+  neurotransmitter_rationale:
+    description: The free-text rationale which users provide as justification/evidence for supporting the neurotransmitter association.
+    range: string
+  neurotransmitter_marker_gene_evidence:
+    description: List of gene names used as evidence for neurotransmitter association. Each gene MUST be included in the matrix of the AnnData/Seurat file.
+    multivalued: true
+
+classes:
+  Bican_Taxonomy:
+    is_a: Taxonomy
+    class_uri: CAS:Taxonomy
+    tree_root: true
+    slot_usage:
+      labelsets:
+        range: Bican_Labelset
+      annotations:
+        range: Bican_Annotation
+  Bican_Labelset:
+    is_a: Labelset
+    class_uri: CAS:Labelset
+    slots:
+    - rank
+  Bican_Annotation:
+    is_a: Annotation
+    class_uri: PCL:0010001
+    slots:
+    - cell_set_accession
+    - parent_cell_set_accession
+    - transferred_annotations
+    - cells
+    - negative_marker_gene_evidence
+    - neurotransmitter_accession
+    - neurotransmitter_rationale
+    - neurotransmitter_marker_gene_evidence
+  AnnotationTransfer:
+    slots:
+    - transferred_cell_label
+    - source_taxonomy
+    - source_node_accession
+    - algorithm_name
+    - comment
+  Cell:
+    slots:
+    - cell_id
+    - confidence
+    - author_categories
