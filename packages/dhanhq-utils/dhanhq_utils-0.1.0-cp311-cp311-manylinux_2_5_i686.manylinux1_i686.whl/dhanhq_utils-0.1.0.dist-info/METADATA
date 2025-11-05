@@ -1,0 +1,63 @@
+Metadata-Version: 2.4
+Name: dhanhq_utils
+Version: 0.1.0
+Classifier: Programming Language :: Rust
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+License-File: LICENSE
+Summary: A lightweight utility library for encrypting and decrypting DhanHQ Web-API payloads with minimal setup.
+Home-Page: https://github.com/Indian-Algorithmic-Trading-Community/dhanhq_utils
+Author-email: Shabbir Hasan <68828793+ShabbirHasan1@users.noreply.github.com>
+License: Apache License 2.0
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+
+# dhanhq_utils
+
+A lightweight utility library for **encrypting and decrypting DhanHQ Web-API payloads** with minimal setup.
+
+### Installation
+
+```bash
+pip install dhanhq_utils
+```
+
+or (if using [uv](https://docs.astral.sh/uv/)):
+
+```bash
+uv add dhanhq_utils
+```
+
+---
+
+### Usage
+
+```python
+import json
+from dhanhq_utils import decrypt_payload, encrypt_payload
+
+def encrypt(payload: dict) -> str:
+    """Encrypt a Python dictionary into DhanHQ-compatible ciphertext."""
+    return encrypt_payload(json.dumps(payload, separators=(',', ':')))
+
+def decrypt(cipher_text: str) -> dict:
+    """Decrypt DhanHQ ciphertext back into a Python dictionary."""
+    return json.loads(decrypt_payload(cipher_text))
+
+CIPHER_TEXT = "dhIs/M55xbI+qBzoZNUzHVOqGNb9XB0XTb4KB6hP04nr3/XD2Z8hM9x8EbjKq9f+JhWf7k+..."
+
+PLAIN_TEXT = '{"kyc_status":"8","login_id":"9999999999","kyc_status_msg":"Invested User", ...}'
+
+print(f"{decrypt(CIPHER_TEXT) = }")
+print(f"{encrypt(json.loads(PLAIN_TEXT)) = }")
+print(f"{encrypt_payload(PLAIN_TEXT) == CIPHER_TEXT = }")
+```
+
+---
+
+### Notes
+
+* Designed specifically for **DhanHQ Web-API encryption/decryption workflows**.
+* Simplifies working with secure payloads in both **Python scripts** and **automated trading systems**.
+* Supports seamless integration with JSON-based requests and responses.
+
