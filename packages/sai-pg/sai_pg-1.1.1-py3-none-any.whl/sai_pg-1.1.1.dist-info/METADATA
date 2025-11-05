@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: sai-pg
+Version: 1.1.1
+Summary: A Python Package for Statistics for Adaptive Introgression
+Author-email: Xin Huang <xinhuang.res@gmail.com>
+License: GPLv3
+Project-URL: Homepage, https://github.com/xin-huang/sai
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.9
+Requires-Python: ==3.9.19
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: matplotlib==3.9.1
+Requires-Dist: natsort==8.4.0
+Requires-Dist: numpy==1.26.4
+Requires-Dist: pandas==2.2.1
+Requires-Dist: pydantic==2.11.7
+Requires-Dist: pysam==0.23.0
+Requires-Dist: scikit-allel==1.3.7
+Requires-Dist: scipy==1.12.0
+Dynamic: license-file
+
+# SAI
+
+[![license](https://img.shields.io/badge/license-GPL%20v3-black.svg?style=flat-square)](LICENSE) 
+[![language](http://img.shields.io/badge/language-Python-blue.svg?style=flat-square)](https://www.python.org/) 
+[![build status](https://img.shields.io/github/actions/workflow/status/xin-huang/sai/build.yaml?branch=main&style=flat-square)](https://github.com/xin-huang/sai/actions)
+[![codecov](https://img.shields.io/codecov/c/github/xin-huang/sai?style=flat-square)](https://app.codecov.io/gh/xin-huang/sai)
+[![docs](https://img.shields.io/github/actions/workflow/status/xin-huang/sai/pages/pages-build-deployment?style=flat-square&label=docs)](https://github.com/xin-huang/sai/deployments/github-pages)
+
+A Python Package for **S**tatistics for **A**daptive **I**ntrogression
+
+The manual can be found [here](https://xin-huang.github.io/sai).
