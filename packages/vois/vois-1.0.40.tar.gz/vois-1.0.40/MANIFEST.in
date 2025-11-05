@@ -1,0 +1,31 @@
+# MANIFEST.in
+
+prune deploy
+prune docs
+prune examples
+prune logo
+prune scripts
+prune tests
+
+include src/vois/vuetify/extra/file_input.vue
+
+exclude src/vois/.gitignore
+exclude src/vois/.gitkeep
+
+exclude src/vois/vuetify/.gitignore
+exclude src/vois/vuetify/.gitkeep
+
+exclude src/vois/*.ipynb
+exclude src/vois/vuetify/*.ipynb
+
+exclude src/vois/__pycache__
+exclude src/vois/vuetify/__pycache__
+exclude src/vois/vuetify/extra/__pycache__
+
+prune __pycache__
+prune */__pycache__ 
+recursive-exclude */__pycache__ *
+
+prune .ipynb_checkpoints
+prune */.ipynb_checkpoints 
+recursive-exclude */.ipynb_checkpoints *
