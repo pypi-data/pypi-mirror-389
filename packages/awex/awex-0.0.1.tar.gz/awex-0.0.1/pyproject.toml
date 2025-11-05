@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "awex"
+version = "0.0.1"
+description = "Awex is a high-performance weights exchange framework for RL training"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "Apache License 2.0"}
+authors = [
+    {name = "chaokunyang", email = "shawn.ck.yang@example.com"}
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = ["RL", "LLM", "model"]
+
+[project.urls]
+Homepage = "https://github.com/chaokunyang/awex"
+Repository = "https://github.com/chaokunyang/awex"
