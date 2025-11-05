@@ -1,0 +1,81 @@
+Metadata-Version: 2.4
+Name: zmunk-ui
+Version: 1.0.0
+Summary: Interactive script utilities
+Author-email: zmunk <ibrahim.tigrek@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2018 Real Python
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/zmunk/ui-python
+Keywords: script,ui,interactive
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+[![PyPI]()](https://pypi.org/project/zmunk-ui/)
+
+# Script utilities
+
+Utility functions for interactive scripts.
+
+## Installation
+
+    python -m pip install zmunk-ui
+
+## Examples
+
+### Processing input
+```python
+from ui import hide_cursor, show_cursor, get_key, Key, clear
+
+hide_cursor()
+
+clear()
+
+while True:
+    key = get_key()
+    clear()
+    match key:
+        case Key.RIGHT:
+            print("move right")
+        case Key.LEFT:
+            print("move left")
+        case c if isinstance(c, str):
+            print("c:", c)
+        case Key.EXIT:
+            break
+
+
+show_cursor()
+```
+
+### Printing colors
+```python
+from ui.colors import blue, red_bg
+
+print(red_bg("Error"))
+print(blue("Hello, world"))
+```
