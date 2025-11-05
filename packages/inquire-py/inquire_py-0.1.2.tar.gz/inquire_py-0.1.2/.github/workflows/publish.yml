@@ -1,0 +1,43 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'pyproject.toml'  # Only trigger when version changes
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # For trusted publishing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          if [ -z "$PYPI_TOKEN" ]; then
+            echo "⚠️  PYPI_TOKEN not set. Skipping publish."
+            echo "Add your PyPI token to GitHub secrets: Settings > Secrets > Actions > New repository secret"
+            exit 1
+          fi
+          uv publish --token $PYPI_TOKEN
