@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "fastfeatures"
+version = "0.1.4"
+description = "Modular features discovery system for FastAPI projects."
+authors = ["Yuri Seki <yuriseki@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fastfeatures", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+fastapi = ">=0.118.3,<0.119.0"
+sqlalchemy = ">=2.0.44,<3.0.0"
+sqlmodel = ">=0.0.27,<0.0.28"
+click = ">=8.1.7,<9.0.0"
+setuptools = ">=69.0.3,<70.0.0"
+python-dotenv = ">=1.0.0,<2.0.0"
+alembic = ">=1.17.1,<2.0.0"
+uvicorn = ">=0.38.0,<0.39.0"
+pydantic-settings = ">=2.11.0,<3.0.0"
+aiosqlite = ">=0.21.0,<0.22.0"
+asyncpg = ">=0.30.0,<0.31.0"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
