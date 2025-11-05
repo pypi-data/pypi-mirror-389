@@ -1,0 +1,319 @@
+Metadata-Version: 2.4
+Name: shellog
+Version: 1.0.5
+Summary: A Python package to get notifications about the logs of a process
+Home-page: https://github.com/danmargs/shellog
+Author: Daniele Margiotta
+Author-email: daniele.margiotta11@gmail.com
+License: BSD 2-clause
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.25.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Shellog 1.0.5
+
+Have you ever needed to monitor your background processes when you couldn't access your PC or VPN?
+
+Shellog empowers you to seamlessly integrate logs into your Python code, delivering direct notifications to your Telegram chat. Additionally, for teams, it facilitates log sharing.
+
+The primary aim of the Shellog library is to streamline process monitoring, and we'll explore how it accomplishes this with ease.
+
+## 🚀 Features
+
+- ✅ Send Python logs directly to Telegram
+- ✅ Simple and intuitive API
+- ✅ Support for multiple chat IDs (team notifications)
+- ✅ Secure architecture (bot token never exposed to users)
+- ✅ Rate limiting to prevent abuse
+- ✅ Cross-platform (Linux, macOS, Windows)
+
+## 📋 Requirements
+
+1. **Get the Server URL:**
+   - Contact the administrator to get the Shellog server URL
+   - Or set up your own server (see [DEPLOYMENT.md](DEPLOYMENT.md))
+
+2. **Get your ChatId:**
+   - Connect to Telegram: https://web.telegram.org/
+   - Start a chat with the bot on Telegram
+   - Send `/id` to get your ChatId
+   - Save the ChatId for later use
+
+3. **Python 3.6+**
+
+## 📦 Installation
+
+```bash
+pip install shellog
+```
+
+## 🎯 Quick Start
+
+```python
+import shellog
+
+# Create bot instance with the server URL
+bot = shellog.Bot(server_url="https://your-shellog-server.com")
+
+# Or use environment variable SHELLOG_SERVER_URL
+# bot = shellog.Bot()
+
+# Add your ChatId (obtained from the bot with /id command)
+bot.addChatId("YOUR_CHAT_ID")
+
+# Send a message
+bot.sendMessage("🎉 Hello from Python!")
+```
+
+## 📖 Usage Examples
+
+### Basic Usage
+
+```python
+import shellog
+
+bot = shellog.Bot(server_url="https://your-server.com")
+bot.addChatId("123456789")
+
+# Send notifications
+bot.sendMessage("🚀 Process started!")
+bot.sendMessage("✅ Task completed successfully!")
+```
+
+### Progress Monitoring
+
+```python
+import shellog
+import time
+
+bot = shellog.Bot(server_url="https://your-server.com")
+bot.addChatId("123456789")
+
+bot.sendMessage("⏳ Starting long process...")
+
+for i in range(10):
+    # Do some work
+    time.sleep(1)
+    bot.sendMessage(f"Progress: {(i+1)*10}%")
+
+bot.sendMessage("✅ Process completed!")
+```
+
+### Error Notifications
+
+```python
+import shellog
+
+bot = shellog.Bot(server_url="https://your-server.com")
+bot.addChatId("123456789")
+
+try:
+    # Your code here
+    result = some_risky_operation()
+    bot.sendMessage("✅ Operation successful!")
+except Exception as e:
+    bot.sendMessage(f"❌ Error: {str(e)}")
+```
+
+### Team Notifications
+
+```python
+import shellog
+
+bot = shellog.Bot(server_url="https://your-server.com")
+
+# Add multiple team members
+bot.addListChatIds([
+    "123456789",  # Alice
+    "987654321",  # Bob
+    "555555555"   # Charlie
+])
+
+# Everyone gets the notification
+bot.sendMessage("🎉 Deployment completed!")
+```
+
+### Managing Chat IDs
+
+```python
+import shellog
+
+bot = shellog.Bot(server_url="https://your-server.com")
+
+# Add single chat ID
+bot.addChatId("123456789")
+
+# Add multiple chat IDs
+bot.addListChatIds(["123456789", "987654321"])
+
+# Remove single chat ID
+bot.removeChatId("123456789")
+
+# Remove multiple chat IDs
+bot.removeListChatIds(["123456789", "987654321"])
+
+# Clear all chat IDs
+bot.clearChatId()
+```
+
+## 🔧 Configuration
+
+### Server URL
+
+You can specify the server URL in three ways:
+
+1. **Direct parameter** (recommended for simple scripts):
+```python
+bot = shellog.Bot(server_url="https://your-server.com")
+```
+
+2. **Environment variable** (recommended for production):
+```bash
+export SHELLOG_SERVER_URL="https://your-server.com"
+```
+```python
+bot = shellog.Bot()  # Automatically uses SHELLOG_SERVER_URL
+```
+
+3. **Default** (for local testing):
+```python
+bot = shellog.Bot()  # Uses http://localhost:5005
+```
+
+## 🏗️ Architecture
+
+Shellog uses a secure client-server architecture:
+
+```
+[Your Python Code] → [shellog library] → [Backend Server] → [Telegram]
+```
+
+- The bot token is **never exposed** to users
+- All messages go through the backend server
+- Rate limiting prevents abuse
+- Secure and scalable
+
+## 🛠️ For Server Administrators
+
+If you want to host your own Shellog server, see [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+
+Quick overview:
+1. Run `server.py` (backend API)
+2. Run `bot_server.py` (handles `/id` command)
+3. Configure your domain/URL
+4. Share the URL with your users
+
+## 📊 API Reference
+
+### `Bot(server_url=None)`
+
+Create a new Bot instance.
+
+**Parameters:**
+- `server_url` (str, optional): Backend server URL. Defaults to `SHELLOG_SERVER_URL` env var or `http://localhost:5005`
+
+### `addChatId(id: str)`
+
+Add a single chat ID to the recipient list.
+
+### `addListChatIds(ids: list)`
+
+Add multiple chat IDs at once.
+
+### `removeChatId(id: str)`
+
+Remove a single chat ID from the recipient list.
+
+### `removeListChatIds(ids: list)`
+
+Remove multiple chat IDs at once.
+
+### `clearChatId()`
+
+Remove all chat IDs from the recipient list.
+
+### `sendMessage(text: str)`
+
+Send a message to all registered chat IDs.
+
+**Returns:** dict with send results
+
+**Raises:**
+- `ValueError`: If no chat IDs are registered or text is empty
+- `Exception`: If the server is unreachable or returns an error
+
+## ❓ FAQ
+
+**Q: Where do I get the ChatId?**  
+A: Send `/id` to the Shellog bot on Telegram.
+
+**Q: Can I use this for team notifications?**  
+A: Yes! Use `addListChatIds()` to add multiple team members.
+
+**Q: Is the bot token secure?**  
+A: Yes! The token is stored only on the server, never in the client library.
+
+**Q: What if I send too many messages?**  
+A: The server has rate limiting (default: 10 messages/minute per chat).
+
+**Q: Can I self-host the server?**  
+A: Yes! See [DEPLOYMENT.md](DEPLOYMENT.md) for instructions.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+BSD 2-clause License - see LICENSE file for details.
+
+## 👤 Author
+
+**Daniele Margiotta**
+- Email: daniele.margiotta11@gmail.com
+- GitHub: [@danmargs](https://github.com/danmargs)
+
+## 🙏 Credits
+
+Reveal s.r.l.
+
+---
+
+## ⚙️ Server Setup
+
+**Important:** Shellog requires a backend server to function. You have two options:
+
+1. **Use an existing server:** Contact your administrator for the server URL
+2. **Host your own:** Follow the instructions in [DEPLOYMENT.md](DEPLOYMENT.md)
+
+The library is designed this way to keep the bot token secure and prevent abuse.
+
+For administrators setting up a server, see:
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide
+- [QUICKSTART.md](QUICKSTART.md) - Quick local testing
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
