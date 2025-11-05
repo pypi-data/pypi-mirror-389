@@ -1,0 +1,27 @@
+# Include documentation
+include README.md
+include LICENSE
+include CONTRIBUTING.md
+
+# Include examples
+recursive-include examples *.py
+recursive-include examples *.md
+
+# Include docs
+recursive-include docs *.md
+
+# Exclude development and build files
+exclude .gitignore
+exclude .coverage
+exclude pytest.ini
+recursive-exclude tests *
+recursive-exclude .pytest_cache *
+recursive-exclude .mypy_cache *
+recursive-exclude .ruff_cache *
+recursive-exclude htmlcov *
+recursive-exclude .venv *
+recursive-exclude *.egg-info *
+recursive-exclude __pycache__ *
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *~
