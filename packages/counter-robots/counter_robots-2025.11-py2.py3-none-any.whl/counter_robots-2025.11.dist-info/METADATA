@@ -1,0 +1,89 @@
+Metadata-Version: 2.4
+Name: counter-robots
+Version: 2025.11
+Summary: Library for COUNTER-compliant detection of machines and robots.
+Home-page: https://github.com/inveniosoftware/counter-robots
+Author: Invenio Software
+Author-email: info@inveniosoftware.org
+License: MIT
+Keywords: COUNTER,user-agent,robot detection
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Requires-Python: >=3.9
+License-File: LICENSE
+License-File: AUTHORS.rst
+Provides-Extra: tests
+Requires-Dist: pytest-black>=0.6.0; extra == "tests"
+Requires-Dist: pytest-invenio<4.0.0,>=3.0.0; extra == "tests"
+Requires-Dist: Sphinx>=4.5.0; extra == "tests"
+Provides-Extra: docs
+Dynamic: license-file
+
+..
+    This file is part of COUNTER-Robots.
+    Copyright (C) 2018 CERN.
+
+    COUNTER-Robots is free software; you can redistribute it and/or modify it
+    under the terms of the MIT License; see LICENSE file for more details.
+
+================
+ COUNTER-Robots
+================
+
+.. image:: https://img.shields.io/github/license/inveniosoftware/counter-robots.svg
+        :target: https://github.com/inveniosoftware/counter-robots/blob/master/LICENSE
+
+.. image:: https://github.com/inveniosoftware/counter-robots/workflows/CI/badge.svg
+        :target: https://github.com/inveniosoftware/counter-robots/actions
+
+.. image:: https://img.shields.io/coveralls/inveniosoftware/counter-robots.svg
+        :target: https://coveralls.io/r/inveniosoftware/counter-robots
+
+.. image:: https://img.shields.io/pypi/v/counter-robots.svg
+        :target: https://pypi.org/pypi/counter-robots
+
+
+Library for COUNTER-compliant detection of machines and robots.
+
+The purpose behind COUNTER is to enable comparable usage statistics by only
+reporting genuine user-driven usage for repositories. The purpose behind Code
+of Practice for Research Data is to split genuine COUNTER user-driven usage
+into human- and machine-based access.
+
+This Python library implements a tiny API to check if a given user agent
+string from a browser is considered a robot/crawler/spider or a machine
+according to the `Code of Practice for Research Data
+<https://doi.org/10.7287/peerj.preprints.26505v1>`_ [1]  as well as the
+`COUNTER Code of Practice
+<https://www.projectcounter.org/code-of-practice-five-sections/abstract/>`_.
+
+The library depends on official lists published by both projects. You can see
+the lists on:
+
+- `Making Data Count
+  <https://github.com/CDLUC3/Make-Data-Count/tree/master/user-agents>`_
+- `COUNTER <https://github.com/atmire/COUNTER-Robots/>`_
+
+..
+    This file is part of COUNTER-Robots.
+    Copyright (C) 2018-2025 CERN.
+    Copyright (C) 2025 Graz University of Technology.
+
+    COUNTER-Robots is free software; you can redistribute it and/or modify it
+    under the terms of the MIT License; see LICENSE file for more details.
+
+Changes
+=======
+
+Version 2025.11 (released on 2025-11-04)
+
+- chore(setup): update dependencies
+- fix: pkg_resources DeprecationWarning
+
+Version 2025.2 (released on 2025-02-13)
+
+- User agents lists update.
+
+Version 2018.6 (released on 2018-06-15)
+
+- Initial public release.
