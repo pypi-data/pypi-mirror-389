@@ -1,0 +1,24 @@
+[project]
+name = "skryptography"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Skanda Bhairava", email = "skandabhairava@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "cryptography>=46.0.3",
+    "elgamal>=0.0.5",
+    "numpy>=2.3.4",
+    "pycipher>=0.5.2",
+    "pycryptodome>=3.23.0",
+    "pycryptodomex>=3.23.0",
+]
+
+[project.scripts]
+skryptography = "skryptography:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
