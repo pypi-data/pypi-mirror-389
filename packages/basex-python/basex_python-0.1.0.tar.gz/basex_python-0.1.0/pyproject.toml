@@ -1,0 +1,66 @@
+[project]
+name = "basex-python"
+dynamic = ["version"]
+description = "Fast library for encoding/decoding data in custom base-N alphabets of any size"
+authors = [{name = "yokotoka"}]
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+license = {text = "MIT"}
+keywords = ["base58", "base64", "base32", "base16", "encoding", "decoding", "baseN"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Security :: Cryptography",
+]
+
+[project.urls]
+Homepage = "https://github.com/yokotoka/basex"
+Repository = "https://github.com/yokotoka/basex"
+
+[build-system]
+requires = [
+    "setuptools>=45",
+    "setuptools-scm[toml]>=6.2",
+    "wheel",
+    "Cython>=3.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+write_to = "src/basex/_version.py"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-benchmark>=4.0.0",
+    "ruff>=0.14.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"
+
+[tool.cibuildwheel]
+# Build for CPython 3.10-3.14
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
+# Skip 32-bit builds, musllinux, and PyPy
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_*", "pp*"]
+
+# Test command to run after building wheel
+[tool.cibuildwheel.config-settings]
+test-command = "pytest {package}/tests"
+test-requires = "pytest"
