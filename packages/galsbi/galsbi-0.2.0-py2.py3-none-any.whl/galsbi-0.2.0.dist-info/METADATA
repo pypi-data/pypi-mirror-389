@@ -1,0 +1,162 @@
+Metadata-Version: 2.4
+Name: galsbi
+Version: 0.2.0
+Summary: Package to easily generate catalogs from the model
+Project-URL: Repository, https://cosmo-docs.phys.ethz.ch/galsbi
+Author-email: Silvan Fischbacher <silvanf@phys.ethz.ch>
+License: MIT License
+License-File: AUTHORS.rst
+License-File: LICENSE
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Dist: astropy
+Requires-Dist: cosmic-toolbox>=0.4.1
+Requires-Dist: cosmo-torrent
+Requires-Dist: edelweiss>=0.2.0
+Requires-Dist: h5py
+Requires-Dist: healpy
+Requires-Dist: ivy-wfengine>=0.4.0
+Requires-Dist: numpy
+Requires-Dist: psutil>=6.1.0
+Requires-Dist: pycosmo>=2.2.0
+Requires-Dist: scipy
+Requires-Dist: ufig>=1.0.0a2
+Description-Content-Type: text/markdown
+
+# The (Great) GalSBI
+
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/galsbi.svg)](https://pypi.python.org/pypi/galsbi/)
+[![PyPI version](https://badge.fury.io/py/galsbi.svg)](https://badge.fury.io/py/galsbi)
+[![pipeline](https://gitlab.com/cosmology-ethz/galsbi/badges/main/pipeline.svg)](https://gitlab.com/cosmology-ethz/galsbi/-/pipelines)
+[![coverage](https://gitlab.com/cosmology-ethz/galsbi/badges/main/coverage.svg)](https://gitlab.com/cosmology-ethz/galsbi)
+<a href="https://cosmo-docs.phys.ethz.ch/galsbi/htmlcov/index.html">
+  <img src="https://img.shields.io/badge/coverage_report-green"
+    alt="coverage report"/>
+</a>
+
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08766/status.svg)](https://doi.org/10.21105/joss.08766)
+[![image](https://img.shields.io/badge/arXiv-2412.08701-B31B1B.svg?logo=arxiv&style=flat)](https://arxiv.org/abs/2412.08701)
+[![image](https://img.shields.io/badge/arXiv-2412.08722-B31B1B.svg?logo=arxiv&style=flat)](https://arxiv.org/abs/2412.08722)
+
+[![Docs](https://badgen.net/badge/icon/Documentation?icon=https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/gitbook.svg&label)](https://cosmo-docs.phys.ethz.ch/galsbi/)
+[![Source Code](https://badgen.net/badge/icon/Source%20Code?icon=gitlab&label)](https://gitlab.com/cosmology-ethz/galsbi)
+
+Create realistic galaxy catalogs and astronomical images based on the GalSBI model.
+The GalSBI model is described in [Fischbacher et al. (2024)](https://arxiv.org/abs/2412.08701) and the
+package is described in [Fischbacher et al. (2024)](https://arxiv.org/abs/2412.08722).
+
+## Motivation
+
+Next-generation galaxy surveys will test cosmology with unprecedented precision.
+To fully realize the potential of these surveys, forward modeling of galaxy populations
+offers a promising path - enabling accurate redshift estimation, shape measurement
+calibration, selection effect modeling, and deeper insights into galaxy properties.
+
+GalSBI is a parametric galaxy population model constrained by observational data using
+simulation-based inference (SBI).
+The `galsbi` Python package provides a flexible framework for generating realistic
+galaxy catalogs and rendering them into astronomical images via
+[UFig](https://gitlab.com/cosmology-ethz/ufig).
+
+
+## Installation
+
+The package can be installed via pip:
+
+```bash
+pip install galsbi
+```
+
+or using uv:
+
+```bash
+uv pip install galsbi
+```
+
+## Usage
+
+To generate a catalog of galaxies with their intrinsic properties, you can use the
+following code snippet:
+
+```python
+from galsbi import GalSBI
+
+model = GalSBI(name="Fischbacher+24") # define which model to use
+model(mode="intrinsic") # generating catalogs with intrinsic galaxy properties
+cats = model.load_catalogs() # load the generated catalogs
+
+intrinsic_i_band_cat = cats["ucat galaxies i"]
+```
+
+**Note:** The first time you run `galsbi`, additional data files will be downloaded
+automatically and cached locally. The initial run may also take longer due to
+PyCosmo compilation. If you encounter any issues, see the
+[FAQ](https://cosmo-docs.phys.ethz.ch/galsbi/faq.html#i-get-an-error-when-i-run-the-code-for-the-first-time-during-the-compilation-of-pycosmo-what-should-i-do).
+
+Currently, the following models are available:
+
+- `Fischbacher+24`: constrained in [Fischbacher et al. (2024)](https://arxiv.org/abs/2412.08701).
+- `Moser+24`: constrained in [Moser et al. (2024)](https://arxiv.org/abs/2401.06846).
+
+There are different modes available to generate catalogs:
+
+- `intrinsic`: generates a catalog with intrinsic galaxy properties for HSC grizy bands.
+- `emulator`: generates a catalog with intrinsic galaxy properties for HSC grizy bands
+  and a catalog with measured galaxy properties for each band using an emulator trained
+  on HSC deep fields.
+- `image`: generates a catalog with intrinsic galaxy properties for HSC grizy bands
+  and a simulated image for each band. The image has background noise and PSF size
+  similar to HSC deep fields.
+- `image+SE`: same as `image`, but also runs `SExtractor` on the images to generate
+  catalogs with measured galaxy properties for each band.
+- `config_file`: runs the model following a custom configuration file. The path to the configuration file can be passed as an argument `config_file`. The predefined configuration files can be found in the `src/galsbi/configs` directory and can be used as a starting point for custom configurations.
+
+The loaded catalogs are stored in a dictionary with the following keys:
+- `ucat galaxies <band>`: intrinsic galaxy catalog for the given band.
+- `ucat stars <band>`: intrinsic star catalog for the given band.
+- `sextractor <band>`: catalog with measured galaxy properties for the given band (if a measured catalog is generated)
+- `sed`: catalog with SEDs of the galaxies (in case the SEDs are saved, see [Saving Galaxy Spectra](https://cosmo-docs.phys.ethz.ch/galsbi/spectra.html)).
+- `restframe_wavelength_in_A`: the restframe wavelength in Angstroms for the SEDs (if the SEDs are saved).
+
+By default, the catalogs are loaded as structured NumPy arrays. Setting `output_format` to `df` loads them as pandas DataFrames, while `output_format="fits"` loads them as FITS catalogs. An overview of the columns in the catalogs can be found in the [Catalog Column Descriptions](https://cosmo-docs.phys.ethz.ch/galsbi/column_description.html).
+
+If an image is generated, one can also load the images, segmentation and background maps using
+`model.load_images()`. This returns a dictionary with the following keys:
+- `image <band>`: the simulated image for the given band.
+- `segmentation <band>`: the segmentation map for the given band.
+- `background <band>`: the background map for the given band.
+
+More details on the usage of the package can be found in the [documentation](https://cosmo-docs.phys.ethz.ch/galsbi/).
+
+## Citation
+
+If you use GalSBI in your work, please cite the science paper [Fischbacher et al. (2024)](https://arxiv.org/abs/2412.08701)
+for using the GalSBI model and the code release paper [Fischbacher et al. (2024)](https://arxiv.org/abs/2412.08722) for using the package.
+If you are using specific models or parametrizations, please also cite the corresponding papers.
+If you are not sure which papers to cite, use the following with your model instance:
+
+```python
+model.cite()
+```
+
+## Credits
+
+This package was developed by the Cosmology group at ETH Zurich and is currently maintained by
+[Silvan Fischbacher](mailto:silvanf@phys.ethz.ch).
+
+## Contributions
+
+Contributions are welcome, and they are greatly appreciated! Every
+little bit helps, and credit will always be given.
+
+Please see the [Contributing to galsbi](https://cosmo-docs.phys.ethz.ch/galsbi/contributing.html)
+documentation for more information on how to contribute.
