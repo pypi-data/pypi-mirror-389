@@ -1,0 +1,50 @@
+{% extends 'generic/object_edit.html' %}
+{% load i18n %}
+{% load static %}
+{% load form_helpers %}
+{% block title %}
+    {% trans "Bulk Editing Maintenance" %}
+{% endblock title %}
+{% block head %}
+    {{ block.super }}
+    <script src="{% static 'maintenance_parent_display.js' %}"></script>
+{% endblock head %}
+{% block buttons %}
+    <a href="{{ return_url }}" class="btn btn-outline-secondary btn-float">{% trans "Cancel" %}</a>
+    <button type="submit" name="_update" class="btn btn-primary">{% trans "Save" %}</button>
+{% endblock buttons %}
+{% block form %}
+    {# Warning about form behavior #}
+    <div class="alert alert-warning mb-4" role="alert">
+        <h5 class="alert-heading">
+            <i class="mdi mdi-alert"></i> {% trans "Important: Bulk Edit Behavior" %}
+        </h5>
+        <ul class="mb-0">
+            <li>
+                <strong>{% trans "Removing objects" %}</strong> {% trans "from the lists below will" %} <strong>{% trans "delete" %}</strong> {% trans "their associated maintenance impacts." %}
+            </li>
+            <li>
+                <strong>{% trans "Adding objects" %}</strong> {% trans "will" %} <strong>{% trans "create new" %}</strong> {% trans "maintenance impacts with the selected impact type." %}
+            </li>
+            <li>
+                <strong>{% trans "Existing objects" %}</strong> {% trans "(shown in bold) will have their impact type" %} <strong>{% trans "updated" %}</strong> {% trans "if changed." %}
+            </li>
+            <li>
+                <strong>{% trans "Tags" %}</strong> {% trans "will be applied to" %} <strong>{% trans "all" %}</strong> {% trans "maintenance impacts (both existing and newly created)." %}
+            </li>
+        </ul>
+    </div>
+    {% if impact_type_counts %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>{% trans "Current Impact Distribution" %}</strong>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    {% for item in impact_type_counts %}<li>{{ item.impact__name }} ({{ item.count }})</li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock form %}

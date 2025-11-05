@@ -1,0 +1,14 @@
+{% extends 'generic/object_children.html' %}
+{% load helpers %}
+{% load perms %}
+{% load i18n %}
+{% load static %}
+{% block table_controls %}
+    {{ block.super }}
+    <div class="d-print-none mt-2 mb-3 text-end">
+        <a href="{% url 'plugins:netbox_maintenance:maintenanceimpact_bulk_update' %}?maintenance={{ object.pk }}&return_url={{ request.path }}"
+           class="btn btn-indigo">
+            <i class="mdi mdi-pencil-box-multiple"></i> BulkUpdate Assigned Objects
+        </a>
+    </div>
+{% endblock table_controls %}

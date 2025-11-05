@@ -1,0 +1,31 @@
+{% extends "generic/object_children.html" %}
+{% load render_table from django_tables2 %}
+{% load static %}
+{% load helpers %}
+
+{% if perms.netbox_maintenance.view_maintenance %}
+    {% block content %}
+        {% block table_controls %}
+            {% include "inc/table_controls_htmx.html" with table_modal="MaintenanceTable_config" %}
+        {% endblock table_controls %}
+
+        <div class="card">
+            <div class="card-body" id="object_list">
+                {% htmx_table 'plugins:netbox_maintenance:maintenance_list' object_type_id=object|content_type_id object_id=object.pk %}
+            </div>
+        </div>
+
+        <div class="noprint bulk-buttons">
+            <div class="bulk-button-group"></div>
+            <div class="bulk-button-group">
+                {% if perms.netbox_maintenance.add_maintenanceimpact %}
+                    <a href="{% url 'plugins:netbox_maintenance:maintenanceimpact_add' %}?object_type={{ object|content_type_id }}&object_id={{ object.pk }}&return_url={{ request.path }}"
+                       class="btn btn-primary">
+                        <i class="mdi mdi-plus-thick" aria-hidden="true"></i>
+                        Add Maintenance Impact
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock content %}
+{% endif %}

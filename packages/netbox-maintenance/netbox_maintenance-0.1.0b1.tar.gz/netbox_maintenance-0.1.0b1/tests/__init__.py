@@ -1,0 +1,2 @@
+# Tests module
+import pytest

@@ -1,0 +1,72 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load render_table from django_tables2 %}
+{% load plugins %}
+{% block content %}
+<div class="row">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Maintenance Impact</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Maintenance</th>
+                        <td>
+                            {% if object.maintenance %}
+                                <a href="{{ object.maintenance.get_absolute_url }}">{{ object.maintenance }}</a>
+                            {% else %}
+                                {{ ''|placeholder }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Impact Type</th>
+                        <td>
+                            {% if object.impact %}
+                                <a href="{{ object.impact.get_absolute_url }}">{{ object.impact }}</a>
+                            {% else %}
+                                {{ ''|placeholder }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Impacted Object Type</th>
+                        <td>
+                            {% if object.object_type %}
+                                {{ object.object_type }}
+                            {% else %}
+                                {{ ''|placeholder }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Impacted Object</th>
+                        <td>
+                            {% if object.object %}
+                                {% if object.object.get_absolute_url %}
+                                    <a href="{{ object.object.get_absolute_url }}">{{ object.object }}</a>
+                                {% else %}
+                                    {{ object.object }}
+                                {% endif %}
+                            {% else %}
+                                {{ ''|placeholder }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Description</th>
+                        <td>{{ object.description|placeholder }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% include 'inc/panels/custom_fields.html' %}
+        {% include 'inc/panels/tags.html' %}
+        {% plugin_left_page object %}
+    </div>
+    <div class="col col-md-6">
+        {% include 'inc/panels/comments.html' %}
+        {% plugin_right_page object %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+{% load plugins %}
+{% block content %}
+    <div class="row">
+        <div class="col col-md-6">
+            <div class="card">
+                <h5 class="card-header">Maintenance</h5>
+                <div class="card-body">
+                    <table class="table table-hover attr-table">
+                        <tr>
+                            <th scope="row">Name</th>
+                            <td>{{ object.name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Summary</th>
+                            <td>{{ object.summary|placeholder }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Status</th>
+                            <td>
+                                {% if object.status %}
+                                    <a href="{{ object.status.get_absolute_url }}">
+                                        <span class="badge" style="background-color: #{{ object.status.color }}">{{ object.status.name }}</span>
+                                    </a>
+                                {% else %}
+                                    {{ ''|placeholder }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Start Time</th>
+                            <td>{{ object.start|placeholder }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">End Time</th>
+                            <td>{{ object.end|placeholder }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Internal Ticket</th>
+                            <td>{{ object.internal_ticket|placeholder }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Acknowledged</th>
+                            <td>
+                                {% if object.acknowledged %}
+                                    <span class="badge text-bg-success"><i class="mdi mdi-check"></i> Yes</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary"><i class="mdi mdi-close"></i> No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            {% include 'inc/panels/custom_fields.html' %}
+            {% include 'inc/panels/tags.html' %}
+            {% plugin_left_page object %}
+        </div>
+        <div class="col col-md-6">
+            {% include 'inc/panels/comments.html' %}
+            {% plugin_right_page object %}
+        </div>
+    </div>
+{% endblock %}

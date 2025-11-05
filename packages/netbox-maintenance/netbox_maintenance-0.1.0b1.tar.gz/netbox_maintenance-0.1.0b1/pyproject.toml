@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netbox_maintenance"
+version = "0.1.0b1"
+description = "NetBox plugin for managing maintenance windows and scheduled maintenance activities."
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+license = {text = "Apache-2.0"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Framework :: Django",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/netbox-maintenance"
+Repository = "https://github.com/yourusername/netbox-maintenance"
+Issues = "https://github.com/yourusername/netbox-maintenance/issues"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "autopep8",
+    "pip",
+    "check-manifest",
+    "pytest",
+    "python-dotenv",
+]
+
+[tool.setuptools.packages.find]
+# This replaces find_packages()
+where = ["."]
+include = ["netbox_maintenance*"]
+
+[tool.setuptools.package-data]
+# This replaces include_package_data=True
+"*" = ["*"]

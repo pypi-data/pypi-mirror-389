@@ -1,0 +1,8 @@
+{% extends 'generic/object_edit.html' %}
+{% load i18n %}
+{% load static %}
+{% load form_helpers %}
+{% block head %}
+    {{ block.super }}
+    <script src="{% static 'maintenance_impact_active_tab.js' %}"></script>
+{% endblock head %}
