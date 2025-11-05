@@ -1,0 +1,130 @@
+Metadata-Version: 2.4
+Name: aware-sdk
+Version: 0.5.1
+Summary: Convenience bundle for installing Aware release tooling
+Project-URL: Homepage, https://github.com/aware-network/aware-sdk
+Project-URL: Documentation, https://github.com/aware-network/aware-sdk/blob/main/README.md
+Project-URL: Changelog, https://github.com/aware-network/aware-sdk/blob/main/CHANGELOG.md
+Project-URL: Source, https://github.com/aware-network/aware-sdk
+Project-URL: Issues, https://github.com/aware-network/aware-sdk/issues
+Author: Aware OSS Team
+License: MIT License
+        
+        Copyright (c) 2025 Aware Network
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+License-File: LICENSE
+Keywords: automation,aware,release,sdk
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Build Tools
+Requires-Python: >=3.12
+Requires-Dist: aware-file-system>=0.1.1
+Requires-Dist: aware-release>=0.1.2
+Requires-Dist: aware-test-runner>=0.1.4
+Provides-Extra: test
+Requires-Dist: aware-file-system[test]>=0.1.1; extra == 'test'
+Requires-Dist: pytest-asyncio>=0.23.7; extra == 'test'
+Requires-Dist: pytest-mock>=3.12; extra == 'test'
+Requires-Dist: pytest>=8.4.2; extra == 'test'
+Description-Content-Type: text/markdown
+
+# aware-sdk
+
+`aware-sdk` is the convenience bundle for installing the Aware release toolchain.
+It pulls in the published `aware-release`, `aware-test-runner`, and
+`aware-file-system` packages so you can bootstrap an environment with a single
+`pip install`.
+
+## Installation
+
+```bash
+pip install aware-sdk
+```
+
+Python 3.12 or newer is required.
+
+For CI parity and local testing install the optional `test` extra, which pulls
+in pytest and async fixtures used by the bundled suites:
+
+```bash
+pip install "aware-sdk[test]"
+```
+
+This command installs the following packages (with compatible versions):
+
+- [`aware-release`](https://pypi.org/project/aware-release/) — bundle builder,
+  manifest tooling, and workflow helpers.
+- [`aware-test-runner`](https://pypi.org/project/aware-test-runner/) — manifest-
+  driven test orchestration.
+- [`aware-file-system`](https://pypi.org/project/aware-file-system/) —
+  filesystem watcher/indexer used by the CLI and SDK.
+
+## CLI helper
+
+The package exposes a lightweight `aware-sdk` CLI that reports the installed
+versions of the bundled components:
+
+```bash
+$ aware-sdk
+{
+  "aware_sdk": "0.0.0",
+  "aware_release": "0.1.2",
+  "aware_test_runner": "0.1.2",
+  "aware_file_system": "0.1.0"
+}
+```
+
+(Version numbers will reflect the installed releases.)
+
+Use this command in CI or local scripts to verify that your environment is
+synchronised with the recommended versions.
+
+## Usage
+
+Once `aware-sdk` is installed you can immediately invoke the underlying
+packages. Common examples:
+
+```bash
+# Build a release bundle
+aware-release bundle --help
+
+# Run the curated OSS test suites
+aware-tests --manifest oss --stable --no-warnings
+
+# Start the filesystem watcher
+python -m aware_file_system.examples.watch_docs
+```
+
+Refer to the individual package documentation for detailed usage.
+
+## Versioning & changelog
+
+`aware-sdk` itself contains only the helper CLI and metadata. All functional
+updates happen in the underlying packages. Each release of the SDK documents
+which versions of the bundled packages it expects.
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for details.
