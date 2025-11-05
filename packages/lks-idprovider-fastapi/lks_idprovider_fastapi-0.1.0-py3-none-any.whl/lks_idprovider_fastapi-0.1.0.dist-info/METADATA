@@ -1,0 +1,37 @@
+Metadata-Version: 2.3
+Name: lks-idprovider-fastapi
+Version: 0.1.0
+Summary: Provider-agnostic FastAPI integration for lks-idprovider API protocols.
+License: LKSISL
+Author: Raul Medeiros
+Author-email: rmedeiros@lksnext.com
+Requires-Python: >=3.11
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Dist: fastapi (>=0.116.1)
+Requires-Dist: lks-idprovider-api (>=0.1.6,<0.2.0)
+Description-Content-Type: text/markdown
+
+# lks-idprovider-fastapi
+
+Provider-agnostic FastAPI integration for lks-idprovider API protocols.
+
+This package provides reusable FastAPI dependencies, decorators, and middleware for REST API security, based on the lks-idprovider API protocols. It is not tied to any specific provider implementation (e.g., Keycloak) and can be used with any compatible backend.
+
+## Features
+- Bearer token security scheme for OpenAPI
+- AuthContext dependency for user/client authentication
+- Role-based and route protection dependencies
+- Easy integration with any provider implementing the API protocols
+
+## Usage
+1. Install this package and your chosen provider implementation.
+2. Configure your provider (e.g., Keycloak) in your FastAPI app.
+3. Inject the provider into the dependencies from this package.
+
+## License
+LKSISL
+
