@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: upstream-ontologist
+Version: 0.2.7
+Summary: tracking of upstream project metadata
+Author-email: Jelmer Vernooij <jelmer@jelmer.uk>
+Maintainer-email: Jelmer Vernooij <jelmer@jelmer.uk>
+Project-URL: Homepage, https://github.com/jelmer/upstream-ontologist-py
+Project-URL: Repository, https://github.com/jelmer/upstream-ontologist-py.git
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: python_debian
+Requires-Dist: ruamel.yaml
+Requires-Dist: breezy>=3.3.0
+Provides-Extra: debian-changelog
+Requires-Dist: httplib2>=0.7.8; extra == "debian-changelog"
+Requires-Dist: python_debian; extra == "debian-changelog"
+Provides-Extra: homepage
+Requires-Dist: bs4; extra == "homepage"
+Provides-Extra: readme
+Requires-Dist: docutils; extra == "readme"
+Requires-Dist: lxml; extra == "readme"
+Requires-Dist: bs4; extra == "readme"
+Requires-Dist: pygments; extra == "readme"
+Provides-Extra: setup-cfg
+Requires-Dist: setuptools; extra == "setup-cfg"
+Provides-Extra: testing
+Requires-Dist: breezy>=3.3.0; extra == "testing"
+Provides-Extra: dev
+Requires-Dist: ruff==0.14.3; extra == "dev"
+
+# Python bindings for the upstream ontologist
+
+This is a Python package that provides bindings to the [upstream
+ontologist](https://github.com/jelmer/upstream-ontologist).
