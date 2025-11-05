@@ -1,0 +1,95 @@
+Metadata-Version: 2.4
+Name: oci-openai
+Version: 0.2.1
+Project-URL: Documentation, https://github.com/oracle/oci-openai#readme
+Project-URL: Issues, https://github.com/oracle/oci-openai/issues
+Project-URL: Source, https://github.com/oracle/oci-openai
+Author-email: Chao Yang <chao.c.yang@oracle.com>
+License-Expression: UPL-1.0
+License-File: LICENSE.txt
+Keywords: AI,Artificial Intelligence,GenAI,Generative AI,OCI,Oracle,Oracle Cloud Infrastructure
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: System :: Benchmark
+Classifier: Typing :: Typed
+Requires-Python: >=3.8
+Requires-Dist: httpx<1,>=0.23.0
+Requires-Dist: oci>=2.150.1
+Requires-Dist: openai>=v1.108.1
+Requires-Dist: requests<3.0.0,>=2.32.1
+Provides-Extra: dev
+Requires-Dist: black<25.0.0,>=24.8.0; extra == 'dev'
+Requires-Dist: isort<6.0.0,>=5.13.2; extra == 'dev'
+Requires-Dist: mypy<2.0.0,>=1.11.1; extra == 'dev'
+Requires-Dist: pytest-cov<6.0.0,>=5.0.0; extra == 'dev'
+Requires-Dist: pytest<9.0.0,>=8.3.2; extra == 'dev'
+Requires-Dist: respx; extra == 'dev'
+Requires-Dist: ruff<0.6.0,>=0.5.6; extra == 'dev'
+Requires-Dist: typing-extensions<5,>=4.11; extra == 'dev'
+Description-Content-Type: text/markdown
+
+# oci-openai
+
+[![PyPI - Version](https://img.shields.io/pypi/v/oci-openai.svg)](https://pypi.org/project/oci-openai)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/oci-openai.svg)](https://pypi.org/project/oci-openai)
+
+OCI-OpenAI is a client library maintained by the Oracle Cloud Infrastructure (OCI) [Generative AI Service](https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm) team.
+This package simplifies integration between OpenAI’s Python SDK and Oracle Cloud Infrastructure (OCI) GenAI service by providing robust authentication and authorization utilities.
+Developers can seamlessly connect to Oracle Generative AI services using OCI credentials, ensuring secure and compliant access while leveraging industry best practices.
+
+-----
+
+## Table of Contents
+
+- [Installation](#installation)
+- [License](#license)
+
+## Installation
+
+```console
+pip install oci-openai
+```
+
+## Examples
+
+```python
+from oci_openai import OciOpenAI, OciSessionAuth
+
+client = OciOpenAI(
+    service_endpoint="https://inference.generativeai.us-chicago-1.oci.oraclecloud.com",
+    auth=OciSessionAuth(profile_name="<profile name>"),
+    compartment_id="<compartment ocid>",
+)
+
+completion = client.chat.completions.create(
+    model="<model name>",
+    messages=[
+        {
+            "role": "user",
+            "content": "How do I output all files in a directory using Python?",
+        },
+    ],
+)
+print(completion.model_dump_json())
+```
+
+## Contributing
+
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md)
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
+
+## License
+
+Copyright (c) 2025 Oracle and/or its affiliates.
+
+Released under the Universal Permissive License v1.0 as shown at
+<https://oss.oracle.com/licenses/upl/>
