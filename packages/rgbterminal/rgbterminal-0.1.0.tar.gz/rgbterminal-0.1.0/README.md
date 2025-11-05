@@ -1,0 +1,87 @@
+# rgbterminal
+
+`rgbterminal` is a lightweight Python library for **terminal-colored text** with both **256-color** and **truecolor (24-bit)** support. It allows you to print colorful text in the terminal easily, with a convenient factory system for repeated colors.
+
+---
+
+## Features
+
+- Foreground **256-color and truecolor** support  
+- Easy-to-use **factory** for creating multiple colored texts  
+- Access RGB values, cube levels, and terminal color codes  
+- Compatible with Python 3.10+  
+
+---
+
+## Installation
+
+Install via pip:
+
+##change##
+pip install rgbterminal
+##change##
+
+---
+
+## Usage
+
+### Basic Usage
+
+##change##
+from rgbterminal import RGBText
+
+# 256-color text
+text1 = RGBText("Hello 256-color!", rgb=(120, 200, 80), truecolor=False)
+print(text1)
+
+# Truecolor text
+text2 = RGBText("Hello Truecolor!", rgb=(120, 200, 80), truecolor=True)
+print(text2)
+##change##
+
+### Using RGBTextFactory
+
+##change##
+from rgbterminal import RGBTextFactory
+
+factory = RGBTextFactory((255, 100, 50))
+
+# Generate multiple texts with same base color
+t1 = factory.t("Factory 256-color text")
+t2 = factory.t_truecolor("Factory Truecolor text")
+t3 = factory.text("Another 256-color text")
+
+print(t1)
+print(t2)
+print(t3)
+
+# Access properties
+print("Factory RGB:", factory.r, factory.g, factory.b)
+print("Cube levels:", factory.r_level, factory.g_level, factory.b_level)
+print("256-color code:", factory.code)
+##change##
+
+---
+
+## Properties
+
+For any `RGBText` object:
+
+- `r`, `g`, `b` → RGB values (0-255)  
+- `r_level`, `g_level`, `b_level` → Cube levels (0-5)  
+- `red`, `green`, `blue` → aliases for `r`, `g`, `b`  
+- `red_level`, `green_level`, `blue_level` → aliases for cube levels  
+- `code` → 256-color terminal code  
+- `in_256color` → 256-color string for printing  
+
+---
+
+## Contributing
+
+Contributions are welcome! Please fork the repo and submit a pull request.
+
+---
+
+## License
+
+MIT License
