@@ -1,0 +1,134 @@
+# ChromifyPro
+
+[![PyPI](https://img.shields.io/pypi/v/ChromifyPro)](https://pypi.org/project/ChromifyPro/)
+[![Python Version](https://img.shields.io/pypi/pyversions/ChromifyPro)](https://pypi.org/project/ChromifyPro/)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+
+ChromifyPro is a Python library for working with color palettes and themes.  
+It comes with built-in templates and also allows loading custom palettes from ZIP files.  
+
+---
+
+## Features
+
+- Preloaded color templates accessible via a global dictionary.  
+- Load custom palettes from ZIP files containing JSON, CSV, or TXT color files.  
+- Supports hex color strings (`#RRGGBB` or `#RGB`).  
+- Password-protected ZIP files are supported (default password: `"ChromifyPro"`).
+
+---
+
+## Installation
+
+```bash
+pip install ChromifyPro
+````
+
+---
+
+## Usage
+
+### 1. Using Built-in Templates
+
+ChromifyPro automatically loads templates from the `ChromifyPro_template` folder when imported.
+Use the global `TEMPLATE_COLORS` dictionary to access them.
+
+```python
+from ChromifyPro import TEMPLATE_COLORS
+
+# List available palettes
+print("Available palettes:", list(TEMPLATE_COLORS.keys()))
+
+# Access colors from a specific palette
+palette_name = "palette_01"
+colors = TEMPLATE_COLORS.get(palette_name, [])
+print(f"Colors in {palette_name}: {colors}")
+```
+
+> Example structure of `TEMPLATE_COLORS`:
+
+```python
+{
+  "palette_01": ["#FF0000", "#00FF00", "#0000FF"],
+  "palette_02": ["#123456", "#ABCDEF"],
+}
+```
+
+---
+
+### 2. Loading Custom Templates from a ZIP File
+
+The `load_from_zip` function allows loading custom palettes from a ZIP file:
+
+* **JSON**: `[{"hex": "#FF0000"}, {"hex": "#00FF00"}]`
+* **CSV**: `name,hex`
+* **TXT**: each line is a hex color like `#RRGGBB`
+
+```python
+from ChromifyPro import load_from_zip
+
+# Load colors directly from a ZIP file
+colors = load_from_zip("/path/to/custom_palettes.zip")
+
+# Print loaded colors
+for color in colors:
+    print(color.to_hex())
+```
+
+> Returns a list of `Color` objects ready to use.
+
+---
+
+### 3. Updating `TEMPLATE_COLORS` with Custom ZIP
+
+After loading a ZIP, refresh the global `TEMPLATE_COLORS` to include new palettes:
+
+```python
+from ChromifyPro import load_from_template, TEMPLATE_COLORS
+
+# Reload templates into the global TEMPLATE_COLORS dictionary
+TEMPLATE_COLORS = load_from_template()
+
+# Access a newly loaded custom palette
+custom_colors = TEMPLATE_COLORS.get("my_custom_palette", [])
+print(custom_colors)
+```
+
+---
+
+## Notes
+
+* Password-protected ZIP files use `"ChromifyPro"` as the default password.
+* Supported file types inside the ZIP: JSON, CSV, TXT.
+* Hex colors must follow the standard format: `#RRGGBB` or `#RGB`.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+## Example Directory Structure
+
+```
+ChromifyPro/
+├── __init__.py
+├── Color.py
+├── Converter.py
+├── utils.py
+├── ChromifyPro_template/
+│   ├── palette_01.json
+│   ├── palette_02.csv
+│   └── ...
+└── ...
+```
+
+---
+
+## References
+
+* [Python ZIP File Handling](https://docs.python.org/3/library/zipfile.html)
+* [Working with JSON in Python](https://docs.python.org/3/library/json.html)
+* [CSV File Reading/Writing](https://docs.python.org/3/library/csv.html)
