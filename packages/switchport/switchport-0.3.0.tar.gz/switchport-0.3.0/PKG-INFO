@@ -1,0 +1,93 @@
+Metadata-Version: 2.4
+Name: switchport
+Version: 0.3.0
+Summary: Python SDK for Switchport - Prompt management and A/B testing platform
+Project-URL: Homepage, https://switchport.ai
+Project-URL: Documentation, https://docs.switchport.ai/sdk/python/quickstart
+Project-URL: Repository, https://github.com/switchport-ai/switchport-python
+Project-URL: Issues, https://github.com/switchport-ai/switchport-python/issues
+Author-email: Switchport <hello@switchport.ai>
+License: MIT
+License-File: LICENSE
+Keywords: a/b testing,ai,llm,prompt,sdk,switchport
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: requests>=2.31.0
+Provides-Extra: dev
+Requires-Dist: black>=23.0.0; extra == 'dev'
+Requires-Dist: mypy>=1.0.0; extra == 'dev'
+Requires-Dist: pytest-cov>=4.0.0; extra == 'dev'
+Requires-Dist: pytest>=7.0.0; extra == 'dev'
+Description-Content-Type: text/markdown
+
+# Switchport Python SDK
+
+Official Python SDK for [Switchport](https://switchport.ai) - Prompt management and A/B testing platform.
+
+## Features
+
+- 🚀 **Easy Integration**: Simple, intuitive API
+- 🎯 **Prompt Execution**: Call LLMs with managed prompts
+- 📊 **A/B Testing**: Deterministic version routing based on context
+- 📈 **Metrics Recording**: Track performance and user feedback
+- 🔐 **Secure**: API key authentication
+- 🎨 **Flexible Context**: Support for dict or string context
+
+## Installation
+
+```bash
+pip install switchport
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/switchport-ai/switchport-python.git
+cd switchport-python
+pip install -e .
+```
+
+## Quick Start
+
+### 1. Get Your API Key
+
+1. Sign up at [switchport.ai](https://switchport.ai)
+2. Create an organization and project
+3. Get your API key from Settings (starts with `sp_`)
+
+### 2. Set Environment Variable
+
+```bash
+export SWITCHPORT_API_KEY=sp_your_key_here
+```
+
+### 3. Use the SDK
+
+```python
+from switchport import Switchport
+
+# Initialize client
+client = Switchport()  # Reads API key from environment
+
+# Execute a prompt
+response = client.prompts.execute(
+    prompt_key="welcome-message",
+    variables={"customer_name": "Alice"}
+)
+
+print(response.text)  # Generated text from LLM
+```
+
+For complete examples and documentation, see the [examples](examples/) directory.
