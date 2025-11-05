@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: detectk
+Version: 0.3.2
+Summary: Flexible metric monitoring and anomaly detection framework
+Author-email: Alexei Veselov <alexeiveselov92@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/alexeiveselov92/detectk
+Project-URL: Documentation, https://github.com/alexeiveselov92/detectk#readme
+Project-URL: Repository, https://github.com/alexeiveselov92/detectk
+Project-URL: Issues, https://github.com/alexeiveselov92/detectk/issues
+Keywords: monitoring,alerting,metrics,anomaly-detection,detection,observability,time-series
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: System :: Monitoring
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: jinja2>=3.1.0
+Requires-Dist: python-dateutil>=2.8.0
+Requires-Dist: click>=8.1.0
+Provides-Extra: progress
+Requires-Dist: tqdm>=4.65.0; extra == "progress"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Requires-Dist: types-pyyaml; extra == "dev"
+Requires-Dist: types-python-dateutil; extra == "dev"
+Requires-Dist: tqdm>=4.65.0; extra == "dev"
