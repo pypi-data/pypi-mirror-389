@@ -1,0 +1,2677 @@
+"""
+PaprWall - Modern Desktop Wallpaper Manager GUI
+A clean, feature-rich wallpaper manager with motivational quotes
+"""
+
+import os
+import sys
+import json
+import platform
+import subprocess
+import threading
+import time
+from pathlib import Path
+from datetime import datetime
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox, scrolledtext
+from PIL import Image, ImageTk, ImageDraw, ImageFont
+import requests
+
+# Removed tray support - using systemd/Windows service instead
+
+
+class ModernWallpaperGUI:
+    """Modern wallpaper manager with clean UI and enhanced features."""
+
+    def __init__(self, root):
+        self.root = root
+        self.root.title("PaprWall - Modern Wallpaper Manager")
+
+        # Set window icon
+        self.set_window_icon()
+
+        # Window setup
+        self.setup_window()
+
+        # Initialize variables
+        self.init_variables()
+
+        # Setup data directories
+        self.setup_directories()
+
+        # Load configuration and history
+        self.load_config()
+        self.load_history()
+
+        # Build UI
+        self.build_ui()
+
+        # Check for first run installation
+        self.root.after(100, self.check_first_run_installation)
+
+        # Start background tasks
+        self.root.after(500, self.fetch_initial_wallpaper)
+
+        # Start auto-rotation if enabled
+        self.root.after(1000, self.start_auto_rotate_if_enabled)
+
+    def set_window_icon(self):
+        """Set the window icon."""
+        try:
+            # Find the icon file
+            if getattr(sys, "frozen", False):
+                # Running as PyInstaller bundle
+                bundle_dir = Path(sys._MEIPASS)
+                icon_path = bundle_dir / "assets" / "paprwall-icon.png"
+            else:
+                # Running as script
+                gui_dir = Path(__file__).parent
+                project_root = gui_dir.parent.parent
+                icon_path = project_root / "assets" / "paprwall-icon.png"
+
+            if icon_path.exists():
+                # Load icon and set it
+                icon_img = Image.open(icon_path)
+                try:
+                    icon_photo = ImageTk.PhotoImage(icon_img)
+                    self.root.iconphoto(True, icon_photo)
+                    self.root._icon_photo = icon_photo  # Prevent GC
+                except Exception as e:
+                    print(f"[DEBUG] Failed to set icon: {e}")
+
+        except Exception as e:
+            # Icon is optional, don't crash if it fails
+            pass
+
+    def setup_window(self):
+        """Configure main window."""
+        # Set minimum size
+        self.root.minsize(1200, 700)
+
+        # Maximize window
+        if platform.system() == "Windows":
+            self.root.state("zoomed")
+        else:
+            self.root.attributes("-zoomed", True)
+
+        # Modern color scheme
+        self.colors = {
+            "bg_primary": "#0f1419",
+            "bg_secondary": "#1a1f26",
+            "bg_tertiary": "#23272f",
+            "bg_hover": "#23272f",
+            "accent_green": "#10b981",
+            "accent_red": "#ef4444",
+            "accent_blue": "#2563eb",
+            "accent_purple": "#8b5cf6",   # <-- add this line
+            "text_primary": "#f9fafb",
+            "text_secondary": "#9ca3af",
+            "text_muted": "#6b7280",
+            "border": "#374151",
+        }
+
+        self.root.configure(bg=self.colors["bg_primary"])
+        
+        # Setup window close handler
+        self.root.protocol("WM_DELETE_WINDOW", self.on_window_close)
+
+    def init_variables(self):
+        """Initialize application variables."""
+        # Current state
+        self.current_wallpaper = None
+        self.current_quote = {"text": "Transform your desktop", "author": "PaprWall"}
+        self.preview_image = None
+        self.preview_path = None  # Track which file is shown in preview
+        self.applied_wallpaper = None  # Track last successfully applied wallpaper
+        self.is_fetching = False  # Prevent concurrent fetches
+        self.fetch_lock = threading.Lock()
+
+        # Auto-rotation
+        self.auto_rotate = tk.BooleanVar(value=True)
+        self.rotate_interval = tk.IntVar(value=30)  # Changed to 30 minutes
+        self.timer_thread = None
+        self.timer_running = False
+        self.time_remaining = 0
+
+        # Settings
+        self.quote_category = tk.StringVar(value="motivational")
+        self.auto_fetch_on_start = tk.BooleanVar(value=True)
+
+        # Quote categories
+        self.categories = {
+            "motivational": "Motivational",
+            "mathematics": "Mathematics",
+            "science": "Science",
+            "famous": "Famous People",
+            "technology": "Technology",
+            "philosophy": "Philosophy",
+        }
+
+        # API endpoints with fallbacks
+        self.quote_apis = {
+            "quotable": "https://api.quotable.io/random",
+            "zenquotes": "https://zenquotes.io/api/random",
+            "type.fit": "https://type.fit/api/quotes",
+        }
+
+        # Multiple image sources for reliability (95% picsum, 5% loremflickr as fallback)
+        self.image_sources = [
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://picsum.photos/1920/1080",
+            "https://loremflickr.com/1920/1080/nature",
+        ]
+
+        # Retry configuration
+        self.max_retries = 3
+        self.retry_delay = 2  # seconds
+
+    def setup_directories(self):
+        """Setup data directories."""
+        if platform.system() == "Windows":
+            base_dir = Path(os.environ.get("APPDATA", Path.home()))
+        else:
+            base_dir = Path.home() / ".local" / "share"
+
+        self.data_dir = base_dir / "paprwall"
+        self.wallpapers_dir = self.data_dir / "wallpapers"
+        self.config_file = self.data_dir / "config.json"
+        self.history_file = self.data_dir / "history.json"
+
+        # Create directories
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.wallpapers_dir.mkdir(exist_ok=True)
+
+    def load_config(self):
+        """Load user configuration."""
+        if self.config_file.exists():
+            try:
+                with open(self.config_file, "r") as f:
+                    config = json.load(f)
+                    self.quote_category.set(config.get("category", "motivational"))
+                    self.rotate_interval.set(config.get("interval", 60))
+                    self.auto_rotate.set(config.get("auto_rotate", False))
+            except Exception as e:
+                print(f"Failed to load config: {e}")
+
+    def save_config(self):
+        """Save user configuration."""
+        try:
+            config = {
+                "category": self.quote_category.get(),
+                "interval": self.rotate_interval.get(),
+                "auto_rotate": self.auto_rotate.get(),
+            }
+            with open(self.config_file, "w") as f:
+                json.dump(config, f, indent=2)
+        except Exception as e:
+            print(f"Failed to save config: {e}")
+
+    def load_history(self):
+        """Load wallpaper history."""
+        self.history = []
+        if self.history_file.exists():
+            try:
+                with open(self.history_file, "r") as f:
+                    data = json.load(f)
+                    # Ensure it's a list
+                    if isinstance(data, list):
+                        self.history = data
+                    else:
+                        self.history = []
+            except Exception as e:
+                print(f"Failed to load history: {e}")
+                self.history = []
+
+    def save_to_history(self, wallpaper_path, quote):
+        """Save wallpaper to history."""
+        try:
+            # Create entry
+            entry = {
+                "path": str(wallpaper_path),
+                "quote": quote,
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            # Ensure history is a list
+            if not isinstance(self.history, list):
+                self.history = []
+
+            # Add to beginning
+            self.history.insert(0, entry)
+            self.history = self.history[:50]  # Keep last 50
+
+            # Save to file
+            with open(self.history_file, "w") as f:
+                json.dump(self.history, f, indent=2)
+
+            # Update gallery display
+            self.root.after(0, self.update_history_gallery)
+        except Exception as e:
+            print(f"Failed to save history: {e}")
+
+    def build_ui(self):
+        """Build the user interface."""
+        # Create main sections
+        self.create_header()
+        self.create_main_area()
+        self.create_sidebar()
+
+    def create_header(self):
+        """Create header bar."""
+        header = tk.Frame(self.root, bg=self.colors["bg_secondary"], height=60)
+        header.pack(side=tk.TOP, fill=tk.X)
+        header.pack_propagate(False)
+
+        # Logo
+        logo_frame = tk.Frame(header, bg=self.colors["bg_secondary"])
+        logo_frame.pack(side=tk.LEFT, padx=20, pady=10)
+
+        tk.Label(
+            logo_frame,
+            text="PaprWall",
+            font=("Segoe UI", 18, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["accent_blue"],
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            logo_frame,
+            text="Modern Wallpaper Manager",
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_secondary"],
+        ).pack(side=tk.LEFT, padx=(10, 0))
+
+        # Quick actions
+        actions = tk.Frame(header, bg=self.colors["bg_secondary"])
+        actions.pack(side=tk.RIGHT, padx=20, pady=10)
+
+        # Status indicator
+        self.status_label = tk.Label(
+            actions,
+            text="● Ready",
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["accent_green"],
+        )
+        self.status_label.pack(side=tk.LEFT, padx=10)
+
+        # Quick action buttons
+        self.create_button(
+            actions,
+            "Random",
+            lambda: self.fetch_random_wallpaper(),
+            self.colors["accent_blue"],
+        ).pack(side=tk.LEFT, padx=2)
+
+        self.create_button(
+            actions, "Browse", self.browse_local_file, self.colors["bg_tertiary"]
+        ).pack(side=tk.LEFT, padx=2)
+
+    def create_main_area(self):
+        """Create main content area."""
+        main = tk.Frame(self.root, bg=self.colors["bg_primary"])
+        main.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Preview section (reduced padding to fit more)
+        preview_container = tk.Frame(main, bg=self.colors["bg_secondary"])
+        preview_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=(15, 10))
+
+        # Preview header (reduced spacing)
+        preview_header = tk.Frame(preview_container, bg=self.colors["bg_secondary"])
+        preview_header.pack(fill=tk.X, pady=(5, 8))
+
+        tk.Label(
+            preview_header,
+            text="Preview",
+            font=("Segoe UI", 12, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_primary"],
+        ).pack(side=tk.LEFT, padx=15)
+
+        # Applied indicator (shows if current preview is the active system wallpaper)
+        self.applied_indicator = tk.Label(
+            preview_header,
+            text="Preview only",
+            font=("Segoe UI", 9, "bold"),
+            bg=self.colors["bg_tertiary"],
+            fg=self.colors["text_muted"],
+            padx=8,
+            pady=3,
+        )
+        self.applied_indicator.pack(side=tk.LEFT, padx=6)
+
+        # Resolution info
+        self.resolution_label = tk.Label(
+            preview_header,
+            text="1920×1080",
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_tertiary"],
+            fg=self.colors["text_secondary"],
+            padx=10,
+            pady=5,
+        )
+        self.resolution_label.pack(side=tk.RIGHT, padx=15)
+
+        # Action buttons (top of preview)
+        top_button_frame = tk.Frame(preview_container, bg=self.colors["bg_secondary"])
+        top_button_frame.pack(fill=tk.X, padx=15, pady=(0, 6))
+
+        self.create_button(
+            top_button_frame,
+            "Set as Wallpaper",
+            self.set_wallpaper,
+            self.colors["accent_green"],
+            width=20,
+        ).pack(side=tk.LEFT, padx=5)
+
+        self.create_button(
+            top_button_frame,
+            "Refresh",
+            self.fetch_random_wallpaper,
+            self.colors["accent_blue"],
+            width=15,
+        ).pack(side=tk.LEFT, padx=5)
+
+        # Preview canvas (fixed height to fit on screen)
+        canvas_frame = tk.Frame(preview_container, bg="black", height=320)
+        canvas_frame.pack(fill=tk.X, expand=False, padx=15, pady=(0, 8))
+        canvas_frame.pack_propagate(False)
+
+        self.preview_canvas = tk.Canvas(
+            canvas_frame,
+            bg="#000000",
+            highlightthickness=1,
+            highlightbackground=self.colors["border"],
+        )
+        self.preview_canvas.pack(fill=tk.BOTH, expand=True)
+
+        # Move history section up so it's visible without scrolling
+        self.create_history_section(preview_container)
+
+        # Quote display (smaller and more compact)
+        quote_frame = tk.Frame(preview_container, bg=self.colors["bg_tertiary"])
+        quote_frame.pack(fill=tk.X, padx=15, pady=(0, 8))
+
+        # Quote content frame with refresh button
+        quote_content_frame = tk.Frame(quote_frame, bg=self.colors["bg_tertiary"])
+        quote_content_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.quote_display = tk.Label(
+            quote_content_frame,
+            text='"Transform your desktop with beautiful wallpapers"',
+            font=("Georgia", 11, "italic"),
+            bg=self.colors["bg_tertiary"],
+            fg=self.colors["text_primary"],
+            wraplength=700,
+            justify="left",
+            padx=12,
+            pady=8,
+        )
+        self.quote_display.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Refresh quote button
+        self.create_button(
+            quote_content_frame,
+            "↻",
+            self.refresh_quote_only,
+            self.colors["accent_blue"],
+            width=3,
+        ).pack(side=tk.RIGHT, padx=10, pady=5)
+
+        # (Buttons moved to top of preview)
+
+        # History section moved above; no call here
+
+    def create_history_section(self, parent):
+        """Create history gallery section."""
+        history_container = tk.Frame(parent, bg=self.colors["bg_secondary"], height=160)
+        history_container.pack(fill=tk.X, expand=False, padx=20, pady=(0, 15))
+        history_container.pack_propagate(False)
+
+        # Header
+        header = tk.Frame(history_container, bg=self.colors["bg_secondary"])
+        header.pack(fill=tk.X, pady=(5, 5), padx=15)
+
+        tk.Label(
+            header,
+            text="History",
+            font=("Segoe UI", 12, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_primary"],
+        ).pack(side=tk.LEFT)
+
+        # Gallery canvas
+        gallery_frame = tk.Frame(history_container, bg=self.colors["bg_secondary"])
+        gallery_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=(0, 8))
+
+        # Scrollable canvas
+        self.history_canvas = tk.Canvas(
+            gallery_frame,
+            bg=self.colors["bg_secondary"],
+            height=200,
+            highlightthickness=0,
+        )
+
+        scrollbar = ttk.Scrollbar(
+            gallery_frame, orient=tk.HORIZONTAL, command=self.history_canvas.xview
+        )
+
+        self.history_canvas.configure(xscrollcommand=scrollbar.set)
+
+        self.history_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Create inner frame for thumbnails
+        self.history_frame = tk.Frame(
+            self.history_canvas, bg=self.colors["bg_secondary"]
+        )
+        self.history_canvas_window = self.history_canvas.create_window(
+            (0, 0), window=self.history_frame, anchor="nw"
+        )
+
+        self.history_frame.bind("<Configure>", self.on_history_configure)
+        
+        # Enable mouse wheel scrolling
+        self.history_canvas.bind("<MouseWheel>", self.on_history_mousewheel)
+        self.history_canvas.bind("<Button-4>", self.on_history_mousewheel)
+        self.history_canvas.bind("<Button-5>", self.on_history_mousewheel)
+
+    def on_history_configure(self, event):
+        """Update scroll region when history frame changes."""
+        self.history_canvas.configure(scrollregion=self.history_canvas.bbox("all"))
+
+    def on_history_mousewheel(self, event):
+        """Handle mouse wheel scrolling for history gallery."""
+        # Windows and MacOS
+        if event.num == 5 or event.delta < 0:
+            self.history_canvas.xview_scroll(1, "units")
+        elif event.num == 4 or event.delta > 0:
+            self.history_canvas.xview_scroll(-1, "units")
+
+    def create_sidebar(self):
+        """Create right sidebar with controls."""
+        sidebar = tk.Frame(self.root, bg=self.colors["bg_secondary"], width=450)
+        sidebar.pack(side=tk.RIGHT, fill=tk.BOTH)
+        sidebar.pack_propagate(False)
+
+        # Scrollable content
+        canvas = tk.Canvas(
+            sidebar, bg=self.colors["bg_secondary"], highlightthickness=0
+        )
+        scrollbar = ttk.Scrollbar(sidebar, orient=tk.VERTICAL, command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg=self.colors["bg_secondary"])
+
+        scrollable_frame.bind(
+            "<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Sections
+        self.create_category_section(scrollable_frame)
+        self.create_auto_rotation_section(scrollable_frame)
+        self.create_url_section(scrollable_frame)
+        self.create_settings_section(scrollable_frame)
+
+    def create_section(self, parent, title):
+        """Create a section container."""
+        section = tk.Frame(parent, bg=self.colors["bg_secondary"])
+        section.pack(fill=tk.X, padx=15, pady=(15, 0))
+
+        tk.Label(
+            section,
+            text=title,
+            font=("Segoe UI", 12, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_primary"],
+        ).pack(anchor="w", pady=(0, 10))
+
+        return section
+
+    def create_category_section(self, parent):
+        """Create quote category selection."""
+        section = self.create_section(parent, "Quote Category")
+
+        for key, label in self.categories.items():
+            rb = tk.Radiobutton(
+                section,
+                text=label,
+                variable=self.quote_category,
+                value=key,
+                font=("Segoe UI", 10),
+                bg=self.colors["bg_secondary"],
+                fg=self.colors["text_primary"],
+                selectcolor=self.colors["bg_tertiary"],
+                activebackground=self.colors["bg_secondary"],
+                activeforeground=self.colors["accent_blue"],
+                command=self.on_category_change,
+            )
+            rb.pack(anchor="w", pady=2)
+
+    def create_auto_rotation_section(self, parent):
+        """Create auto-rotation controls."""
+        section = self.create_section(parent, "Auto-Rotation")
+
+        # Enable checkbox
+        check = tk.Checkbutton(
+            section,
+            text="Enable auto-rotation",
+            variable=self.auto_rotate,
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_primary"],
+            selectcolor=self.colors["bg_tertiary"],
+            activebackground=self.colors["bg_secondary"],
+            command=self.toggle_auto_rotate,
+        )
+        check.pack(anchor="w", pady=5)
+
+        # Interval control
+        interval_frame = tk.Frame(section, bg=self.colors["bg_secondary"])
+        interval_frame.pack(fill=tk.X, pady=10)
+
+        tk.Label(
+            interval_frame,
+            text="Interval (minutes):",
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_secondary"],
+        ).pack(side=tk.LEFT)
+
+        interval_spin = tk.Spinbox(
+            interval_frame,
+            from_=5,
+            to=1440,
+            textvariable=self.rotate_interval,
+            width=8,
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_tertiary"],
+            fg=self.colors["text_primary"],
+            buttonbackground=self.colors["bg_hover"],
+            command=self.on_interval_change,
+        )
+        interval_spin.pack(side=tk.RIGHT)
+        # Also bind Entry events (user typing directly)
+        interval_spin.bind("<Return>", lambda e: self.on_interval_change())
+        interval_spin.bind("<FocusOut>", lambda e: self.on_interval_change())
+
+        # Timer display
+        self.timer_label = tk.Label(
+            section,
+            text="Next update: --:--",
+            font=("Segoe UI", 10, "bold"),
+            bg=self.colors["bg_tertiary"],
+            fg=self.colors["accent_blue"],
+            padx=10,
+            pady=5,
+        )
+        self.timer_label.pack(fill=tk.X, pady=5)
+
+    def create_url_section(self, parent):
+        """Create custom URL input."""
+        section = self.create_section(parent, "Custom Image URL")
+
+        self.url_entry = tk.Entry(
+            section,
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_tertiary"],
+            fg=self.colors["text_primary"],
+            insertbackground=self.colors["text_primary"],
+            relief=tk.FLAT,
+        )
+        self.url_entry.pack(fill=tk.X, pady=5, ipady=5)
+
+        self.create_button(
+            section, "Fetch from URL", self.fetch_from_url, self.colors["accent_purple"]
+        ).pack(fill=tk.X, pady=5)
+
+    def create_settings_section(self, parent):
+        """Create settings and utilities."""
+        section = self.create_section(parent, "Settings & Utilities")
+
+        # Install to system (if not installed)
+        if not self.is_already_installed() and getattr(sys, "frozen", False):
+            self.create_button(
+                section,
+                "Install to System",
+                self.install_to_system,
+                self.colors["accent_blue"],
+            ).pack(fill=tk.X, pady=5)
+
+        # Background Service Controls
+        service_frame = tk.Frame(section, bg=self.colors["bg_secondary"])
+        service_frame.pack(fill=tk.X, pady=5)
+        
+        # Service status with icon (left side)
+        status_container = tk.Frame(service_frame, bg=self.colors["bg_secondary"])
+        status_container.pack(fill=tk.X, pady=(0, 8))
+        
+        tk.Label(
+            status_container,
+            text="Background Service:",
+            font=("Segoe UI", 9, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_primary"],
+        ).pack(side=tk.LEFT)
+        
+        # Service status icon and text
+        self.service_status_icon = tk.Label(
+            status_container,
+            text="⚪",
+            font=("Segoe UI", 14),
+            bg=self.colors["bg_secondary"],
+        )
+        self.service_status_icon.pack(side=tk.LEFT, padx=(10, 5))
+        
+        self.service_status_label = tk.Label(
+            status_container,
+            text="Checking...",
+            font=("Segoe UI", 9),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_muted"],
+        )
+        self.service_status_label.pack(side=tk.LEFT)
+        
+        # Single toggle button for enable/disable
+        self.service_toggle_btn = self.create_button(
+            service_frame,
+            "Enable Service",
+            self.toggle_service,
+            self.colors["accent_green"],
+        )
+        self.service_toggle_btn.pack(fill=tk.X)
+        
+        # Update status on startup
+        self.root.after(100, self.update_service_status)
+
+        # Open data folder
+        self.create_button(
+            section,
+            "Open Data Folder",
+            self.open_data_folder,
+            self.colors["bg_tertiary"],
+        ).pack(fill=tk.X, pady=5)
+
+        # Clear history
+        self.create_button(
+            section, "Clear History", self.clear_history, self.colors["bg_tertiary"]
+        ).pack(fill=tk.X, pady=5)
+
+        # Uninstall
+        if self.is_already_installed():
+            self.create_button(
+                section,
+                "Uninstall PaprWall",
+                self.uninstall_app,
+                self.colors["accent_red"],
+            ).pack(fill=tk.X, pady=5)
+
+        # About
+        self.create_button(
+            section, "About", self.show_about, self.colors["bg_tertiary"]
+        ).pack(fill=tk.X, pady=5)
+
+    def create_button(self, parent, text, command, bg_color, width=None):
+        """Create a styled button."""
+        btn = tk.Button(
+            parent,
+            text=text,
+            command=command,
+            font=("Segoe UI", 10, "bold"),
+            bg=bg_color,
+            fg="white",
+            activebackground=self.colors["bg_hover"],
+            activeforeground="white",
+            relief=tk.FLAT,
+            cursor="hand2",
+            padx=15,
+            pady=8,
+        )
+        if width:
+            btn.config(width=width)
+        return btn
+
+    # ===== Event Handlers =====
+
+    def on_category_change(self):
+        """Handle category change."""
+        self.save_config()
+        self.update_status("Category changed", "accent_green")
+
+    def toggle_auto_rotate(self):
+        """Toggle auto-rotation."""
+        if self.auto_rotate.get():
+            self.start_auto_rotation()
+        else:
+            self.stop_auto_rotation()
+        self.save_config()
+
+    def on_interval_change(self):
+        """Handle rotation interval change."""
+        self.save_config()
+        # If timer is running, restart with new interval
+        if self.timer_running and self.auto_rotate.get():
+            self.stop_auto_rotation()
+            self.start_auto_rotation()
+            self.update_status(f"Interval updated to {self.rotate_interval.get()} min", "accent_green")
+
+    def browse_local_file(self):
+        """Browse and select local image file."""
+        file_path = filedialog.askopenfilename(
+            title="Select Image",
+            filetypes=[
+                ("Image files", "*.jpg *.jpeg *.png *.bmp"),
+                ("All files", "*.*"),
+            ],
+        )
+
+        if file_path:
+            self.load_image_to_preview(file_path)
+            self.current_wallpaper = file_path
+            self.update_status("Local image loaded", "accent_green")
+
+    def load_image_to_preview(self, path):
+        """Load *path* into the preview canvas, scaled to fit while keeping ratio."""
+        try:
+            img = Image.open(path)
+            canvas_w = self.preview_canvas.winfo_width()
+            canvas_h = self.preview_canvas.winfo_height()
+            if canvas_w < 10 or canvas_h < 10:  # canvas not realised yet
+                self.root.after(100, lambda: self.load_image_to_preview(path))
+                return
+
+            # Update resolution label
+            self.resolution_label.config(text=f"{img.width}×{img.height}")
+
+            # scale to fit
+            img.thumbnail((canvas_w, canvas_h), Image.Resampling.LANCZOS)
+            tk_img = ImageTk.PhotoImage(img)
+
+            # centre image
+            x = (canvas_w - tk_img.width()) // 2
+            y = (canvas_h - tk_img.height()) // 2
+
+            self.preview_canvas.delete("all")
+            self.preview_canvas.create_image(x, y, anchor="nw", image=tk_img)
+            self.preview_canvas.image = tk_img  # keep reference
+            # Track current preview path and update applied indicator
+            self.preview_path = str(path)
+            self.update_applied_indicator()
+        except Exception as e:
+            print(f"[ERROR] Failed to load image preview: {e}")
+            self.update_status("Failed to load preview", "accent_red")
+            # Keep indicator consistent even on failure
+            self.update_applied_indicator()
+
+    def _fetch_image_helper(self, url, filename_prefix="temp", fetch_quote=True):
+        """Helper method to fetch and process images."""
+        try:
+            if fetch_quote:
+                self.fetch_quote()
+
+            response = requests.get(
+                url,
+                timeout=10,
+                allow_redirects=True,
+                headers={"User-Agent": "Mozilla/5.0"},
+            )
+
+            if response.status_code == 200:
+                # Determine file extension
+                content_type = response.headers.get("content-type", "").lower()
+                if "png" in content_type:
+                    ext = "png"
+                elif "webp" in content_type:
+                    ext = "webp"
+                else:
+                    ext = "jpg"
+
+                temp_path = (
+                    self.wallpapers_dir / f"{filename_prefix}_{int(time.time())}.{ext}"
+                )
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
+
+                self.root.after(0, lambda: self.load_image_to_preview(str(temp_path)))
+                self.current_wallpaper = str(temp_path)
+                self.root.after(
+                    0, lambda: self.update_status("Image loaded", "accent_green")
+                )
+                return True
+            else:
+                self.root.after(
+                    0, lambda: self.update_status("Failed to fetch", "accent_red")
+                )
+                return False
+        except Exception as e:
+            print(f"[ERROR] Fetch failed: {e}")
+            self.root.after(
+                0, lambda e=e: self.update_status(f"Error: {str(e)}", "accent_red")
+            )
+            return False
+
+    def fetch_random_wallpaper(self):
+        """Fetch random wallpaper from internet with retry logic."""
+        # Thread-safe check
+        with self.fetch_lock:
+            if self.is_fetching:
+                print("[DEBUG] Already fetching, ignoring request")
+                return
+            self.is_fetching = True
+
+        self.update_status("Fetching wallpaper...", "accent_blue")
+
+        def fetch():
+            import random
+
+            success = False
+            last_error = None
+
+            # Try multiple times
+            for attempt in range(self.max_retries):
+                try:
+                    # Select image source (95% picsum, 5% loremflickr)
+                    url = random.choice(self.image_sources)
+                    print(
+                        f"[DEBUG] Attempt {attempt + 1}/{self.max_retries}: Fetching from {url}"
+                    )
+
+                    # Fetch new quote for each attempt
+                    self.fetch_quote_with_retry()
+                    time.sleep(0.5)  # Wait for quote
+
+                    # Fetch image with increased timeout
+                    response = requests.get(
+                        url,
+                        timeout=15,
+                        allow_redirects=True,
+                        headers={
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        },
+                    )
+
+                    if response.status_code == 200:
+                        # Save image
+                        temp_path = self.wallpapers_dir / f"temp_{int(time.time())}.jpg"
+                        with open(temp_path, "wb") as f:
+                            f.write(response.content)
+
+                        print(f"[DEBUG] Image saved to: {temp_path}")
+
+                        # Embed quote and preview
+                        preview_path = self.embed_quote_on_image(str(temp_path))
+                        self.current_wallpaper = str(temp_path)
+
+                        self.root.after(
+                            0, lambda p=preview_path: self.load_image_to_preview(p)
+                        )
+                        
+                        # Automatically set as wallpaper
+                        final_path = self.embed_quote_on_image(str(temp_path))
+                        wp_success = self.set_system_wallpaper(final_path)
+                        print(f"[DEBUG] Auto-set wallpaper result: {wp_success}")
+                        
+                        if wp_success:
+                            # Update applied state and preview to exactly what was set
+                            self.applied_wallpaper = final_path
+                            self.root.after(0, lambda p=final_path: self.load_image_to_preview(p))
+                            self.root.after(0, self.update_applied_indicator)
+                            self.root.after(0, lambda: self.save_to_history(final_path, self.current_quote))
+                            self.root.after(
+                                0,
+                                lambda: self.update_status(
+                                    "Wallpaper set!", "accent_green"
+                                ),
+                            )
+                        else:
+                            self.root.after(
+                                0,
+                                lambda: self.update_status(
+                                    "Loaded (set failed)", "accent_red"
+                                ),
+                            )
+
+                        success = True
+                        break
+                    else:
+                        last_error = f"HTTP {response.status_code}"
+                        print(f"[WARN] Attempt {attempt + 1} failed: {last_error}")
+
+                except requests.exceptions.Timeout:
+                    last_error = "Request timeout"
+                    print(f"[WARN] Attempt {attempt + 1} timeout")
+                    # Retry with fresh quote on timeout
+                    if attempt < self.max_retries - 1:
+                        print("[DEBUG] Retrying with new quote...")
+
+                except requests.exceptions.ConnectionError as e:
+                    last_error = "Network connection error"
+                    print(f"[WARN] Attempt {attempt + 1} connection error: {e}")
+                    # Retry with fresh quote on connection error
+                    if attempt < self.max_retries - 1:
+                        print("[DEBUG] Retrying with new quote...")
+
+                except Exception as e:
+                    last_error = str(e)
+                    print(f"[WARN] Attempt {attempt + 1} failed: {e}")
+
+                # Wait before retry (except on last attempt)
+                if attempt < self.max_retries - 1 and not success:
+                    time.sleep(self.retry_delay)
+
+            if not success:
+                error_msg = f"Failed after {self.max_retries} attempts"
+                if last_error:
+                    error_msg += f": {last_error}"
+
+                self.root.after(
+                    0, lambda msg=error_msg: self.update_status(msg[:50], "accent_red")
+                )
+                self.root.after(
+                    0,
+                    lambda msg=error_msg: messagebox.showerror(
+                        "Fetch Failed",
+                        f"{msg}\n\nPlease check your internet connection.",
+                    ),
+                )
+                # Fallback to previously applied wallpaper in preview, if available
+                if self.applied_wallpaper and Path(self.applied_wallpaper).exists():
+                    self.root.after(0, lambda p=self.applied_wallpaper: self.load_image_to_preview(p))
+                    self.current_wallpaper = self.applied_wallpaper
+                    self.root.after(0, lambda: self.update_status("Using previous wallpaper", "accent_blue"))
+
+            # Always reset the flag
+            with self.fetch_lock:
+                self.is_fetching = False
+
+        threading.Thread(target=fetch, daemon=True).start()
+
+    def fetch_quote_with_retry(self):
+        """Fetch quote with retry logic (synchronous)."""
+        fallback_quotes = [
+            {
+                "text": "The only way to do great work is to love what you do.",
+                "author": "Steve Jobs",
+            },
+            {
+                "text": "Innovation distinguishes between a leader and a follower.",
+                "author": "Steve Jobs",
+            },
+            {"text": "Stay hungry, stay foolish.", "author": "Steve Jobs"},
+            {
+                "text": "The future belongs to those who believe in the beauty of their dreams.",
+                "author": "Eleanor Roosevelt",
+            },
+            {
+                "text": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                "author": "Winston Churchill",
+            },
+        ]
+
+        # Try multiple quote APIs (zenquotes first, then forismatic)
+        quote_api_list = [
+            ("https://zenquotes.io/api/random", "zenquotes"),
+            ("https://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en", "forismatic"),
+        ]
+
+        for attempt in range(len(quote_api_list)):
+            try:
+                api_url, api_name = quote_api_list[attempt]
+                
+                if api_name == "zenquotes":
+                    response = requests.get(api_url, timeout=5)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        if isinstance(data, list) and len(data) > 0:
+                            quote = {
+                                "text": data[0].get("q", "Stay motivated!"),
+                                "author": data[0].get("a", "Unknown"),
+                            }
+                            self.current_quote = quote
+                            self.root.after(0, self.update_quote_display)
+                            print(f"[DEBUG] Quote fetched from {api_name}: {quote['text'][:50]}...")
+                            return
+                            
+                elif api_name == "forismatic":
+                    response = requests.get(api_url, timeout=5)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        quote = {
+                            "text": data.get("quoteText", "Stay motivated!").strip(),
+                            "author": data.get("quoteAuthor", "Unknown").strip() or "Unknown",
+                        }
+                        self.current_quote = quote
+                        self.root.after(0, self.update_quote_display)
+                        print(f"[DEBUG] Quote fetched from {api_name}: {quote['text'][:50]}...")
+                        return
+
+            except Exception as e:
+                print(f"[DEBUG] Quote fetch from {api_name if 'api_name' in locals() else 'API'} attempt {attempt + 1} failed: {e}")
+                if attempt < len(quote_api_list) - 1:
+                    time.sleep(0.5)  # Wait before trying next API
+
+        # Use fallback quote if all APIs fail
+        import random
+
+        quote = random.choice(fallback_quotes)
+        self.current_quote = quote
+        self.root.after(0, self.update_quote_display)
+        print(f"[DEBUG] Using fallback quote: {quote['text'][:50]}...")
+
+    def fetch_quote(self):
+        """Fetch motivational quote with fallbacks (async version)."""
+
+        def fetch():
+            self.fetch_quote_with_retry()
+
+        threading.Thread(target=fetch, daemon=True).start()
+
+    def update_quote_display(self):
+        """Update the quote display label with current quote."""
+        try:
+            quote_text = self.current_quote.get("text", "")
+            author_text = self.current_quote.get("author", "")
+            display_text = f'"{quote_text}"\n\n— {author_text}'
+            self.quote_display.config(text=display_text)
+            print(f"[DEBUG] Updated quote display: {len(quote_text)} chars")
+        except Exception as e:
+            print(f"[ERROR] Failed to update quote display: {e}")
+
+    def refresh_quote_only(self):
+        """Refresh only the quote without changing the wallpaper."""
+        self.update_status("Refreshing quote...", "accent_blue")
+
+        def refresh():
+            try:
+                # Fetch new quote with retry
+                self.fetch_quote_with_retry()
+
+                # If there's a current wallpaper, re-embed the new quote on it
+                if self.current_wallpaper:
+                    preview_path = self.embed_quote_on_image(self.current_wallpaper)
+                    self.root.after(0, lambda: self.load_image_to_preview(preview_path))
+
+                self.root.after(
+                    0, lambda: self.update_status("Quote refreshed", "accent_green")
+                )
+            except Exception as e:
+                print(f"[ERROR] Failed to refresh quote: {e}")
+                self.root.after(
+                    0, lambda: self.update_status("Failed to refresh", "accent_red")
+                )
+
+        threading.Thread(target=refresh, daemon=True).start()
+
+    def fetch_and_set_wallpaper(self):
+        """Fetch a new random wallpaper and automatically set it (for auto-rotation)."""
+        self.update_status("Auto-rotating wallpaper...", "accent_blue")
+        
+        def fetch_and_set():
+            try:
+                # First fetch a new wallpaper
+                import random
+                url = random.choice(self.image_sources)
+                print(f"[DEBUG] Auto-rotation: Fetching from {url}")
+                
+                # Fetch new quote
+                self.fetch_quote_with_retry()
+                time.sleep(0.5)
+                
+                # Fetch image
+                response = requests.get(
+                    url,
+                    timeout=15,
+                    allow_redirects=True,
+                    headers={
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                    },
+                )
+                
+                if response.status_code == 200:
+                    # Save image
+                    temp_path = self.wallpapers_dir / f"auto_{int(time.time())}.jpg"
+                    with open(temp_path, "wb") as f:
+                        f.write(response.content)
+                    
+                    print(f"[DEBUG] Auto-rotation: Image saved to {temp_path}")
+                    
+                    # Update preview in main thread
+                    self.current_wallpaper = str(temp_path)
+                    preview_path = self.embed_quote_on_image(str(temp_path))
+                    self.root.after(0, lambda p=preview_path: self.load_image_to_preview(p))
+                    
+                    # Now set it as wallpaper
+                    final_path = self.embed_quote_on_image(str(temp_path))
+                    success = self.set_system_wallpaper(final_path)
+                    print(f"[DEBUG] Auto-rotation: Wallpaper set result: {success}")
+                    
+                    if success:
+                        # Record applied and ensure preview shows the exact applied file
+                        self.applied_wallpaper = final_path
+                        self.root.after(0, lambda p=final_path: self.load_image_to_preview(p))
+                        self.root.after(0, self.update_applied_indicator)
+                        self.root.after(0, lambda: self.save_to_history(final_path, self.current_quote))
+                        self.root.after(0, lambda: self.update_status("Wallpaper auto-rotated!", "accent_green"))
+                    else:
+                        self.root.after(0, lambda: self.update_status("Auto-rotation failed", "accent_red"))
+                else:
+                    print(f"[WARN] Auto-rotation fetch failed: HTTP {response.status_code}")
+                    self.root.after(0, lambda: self.update_status("Auto-rotation failed", "accent_red"))
+                    # Fallback to previously applied wallpaper in preview, if available
+                    if self.applied_wallpaper and Path(self.applied_wallpaper).exists():
+                        self.root.after(0, lambda p=self.applied_wallpaper: self.load_image_to_preview(p))
+                        self.current_wallpaper = self.applied_wallpaper
+                        self.root.after(0, lambda: self.update_status("Using previous wallpaper", "accent_blue"))
+                    
+            except Exception as e:
+                print(f"[ERROR] Auto-rotation error: {e}")
+                self.root.after(0, lambda: self.update_status("Auto-rotation error", "accent_red"))
+                # Fallback to previously applied wallpaper in preview, if available
+                if self.applied_wallpaper and Path(self.applied_wallpaper).exists():
+                    self.root.after(0, lambda p=self.applied_wallpaper: self.load_image_to_preview(p))
+                    self.current_wallpaper = self.applied_wallpaper
+                    self.root.after(0, lambda: self.update_status("Using previous wallpaper", "accent_blue"))
+        
+        threading.Thread(target=fetch_and_set, daemon=True).start()
+
+    def set_wallpaper(self):
+        """Set current image as wallpaper."""
+        if not self.current_wallpaper:
+            messagebox.showwarning("No Image", "Please load an image first")
+            return
+
+        self.update_status("Setting wallpaper...", "accent_blue")
+
+        def set_wp():
+            try:
+                print(f"[DEBUG] Setting wallpaper: {self.current_wallpaper}")
+                # Embed quote on the wallpaper
+                final_path = self.embed_quote_on_image(self.current_wallpaper)
+                print(f"[DEBUG] Wallpaper with quote saved to: {final_path}")
+
+                # Set as system wallpaper
+                success = self.set_system_wallpaper(final_path)
+                print(f"[DEBUG] Wallpaper set result: {success}")
+
+                if success:
+                    # Record applied wallpaper and sync preview
+                    self.applied_wallpaper = final_path
+                    self.root.after(
+                        0, lambda: self.save_to_history(final_path, self.current_quote)
+                    )
+                    self.root.after(
+                        0, lambda: self.update_status("Wallpaper set!", "accent_green")
+                    )
+                    # Ensure preview shows the exact applied file
+                    self.root.after(0, lambda p=final_path: self.load_image_to_preview(p))
+                    self.root.after(0, self.update_applied_indicator)
+                    self.root.after(
+                        0,
+                        lambda: messagebox.showinfo(
+                            "Success", "Wallpaper set successfully!"
+                        ),
+                    )
+                else:
+                    error_msg = (
+                        "Failed to set wallpaper.\n\n"
+                        "Common fixes:\n"
+                        "• Ubuntu/GNOME: Check terminal for [DEBUG] messages\n"
+                        "• Install feh: sudo apt install feh\n"
+                        "• WSL: Wallpaper sets on Windows side\n"
+                        "• Check file exists: " + final_path
+                    )
+                    self.root.after(
+                        0, lambda: self.update_status("Failed to set", "accent_red")
+                    )
+                    self.root.after(
+                        0,
+                        lambda: messagebox.showerror("Wallpaper Failed", error_msg),
+                    )
+            except Exception as e:
+                print(f"[ERROR] Failed to set wallpaper: {e}")
+                self.root.after(
+                    0, lambda e=e: messagebox.showerror("Error", f"Failed: {str(e)}")
+                )
+
+        threading.Thread(target=set_wp, daemon=True).start()
+
+    def fetch_from_url(self):
+        """Fetch image from custom URL."""
+        url = self.url_entry.get().strip()
+        if not url:
+            messagebox.showwarning("No URL", "Please enter an image URL")
+            return
+
+        self.update_status("Fetching from URL...", "accent_blue")
+
+        def fetch():
+            try:
+                response = requests.get(url, timeout=10)
+                if response.status_code == 200:
+                    temp_path = self.wallpapers_dir / f"custom_{int(time.time())}.jpg"
+                    with open(temp_path, "wb") as f:
+                        f.write(response.content)
+
+                    self.root.after(
+                        0, lambda: self.load_image_to_preview(str(temp_path))
+                    )
+                    self.current_wallpaper = str(temp_path)
+                    self.root.after(
+                        0, lambda: self.update_status("Image loaded", "accent_green")
+                    )
+                else:
+                    self.root.after(
+                        0, lambda: self.update_status("Invalid URL", "accent_red")
+                    )
+            except Exception as e:
+                self.root.after(
+                    0, lambda e=e: self.update_status(f"Error: {str(e)}", "accent_red")
+                )
+
+        threading.Thread(target=fetch, daemon=True).start()
+
+    def embed_quote_on_image(self, image_path):
+        """
+        Embed a quote and author on the image with adaptive overlay and font sizing.
+        Returns the output image path, or original if fails.
+        """
+        try:
+            img = Image.open(image_path)
+            img_width, img_height = img.size
+            quote_text = self.current_quote.get("text", "")
+            author_text = f"— {self.current_quote.get('author', '')}" if self.current_quote.get('author', '') else ""
+
+            # Adaptive font size: start smaller and shrink-to-fit within a fraction of the image
+            draw = ImageDraw.Draw(img)
+
+            font_candidates = [
+                ("arial.ttf", "arial.ttf"),
+                ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                 "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+                ("/System/Library/Fonts/Helvetica.ttc", "/System/Library/Fonts/Helvetica.ttc"),  # macOS
+                ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arial.ttf"),  # Windows absolute
+            ]
+
+            def choose_fonts(q_size, a_size):
+                for qf, af in font_candidates:
+                    try:
+                        q_font = ImageFont.truetype(qf, q_size)
+                        a_font = ImageFont.truetype(af, a_size)
+                        return q_font, a_font
+                    except Exception:
+                        continue
+                # Fallback (bitmap font may ignore size but prevents crash)
+                f = ImageFont.load_default()
+                return f, f
+
+            base_font_size = max(20, img_height // 36)
+            author_font_size = max(14, base_font_size - 4)
+            font, author_font = choose_fonts(base_font_size, author_font_size)
+
+            def measure(f, af):
+                qb = draw.textbbox((0, 0), quote_text, font=f)
+                ab = draw.textbbox((0, 0), author_text, font=af)
+                q_w, q_h = qb[2] - qb[0], qb[3] - qb[1]
+                a_w, a_h = ab[2] - ab[0], ab[3] - ab[1]
+                bw = max(q_w, a_w) + 40
+                bh = q_h + a_h + 40
+                return q_w, q_h, a_w, a_h, bw, bh
+
+            quote_w, quote_h, author_w, author_h, box_width, box_height = measure(font, author_font)
+            allowed_w = int(img_width * 0.55)
+            allowed_h = int(img_height * 0.35)
+
+            # Shrink text if it exceeds allowed area
+            while (box_width > allowed_w or box_height > allowed_h) and base_font_size > 14:
+                base_font_size -= 2
+                author_font_size = max(12, base_font_size - 4)
+                font, author_font = choose_fonts(base_font_size, author_font_size)
+                quote_w, quote_h, author_w, author_h, box_width, box_height = measure(font, author_font)
+
+            # Position: top right with padding
+            padding = max(30, img_width // 40)
+            x = img_width - box_width - padding
+            y = padding
+
+            # Overlay: semi-transparent black
+            overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+            overlay_draw = ImageDraw.Draw(overlay)
+            left = x - 20
+            top = y - 20
+            right = x + box_width
+            bottom = y + box_height
+            overlay_draw.rectangle([left, top, right, bottom], fill=(0, 0, 0, 100))
+
+            if img.mode != "RGBA":
+                img = img.convert("RGBA")
+            img = Image.alpha_composite(img, overlay)
+            img = img.convert("RGB")
+
+            draw = ImageDraw.Draw(img)
+            draw.text((x, y), quote_text, font=font, fill="#ffffff")
+            draw.text((x, y + quote_h + 10), author_text, font=author_font, fill="#cccccc")
+
+            output_path = str(self.wallpapers_dir / f"wallpaper_{int(time.time())}.jpg")
+            img.save(output_path, "JPEG", quality=98, subsampling=0)
+            return output_path
+        except Exception as e:
+            print(f"[ERROR] Failed to embed quote: {e}")
+            return image_path
+            author_text = f"— {self.current_quote.get('author', '')}"
+
+            # Load font with robust fallback
+            font = None
+            author_font = None
+            font_paths = [
+                ("arial.ttf", 16, 12),
+                ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16, 12),
+                ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16, 12),
+                ("/System/Library/Fonts/Arial.ttf", 16, 12),  # macOS
+                ("C:/Windows/Fonts/arial.ttf", 16, 12),  # Windows
+            ]
+
+            for fp, fs, afs in font_paths:
+                try:
+                    font = ImageFont.truetype(fp, fs)
+                    author_font = ImageFont.truetype(fp, afs)
+                    print(f"[DEBUG] Loaded font: {fp}")
+                    break
+                except Exception as fe:
+                    print(f"[DEBUG] Font load failed: {fp} ({fe})")
+
+            if font is None:
+                try:
+                    font = ImageFont.load_default()
+                    author_font = font
+                    print("[DEBUG] Using default font.")
+                except:
+                    return image_path  # Return original if font loading fails
+
+            # Calculate position (top-right corner)
+            img_width, img_height = img.size
+            max_width = max(img_width // 3, 300)
+
+            # Create drawing context
+            draw = ImageDraw.Draw(img)
+
+            # Wrap text
+            lines = self.wrap_text(quote_text, font, max_width, draw)
+            if not lines:
+                return image_path
+
+            # Position at top-right
+            padding = max(30, img_width // 40)
+            x = img_width - max_width - padding
+            y = padding
+
+            # Calculate text dimensions
+            line_height = 40  # Default line height
+            try:
+                line_height = font.size + 8 if hasattr(font, "size") else 40
+            except:
+                pass
+
+            # Compute tight background box based on actual text width
+            max_line_px = 0
+            for line in lines:
+                try:
+                    bbox = draw.textbbox((0, 0), line, font=font)
+                    max_line_px = max(max_line_px, bbox[2] - bbox[0])
+                except Exception:
+                    # Fallback approximate width using character count
+                    max_line_px = max(max_line_px, int(len(line) * (font.size * 0.6)))
+
+            # Include author width
+            try:
+                author_bbox = draw.textbbox((0, 0), author_text, font=author_font)
+                author_px = author_bbox[2] - author_bbox[0]
+            except Exception:
+                author_px = int(len(author_text) * (author_font.size * 0.6 if hasattr(author_font, "size") else 10))
+
+            box_width = max(max_line_px, author_px)
+            total_height = len(lines) * line_height + 50
+
+            # Draw semi-transparent background only behind the quote (avoid dimming large area)
+            try:
+                overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+                overlay_draw = ImageDraw.Draw(overlay)
+                left = max(0, x - 20)
+                top = max(0, y - 20)
+                right = min(img_width, x + box_width + 20)
+                bottom = min(img_height, y + total_height + 20)
+                # Slightly lighter opacity to reduce perceived dimming
+                overlay_draw.rectangle([left, top, right, bottom], fill=(0, 0, 0, 110))
+
+                # Convert image to RGBA and composite with overlay
+                if img.mode != "RGBA":
+                    img = img.convert("RGBA")
+                img = Image.alpha_composite(img, overlay)
+                img = img.convert("RGB")
+
+                # Recreate drawing context after compositing
+                draw = ImageDraw.Draw(img)
+            except Exception as e:
+                print(f"[DEBUG] Overlay creation failed, using direct drawing: {e}")
+                # Fallback: draw directly on image
+                draw.rectangle(
+                    [left, top, right, bottom],
+                    fill=(0, 0, 0),
+                    outline=(50, 50, 50),
+                )
+            # Recreate drawing context after compositing
+            draw = ImageDraw.Draw(img)
+
+            # Draw quote text on image
+            y_offset = y
+            for line in lines:
+                draw.text((x, y_offset), line, font=font, fill="white")
+                y_offset += line_height
+
+            # Draw author text
+            draw.text(
+                (x, y_offset + 10), author_text, font=author_font, fill="lightgray"
+            )
+
+            # Save permanently with embedded quote
+            output_path = str(self.wallpapers_dir / f"wallpaper_{int(time.time())}.jpg")
+            img.save(output_path, "JPEG", quality=95)
+            print(f"[DEBUG] Saved wallpaper with quote: {output_path}")
+            return output_path
+
+        except Exception as e:
+            print(f"[ERROR] Failed to embed quote on image: {e}")
+            return image_path
+
+    def wrap_text(self, text, font, max_width, draw):
+        """Wrap text to fit width."""
+        words = text.split()
+        lines = []
+        current_line = []
+
+        for word in words:
+            test_line = " ".join(current_line + [word])
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            if bbox[2] - bbox[0] <= max_width:
+                current_line.append(word)
+            else:
+                if current_line:
+                    lines.append(" ".join(current_line))
+                current_line = [word]
+
+        if current_line:
+            lines.append(" ".join(current_line))
+
+        return lines or [text]
+
+    def set_system_wallpaper(self, image_path):
+        """Set wallpaper on the system with comprehensive debug logging."""
+        tried_methods = []
+        print("\n" + "="*80)
+        print("[WALLPAPER SETTER DEBUG] Starting wallpaper set operation")
+        print("="*80)
+        
+        try:
+            system = platform.system()
+            abs_path = str(Path(image_path).resolve())
+            file_uri = f"file://{abs_path}"
+
+            # Comprehensive environment info
+            de = os.environ.get("XDG_CURRENT_DESKTOP", "")
+            sess = os.environ.get("DESKTOP_SESSION", "")
+            way = os.environ.get("WAYLAND_DISPLAY", "")
+            disp = os.environ.get("DISPLAY", "")
+            
+            print(f"[DEBUG] Operating System: {system}")
+            print(f"[DEBUG] Platform Release: {platform.release()}")
+            print(f"[DEBUG] Desktop Environment: {de or '(not set)'}")
+            print(f"[DEBUG] Desktop Session: {sess or '(not set)'}")
+            print(f"[DEBUG] Wayland Display: {way or '(not set)'}")
+            print(f"[DEBUG] X Display: {disp or '(not set)'}")
+            print(f"[DEBUG] Image Path (input): {image_path}")
+            print(f"[DEBUG] Absolute Path: {abs_path}")
+            print(f"[DEBUG] File URI: {file_uri}")
+            
+            # Verify file exists and get details
+            if not Path(abs_path).exists():
+                print(f"[ERROR] ✗ Image file does not exist: {abs_path}")
+                return False
+            
+            file_size = Path(abs_path).stat().st_size
+            print(f"[DEBUG] ✓ File exists, size: {file_size:,} bytes ({file_size/1024:.1f} KB)")
+            print("-"*80)
+
+            if system == "Windows":
+                print("[DEBUG] Windows OS detected - using SystemParametersInfoW")
+                tried_methods.append("Windows SystemParametersInfoW")
+                try:
+                    import ctypes
+                    result = ctypes.windll.user32.SystemParametersInfoW(20, 0, abs_path, 3)
+                    print(f"[DEBUG] SystemParametersInfoW result: {result}")
+                    if result:
+                        print("[SUCCESS] ✓ Windows wallpaper set successfully!")
+                        print("="*80 + "\n")
+                        return True
+                    else:
+                        print("[ERROR] ✗ SystemParametersInfoW returned 0 (failure)")
+                        print("="*80 + "\n")
+                        return False
+                except Exception as e:
+                    print(f"[ERROR] ✗ Windows wallpaper setting failed: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    print("="*80 + "\n")
+                    return False
+
+            elif system == "Linux":
+                print("[DEBUG] Linux OS detected - trying desktop environment methods...")
+                
+                # WSL: set Windows wallpaper from Linux (if running under WSL)
+                if "microsoft" in platform.release().lower():
+                    tried_methods.append("WSL->Windows PowerShell")
+                    try:
+                        print("[DEBUG] WSL environment detected")
+                        print("[DEBUG] Converting Linux path to Windows path...")
+                        win_path_proc = subprocess.run(
+                            ["wslpath", "-w", abs_path],
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                        )
+                        win_path = win_path_proc.stdout.strip()
+                        print(f"[DEBUG] Windows path: {win_path}")
+                        
+                        print("[DEBUG] Calling PowerShell to set Windows wallpaper...")
+                        ps_script = (
+                            "Add-Type -AssemblyName PresentationCore; "
+                            "$code='[DllImport(\"user32.dll\")] public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);'; "
+                            "Add-Type -MemberDefinition $code -Name User32 -Namespace Win32; "
+                            f"[Win32.User32]::SystemParametersInfo(20,0,\"{win_path}\",3)"
+                        )
+                        r = subprocess.run(
+                            ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", ps_script],
+                            capture_output=True,
+                            text=True,
+                        )
+                        print(f"[DEBUG] PowerShell exit code: {r.returncode}")
+                        if r.stdout: print(f"[DEBUG] PowerShell stdout: {r.stdout!r}")
+                        if r.stderr: print(f"[DEBUG] PowerShell stderr: {r.stderr!r}")
+                        
+                        if r.returncode == 0:
+                            print("[SUCCESS] ✓ WSL->Windows wallpaper set successfully!")
+                            print("="*80 + "\n")
+                            return True
+                        else:
+                            print(f"[ERROR] ✗ PowerShell failed with exit code {r.returncode}")
+                    except Exception as e:
+                        print(f"[DEBUG] WSL->Windows method failed: {e}")
+                        import traceback
+                        traceback.print_exc()
+
+                # Try GNOME (Ubuntu default)
+                tried_methods.append("GNOME gsettings")
+                try:
+                    print("\n[METHOD 1] Trying GNOME gsettings...")
+                    print(f"[DEBUG] Command: gsettings set org.gnome.desktop.background picture-uri {file_uri}")
+                    r = subprocess.run(
+                        [
+                            "gsettings",
+                            "set",
+                            "org.gnome.desktop.background",
+                            "picture-uri",
+                            file_uri,
+                        ],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                    )
+                    print(f"[DEBUG] Exit code: {r.returncode}")
+                    if r.stdout: print(f"[DEBUG] stdout: {r.stdout!r}")
+                    if r.stderr: print(f"[DEBUG] stderr: {r.stderr!r}")
+                    
+                    # Best-effort updates for GNOME variants
+                    try:
+                        print("[DEBUG] Setting picture-uri-dark and picture-options...")
+                        r1 = subprocess.run(
+                            [
+                                "gsettings",
+                                "set",
+                                "org.gnome.desktop.background",
+                                "picture-uri-dark",
+                                file_uri,
+                            ],
+                            check=False,
+                            capture_output=True,
+                            text=True,
+                        )
+                        r2 = subprocess.run(
+                            [
+                                "gsettings",
+                                "set",
+                                "org.gnome.desktop.background",
+                                "picture-options",
+                                "scaled",
+                            ],
+                            check=False,
+                            capture_output=True,
+                            text=True,
+                        )
+                        print(f"[DEBUG] picture-uri-dark exit code: {r1.returncode}")
+                        print(f"[DEBUG] picture-options exit code: {r2.returncode}")
+                        if r1.stderr: print(f"[DEBUG] picture-uri-dark stderr: {r1.stderr!r}")
+                        if r2.stderr: print(f"[DEBUG] picture-options stderr: {r2.stderr!r}")
+                    except Exception as e:
+                        print(f"[DEBUG] GNOME extras failed (non-critical): {e}")
+                    
+                    print("[SUCCESS] ✓ GNOME wallpaper set successfully!")
+                    print("="*80 + "\n")
+                    return True
+                except Exception as e:
+                    print(f"[ERROR] ✗ GNOME gsettings failed: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    # dconf direct write fallback (some setups)
+                    tried_methods.append("dconf")
+                    try:
+                        print("\n[METHOD 2] Trying dconf write fallback...")
+                        print(f"[DEBUG] Command: dconf write /org/gnome/desktop/background/picture-uri \\\"{file_uri}\\\"")
+                        r3 = subprocess.run(
+                            [
+                                "dconf",
+                                "write",
+                                "/org/gnome/desktop/background/picture-uri",
+                                f"\"{file_uri}\"",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                        print(f"[DEBUG] Exit code: {r3.returncode}")
+                        if r3.stdout: print(f"[DEBUG] stdout: {r3.stdout!r}")
+                        if r3.stderr: print(f"[DEBUG] stderr: {r3.stderr!r}")
+                        print("[SUCCESS] ✓ dconf wallpaper set successfully!")
+                        print("="*80 + "\n")
+                        return True
+                    except Exception as e2:
+                        print(f"[ERROR] ✗ dconf fallback failed: {e2}")
+                        import traceback
+                        traceback.print_exc()
+
+                # Try KDE
+                tried_methods.append("KDE qdbus")
+                try:
+                    print("\n[METHOD 3] Trying KDE via qdbus...")
+                    script = f"""
+                    qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
+                        var allDesktops = desktops();
+                        for (i=0;i<allDesktops.length;i++) {{
+                            d = allDesktops[i];
+                            d.wallpaperPlugin = "org.kde.image";
+                            d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");
+                            d.writeConfig("Image", "{file_uri}");
+                        }}
+                    '
+                    """
+                    print(f"[DEBUG] Executing shell script: {script[:100]}...")
+                    r = subprocess.run(script, shell=True, check=True, capture_output=True, text=True)
+                    print(f"[DEBUG] Exit code: {r.returncode}")
+                    if r.stdout: print(f"[DEBUG] stdout: {r.stdout!r}")
+                    if r.stderr: print(f"[DEBUG] stderr: {r.stderr!r}")
+                    print("[SUCCESS] ✓ KDE wallpaper set successfully!")
+                    print("="*80 + "\n")
+                    return True
+                except Exception as e:
+                    print(f"[ERROR] ✗ KDE attempt failed: {e}")
+                    import traceback
+                    traceback.print_exc()
+
+                # Try XFCE
+                tried_methods.append("XFCE xfconf-query")
+                try:
+                    print("\n[METHOD 4] Trying XFCE xfconf-query (absolute path)...")
+                    print(f"[DEBUG] Command: xfconf-query -c xfce4-desktop -p /backdrop/.../last-image -s {abs_path}")
+                    r = subprocess.run(
+                        [
+                            "xfconf-query",
+                            "-c",
+                            "xfce4-desktop",
+                            "-p",
+                            "/backdrop/screen0/monitor0/workspace0/last-image",
+                            "-s",
+                            abs_path,
+                        ],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                    )
+                    print(f"[DEBUG] Exit code: {r.returncode}")
+                    if r.stdout: print(f"[DEBUG] stdout: {r.stdout!r}")
+                    if r.stderr: print(f"[DEBUG] stderr: {r.stderr!r}")
+                    print("[SUCCESS] ✓ XFCE wallpaper set successfully!")
+                    print("="*80 + "\n")
+                    return True
+                except Exception as e:
+                    print(f"[ERROR] ✗ XFCE path method failed: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    
+                    # Try with file:// URI variant
+                    try:
+                        print("\n[METHOD 4b] Trying XFCE xfconf-query (file URI)...")
+                        print(f"[DEBUG] Command: xfconf-query -c xfce4-desktop -p /backdrop/.../last-image -s {file_uri}")
+                        r = subprocess.run(
+                            [
+                                "xfconf-query",
+                                "-c",
+                                "xfce4-desktop",
+                                "-p",
+                                "/backdrop/screen0/monitor0/workspace0/last-image",
+                                "-s",
+                                file_uri,
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                        print(f"[DEBUG] Exit code: {r.returncode}")
+                        if r.stdout: print(f"[DEBUG] stdout: {r.stdout!r}")
+                        if r.stderr: print(f"[DEBUG] stderr: {r.stderr!r}")
+                        print("[SUCCESS] ✓ XFCE wallpaper set successfully!")
+                        print("="*80 + "\n")
+                        return True
+                    except Exception as e2:
+                        print(f"[ERROR] ✗ XFCE file URI method failed: {e2}")
+                        import traceback
+                        traceback.print_exc()
+
+                # Try feh as fallback
+                tried_methods.append("feh")
+                try:
+                    print("\n[METHOD 5] Trying feh as fallback...")
+                    print(f"[DEBUG] Command: feh --bg-scale {abs_path}")
+                    r = subprocess.run(
+                        ["feh", "--bg-scale", abs_path],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                    )
+                    print(f"[DEBUG] Exit code: {r.returncode}")
+                    if r.stdout: print(f"[DEBUG] stdout: {r.stdout!r}")
+                    if r.stderr: print(f"[DEBUG] stderr: {r.stderr!r}")
+                    print("[SUCCESS] ✓ feh wallpaper set successfully!")
+                    print("="*80 + "\n")
+                    return True
+                except Exception as e:
+                    print(f"[ERROR] ✗ feh fallback failed: {e}")
+                    import traceback
+                    traceback.print_exc()
+
+            print("\n" + "!"*80)
+            print(f"[FAILURE] All wallpaper methods failed!")
+            print(f"[FAILURE] Tried methods: {', '.join(tried_methods)}")
+            print("!"*80)
+            print("\n[TROUBLESHOOTING TIPS]")
+            print("  • Ubuntu/GNOME: Ensure gsettings is installed")
+            print("  • Install feh as universal fallback: sudo apt install feh")
+            print("  • WSL: Wallpaper sets on Windows host, not Linux GUI")
+            print("  • Check desktop environment variables above")
+            print("="*80 + "\n")
+            return False
+
+        except Exception as e:
+            print("\n" + "!"*80)
+            print(f"[CRITICAL ERROR] Exception in set_system_wallpaper: {e}")
+            print("!"*80)
+            import traceback
+            traceback.print_exc()
+            print("="*80 + "\n")
+            return False
+
+    def update_history_gallery(self):
+        """Update history thumbnail gallery."""
+        try:
+            # Clear existing thumbnails
+            for widget in self.history_frame.winfo_children():
+                widget.destroy()
+
+            # Ensure history is valid
+            if (
+                not self.history
+                or not isinstance(self.history, list)
+                or len(self.history) == 0
+            ):
+                tk.Label(
+                    self.history_frame,
+                    text="No history yet",
+                    font=("Segoe UI", 10),
+                    bg=self.colors["bg_secondary"],
+                    fg=self.colors["text_muted"],
+                ).pack(pady=20)
+                return
+
+            # Create thumbnails for recent entries
+            for entry in self.history[:10]:
+                if entry and isinstance(entry, dict) and "path" in entry:
+                    self.create_history_thumbnail(entry)
+        except Exception as e:
+            print(f"Failed to update history gallery: {e}")
+
+    def create_history_thumbnail(self, entry):
+        """Create a thumbnail widget for history entry with Set button."""
+        try:
+            if not entry or "path" not in entry:
+                return
+
+            image_path = entry.get("path")
+            if not image_path or not Path(image_path).exists():
+                return
+
+            # Container frame
+            container = tk.Frame(
+                self.history_frame,
+                bg=self.colors["bg_tertiary"],
+                relief=tk.FLAT,
+            )
+            container.pack(side=tk.LEFT, padx=5, pady=5)
+
+            # Load and resize image
+            img = Image.open(image_path)
+            img.thumbnail((120, 80), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(img)
+
+            # Image label
+            img_label = tk.Label(container, image=photo, bg=self.colors["bg_tertiary"])
+            img_label.image = photo  # Keep reference
+            img_label.pack(padx=5, pady=(5, 2))
+
+            # Set button
+            set_btn = tk.Button(
+                container,
+                text="Set",
+                command=lambda p=image_path: self.set_from_history(p),
+                font=("Segoe UI", 8),
+                bg=self.colors["accent_green"],
+                fg="white",
+                relief=tk.FLAT,
+                cursor="hand2",
+                padx=8,
+                pady=2,
+            )
+            set_btn.pack(pady=(0, 5))
+
+            # Hover effect
+            def on_enter(e):
+                container.config(bg=self.colors["accent_blue"])
+                img_label.config(bg=self.colors["accent_blue"])
+
+            def on_leave(e):
+                container.config(bg=self.colors["bg_tertiary"])
+                img_label.config(bg=self.colors["bg_tertiary"])
+
+            container.bind("<Enter>", on_enter)
+            container.bind("<Leave>", on_leave)
+            img_label.bind("<Enter>", on_enter)
+            img_label.bind("<Leave>", on_leave)
+
+        except Exception as e:
+            print(f"Failed to create thumbnail for {entry.get('path', 'unknown')}: {e}")
+
+    def load_from_history(self, image_path):
+        """Load wallpaper from history to preview."""
+        if Path(image_path).exists():
+            self.load_image_to_preview(image_path)
+            self.current_wallpaper = image_path
+            self.update_status("Loaded from history", "accent_green")
+        else:
+            messagebox.showerror("Error", "Image file not found")
+
+    def set_from_history(self, image_path):
+        """Set wallpaper directly from history."""
+        if Path(image_path).exists():
+            self.update_status("Setting wallpaper...", "accent_blue")
+
+            def set_wp():
+                try:
+                    success = self.set_system_wallpaper(image_path)
+                    if success:
+                        # Record applied and sync preview/indicator
+                        self.applied_wallpaper = image_path
+                        self.root.after(0, lambda p=image_path: self.load_image_to_preview(p))
+                        self.root.after(0, self.update_applied_indicator)
+                        self.root.after(
+                            0,
+                            lambda: self.update_status(
+                                "Wallpaper set!", "accent_green"
+                            ),
+                        )
+                        self.root.after(
+                            0,
+                            lambda: messagebox.showinfo(
+                                "Success", "Wallpaper set from history!"
+                            ),
+                        )
+                    else:
+                        self.root.after(
+                            0, lambda: self.update_status("Failed to set", "accent_red")
+                        )
+                except Exception as e:
+                    self.root.after(
+                        0, lambda e=e: messagebox.showerror("Error", f"Failed: {str(e)}")
+                    )
+
+            threading.Thread(target=set_wp, daemon=True).start()
+        else:
+            messagebox.showerror("Error", "Image file not found")
+
+    def start_auto_rotation(self):
+        """Start auto-rotation timer."""
+        if self.timer_running:
+            return
+
+        self.timer_running = True
+        self.time_remaining = self.rotate_interval.get() * 60
+        self.update_timer()
+
+    def stop_auto_rotation(self):
+        """Stop auto-rotation timer."""
+        self.timer_running = False
+        self.timer_label.config(text="Next update: --:--")
+
+    def update_timer(self):
+        """Update timer display and fetch when needed."""
+        if not self.timer_running or not self.auto_rotate.get():
+            return
+
+        if self.time_remaining <= 0:
+            # Time to fetch new wallpaper AND set it automatically
+            self.fetch_and_set_wallpaper()
+            self.time_remaining = self.rotate_interval.get() * 60
+
+        # Update display
+        minutes = self.time_remaining // 60
+        seconds = self.time_remaining % 60
+        self.timer_label.config(text=f"Next update: {minutes:02d}:{seconds:02d}")
+
+        self.time_remaining -= 1
+
+        # Schedule next update
+        self.root.after(1000, self.update_timer)
+
+    def start_auto_rotate_if_enabled(self):
+        """Start auto-rotation if enabled on startup."""
+        if self.auto_rotate.get():
+            self.start_auto_rotation()
+
+    def fetch_initial_wallpaper(self):
+        """Fetch initial wallpaper on startup."""
+        if self.auto_fetch_on_start.get():
+            self.fetch_random_wallpaper()
+
+    def open_data_folder(self):
+        """Open data directory."""
+        try:
+            system = platform.system()
+            if system == "Windows":
+                os.startfile(self.data_dir)
+            elif system == "Darwin":
+                subprocess.run(["open", str(self.data_dir)])
+            else:
+                subprocess.run(["xdg-open", str(self.data_dir)])
+            self.update_status("Opened data folder", "accent_green")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open folder: {str(e)}")
+
+    def clear_history(self):
+        """Clear wallpaper history."""
+        if not self.history:
+            messagebox.showinfo("Info", "History is already empty")
+            return
+
+        if messagebox.askyesno(
+            "Clear History", "Are you sure you want to clear all history?"
+        ):
+            self.history = []
+            try:
+                with open(self.history_file, "w") as f:
+                    json.dump([], f)
+                self.update_history_gallery()
+                self.update_status("History cleared", "accent_green")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to clear history: {str(e)}")
+
+    def uninstall_app(self):
+        """Uninstall application."""
+        result = messagebox.askyesno(
+            "Uninstall PaprWall",
+            "Are you sure you want to uninstall PaprWall?\n\n"
+            "This will remove the application from your system.\n"
+            "Your data and settings will be preserved.",
+            icon="warning",
+        )
+
+        if not result:
+            return
+
+        try:
+            from ..installer import uninstall_system
+
+            self.root.quit()
+            uninstall_system()
+        except Exception as e:
+            messagebox.showerror("Error", f"Uninstallation failed: {str(e)}")
+
+    def show_about(self):
+        """Show about dialog."""
+        about_window = tk.Toplevel(self.root)
+        about_window.title("About PaprWall")
+        about_window.geometry("600x300")
+        about_window.configure(bg=self.colors["bg_secondary"])
+        about_window.resizable(False, False)
+
+        # Center window
+        about_window.transient(self.root)
+        about_window.grab_set()
+
+        # Content
+        content = tk.Frame(about_window, bg=self.colors["bg_secondary"])
+        content.pack(fill=tk.BOTH, expand=True, padx=30, pady=30)
+
+        tk.Label(
+            content,
+            text="PaprWall",
+            font=("Segoe UI", 20, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["accent_blue"],
+        ).pack(pady=(0, 10))
+
+        tk.Label(
+            content,
+            text="Modern Wallpaper Manager",
+            font=("Segoe UI", 12),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_secondary"],
+        ).pack(pady=(0, 20))
+
+        from .. import __version__
+
+        tk.Label(
+            content,
+            text=f"Version {__version__}",
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_primary"],
+        ).pack(pady=5)
+
+        tk.Label(
+            content,
+            text="Transform your desktop with\nbeautiful wallpapers and quotes",
+            font=("Segoe UI", 10),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_secondary"],
+            justify=tk.CENTER,
+        ).pack(pady=15)
+
+        tk.Label(
+            content,
+            text="© 2024 PaprWall\nMIT License",
+            font=("Segoe UI", 9),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_muted"],
+            justify=tk.CENTER,
+        ).pack(pady=15)
+
+        # Close button
+        self.create_button(
+            content, "Close", about_window.destroy, self.colors["accent_blue"]
+        ).pack(pady=10)
+
+    def update_status(self, message, color_key):
+        """Update status label."""
+        color = self.colors.get(color_key, self.colors["text_primary"])
+        self.status_label.config(text=f"● {message}", fg=color)
+        self.root.update_idletasks()
+
+    def update_applied_indicator(self):
+        """Update the small header badge showing whether the preview is applied."""
+        try:
+            preview = str(self.preview_path) if self.preview_path else None
+            applied = str(self.applied_wallpaper) if self.applied_wallpaper else None
+            is_applied = False
+            if preview and applied:
+                try:
+                    # Prefer robust realpath comparison if both exist
+                    p1 = str(Path(preview).resolve())
+                    p2 = str(Path(applied).resolve())
+                    is_applied = p1 == p2
+                except Exception:
+                    is_applied = preview == applied
+
+            if is_applied:
+                self.applied_indicator.config(
+                    text="APPLIED",
+                    bg=self.colors["accent_green"],
+                    fg="#ffffff",
+                )
+            else:
+                self.applied_indicator.config(
+                    text="Preview only",
+                    bg=self.colors["bg_tertiary"],
+                    fg=self.colors["text_muted"],
+                )
+        except Exception as e:
+            # Non-fatal UI update error
+            print(f"[DEBUG] update_applied_indicator failed: {e}")
+
+    def check_first_run_installation(self):
+        """Check if this is first run and prompt for installation."""
+        # Only check if running as frozen executable
+        if not getattr(sys, "frozen", False):
+            return
+
+        # Check if already installed
+        if self.is_already_installed():
+            return
+
+        # Check if user previously dismissed
+        no_prompt_file = self.data_dir / ".no_install_prompt"
+        if no_prompt_file.exists():
+            return
+
+        # Prompt user for installation
+        response = messagebox.askyesnocancel(
+            "Install PaprWall",
+            "Welcome to PaprWall! 🎨\n\n"
+            "Would you like to install PaprWall to your system?\n\n"
+            "This will create:\n"
+            "  • Desktop shortcut\n"
+            "  • Start Menu entry (Windows) / Application menu (Linux)\n"
+            "  • Easy uninstall option\n\n"
+            "You can also install later from Settings.\n\n"
+            "Yes = Install now\n"
+            "No = Ask me next time\n"
+            "Cancel = Don't ask again",
+            icon="question",
+        )
+
+        if response is True:
+            # User clicked Yes - install
+            self.install_to_system()
+        elif response is None:
+            # User clicked Cancel - don't ask again
+            try:
+                no_prompt_file.touch()
+            except:
+                pass
+
+    def is_already_installed(self):
+        """Check if PaprWall is already installed."""
+        system = platform.system()
+
+        if system == "Windows":
+            # Check if installed in Programs folder
+            install_dir = (
+                Path(os.environ.get("LOCALAPPDATA", Path.home()))
+                / "Programs"
+                / "PaprWall"
+            )
+            return (install_dir / "paprwall-gui.exe").exists()
+        else:  # Linux
+            # Check if binary exists in user's bin
+            bin_path = Path.home() / ".local" / "bin" / "paprwall-gui"
+            return bin_path.exists()
+
+    def install_to_system(self):
+        """Install PaprWall to the system."""
+        try:
+            from ..installer import install_system
+
+            self.update_status("Installing...", "accent_blue")
+
+            # Run installation
+            result = install_system()
+
+            if result == 0:
+                messagebox.showinfo(
+                    "Installation Complete",
+                    "✅ PaprWall has been installed successfully!\n\n"
+                    "You can now find it in:\n"
+                    "  • Start Menu (Windows)\n"
+                    "  • Application Menu (Linux)\n"
+                    "  • Desktop shortcut\n\n"
+                    "Enjoy using PaprWall! 🎨",
+                )
+                self.update_status("Installation successful", "accent_green")
+            else:
+                messagebox.showerror(
+                    "Installation Failed",
+                    "Could not complete installation.\n\n"
+                    "You can try installing manually from Settings.",
+                )
+                self.update_status("Installation failed", "accent_red")
+
+        except Exception as e:
+            messagebox.showerror(
+                "Installation Error",
+                f"An error occurred during installation:\n{str(e)}",
+            )
+            self.update_status("Installation error", "accent_red")
+
+    # ===== Background Service Management =====
+    
+    def update_service_status(self):
+        """Check and update the service status display and toggle button."""
+        try:
+            import subprocess
+            system = platform.system().lower()
+            
+            if system == "linux":
+                # Check if systemctl is available
+                try:
+                    subprocess.run(
+                        ["which", "systemctl"],
+                        capture_output=True,
+                        check=True,
+                        timeout=2
+                    )
+                except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+                    self.service_status_icon.config(text="⚪")
+                    self.service_status_label.config(
+                        text="systemd not available",
+                        fg=self.colors["text_muted"]
+                    )
+                    self.service_toggle_btn.config(
+                        text="Enable Service",
+                        bg=self.colors["bg_tertiary"],
+                        state=tk.DISABLED
+                    )
+                    return
+                
+                # Check if service file exists
+                service_file = Path.home() / ".config" / "systemd" / "user" / "paprwall.service"
+                
+                if not service_file.exists():
+                    self.service_status_icon.config(text="⚪")
+                    self.service_status_label.config(
+                        text="Not Installed",
+                        fg=self.colors["text_muted"]
+                    )
+                    self.service_toggle_btn.config(
+                        text="Enable Service",
+                        bg=self.colors["accent_green"],
+                        state=tk.NORMAL
+                    )
+                    return
+                
+                # Check systemd service status
+                try:
+                    result = subprocess.run(
+                        ["systemctl", "--user", "is-active", "paprwall.service"],
+                        capture_output=True,
+                        text=True,
+                        timeout=5
+                    )
+                    is_active = result.returncode == 0 and result.stdout.strip() == "active"
+                    
+                    # Check if enabled
+                    enabled = subprocess.run(
+                        ["systemctl", "--user", "is-enabled", "paprwall.service"],
+                        capture_output=True,
+                        text=True,
+                        timeout=5
+                    )
+                    is_enabled = enabled.returncode == 0
+                    
+                    if is_active:
+                        self.service_status_icon.config(text="🟢")
+                        self.service_status_label.config(
+                            text="Running" + (" (Enabled)" if is_enabled else ""),
+                            fg=self.colors["accent_green"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Disable Service",
+                            bg=self.colors["accent_red"],
+                            state=tk.NORMAL
+                        )
+                    elif is_enabled:
+                        self.service_status_icon.config(text="🟡")
+                        self.service_status_label.config(
+                            text="Enabled but Stopped",
+                            fg=self.colors["text_muted"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Disable Service",
+                            bg=self.colors["accent_red"],
+                            state=tk.NORMAL
+                        )
+                    else:
+                        self.service_status_icon.config(text="🔴")
+                        self.service_status_label.config(
+                            text="Disabled",
+                            fg=self.colors["text_muted"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Enable Service",
+                            bg=self.colors["accent_green"],
+                            state=tk.NORMAL
+                        )
+                except subprocess.TimeoutExpired:
+                    self.service_status_icon.config(text="⚪")
+                    self.service_status_label.config(
+                        text="Timeout checking service",
+                        fg=self.colors["text_muted"]
+                    )
+                    self.service_toggle_btn.config(
+                        text="Enable Service",
+                        bg=self.colors["bg_tertiary"],
+                        state=tk.DISABLED
+                    )
+                        
+            elif system == "windows":
+                # Check Windows startup
+                try:
+                    appdata = os.environ.get("APPDATA", "")
+                    if not appdata:
+                        self.service_status_icon.config(text="⚪")
+                        self.service_status_label.config(
+                            text="Cannot find APPDATA",
+                            fg=self.colors["text_muted"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Enable Service",
+                            bg=self.colors["bg_tertiary"],
+                            state=tk.DISABLED
+                        )
+                        return
+                    
+                    startup_folder = Path(appdata) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / "Startup"
+                    
+                    if not startup_folder.exists():
+                        self.service_status_icon.config(text="⚪")
+                        self.service_status_label.config(
+                            text="Startup folder not found",
+                            fg=self.colors["text_muted"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Enable Service",
+                            bg=self.colors["bg_tertiary"],
+                            state=tk.DISABLED
+                        )
+                        return
+                    
+                    shortcut_path = startup_folder / "PaprWall.lnk"
+                    
+                    if shortcut_path.exists():
+                        self.service_status_icon.config(text="🟢")
+                        self.service_status_label.config(
+                            text="Enabled",
+                            fg=self.colors["accent_green"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Disable Service",
+                            bg=self.colors["accent_red"],
+                            state=tk.NORMAL
+                        )
+                    else:
+                        self.service_status_icon.config(text="⚪")
+                        self.service_status_label.config(
+                            text="Not Installed",
+                            fg=self.colors["text_muted"]
+                        )
+                        self.service_toggle_btn.config(
+                            text="Enable Service",
+                            bg=self.colors["accent_green"],
+                            state=tk.NORMAL
+                        )
+                except Exception as win_error:
+                    self.service_status_icon.config(text="⚪")
+                    self.service_status_label.config(
+                        text=f"Error: {str(win_error)[:30]}",
+                        fg=self.colors["text_muted"]
+                    )
+                    self.service_toggle_btn.config(
+                        text="Enable Service",
+                        bg=self.colors["bg_tertiary"],
+                        state=tk.DISABLED
+                    )
+            else:
+                self.service_status_icon.config(text="⚪")
+                self.service_status_label.config(
+                    text="Not supported on this platform",
+                    fg=self.colors["text_muted"]
+                )
+                self.service_toggle_btn.config(
+                    text="Enable Service",
+                    bg=self.colors["bg_tertiary"],
+                    state=tk.DISABLED
+                )
+                
+        except Exception as e:
+            # More detailed error message
+            error_msg = str(e)[:50] if len(str(e)) < 50 else str(e)[:47] + "..."
+            self.service_status_icon.config(text="⚪")
+            self.service_status_label.config(
+                text=f"Error: {error_msg}",
+                fg=self.colors["accent_red"]
+            )
+            self.service_toggle_btn.config(
+                text="Enable Service",
+                bg=self.colors["bg_tertiary"],
+                state=tk.DISABLED
+            )
+            print(f"Service status check error: {e}")  # Log to console for debugging
+    
+    def toggle_service(self):
+        """Toggle background service on/off based on current state."""
+        try:
+            import subprocess
+            from ..service import (
+                install_systemd_service, 
+                install_windows_startup,
+                uninstall_systemd_service,
+                uninstall_windows_startup
+            )
+            
+            system = platform.system().lower()
+            
+            # Determine current state
+            is_enabled = False
+            
+            if system == "linux":
+                service_file = Path.home() / ".config" / "systemd" / "user" / "paprwall.service"
+                if service_file.exists():
+                    try:
+                        result = subprocess.run(
+                            ["systemctl", "--user", "is-enabled", "paprwall.service"],
+                            capture_output=True,
+                            text=True,
+                            timeout=5
+                        )
+                        is_enabled = result.returncode == 0
+                    except:
+                        is_enabled = True  # If check fails but file exists, assume enabled
+                        
+            elif system == "windows":
+                appdata = os.environ.get("APPDATA", "")
+                if appdata:
+                    startup_folder = Path(appdata) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / "Startup"
+                    shortcut_path = startup_folder / "PaprWall.lnk"
+                    is_enabled = shortcut_path.exists()
+            
+            # Toggle based on current state
+            if is_enabled:
+                # Disable service
+                response = messagebox.askyesno(
+                    "Disable Service",
+                    "Are you sure you want to disable the background service?\n\n"
+                    "PaprWall will no longer:\n"
+                    "  • Start automatically on login\n"
+                    "  • Run in the background\n"
+                    "  • Change wallpapers automatically"
+                )
+                
+                if not response:
+                    return
+                
+                self.update_status("Disabling background service...", "accent_blue")
+                
+                if system == "linux":
+                    success = uninstall_systemd_service()
+                elif system == "windows":
+                    success = uninstall_windows_startup()
+                else:
+                    messagebox.showerror(
+                        "Not Supported",
+                        f"Background service not supported on {platform.system()}"
+                    )
+                    return
+                
+                if success:
+                    messagebox.showinfo(
+                        "Service Disabled",
+                        "✅ Background service disabled successfully!\n\n"
+                        "You can still run PaprWall manually."
+                    )
+                    self.update_status("Service disabled", "text_muted")
+                else:
+                    messagebox.showwarning(
+                        "Disable Complete",
+                        "Service has been disabled (or was not installed)."
+                    )
+                    self.update_status("Service disabled", "text_muted")
+            else:
+                # Enable service
+                self.update_status("Enabling background service...", "accent_blue")
+                
+                if system == "linux":
+                    success = install_systemd_service()
+                elif system == "windows":
+                    success = install_windows_startup()
+                else:
+                    messagebox.showerror(
+                        "Not Supported",
+                        f"Background service not supported on {platform.system()}"
+                    )
+                    return
+                
+                if success:
+                    messagebox.showinfo(
+                        "Service Enabled",
+                        "✅ Background service enabled successfully!\n\n"
+                        "PaprWall will now:\n"
+                        "  • Start automatically on login\n"
+                        "  • Run in the background\n"
+                        "  • Change wallpapers automatically"
+                    )
+                    self.update_status("Service enabled", "accent_green")
+                else:
+                    messagebox.showerror(
+                        "Enable Failed",
+                        "Could not enable background service.\n"
+                        "Check the console for details."
+                    )
+                    self.update_status("Service enable failed", "accent_red")
+            
+            # Update status display
+            self.update_service_status()
+            
+        except Exception as e:
+            messagebox.showerror(
+                "Error",
+                f"Failed to toggle service:\n{str(e)}"
+            )
+            self.update_status("Service error", "accent_red")
+
+    # ===== Window Management =====
+    
+    def on_window_close(self):
+        """Handle window close event."""
+        self.quit_app()
+    
+    def quit_app(self):
+        """Quit the application completely."""
+        try:
+            # Stop timer
+            self.timer_running = False
+            
+            # Save config
+            self.save_config()
+            
+            # Quit
+            self.root.quit()
+            self.root.destroy()
+        except Exception as e:
+            print(f"Error during quit: {e}")
+            sys.exit(0)
+
+
+# Legacy class name for compatibility
+WallpaperManagerGUI = ModernWallpaperGUI
+
+
+def main():
+    """Main entry point."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="PaprWall - Modern Wallpaper Manager")
+    parser.add_argument("--install", action="store_true", help="Install to system")
+    parser.add_argument(
+        "--uninstall", action="store_true", help="Uninstall from system"
+    )
+    parser.add_argument(
+        "--daemon", action="store_true", help="Run in daemon mode (no GUI window)"
+    )
+    args = parser.parse_args()
+
+    if args.install:
+        from ..installer import install_system
+
+        sys.exit(install_system())
+
+    if args.uninstall:
+        from ..installer import uninstall_system
+
+        sys.exit(uninstall_system())
+
+    # Launch GUI
+    root = tk.Tk()
+    
+    # If daemon mode, hide window and run in background
+    if args.daemon:
+        root.withdraw()  # Hide the window
+        print("PaprWall running in daemon mode")
+    
+    app = ModernWallpaperGUI(root)
+    
+    # If daemon mode, auto-start rotation
+    if args.daemon and not app.auto_rotate.get():
+        app.auto_rotate.set(True)
+        app.start_auto_rotation()
+    
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
