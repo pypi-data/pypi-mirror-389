@@ -1,0 +1,190 @@
+Metadata-Version: 2.4
+Name: imcp-weather
+Version: 0.1.5
+Summary: 这是我自己的mcp工具集合(IMCP - Intelligent MCP)
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: mcp[cli]>=1.20.0
+Requires-Dist: pyjwt
+Requires-Dist: pytz>=2025.2
+
+# IMCP - Intelligent Model Context Protocol
+
+## 项目简介
+
+IMCP（Intelligent Model Context Protocol）是基于MCP（Model Context Protocol）框架开发的智能工具集合。本项目旨在提供丰富的功能性工具模块，通过标准化的JSON-RPC接口实现服务调用，便于在各类AI平台（如ModelScope）上集成和使用。
+
+## 工具模块目录结构
+
+项目采用模块化设计，按功能类别组织工具模块：
+
+- **tool_天气/**：存放天气相关服务功能模块
+  - tool1_get_jwt.py：JWT令牌生成工具（用于API认证）
+  - tool2_get_city_info.py：城市信息搜索工具
+  - tool3_get_now_weather.py：实时天气数据获取工具
+  - tool4_get_3_30day_weather.py：3-30天天气预报获取工具（支持15/30天数据特殊优化）
+
+- **tool_卫星图像/**：存放卫星图像读取和处理工具模块
+  
+## 功能特性
+
+- **JWT认证机制**：提供安全的API访问认证
+- **城市信息查询**：支持关键词搜索，获取城市ID和地理位置信息
+- **实时天气数据**：获取指定地区的当前天气状况
+- **多日天气预报**：支持3-30天的天气预报数据查询，特别优化15/30天数据处理
+- **标准化数据格式**：统一的数据输出格式，便于集成和使用
+- **异常处理机制**：完善的错误处理和日志记录
+
+## 技术栈
+
+- **Python 3.13+**：核心开发语言
+- **MCP**：智能工具服务框架
+- **PyJWT**：JWT令牌生成与验证
+- **httpx**：异步HTTP客户端
+- **pytz**：时区处理
+- **uv**：现代化Python包管理工具
+
+## 安装部署
+
+### 环境要求
+
+- Python 3.13或更高版本
+- uv包管理器（推荐）
+
+### 安装步骤
+
+1. 克隆项目仓库
+
+```bash
+git clone [仓库地址]
+cd imcp
+```
+
+2. 使用uv安装依赖（推荐）
+
+```bash
+uv venv
+uv pip install -e .
+```
+
+3. 或使用pip安装
+
+```bash
+pip install httpx>=0.28.1 mcp[cli]>=1.20.0 pyjwt pytz>=2025.2
+```
+
+## 使用说明
+
+### 启动MCP服务器
+
+```bash
+python main.py
+```
+
+服务器启动后，将通过标准输入接收JSON-RPC格式的请求。
+
+### 工具调用示例
+
+#### 1. 获取JWT Token
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "get_jwt_token",
+  "params": {
+    "expiration_seconds": 300,
+    "show_log": true
+  },
+  "id": 1
+}
+```
+
+#### 2. 查询城市信息
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "get_city_info",
+  "params": {
+    "location": "北京"
+  },
+  "id": 2
+}
+```
+
+#### 3. 获取实时天气
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "get_now_weather",
+  "params": {
+    "location": "101010100"
+  },
+  "id": 3
+}
+```
+
+#### 4. 获取天气预报
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "get_3_30day_weather",
+  "params": {
+    "location": "101010100",
+    "days": "15d"
+  },
+  "id": 4
+}
+```
+
+## 部署说明
+
+本项目基于Python-SDK方式部署，完全兼容MCP框架规范。部署到ModelScope等平台时，只需确保环境依赖正确安装，并通过`python main.py`启动服务即可。
+
+详细部署指南可参考：https://modelcontextprotocol.info/zh-cn/docs/quickstart/server/
+
+## 扩展开发
+
+要添加新的工具模块：
+
+1. 在相应的功能目录下创建新的Python文件
+2. 实现工具函数并使用`@mcp.tool()`装饰器
+3. 在`main.py`中导入并注册新工具
+
+```python
+# 在main.py中添加新工具注册
+from your_module import your_function
+def initialize_master_mcp():
+    # 现有工具注册...
+    master_mcp.tool(name="your_function")(your_function)
+```
+
+## 未来开发计划
+
+1. 扩展天气工具功能，增加空气质量、极端天气预警等数据
+2. 完善卫星图像处理工具，支持多源卫星数据解析
+3. 集成自定义硬件API接口，实现硬件控制与数据采集
+4. 优化性能和稳定性，提升并发处理能力
+
+## 参考资源
+
+- MCP官方文档：https://modelcontextprotocol.info/
+- MCP示例代码：参考官方仓库
+- 天气API服务：使用和风天气API (na5ctux62n.re.qweatherapi.com)
+
+## 注意事项
+
+1. 项目依赖有效的API密钥才能访问外部服务
+2. 部分功能可能需要网络连接
+3. 请按照API使用规范，避免过度请求
+
+## 许可证
+
+[根据项目实际情况补充]
+
+## 项目状态
+
+进行中，持续开发和维护中。欢迎贡献代码和提出建议。
