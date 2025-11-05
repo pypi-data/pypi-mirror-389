@@ -1,0 +1,91 @@
+Metadata-Version: 2.4
+Name: Monglo
+Version: 0.0.1
+Summary: A framework-agnostic MongoDB admin library with intelligent relationship detection and dual views
+Project-URL: Homepage, https://github.com/meharumar/monglo
+Project-URL: Repository, https://github.com/meharumar/monglo
+Project-URL: Issues, https://github.com/meharumar/monglo/issues
+Project-URL: Changelog, https://github.com/meharumar/monglo/blob/main/CHANGELOG.md
+Author-email: Mehar Umar <contact@meharumar.codes>
+Maintainer-email: Mehar Umar <contact@meharumar.codes>
+License: MIT
+License-File: LICENSE
+Keywords: admin,async,crud,database,django,fastapi,flask,introspection,mongodb,motor,relationships,schema
+Classifier: Development Status :: 3 - Alpha
+Classifier: Framework :: Django
+Classifier: Framework :: FastAPI
+Classifier: Framework :: Flask
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Database
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Requires-Python: >=3.10
+Requires-Dist: motor>=3.3.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pymongo>=4.5.0
+Requires-Dist: typing-extensions>=4.8.0
+Provides-Extra: all
+Requires-Dist: django>=4.2.0; extra == 'all'
+Requires-Dist: fastapi>=0.104.0; extra == 'all'
+Requires-Dist: flask-cors>=4.0.0; extra == 'all'
+Requires-Dist: flask>=3.0.0; extra == 'all'
+Requires-Dist: starlette>=0.32.0; extra == 'all'
+Requires-Dist: uvicorn[standard]>=0.24.0; extra == 'all'
+Provides-Extra: dev
+Requires-Dist: black>=23.11.0; extra == 'dev'
+Requires-Dist: build>=1.0.0; extra == 'dev'
+Requires-Dist: mypy>=1.7.0; extra == 'dev'
+Requires-Dist: pytest-asyncio>=0.21.0; extra == 'dev'
+Requires-Dist: pytest-cov>=4.1.0; extra == 'dev'
+Requires-Dist: pytest-mock>=3.12.0; extra == 'dev'
+Requires-Dist: pytest>=7.4.0; extra == 'dev'
+Requires-Dist: ruff>=0.1.0; extra == 'dev'
+Requires-Dist: twine>=4.0.0; extra == 'dev'
+Provides-Extra: django
+Requires-Dist: django>=4.2.0; extra == 'django'
+Provides-Extra: fastapi
+Requires-Dist: fastapi>=0.104.0; extra == 'fastapi'
+Requires-Dist: uvicorn[standard]>=0.24.0; extra == 'fastapi'
+Provides-Extra: flask
+Requires-Dist: flask-cors>=4.0.0; extra == 'flask'
+Requires-Dist: flask>=3.0.0; extra == 'flask'
+Provides-Extra: starlette
+Requires-Dist: starlette>=0.32.0; extra == 'starlette'
+Description-Content-Type: text/markdown
+
+<h1 align="center"><strong>MONGLO</strong></h1>
+
+<p align="center"><em>A framework-agnostic MongoDB admin library with intelligent relationship detection.</em></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/last%20commit-december-informational?style=flat-square" />
+  <img src="https://img.shields.io/badge/python-100%25-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/license-MIT-yellow?style=flat-square" />
+</p>
+
+<br/>
+
+<p align="center"><em>Built with the tools and technologies:</em></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/-Python-306998?style=flat-square&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/-MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" />
+  <img src="https://img.shields.io/badge/-Motor-47A248?style=flat-square" />
+  <img src="https://img.shields.io/badge/-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/-Flask-000000?style=flat-square&logo=flask&logoColor=white" />
+  <img src="https://img.shields.io/badge/-Django-092E20?style=flat-square&logo=django&logoColor=white" />
+  <img src="https://img.shields.io/badge/-Pydantic-E92063?style=flat-square&logoColor=white" />
+  <img src="https://img.shields.io/badge/-Pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white" />
+</p>
+
+<br/>
+
+<p align="center"><strong>Contact:</strong> <a href="mailto:contact@meharumar.codes">contact@meharumar.codes</a></p>
