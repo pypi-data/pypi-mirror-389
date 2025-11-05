@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling>=1.18.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rivus"
+version = "0.0.2"
+description = "Rivus: orchestration control plane for portable runs (seed release)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "Your Org", email = "dev@yourorg.com" }]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Development Status :: 3 - Alpha",
+  "License :: Other/Proprietary License",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/your-org/rivus"
+Repository = "https://github.com/your-org/rivus"
+Documentation = "https://your-org.github.io/rivus"
+Issues = "https://github.com/your-org/rivus/issues"
+
+[project.scripts]
+rivus = "rivus.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rivus"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/rivus", "README.md", "pyproject.toml"]

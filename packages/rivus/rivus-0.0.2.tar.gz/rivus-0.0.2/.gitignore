@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+*.ipynb_checkpoints
+*.idea/
+.mypy_cache/
+# Distribution / packaging
+*.egg-info/
+.eggs/
+.env
+.hypothesis/
+build/
+dist/
+pip-wheel-metadata/
+tests/test_model_artifacts
+venv*/
+
+.coverage*
+*.swp
+tests/verification/test_data/*/
+mlruns/
+dask-worker-space/
+
+.metaflow
+channeldata.json
+index.html
+noarch/
+osx-64/
+
+# Cursor rules
+.cursor/
+# VSCode
+.vscode/
+
+# Studio build artifacts and dependencies
+studio/node_modules/
+studio/apps/web/node_modules/
+studio/apps/web/.next/
+studio/apps/web/out/
+studio/packages/*/node_modules/
+studio/packages/*/dist/
+studio/apps/api/__pycache__/
+studio/apps/api/src/**/__pycache__/
+studio/apps/api/dist/
+studio/apps/api/build/
+
+# Turbo cache and logs
+**/.turbo/
+
+# TypeScript build info
+*.tsbuildinfo
