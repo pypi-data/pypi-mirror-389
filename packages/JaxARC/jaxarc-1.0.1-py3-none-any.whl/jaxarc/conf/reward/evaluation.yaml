@@ -1,0 +1,8 @@
+# Evaluation-focused reward configuration
+# Designed for test pair evaluation with proper target masking
+
+# Basic reward settings for evaluation
+step_penalty: -0.02 # Higher step penalty to encourage efficiency
+success_bonus: 10.0 # High success bonus for test completion
+unsolved_submission_penalty: -1.0 # Penalty for submitting an unsolved task to prevent reward hacking.
+similarity_weight: 0.0 # No similarity rewards (target masked)
