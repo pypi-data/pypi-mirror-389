@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "joytide"
+version = "0.0.4"
+description = "A fun Python package by team_riptide with random playful helpers."
+readme = "README.md"
+authors = [
+  { name = "Saud Alsheddy", email = "sa8429@nyu.edu" },
+  { name = "Omer Hortig", email = "oh2065@nyu.edu" },
+  { name = "Amy Liu", email = "sl9964@nyu.edu" },
+  { name = "Alfardil Alam", email = "aa11101@nyu.edu" },
+  { name = "Lucy Hartigan", email = "lmh8583@nyu.edu" }
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = ["Python", "fun", "package"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Intended Audience :: Education",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: OS Independent",
+]
+dependencies = ["colorama>=0.4.6", "readchar>=4.0.0"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/swe-students-fall2025/3-python-package-team_riptide"
+Repository = "https://github.com/swe-students-fall2025/3-python-package-team_riptide.git"
+
+[project.scripts]
+joytide = "joytide.__main__:main"
+
+[tool.black]
+line-length = 88
+target-version = ['py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.pytest_cache
+  | \.venv
+  | build
+  | dist
+)/
+| ascii_art\.py  # exclude ASCII art file from formatting
+'''
