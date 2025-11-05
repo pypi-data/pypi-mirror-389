@@ -1,0 +1,42 @@
+[project]
+name = "git-contrib-tree"
+version = "0.1.0"
+description = "Analyze and visualize git repository contributions with a file tree showing top contributors."
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = []
+authors = [
+    {name = "Wiktor W.", email = "wykwit@disroot.org"}
+]
+keywords = ["git", "contributions", "tree", "analysis", "cli", "visualization"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Utilities",
+]
+
+[project.scripts]
+git-contrib-tree = "wrapper:main"
+
+[project.urls]
+Repository = "https://gitlab.com/wykwit/git-contrib-tree"
+Issues = "https://gitlab.com/wykwit/git-contrib-tree/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["wrapper.py", "git-contrib-tree"]
