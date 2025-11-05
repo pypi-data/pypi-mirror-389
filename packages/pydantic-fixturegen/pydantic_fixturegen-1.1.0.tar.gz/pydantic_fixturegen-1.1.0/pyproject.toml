@@ -1,0 +1,163 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pydantic-fixturegen"
+version = "1.1.0"
+description = "Deterministic fixture generator for Pydantic models."
+requires-python = ">=3.10,<3.14"
+readme = "README.md"
+authors = [{ name = "Fixturegen Developers" }]
+license = { text = "MIT" }
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: MIT License",
+  "Development Status :: 5 - Production/Stable",
+]
+dependencies = [
+  "faker>=24.0.0",
+  "pydantic>=2.8.0",
+  "tomli>=2.0.1; python_version < '3.11'",
+  "typer>=0.12.3",
+  "pluggy>=1.5.0",
+]
+
+[project.optional-dependencies]
+regex = [
+  "rstr>=3.2.0",
+]
+orjson = [
+  "orjson>=3.10.0",
+]
+hypothesis = [
+  "hypothesis>=6.100.0",
+]
+dev = [
+  "mypy>=1.11",
+]
+lint = [
+  "ruff>=0.6.5",
+]
+test = [
+  "pytest>=8.3",
+  "pytest-cov>=5.0",
+]
+watch = [
+  "watchfiles>=0.22.0",
+]
+docs = []
+all = [
+  "rstr>=3.2.0",
+  "orjson>=3.10.0",
+  "hypothesis>=6.100.0",
+  "watchfiles>=0.22.0",
+]
+all-dev = [
+  "mypy>=1.11",
+  "ruff>=0.6.5",
+  "pytest>=8.3",
+  "pytest-cov>=5.0",
+  "rstr>=3.2.0",
+  "orjson>=3.10.0",
+  "hypothesis>=6.100.0",
+  "watchfiles>=0.22.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/casper-kristiansson/pydantic-fixturegen"
+Documentation = "https://github.com/casper-kristiansson/pydantic-fixturegen"
+Repository = "https://github.com/casper-kristiansson/pydantic-fixturegen"
+
+[project.scripts]
+pfg = "pydantic_fixturegen.cli:app"
+
+[project.entry-points."pydantic_fixturegen"]
+builtin = "pydantic_fixturegen.plugins.builtin"
+
+[tool.pytest.ini_options]
+addopts = [
+  "-q",
+  "--strict-config",
+  "--strict-markers",
+  "--maxfail=1",
+  "-Werror",
+]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["pydantic_fixturegen"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+]
+fail_under = 90
+precision = 2
+show_missing = true
+skip_empty = true
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+warn_unused_configs = true
+namespace_packages = true
+
+[[tool.mypy.overrides]]
+module = "typer"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "typer.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "orjson"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "rstr"
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["pydantic_fixturegen", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "B",
+  "UP",
+  "SIM",
+]
+ignore = [
+  "E203",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "pydantic_fixturegen",
+  "tests",
+  "docs",
+  "README.md",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pydantic_fixturegen"]

@@ -1,0 +1,137 @@
+# Cookbook: Ship deterministic data with focused recipes
+
+> Apply task-sized patterns for scaling JSON, tuning pytest fixtures, freezing seeds, extending providers, and inspecting explain trees.
+
+## Recipe 1 — Shard massive JSON/JSONL outputs
+
+You need predictable files when generating thousands of records.
+
+```bash
+pfg gen json ./models.py \
+  --include app.models.User \
+  --n 20000 \
+  --jsonl \
+  --shard-size 1000 \
+  --out "artifacts/{model}/shard-{case_index}.jsonl" \
+  --indent 0 \
+  --orjson
+```
+
+- Use `--jsonl` to stream one record per line.
+- `--shard-size` controls how many records land in each file; a final shard uses the remaining count.
+- `--orjson` activates the optional high-performance encoder (`pip install 'pydantic-fixturegen[orjson]'`).
+- Template placeholders keep shards organised per model and shard index.
+
+Validate the emitters by checking the metadata banner for `seed`, `version`, and `digest`.
+
+## Recipe 2 — Adjust pytest fixture style and scope
+
+Switch fixture ergonomics without editing generated code.
+
+```bash
+pfg gen fixtures ./models.py \
+  --out tests/fixtures/test_models.py \
+  --style factory \
+  --scope session \
+  --cases 5 \
+  --return-type dict
+```
+
+- `--style` accepts `functions`, `factory`, or `class`. Pick the format that matches your test suite guidelines.
+- `--scope` accepts `function`, `module`, or `session`. Choose wider scopes to reuse expensive models.
+- `--cases` parametrises fixtures with deterministic data; indexes become `request.param`.
+- `--return-type dict` converts fixtures into dictionaries for JSON-like assertions.
+
+Pair this recipe with Ruff’s formatter or `pytest --fixtures` to verify output.
+
+## Recipe 3 — Freeze seeds for reproducible CI diffs
+
+Keep generated data stable across machines by freezing per-model seeds.
+
+```bash
+pfg gen json ./models.py \
+  --out ./out/users.json \
+  --freeze-seeds \
+  --freeze-seeds-file .pfg-seeds.json
+```
+
+- The freeze file stores model digests and derived seeds.
+- When digests change, the CLI prints `seed_freeze_stale` warnings so you can review updated fixtures.
+- Combine with `--preset boundary` to explore edge cases while staying deterministic.
+
+Review the freeze file:
+
+```json
+{
+  "version": 1,
+  "models": {
+    "app.models.User": {
+      "seed": 412067183,
+      "model_digest": "8d3db06f…"
+    }
+  }
+}
+```
+
+Commit the file to source control when you want cross-team consistency.
+
+## Recipe 4 — Register a custom provider via Pluggy
+
+Extend generation without forking core code.
+
+```python
+# plugins/nickname_boost.py
+from pydantic import BaseModel
+from pydantic_fixturegen.plugins.hookspecs import hookimpl
+
+class NicknameBoost:
+    @hookimpl
+    def pfg_modify_strategy(self, model: type[BaseModel], field_name: str, strategy):
+        if model.__name__ == "User" and field_name == "nickname":
+            return strategy.model_copy(update={"p_none": 0.1})
+        return None
+
+plugin = NicknameBoost()
+```
+
+Register the plugin and run generation:
+
+```python
+from pydantic_fixturegen.core.providers import create_default_registry
+from pydantic_fixturegen.plugins.loader import register_plugin
+
+from plugins.nickname_boost import plugin
+
+registry = create_default_registry(load_plugins=False)
+register_plugin(registry, plugin)
+```
+
+- The hook returns a modified strategy for the matching field; return `None` to fall back to defaults.
+- Use entry points under `pydantic_fixturegen` for discovery in packages.
+- Inspect the effect with `pfg gen explain --tree`.
+
+## Recipe 5 — Debug strategies with explain trees
+
+Expose provider choices to understand constraint handling.
+
+```bash
+pfg gen explain ./models.py --tree --max-depth 2 --include app.models.User
+```
+
+- `--tree` prints an indented diagram showing providers, presets, and policy tweaks.
+- `--json` emits a machine-readable payload suitable for CI or dashboards.
+- `--max-depth` limits recursion when dealing with large nested models.
+
+Use `--json` together with jq for targeted checks:
+
+```bash
+pfg gen explain ./models.py --json | jq '.models["app.models.User"].fields.nickname'
+```
+
+You see probability adjustments, active presets, and provider names, making policy mismatches easy to spot.
+
+## More plays
+
+- Automate regeneration with watch mode: `pfg gen fixtures ... --watch`.
+- Diff outputs before committing: `pfg diff models.py --fixtures-out tests/fixtures/test_models.py --show-diff`.
+- Harden imports by running `pfg doctor` with `--fail-on-gaps 0` and review the structured report.
