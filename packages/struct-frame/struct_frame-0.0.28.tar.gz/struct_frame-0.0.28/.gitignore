@@ -1,0 +1,38 @@
+# Build outputs and temporary files
+ts_out/
+node_modules/
+.vscode/
+main.exe
+dist/
+__pycache__/
+
+# Generated code directories
+generated/
+gen/
+tests/generated/
+
+# Legacy generated output directories (cleanup)
+c/
+py/
+ts/
+
+# Test artifacts
+tests/c/*.exe
+tests/c/*.bin
+tests/py/*.bin
+tests/ts/*.bin
+*_test_data.bin
+
+# Debug and temporary files
+debug*.c
+debug*.exe
+error.txt
+*.log
+InstallationLog.txt
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
