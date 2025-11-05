@@ -1,0 +1,13 @@
+--- a/douyin_mcp_server1/processor.py
++++ b/douyin_mcp_server1/processor.py
+@@ -313,7 +313,7 @@
+                     ctx.info("正在上传音频文件进行语音识别...")
+
+                 # 使用文件上传而不是URL
+-                task_response = dashscope.audio.asr.Transcription.async_call(
++                task_response = dashscope.audio.asr.Transcription.async_call(
+                     model=self.model,
+-                    file=[audio_file],  # 使用本地文件
++                    file_urls=[audio_file.name],  # 使用文件路径URL
+                     language_hints=['zh', 'en']
+                 )
