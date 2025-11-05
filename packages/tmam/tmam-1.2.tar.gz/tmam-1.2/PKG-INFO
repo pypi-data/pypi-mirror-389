@@ -1,0 +1,30 @@
+Metadata-Version: 2.4
+Name: tmam
+Version: 1.2
+Summary: OpenTelemetry-native Auto instrumentation library for monitoring LLM Applications and GPUs, facilitating the integration of observability into your GenAI-driven projects
+License: Apache-2.0
+License-File: LICENSE
+Keywords: OpenTelemetry,otel,otlp,llm,tracing,openai,anthropic,claude,cohere,llm monitoring,observability,monitoring,gpt,Generative AI,chatGPT,gpu
+Author: Tmam
+Requires-Python: >=3.12.1,<4.0.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Dist: anthropic (>=0.49.0,<0.50.0)
+Requires-Dist: boto3 (>=1.37.21,<2.0.0)
+Requires-Dist: botocore (>=1.37.21,<2.0.0)
+Requires-Dist: openai (>=1.68.2,<2.0.0)
+Requires-Dist: opentelemetry-api (>=1.31.1,<2.0.0)
+Requires-Dist: opentelemetry-exporter-otlp (>=1.31.1,<2.0.0)
+Requires-Dist: opentelemetry-instrumentation (>=0.52b1,<0.53)
+Requires-Dist: opentelemetry-sdk (>=1.31.1,<2.0.0)
+Requires-Dist: pydantic (>=2.10.6,<3.0.0)
+Requires-Dist: requests (>=2.32.3,<3.0.0)
+Requires-Dist: schedule (>=1.2.2,<2.0.0)
+Requires-Dist: xmltodict (>=0.14.2,<0.15.0)
+Project-URL: Homepage, https://github.com/python
+Project-URL: Repository, https://github.com/python
+Description-Content-Type: text/markdown
+
+
