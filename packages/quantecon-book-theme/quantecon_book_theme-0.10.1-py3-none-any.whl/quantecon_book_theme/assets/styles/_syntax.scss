@@ -1,0 +1,211 @@
+/* Syntax highlighting - Structural styles only
+ * Token-specific color styles have been moved to _code.scss
+ * This file contains only structural layout and ANSI colors for terminal output
+ */
+
+/* Code block structure and layout */
+.highlight {
+  margin: 0;
+  padding: 0.5rem 10px;
+  border-radius: 2px;
+}
+
+/* Background and border for custom QuantEcon style only
+ * Using :where() to keep specificity low so Pygments styles can override
+ */
+:where(body:not(.use-pygments-style)) .highlight {
+  border: 1px solid #e1e1e1;
+  background: #f7f7f7;
+}
+
+.highlight {
+  position: relative;
+}
+.highlight:before {
+  position: absolute;
+  top: 0.25rem;
+  left: -40px;
+  font-weight: bold;
+  width: 25px;
+  text-align: left;
+  color: #303f9f;
+  font-family: monospace, serif;
+  font-weight: 400;
+}
+// .highlight-none .highlight:before {
+//   content: 'Out';
+//   color: #d84315;
+//   top: 0rem;
+// }
+.highlight-none .highlight {
+  background: #ffffff;
+  border: 0;
+  padding: 0;
+  margin: 0rem 0 1.5rem 0;
+}
+.highlight pre {
+  overflow-x: auto;
+  white-space: pre;
+  word-wrap: normal;
+  margin: 0.25rem 0;
+}
+
+/* ANSI color styling for terminal/notebook output */
+.ansi-bold,
+.ansibold {
+  font-weight: 700;
+}
+.ansi-black-fg {
+  color: #3e424d;
+}
+.ansi-black-bg {
+  background-color: #3e424d;
+}
+.ansi-black-intense-fg {
+  color: #282c36;
+}
+.ansi-black-intense-bg {
+  background-color: #282c36;
+}
+.ansi-red-fg {
+  color: #e75c58;
+}
+.ansi-red-bg {
+  background-color: #e75c58;
+}
+.ansi-red-intense-fg {
+  color: #b22b31;
+}
+.ansi-red-intense-bg {
+  background-color: #b22b31;
+}
+.ansi-green-fg {
+  color: #00a250;
+}
+.ansi-green-bg {
+  background-color: #00a250;
+}
+.ansi-green-intense-fg {
+  color: #007427;
+}
+.ansi-green-intense-bg {
+  background-color: #007427;
+}
+.ansi-yellow-fg {
+  color: #ddb62b;
+}
+.ansi-yellow-bg {
+  background-color: #ddb62b;
+}
+.ansi-yellow-intense-fg {
+  color: #b27d12;
+}
+.ansi-yellow-intense-bg {
+  background-color: #b27d12;
+}
+.ansi-blue-fg {
+  color: #208ffb;
+}
+.ansi-blue-bg {
+  background-color: #208ffb;
+}
+.ansi-blue-intense-fg {
+  color: #0065ca;
+}
+.ansi-blue-intense-bg {
+  background-color: #0065ca;
+}
+.ansi-magenta-fg {
+  color: #d160c4;
+}
+.ansi-magenta-bg {
+  background-color: #d160c4;
+}
+.ansi-magenta-intense-fg {
+  color: #a03196;
+}
+.ansi-magenta-intense-bg {
+  background-color: #a03196;
+}
+.ansi-cyan-fg {
+  color: #60c6c8;
+}
+.ansi-cyan-bg {
+  background-color: #60c6c8;
+}
+.ansi-cyan-intense-fg {
+  color: #258f8f;
+}
+.ansi-cyan-intense-bg {
+  background-color: #258f8f;
+}
+.ansi-white-fg {
+  color: #c5c1b4;
+}
+.ansi-white-bg {
+  background-color: #c5c1b4;
+}
+.ansi-white-intense-fg {
+  color: #a1a6b2;
+}
+.ansi-white-intense-bg {
+  background-color: #a1a6b2;
+}
+.ansi-default-inverse-bg,
+.ansibgblack {
+  background-color: #000;
+}
+.ansi-default-inverse-fg {
+  color: #fff;
+}
+.ansi-underline {
+  text-decoration: underline;
+}
+.ansi-inverse {
+  outline: dotted 0.5px;
+}
+.ansiblack {
+  color: #000;
+}
+.ansired {
+  color: #8b0000;
+}
+.ansigreen {
+  color: #006400;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: #00008b;
+}
+.ansipurple {
+  color: #9400d3;
+}
+.ansicyan {
+  color: #4682b4;
+}
+.ansigray {
+  color: gray;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: #ff0;
+}
+.ansibgblue {
+  background-color: #00f;
+}
+.ansibgpurple {
+  background-color: #f0f;
+}
+.ansibgcyan {
+  background-color: #0ff;
+}
+.ansibggray {
+  background-color: gray;
+}
