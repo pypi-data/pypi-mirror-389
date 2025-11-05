@@ -1,0 +1,206 @@
+Metadata-Version: 2.4
+Name: pywrapid
+Version: 0.3.6
+Summary: Collection of wrapper libraries for rapid development of python applications
+Author-email: Jonas Werme <jonas.werme@nsahq.se>, Marcus Wallgren <marcus.wallgren@nsahq.se>
+Maintainer-email: Jonas Werme <jonas.werme@nsahq.se>, Marcus Wallgren <marcus.wallgren@nsahq.se>
+License: MIT License
+        
+        Copyright (c) 2022 NSAHQ
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: homepage, https://github.com/nsahq
+Project-URL: documentation, https://pywrapid.readthedocs.io/en/latest/
+Project-URL: repository, https://github.com/nsahq/pywrapid
+Project-URL: changelog, https://github.com/nsahq/pywrapid
+Keywords: web client,requests,config,yaml config,wrapper
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Development Status :: 3 - Alpha
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Provides-Extra: yaml
+Requires-Dist: pyyaml>=5.1; extra == "yaml"
+Provides-Extra: requests
+Requires-Dist: requests>=2.25.0; extra == "requests"
+Provides-Extra: httpx
+Requires-Dist: httpx>=0.18.0; extra == "httpx"
+Provides-Extra: aiohttp
+Requires-Dist: aiohttp>=3.7.0; extra == "aiohttp"
+Provides-Extra: jwt
+Requires-Dist: pyjwt; extra == "jwt"
+Provides-Extra: webclient
+Requires-Dist: pywrapid[requests]; extra == "webclient"
+Provides-Extra: webclient-async
+Requires-Dist: pywrapid[webclient-aiohttp]; extra == "webclient-async"
+Provides-Extra: standard
+Requires-Dist: pywrapid[jwt,webclient,yaml]; extra == "standard"
+Provides-Extra: all
+Requires-Dist: pywrapid[jwt,webclient,yaml]; extra == "all"
+Provides-Extra: qa
+Requires-Dist: pywrapid[lint,security,tests]; extra == "qa"
+Provides-Extra: dev
+Requires-Dist: pywrapid[all,build,docs,qa,tests]; extra == "dev"
+Provides-Extra: tests
+Requires-Dist: pytest>=7.0.0; extra == "tests"
+Requires-Dist: pytest-cov>=4.0.0; extra == "tests"
+Requires-Dist: tox>=4.2.0; extra == "tests"
+Requires-Dist: responses>=0.21.0; extra == "tests"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "tests"
+Requires-Dist: coverage>=7.0.0; extra == "tests"
+Provides-Extra: lint
+Requires-Dist: black>=23.0.0; extra == "lint"
+Requires-Dist: isort>=5.12.0; extra == "lint"
+Requires-Dist: flake8>=6.0.0; extra == "lint"
+Requires-Dist: flake8-pyproject; extra == "lint"
+Requires-Dist: mypy>=1.0.0; extra == "lint"
+Requires-Dist: pylint>=2.17.0; extra == "lint"
+Requires-Dist: types-PyYAML; extra == "lint"
+Requires-Dist: types-requests; extra == "lint"
+Provides-Extra: security
+Requires-Dist: bandit; extra == "security"
+Requires-Dist: safety; extra == "security"
+Provides-Extra: docs
+Requires-Dist: sphinx>=7.0.0; extra == "docs"
+Requires-Dist: sphinx_autodoc_typehints>=1.24.0; extra == "docs"
+Requires-Dist: sphinx_rtd_theme>=1.3.0; extra == "docs"
+Requires-Dist: pyyaml>=5.1; extra == "docs"
+Requires-Dist: pyjwt; extra == "docs"
+Provides-Extra: build
+Requires-Dist: build>=1.0.0; extra == "build"
+Requires-Dist: twine>=4.0.0; extra == "build"
+Dynamic: license-file
+
+********
+pywrapid
+********
+
+.. image:: https://readthedocs.org/projects/pywrapid/badge/?version=latest
+    :target: https://pywrapid.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+
+This library is created to wrap other popular libraries and extend their functionalities
+for rapid development of python applications.
+Includes configuration management compatible with all other modules provided in pywrapid.
+
+Extend functionality as you wish by wrapping the modules and/or inheriting the classes.
+
+Features
+========
+
+pywrapid.config
+---------------
+
+Config classes that can be used through out the various pywrapid modules or as a stand alone config management util.
+Currently only yaml configs is supported, with more file types in the roadmap. (Feel free to contribute with additional sypport.)
+
+We intend to at least support the following file types:
+    - YAML
+    - TOML*
+    - INI*
+    - JSON*
+    - KeyValue*
+
+(* Not implemented yet but planned)
+
+Two general config classes is provided: ApplicationConfig and ConfigSubSection
+Both inherits the WrapidConfig class and exposes the configuration data as a dict under the "cfg" propery.
+
+The ApplicationConfig class can be used to explore config location for default config location and common config location for Mac, Linux and Windows.
+
+The exploration functionality can be used standalone using ApplicationConfig.application_config_location().
+
+Simplicity is king and you can therefore use parts as you wish, or adopt wrapid config concept as a whole.
+
+Dependencies
+------------
+
+    - PyYAML
+
+### pywrapid.webclient
+Extends the well known requests library.
+Principle behind the web client is to give you one base that can be used in the same manner regardless of the mix and match between Authorization and Authentication methods used by the API/website.
+If a new version of the API your client consumes comes out with a different authentication method, you should only have to instanciate a different class to match the API and have it work again.
+
+Gives you a generic web client class you can use as a base for your client creations.
+
+Credential types:
+
+    - No authentication
+    - Basic Auth
+    - x509
+
+Authorization types:
+
+    - NONE
+    - BASIC
+    - BEARER
+    - JWT
+    - OAUTH2
+
+pywrapid.log
+============
+
+Helper functions for setting up and controlling the defacto standard logging framework "logging".
+
+Allows you to easily configure logging handlers (currently only console and file) on a per module basis.
+
+Gives your application a similar configuration principle to djangos log management, where you can control logging for each import or derived modules.
+You can specify different log level or formats per module and per handler.
+Propagation to parent will not take place for modules you specify, giving you the control, while also being able to capture undefined child loggers.
+
+
+See documentation for more information.
+
+Dependencies
+------------
+
+    - pyjwt
+
+Exceptions
+----------
+
+Each sub library comes with pywrapid exceptions.
+The exceptions will normalize multiple wrapped libraries/tools and extend with additional generic exceptions.
+
+
+Dependencies
+============
+
+    - pyyaml
+    - requests
+    - pyjwt
+
+Needed softwares
+================
+
+    - python3.x
