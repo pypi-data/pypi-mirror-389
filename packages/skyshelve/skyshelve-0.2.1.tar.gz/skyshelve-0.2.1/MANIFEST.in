@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include go.mod
+include go.sum
+include skyshelve.go
+recursive-include src/skyshelve libskyshelve.*
+recursive-include examples *.py
+recursive-include tests *.py
