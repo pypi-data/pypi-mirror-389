@@ -1,0 +1,139 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paprwall"
+version = "1.0.3"
+authors = [
+    {name = "riturajprofile", email = "riturajprofile@gmail.com"},
+]
+description = "Modern Desktop Wallpaper Manager with Motivational Quotes"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Desktop Environment",
+    "Topic :: Multimedia :: Graphics :: Viewers",
+    "Environment :: X11 Applications",
+]
+keywords = ["wallpaper", "desktop", "gui", "quotes", "automation", "linux", "windows"]
+dependencies = [
+    "requests>=2.28.0",
+    "Pillow>=10.0.0",
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller>=5.0",
+    "cx-freeze>=6.0",
+    "build",
+    "twine",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/riturajprofile/paprwall"
+Repository = "https://github.com/riturajprofile/paprwall"
+Documentation = "https://github.com/riturajprofile/paprwall#readme"
+"Bug Tracker" = "https://github.com/riturajprofile/paprwall/issues"
+Changelog = "https://github.com/riturajprofile/paprwall/releases"
+
+[project.scripts]
+paprwall-gui = "paprwall.gui.wallpaper_manager_gui:main"
+paprwall = "paprwall.gui.wallpaper_manager_gui:main"
+
+[project.gui-scripts]
+paprwall-gui = "paprwall.gui.wallpaper_manager_gui:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["paprwall*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md", "*.json"]
+paprwall = ["assets/*", "../assets/*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = [
+    "tests",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "tests/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
