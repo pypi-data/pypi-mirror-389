@@ -1,0 +1,1 @@
+from nameuz.core import Meaning
