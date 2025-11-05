@@ -1,0 +1,35 @@
+[project]
+name = "hrvlib"
+version = "0.0.0a1"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "faby", email = "fabian.kropfhamer@gmail.com" }
+]
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=2.3.4",
+    "scipy>=1.16.3",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+build-dir = "build/{wheel_tag}"
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "src/**/*.{h,c,hpp,cpp}" }, { file = "CMakeLists.txt" }]
+
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11", "cmake>=3.15"]
+build-backend = "scikit_build_core.build"
+
+[dependency-groups]
+dev = [
+    "memray>=1.19.1",
+]
