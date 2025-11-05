@@ -1,0 +1,40 @@
+[project]
+name = "excel-validator"
+authors = [
+  { name="Matthijs Brouwer", email="matthijs.brouwer@wur.nl" },
+]
+description = "Validation of template based Excel files"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+dynamic = ["dependencies","version"]
+classifiers = [
+    "Topic :: Internet :: Proxy Servers",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://github.com/matthijsbrouwer/excel-validator"
+
+[project.scripts]
+excel-validator = "excel_validator.script.service:service"
+
+[build-system]
+requires = [
+    "read_version[toml] ~= 0.3.0",
+    "setuptools >= 42.0.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+excel_validator = ["**/*.json", "**/*.html", "**/*.js", "**/*.css", "**/*.ini"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.read_version]
+version = "src.excel_validator._version:__version__"
+
