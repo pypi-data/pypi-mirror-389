@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "az-perfwatch"
+version = "1.0.0"
+description = "Production-ready performance monitoring library for Python web applications"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+    { name = "Shahabaz Alam", email = "shahabazalam1@gmail.com" }
+]
+keywords = ["performance", "monitoring", "profiling", "django", "flask", "fastapi", "metrics"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Django",
+    "Framework :: Flask",
+    "Framework :: FastAPI",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "flask>=2.3.2",
+    "django>=4.2",
+    "sqlalchemy>=2.0",
+    "pymongo>=4.10.0",
+    "requests>=2.31.0",
+    "httpx>=0.24.0",
+    "pydantic>=2.5.0",
+    "rich>=13.4",
+    "jinja2>=3.1",
+    "uvicorn>=0.25.0",
+    "toml>=0.10",
+    "passlib[bcrypt]>=1.7.4",
+    "typer>=0.9.0",
+    "psycopg2-binary>=2.9.0",
+    "mysql-connector-python>=8.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ShahabazAlam/az-perfwatch"
+Repository = "https://github.com/ShahabazAlam/az-perfwatch"
+"Bug Reports" = "https://github.com/ShahabazAlam/az-perfwatch/issues"
+Documentation = "https://github.com/ShahabazAlam/az-perfwatch#readme"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=24.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.10.0",
+]
+
+[project.scripts]
+perfwatch = "perfwatch.cli.main:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*", "examples*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+perfwatch = ["dashboard/templates/**/*", "dashboard/static/**/*"]
