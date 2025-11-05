@@ -1,0 +1,20 @@
+# Include important files in the distribution
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include requirements.txt
+include requirements-dev.txt
+
+# Include package data
+recursive-include langgraph_crosschain *.py
+recursive-include tests *.py
+recursive-include examples *.py *.md
+
+# Exclude unnecessary files
+exclude .gitignore
+exclude .pre-commit-config.yaml
+exclude Makefile
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store

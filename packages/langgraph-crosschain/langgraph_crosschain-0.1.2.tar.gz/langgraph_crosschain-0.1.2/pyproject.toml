@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langgraph-crosschain"
+version = "0.1.2"
+description = "Cross-chain node communication framework for LangGraph - Enable direct node-to-node communication across multiple LangGraph chains"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Karthick", email = "karthickrajam18@gmail.com"}
+]
+keywords = [
+    "langgraph", 
+    "langchain", 
+    "cross-chain", 
+    "multi-agent", 
+    "agent-orchestration",
+    "distributed-agents",
+    "ai", 
+    "llm",
+    "agent-communication",
+    "chain-registry"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Framework :: AsyncIO",
+]
+
+dependencies = [
+    "langgraph>=0.2.0,<1.0.0",
+    "langchain>=0.1.0,<2.0.0",
+    "pydantic>=2.0.0,<3.0.0",
+    "typing-extensions>=4.0.0,<5.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "twine>=4.0.0",
+    "build>=0.10.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-autodoc-typehints>=1.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/karthyick/langgraph-crosschain"
+Documentation = "https://github.com/karthyick/langgraph-crosschain#readme"
+Repository = "https://github.com/karthyick/langgraph-crosschain.git"
+"Bug Tracker" = "https://github.com/karthyick/langgraph-crosschain/issues"
+"Source Code" = "https://github.com/karthyick/langgraph-crosschain"
+
+[tool.setuptools.packages.find]
+include = ["langgraph_crosschain*"]
+exclude = ["tests*", "examples*", "docs*"]
+
+[tool.setuptools.package-data]
+langgraph_crosschain = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=langgraph_crosschain --cov-report=html --cov-report=term-missing"
