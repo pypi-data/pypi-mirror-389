@@ -1,0 +1,48 @@
+Metadata-Version: 2.3
+Name: ccowsay
+Version: 0.1.0
+Summary: A program that generates customizable ASCII art pictures with a message.
+Author: Ashkan Feyzollahi
+Author-email: ashkanfeyzollahi@gmail.com
+Requires-Python: >=3.11,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Dist: appdirs (>=1.4.4,<2.0.0)
+Requires-Dist: cli-box (>=0.2.0,<0.3.0)
+Requires-Dist: click (>=8.3.0,<9.0.0)
+Description-Content-Type: text/markdown
+
+# CCowSay
+
+![screenshot](./screenshot.png)
+
+<p align="center">
+    <em>🐮 A program that generates customizable ASCII art pictures with a message.</em>
+</p>
+
+## Installation
+
+1. **[Install Pipx](https://gist.github.com/ashkanfeyzollahi/7bbf36fb876a3781efbbb3ef841b5f4e)** (if you don't have it already)
+
+2. **Install `ccowsay` using Pipx**:
+
+```bash
+pipx install ccowsay
+```
+
+## Usage
+
+```
+Usage: ccowsay [OPTIONS] [MESSAGE]
+
+  ccowsay is a program that generates customizable ASCII art pictures with a
+  message.
+
+Options:
+  -a, --align [CENTER|LEFT|RIGHT]
+  -w, --box-width INTEGER
+  --help                          Show this message and exit.
+```
+
