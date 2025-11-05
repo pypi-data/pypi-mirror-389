@@ -1,0 +1,39 @@
+Metadata-Version: 2.4
+Name: tabula-mutabilis
+Version: 100.20
+Summary: A comprehensive table widget for Tkinter with TTK Bootstrap integration
+Author: Landon Blake
+Author-email: sunburned.surveyor@gmail.com
+Maintainer: The SurveyOS Project
+Keywords: tkinter table widget ttkbootstrap gui spreadsheet grid
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: User Interfaces
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: ttkbootstrap>=1.10.0
+Requires-Dist: tablib>=3.5.0
+Requires-Dist: toml>=0.10.2
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pyinstaller>=6.0.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: maintainer
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+A comprehensive table widget for Tkinter with TTK Bootstrap integration
