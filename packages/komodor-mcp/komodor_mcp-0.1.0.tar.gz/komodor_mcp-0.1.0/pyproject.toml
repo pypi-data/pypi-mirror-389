@@ -1,0 +1,150 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "komodor-mcp"
+version = "0.1.0"
+description = "Komodor MCP Server - Intelligent AI assistant for Kubernetes infrastructure"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "Komodor", email = "support@komodor.com"}
+]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "starlette>=0.27.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "structlog>=23.2.0",
+    "uvicorn>=0.24.0",
+    "python-multipart>=0.0.6",
+    "anyio>=4.0.0",
+    "typing-extensions>=4.8.0",
+    "tenacity>=9.1.2",
+    "python-dotenv>=1.1.1",
+    "attrs>=22.2.0",
+    "python-dateutil>=2.8.0",
+    "pyyaml>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-httpx>=0.24.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "debugpy>=1.8.0",
+]
+
+[project.scripts]
+komodor-mcp = "komodor_mcp.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/komodor_mcp", "generated-client/openapi_client"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/generated-client/openapi_client",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+exclude = [
+    "/.env",
+    "/.env.*",
+    "*.env",
+    "/.git",
+    "/.gitignore",
+    "/.python-version",
+    "/.dockerignore",
+    "/Dockerfile",
+    "/Makefile",
+    "/generate_client.sh",
+    "/openapi.yaml",
+    "/uv.lock",
+    "/generated-client/.openapi-generator",
+    "/generated-client/pyproject.toml",
+    "/generated-client/openapi_client_README.md",
+    "/tests",
+    "/build",
+    "/dist",
+    "*.egg-info",
+    "/.pytest_cache",
+    "/.mypy_cache",
+    "/.ruff_cache",
+    "/__pycache__",
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    "/PKG-INFO",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.black]
+target-version = ["py311"]
+line-length = 88
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+
+[tool.uv.sources]
+openapi-client = { path = "generated-client", editable = true }
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "debugpy>=1.8.16",
+    "mypy>=1.17.1",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-httpx>=0.35.0",
+    "ruff>=0.12.10",
+]
