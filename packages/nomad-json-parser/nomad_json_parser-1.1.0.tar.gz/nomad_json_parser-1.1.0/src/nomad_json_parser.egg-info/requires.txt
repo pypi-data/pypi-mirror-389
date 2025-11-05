@@ -1,0 +1,12 @@
+nomad-lab>=1.3.16
+nomad-material-processing
+
+[:sys_platform == "win32"]
+python-magic-bin
+
+[dev]
+ruff
+pytest
+structlog
+python-logstash>=0.4.6
+nomad-lab[dev,infrastructure]
