@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: importdoc
+Version: 0.0.5
+Summary: Advanced Python import diagnostic tool with deep analysis, subprocess isolation, auto-fixing suggestions, and CI-ready enforcement.
+Project-URL: Homepage, https://github.com/dhruv13x/importdoc
+Project-URL: Repository, https://github.com/dhruv13x/importdoc
+Project-URL: Issues, https://github.com/dhruv13x/importdoc/issues
+Project-URL: Documentation, https://pypi.org/project/importdoc
+Author-email: dhruv13x <dhruv13x@gmail.com>
+License: MIT
+Requires-Python: >=3.10
+Requires-Dist: jsonschema>=4.0.0
+Requires-Dist: tqdm>=4.0.0
+Provides-Extra: dev
+Requires-Dist: black>=24.0; extra == 'dev'
+Requires-Dist: build>=1.2; extra == 'dev'
+Requires-Dist: flake8>=7.0; extra == 'dev'
+Requires-Dist: mypy>=1.10; extra == 'dev'
+Requires-Dist: pytest-cov>=4.1; extra == 'dev'
+Requires-Dist: pytest>=8.0; extra == 'dev'
+Requires-Dist: rich>=13.0; extra == 'dev'
+Requires-Dist: twine>=5.0; extra == 'dev'
+Description-Content-Type: text/markdown
+
+# README.md
