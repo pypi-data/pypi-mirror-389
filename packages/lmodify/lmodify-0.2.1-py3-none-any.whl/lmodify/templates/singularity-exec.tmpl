@@ -1,0 +1,4 @@
+#!/bin/bash
+# Launcher for ${package_name} made by ${organization}
+# Image: ${singularity_image}
+singularity exec "${singularity_image}" $$(basename "$$0") "$$@"

@@ -1,0 +1,47 @@
+-- -*- lua -*-
+-- Module file for ${package_name}
+-- Generated for Singularity container deployment by lmodify
+
+help([[
+${package_name} - ${description}
+
+This module provides access to ${package_name} via a Singularity container.
+All commands are executed within the container environment.
+
+Version: ${version}
+Container: ${singularity_image}
+
+Available commands:
+${commands_list}
+
+For more information, try: ${main_command} --help
+]])
+
+-- Module metadata
+whatis("Name:        ${package_name}")
+whatis("Version:     ${version}")
+whatis("Category:    ${category}")
+whatis("Description: ${description}")
+whatis("Container:   ${singularity_image}")
+
+-- Set local variables for paths
+local base = "${bin_dir}"
+local simg = "${singularity_image}"
+
+-- Add bin directory to PATH
+prepend_path("PATH", base)
+
+-- Set environment variables for the container
+setenv("${package_name_upper}_SINGULARITY_IMAGE", simg)
+setenv("${package_name_upper}_HOME", base)
+
+-- Module load message
+if (mode() == "load") then
+    LmodMessage("Loading ${package_name} ${version} (Singularity container)")
+    LmodMessage("  Container: " .. simg)
+end
+
+-- Module unload message
+if (mode() == "unload") then
+    LmodMessage("Unloading ${package_name} ${version}")
+end
