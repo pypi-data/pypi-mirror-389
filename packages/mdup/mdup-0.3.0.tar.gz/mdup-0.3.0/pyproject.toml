@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mdup"
+description = "Keep markdown files up-to-date."
+readme = "README.md"
+authors = [ {name = "Alexandru Dinu"} ]
+dependencies = []
+requires-python = ">=3.8"
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "mdup.__version__"}
+
+[project.scripts]
+mdup = "mdup:main"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "C4",
+    "B",
+    "SIM"
+]
+ignore = [
+    "E501"
+]
