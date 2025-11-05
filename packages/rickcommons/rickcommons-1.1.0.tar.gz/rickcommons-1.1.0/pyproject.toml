@@ -1,0 +1,28 @@
+[project]
+name = "rickcommons"
+version = "1.1.0"
+description = "一个python redis 的简易分布式消息实现"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "LH", email = "276069869@qq.com" }
+]
+requires-python = ">=3.8.6"
+dependencies = [
+    "redis>=6.1.1",
+]
+
+[project.scripts]
+test = "rickcommons.test:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[[tool.uv.index]]
+url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
+default = true
+
+# Hatchling 配置
+[tool.hatch.build.targets.wheel]
+packages = ["src/rickcommons"]
