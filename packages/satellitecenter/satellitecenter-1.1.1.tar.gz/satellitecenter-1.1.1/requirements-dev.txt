@@ -1,0 +1,25 @@
+# 生产依赖
+-r requirements.txt
+
+# 测试工具
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# 代码格式化和检查
+black>=23.12.0
+ruff>=0.1.9
+isort>=5.13.0
+
+# 类型检查
+mypy>=1.8.0
+
+# 安全检查
+bandit>=1.7.5
+pip-audit>=2.6.1
+
+# 版本管理
+setuptools_scm[toml]>=6.2
+
+# 打包工具
+build>=1.0.0
+twine>=4.0.0
