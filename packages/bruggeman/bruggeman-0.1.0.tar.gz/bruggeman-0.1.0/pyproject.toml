@@ -1,0 +1,62 @@
+[project]
+name = "bruggeman"
+description = "Repository for the Bruggeman equations from Analytical Solutions of Geohydrological Problems (1999)"
+readme = "README.md"
+authors = [{ name = "Davíd Brakenhoff", email = "d.brakenhoff@artesia-water.nl" }]
+requires-python = ">=3.12"
+dependencies = ["numpy", "scipy", "mpmath"]
+dynamic = ["version"]
+
+[project.scripts]
+bruggeman = "bruggeman:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "bruggeman/__about__.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.optional-dependencies]
+# NOTE: it is recommended to install the latest version of latexify-py. Unfortunately
+# PyPI won't accept this as a dependency. So we use the official release, but for the
+# best results use the following in pyproject.toml:
+#  - "latexify-py@git+https://github.com/google/latexify_py.git#egg=main"
+# or install using:
+#  - pip install git+https://github.com/google/latexify_py.git#egg=main
+latexify = ["latexify-py"]
+ci = ["pytest", "pytest-cov", "nbformat", "nbconvert", "mypy", "ruff"]
+docs = [
+    "matplotlib",
+    "bruggeman[latexify]",
+    "Ipython",
+    "ipykernel",
+    "pydata-sphinx-theme",
+    "sphinx",
+    "sphinxcontrib-bibtex",
+    "numpydoc",
+    "sphinx-design",
+    "myst_nb",
+    "ttim",
+]
+dev = ["bruggeman[ci,docs]"]
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+lint.extend-select = ["I"]
+show-fixes = true
+fix = true
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --durations=0"
+markers = ["notebooks: run notebooks"]
+
+[tool.mypy]
+mypy_path = "bruggeman"
+
+[[tool.mypy.overrides]]
+module = ["scipy.special.*", "latexify.*", "mpmath.*"]
+ignore_missing_imports = true
