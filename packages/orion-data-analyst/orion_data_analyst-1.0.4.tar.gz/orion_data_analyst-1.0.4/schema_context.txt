@@ -1,0 +1,16 @@
+You can query ONLY these 4 tables in `bigquery-public-data.thelook_ecommerce`:
+
+1. orders – customer orders (order_id, user_id, status, gender, created_at, returned_at, shipped_at, delivered_at, num_of_item)
+2. order_items – products within each order (id, order_id, user_id, product_id, inventory_item_id, status, created_at, shipped_at, delivered_at, returned_at, sale_price)
+3. products – catalog metadata (id, cost, category, name, brand, retail_price, department, sku, distribution_center_id)
+4. users – customer demographics (id, first_name, last_name, email, age, gender, state, city, country, traffic_source, created_at, user_geom)
+
+Joins:
+- orders.user_id = users.id  
+- orders.order_id = order_items.order_id  
+- order_items.product_id = products.id
+
+Rules:
+- Prefix all tables with full path: `bigquery-public-data.thelook_ecommerce.<table>`
+- Always alias tables (o, oi, p, u) and qualify ambiguous columns
+- Use only these 4 tables; reject others
