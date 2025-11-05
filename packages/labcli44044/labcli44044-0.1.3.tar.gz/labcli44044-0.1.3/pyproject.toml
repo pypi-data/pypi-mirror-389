@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=40.8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labcli44044"
+version = "0.1.3"
+description = "CLI to list and run lab programs stored in a programs/ directory"
+authors = [{name = "labuser"}]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Shakthi44044/labcli"
+"Bug Tracker" = "https://github.com/Shakthi44044/labcli/issues"
+
+[tool.setuptools]
+packages = ["labmanager", "labmanager.program"]
+
+[project.scripts]
+labcli = "labmanager.cli:main"
