@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""
+Semantic Layer Service
+{{ project_name }} - {{ domain }} Domain
+"""
+
+import os
+import logging
+from typing import List, Dict, Any, Optional
+from pathlib import Path
+
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Configuration
+PORT = int(os.getenv("SEMANTIC_LAYER_PORT", "8080"))
+HOST = os.getenv("SEMANTIC_LAYER_HOST", "0.0.0.0")
+
+app = FastAPI(
+    title="Semantic Layer Service",
+    description="Semantic layer for {{ project_name }} - {{ domain }} domain",
+    version="1.0.0"
+)
+
+# Models
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 5
+
+class SearchResult(BaseModel):
+    id: str
+    content: str
+    score: float
+    metadata: Dict[str, Any] = {}
+
+class SearchResponse(BaseModel):
+    results: List[SearchResult]
+    total: int
+
+# In-memory storage for demo
+semantic_data: List[Dict[str, Any]] = [
+    {
+        "id": "demo-1",
+        "content": "This is a demo semantic entry for {{ project_name }}",
+        "metadata": {"type": "demo", "domain": "{{ domain }}"}
+    }
+]
+
+@app.get("/")
+async def root():
+    """Health check endpoint"""
+    return {
+        "service": "semantic_layer",
+        "status": "healthy",
+        "project": "{{ project_name }}",
+        "domain": "{{ domain }}"
+    }
+
+@app.post("/search", response_model=SearchResponse)
+async def search(request: SearchRequest):
+    """Search semantic content"""
+    try:
+        # Simple text matching for demo
+        results = []
+        for item in semantic_data:
+            if request.query.lower() in item["content"].lower():
+                results.append(SearchResult(
+                    id=item["id"],
+                    content=item["content"],
+                    score=0.9,  # Mock score
+                    metadata=item.get("metadata", {})
+                ))
+        
+        return SearchResponse(
+            results=results[:request.limit],
+            total=len(results)
+        )
+    except Exception as e:
+        logger.error(f"Search error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/stats")
+async def get_stats():
+    """Get semantic layer statistics"""
+    return {
+        "total_entries": len(semantic_data),
+        "service": "semantic_layer",
+        "version": "1.0.0"
+    }
+
+if __name__ == "__main__":
+    logger.info(f"Starting Semantic Layer Service on {HOST}:{PORT}")
+    uvicorn.run(app, host=HOST, port=PORT)
