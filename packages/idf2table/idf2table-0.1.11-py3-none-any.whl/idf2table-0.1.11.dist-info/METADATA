@@ -1,0 +1,514 @@
+Metadata-Version: 2.4
+Name: idf2table
+Version: 0.1.11
+Summary: Convertir des fichiers EnergyPlus IDF en DataFrames pandas
+Project-URL: Homepage, https://gitlab.plateforme-tipee.com/idf/idf2table
+Project-URL: Documentation, https://gitlab.plateforme-tipee.com/idf/idf2table/-/blob/main/README.md
+Project-URL: Repository, https://gitlab.plateforme-tipee.com/idf/idf2table.git
+Project-URL: Issues, https://gitlab.plateforme-tipee.com/idf/idf2table/-/issues
+Author-email: TIPEE <contact@plateforme-tipee.com>
+License: MIT
+Keywords: building,dataframe,energyplus,eppy,idf,pandas,simulation
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.12
+Requires-Dist: openpyxl>=3.1.5
+Requires-Dist: pandas>=2.3.3
+Description-Content-Type: text/markdown
+
+# IDF2TABLE
+
+**Convertir des fichiers EnergyPlus IDF en DataFrames pandas**
+
+IDF2TABLE est un outil Python qui permet de convertir les objets issus de fichiers EnergyPlus IDF (Input Data File) en DataFrames pandas. Chaque ligne du DataFrame représente un objet IDF et chaque colonne représente un attribut de cet objet.
+
+## ✨ Fonctionnalités
+
+- 🔄 Conversion automatique des objets IDF en DataFrames pandas
+- 📊 Support de tous les types d'objets EnergyPlus (Material, Zone, Construction, etc.)
+- 🔍 Détection automatique du fichier IDD EnergyPlus
+- 💾 Export des résultats en fichiers Excel
+- 🎯 Interface simple et intuitive
+
+## 📋 Prérequis
+
+- **Python** >= 3.12
+- **EnergyPlus** (pour le fichier IDD)
+- Les autres dépendances sont installées automatiquement
+
+## 🚀 Installation
+
+## 📦 Dépendances
+
+- **eppy** >= 0.5.66 : Manipulation des fichiers IDF EnergyPlus
+- **pandas** >= 2.3.3 : Manipulation de DataFrames
+- **openpyxl** >= 3.1.5 : Export Excel (inclus)
+
+## 📦 Installation depuis PyPI
+
+Une fois publié sur PyPI, vous pourrez installer le package avec :
+
+```bash
+# Installation avec uv
+uv venv venv --python 3.12
+source venv/bin/activate
+uv pip install git+https://github.com/santoshphilip/eppy.git
+uv pip install idf2table
+```
+
+
+### Installation depuis GitLab (recommandé)
+
+Pour installer directement depuis le dépôt GitLab :
+
+```bash
+# Avec pip
+pip install git+https://gitlab.plateforme-tipee.com/idf/idf2table.git
+
+# Avec uv
+uv pip install git+https://gitlab.plateforme-tipee.com/idf/idf2table.git
+```
+
+**Note :** Si le dépôt est privé, vous devrez peut-être vous authentifier :
+- Utiliser un [token d'accès GitLab](https://gitlab.plateforme-tipee.com/-/user_settings/personal_access_tokens)
+- Ou utiliser : `pip install git+https://<username>:<token>@gitlab.plateforme-tipee.com/idf/idf2table.git`
+
+### Installation locale (mode développement)
+
+Pour contribuer au projet ou utiliser le code local :
+
+**Mode développement (depuis le répertoire du projet) :**
+
+```bash
+# Cloner le dépôt
+git clone https://gitlab.plateforme-tipee.com/idf/idf2table.git
+cd idf2table
+
+# Installer en mode éditable avec uv
+uv sync
+# Le module est installé en mode éditable
+```
+
+**Installation en tant que package local :**
+
+```bash
+# Avec uv
+uv pip install -e .
+
+# Avec pip
+pip install -e .
+```
+
+### Dépendances
+
+Les dépendances suivantes seront installées automatiquement :
+- `eppy >= 0.5.66` : Manipulation des fichiers IDF
+- `pandas >= 2.3.3` : DataFrames
+- `openpyxl >= 3.1.5` : Export Excel (inclus)
+
+## ⚙️ Configuration du fichier IDD
+
+Le fichier IDD (Input Data Dictionary) est nécessaire pour interpréter les fichiers IDF. IDF2TABLE le cherche automatiquement dans cet ordre :
+
+1. Variable d'environnement `ENERGYPLUS_IDD`
+2. Emplacements standards selon le système d'exploitation :
+   - **Windows** : `C:\EnergyPlusV9-4-0\Energy+.idd` ou `C:\Program Files\EnergyPlusV9-4-0\Energy+.idd`
+   - **macOS** : `/Applications/EnergyPlus-9-4-0/Energy+.idd`
+   - **Linux** : `./EnergyPlus-9.4.0-998c4b761e-Linux-Ubuntu18.04-x86_64/Energy+.idd`
+
+### Définir manuellement le chemin IDD
+
+```bash
+export ENERGYPLUS_IDD=/chemin/vers/Energy+.idd
+```
+
+## 📖 Utilisation
+
+### En tant que module Python
+
+```python
+from idf2table import idf_to_table, find_idd
+from eppy.modeleditor import IDF
+
+# Configurer le fichier IDD
+idd_path = find_idd()
+IDF.setiddname(str(idd_path))
+
+# Charger le fichier IDF
+idf = IDF('data/OPIO_run.idf')
+
+# Convertir les objets Material en DataFrame
+materials_df = idf_to_table(idf, "Material")
+
+print(materials_df.head())
+```
+
+### Utilisation simplifiée (chemin de fichier direct)
+
+```python
+from idf2table import idf_to_table
+
+# Le fichier IDD sera trouvé automatiquement
+materials_df = idf_to_table('data/OPIO_run.idf', "Material")
+```
+
+### En ligne de commande (CLI)
+# Exporter la géométrie IDF en Wavefront OBJ
+
+```bash
+# Export des BuildingSurface:Detailed
+idf2table export-obj data/OPIO_run.idf --obj out/model.obj
+
+# Inclure fenêtres/portes et ombrages, générer un MTL et inverser les normales
+idf2table export-obj data/OPIO_run.idf --obj out/model.obj \
+  --with-fenestration --with-shading --mtl out/model.mtl --flip-normals
+```
+
+### API d'export OBJ
+
+```python
+from idf2table.obj_export import export_idf_to_obj, ObjExportOptions
+
+opts = ObjExportOptions(include_fenestration=True, include_shading=True, write_mtl=True, mtl_path="out/model.mtl")
+export_idf_to_obj("data/OPIO_run.idf", "out/model.obj", options=opts)
+```
+
+Une fois le module installé, vous disposez d'une commande `idf2table` avec des sous-commandes :
+
+```bash
+# Afficher l'aide générale
+idf2table --help
+
+# 1) Convertir un type d'objet en DataFrame (sous-commande: table)
+idf2table table data/OPIO_run.idf Material
+
+# Exporter en Excel
+idf2table table data/OPIO_run.idf Material --output materials.xlsx
+
+# Exporter en CSV
+idf2table table data/OPIO_run.idf Material --csv
+
+# Spécifier un fichier IDD personnalisé
+idf2table table data/OPIO_run.idf Material --idd /path/to/Energy+.idd
+
+# 2) Appliquer des mises à jour depuis un Excel/CSV (sous-commande: apply)
+idf2table apply data/OPIO_run.idf --excel updates.xlsx --save data/OPIO_run_updated.idf
+
+# Utiliser une feuille nommée
+idf2table apply data/OPIO_run.idf --excel updates.xlsx --sheet MA_FEUILLE --save out.idf
+
+# Exemple avec CSV
+idf2table apply data/OPIO_run.idf --excel updates.csv --save out.idf
+```
+
+### Exemples de types d'objets
+
+```python
+from idf2table import idf_to_table
+
+# Avec un objet IDF déjà chargé
+from eppy.modeleditor import IDF
+from idf2table import find_idd
+
+idd_path = find_idd()
+IDF.setiddname(str(idd_path))
+idf = IDF('data/OPIO_run.idf')
+
+# Matériaux
+materials_df = idf_to_table(idf, "Material")
+
+# Zones
+zones_df = idf_to_table(idf, "Zone")
+
+# Surfaces de bâtiment
+surfaces_df = idf_to_table(idf, "BuildingSurface:Detailed")
+
+# Constructions
+constructions_df = idf_to_table(idf, "Construction")
+
+# Propriétés HAMT (Heat And Moisture Transfer)
+hamt_df = idf_to_table(idf, "MaterialProperty:HeatAndMoistureTransfer:SorptionIsotherm")
+```
+
+### Lister tous les types d'objets disponibles
+
+```python
+from idf2table import find_idd
+from eppy.modeleditor import IDF
+
+idd_path = find_idd()
+IDF.setiddname(str(idd_path))
+idf = IDF('data/OPIO_run.idf')
+
+# Afficher tous les types d'objets disponibles
+print(list(idf.idfobjects.keys()))
+```
+
+### Export en Excel
+
+**Avec pandas :**
+
+```python
+from idf2table import idf_to_table
+
+materials_df = idf_to_table('data/OPIO_run.idf', "Material")
+materials_df.to_excel('materials.xlsx', index=False)
+```
+
+**Ou avec la CLI :**
+
+```bash
+idf2table data/OPIO_run.idf Material --output materials.xlsx
+```
+
+## 📚 API
+### Mise à jour IDF depuis Excel/CSV
+
+#### Format attendu (tableau « large » exporté par `idf_to_table`)
+
+- Colonnes obligatoires: `key`, `Name`
+- Toutes les autres colonnes sont interprétées comme des champs à mettre à jour
+
+Exemple minimal:
+
+| key      | Name                     | Conductivity | Density |
+|----------|--------------------------|--------------|---------|
+| Material | MyMaterial               | 0.038        | 50      |
+| Material | AnotherMaterial          | 0.040        | 25      |
+
+Notes:
+- La colonne `key` correspond au type d’objet (ex: `Material`, `Construction`)
+- La colonne `Name` correspond au nom d’objet IDF
+- Les fichiers `.csv` sont également acceptés
+
+Note: les fichiers `.csv` sont également acceptés (mêmes colonnes).
+
+#### API Python
+
+```python
+from idf2table import find_idd
+from idf2table.core import apply_updates_from_excel
+from eppy.modeleditor import IDF
+
+idd = find_idd(); IDF.setiddname(str(idd))
+idf = IDF('data/OPIO_run.idf')
+
+# Appliquer les updates depuis Excel
+idf = apply_updates_from_excel(idf, 'updates.xlsx', save_to='data/OPIO_run_updated.idf')
+```
+
+### `idf_to_table(idf, object_type, idd_file=None)`
+
+Convertit tous les objets d'un type donné en DataFrame pandas.
+
+**Paramètres :**
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `idf` | `IDF` ou `str` | Objet IDF ou chemin vers le fichier `.idf` |
+| `object_type` | `str` | Type d'objet à convertir (ex: `"Material"`, `"Zone"`) |
+| `idd_file` | `str`, optionnel | Chemin vers le fichier IDD. Si non fourni, recherche automatique |
+
+**Retourne :**
+
+- `pd.DataFrame` : DataFrame où chaque ligne = un objet, chaque colonne = un attribut
+
+**Exemple de résultat :**
+
+```
+   key              Name Roughness  Thickness  Conductivity  Density  Specific_Heat  ...
+0  Material  MATERIAL_1     Rough        0.1         0.038     50.0         1540.0  ...
+1  Material  MATERIAL_2     Rough       0.12           2.0   2400.0          880.0  ...
+```
+
+### `find_idd()`
+
+Trouve automatiquement le fichier IDD EnergyPlus.
+
+**Retourne :**
+
+- `Path` : Chemin vers le fichier IDD trouvé
+
+**Lève :**
+
+- `FileNotFoundError` : Si aucun fichier IDD n'est trouvé
+
+**Exemple :**
+
+```python
+from main import find_idd
+
+try:
+    idd_path = find_idd()
+    print(f"IDD trouvé : {idd_path}")
+except FileNotFoundError as e:
+    print(f"Erreur : {e}")
+```
+
+### Interface en ligne de commande
+
+Après installation, utilisez la commande `idf2table` :
+
+```bash
+idf2table <idf_file> <object_type> [options]
+```
+
+**Options :**
+
+| Option | Description |
+|--------|-------------|
+| `--idd IDD` | Chemin vers le fichier IDD (optionnel) |
+| `--output OUTPUT, -o OUTPUT` | Chemin de sortie pour le fichier Excel (optionnel) |
+| `--csv` | Sauvegarder en CSV au lieu d'Excel |
+
+**Exemples :**
+
+```bash
+# Affichage simple
+idf2table data/OPIO_run.idf Material
+
+# Avec sauvegarde Excel
+idf2table data/OPIO_run.idf Material --output materials.xlsx
+
+# Sauvegarde en CSV
+idf2table data/OPIO_run.idf Material --csv
+```
+
+## 💡 Exemples complets
+
+### Exemple 1 : Analyse des matériaux
+
+```python
+from idf2table import idf_to_table, find_idd
+from eppy.modeleditor import IDF
+import pandas as pd
+
+# Configuration
+idd_path = find_idd()
+IDF.setiddname(str(idd_path))
+idf = IDF('data/OPIO_run.idf')
+
+# Conversion
+materials_df = idf_to_table(idf, "Material")
+
+# Analyse
+print(f"Nombre de matériaux : {len(materials_df)}")
+print(f"\nColonnes disponibles : {list(materials_df.columns)}")
+print("\nMatériaux les plus isolants (faible conductivité) :")
+print(materials_df.nsmallest(5, 'Conductivity')[['Name', 'Conductivity', 'Thickness']])
+```
+
+### Exemple 2 : Export multiple
+
+```python
+from idf2table import idf_to_table, find_idd
+from eppy.modeleditor import IDF
+
+# Configuration
+idd_path = find_idd()
+IDF.setiddname(str(idd_path))
+idf = IDF('data/OPIO_run.idf')
+
+# Convertir plusieurs types d'objets
+object_types = ["Material", "Construction", "Zone"]
+
+for obj_type in object_types:
+    df = idf_to_table(idf, obj_type)
+    df.to_excel(f"export_{obj_type}.xlsx", index=False)
+    print(f"✓ {obj_type} : {len(df)} objets exportés")
+```
+
+### Exemple 3 : Utilisation en ligne de commande
+
+```bash
+# Convertir Material
+idf2table data/OPIO_run.idf Material
+
+# Convertir plusieurs types d'objets
+for obj_type in Material Construction Zone; do
+    idf2table data/OPIO_run.idf $obj_type --output ${obj_type}.xlsx
+done
+```
+
+## 🗂️ Structure du projet
+
+```
+IDF2TABLE/
+├── idf2table/               # Module principal
+│   ├── __init__.py          # Exports publics du module
+│   ├── core.py              # Fonctions principales (idf_to_table, find_idd)
+│   └── cli.py               # Interface en ligne de commande
+├── main.py                  # Script d'exemple
+├── data/                    # Fichiers IDF
+│   ├── OPIO_run.idf
+│   └── OPIO_run_hamt.idf
+├── pyproject.toml           # Configuration du projet
+├── uv.lock                  # Lock file des dépendances
+└── README.md                # Documentation
+```
+
+## 📦 Dépendances
+
+- **eppy** >= 0.5.66 : Manipulation des fichiers IDF EnergyPlus
+- **pandas** >= 2.3.3 : Manipulation de DataFrames
+- **openpyxl** >= 3.1.5 : Export Excel (inclus)
+
+## 📦 Installation depuis PyPI
+
+Une fois publié sur PyPI, vous pourrez installer le package avec :
+
+```bash
+# Installation standard
+pip install idf2table
+
+# Ou avec uv
+uv pip install idf2table
+```
+
+### Publier sur PyPI
+
+Pour publier votre package sur PyPI, suivez les instructions détaillées dans [DEPLOYMENT.md](DEPLOYMENT.md).
+
+**Résumé rapide :**
+
+```bash
+# 1. Installer les outils
+uv add --dev build twine
+
+# 2. Construire le package
+uv run python -m build
+
+# 3. Vérifier le package
+uv run twine check dist/*
+
+# 4. Publier sur TestPyPI (recommandé d'abord)
+uv run twine upload --repository testpypi dist/*
+
+# 5. Publier sur PyPI
+uv run twine upload dist/*
+```
+
+Vous aurez besoin d'un token API PyPI : [https://pypi.org/manage/account/](https://pypi.org/manage/account/)
+
+## ⚠️ Notes importantes
+
+- ✅ Le type d'objet peut être spécifié en **minuscules, majuscules ou casse mixte** (ex: `"Material"`, `"MATERIAL"`, `"material"`)
+- ❌ Si aucun objet du type spécifié n'est trouvé, une `ValueError` est levée avec la liste des types disponibles
+- 📋 Si aucun objet n'est trouvé (liste vide), un DataFrame vide est retourné
+- 🧹 Les valeurs de type string sont automatiquement nettoyées (espaces supprimés)
+- 📝 Le DataFrame inclut toujours une colonne `key` indiquant le type d'objet
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
+
+## 📄 Licence
+
+[À compléter selon vos besoins]
