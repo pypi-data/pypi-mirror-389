@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mas-framework"
+dynamic = ["version"]
+authors = [{ name = "Lemuel Boyce", email = "lemuel@vokality.com" }]
+keywords = ["multi-agent", "AI", "agent", "framework"]
+description = "A Multi-Agent System Framework"
+requires-python = ">=3.14"
+dependencies = [
+    "prometheus-client>=0.23.1",
+    "psutil>=6.1.1",
+    "pydantic>=2.12.3",
+    "pydantic-settings>=2.0.0",
+    "redis[hiredis]>=5.2.1",
+    "pyyaml>=6.0",
+]
+readme = "README.md"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.isort]
+profile = "ruff"
+include = ["src"]
+exclude = ["tests"]
+multi_line_output = 3
+
+[tool.pyright]
+pythonVersion = "3.14"
+pythonPlatform = "All"
+typeCheckingMode = "standard"
+reportMissingImports = "error"
+reportMissingTypeStubs = false
+enableReachabilityAnalysis = true
+reportUnusedFunction = "warning"
+reportUnusedVariable = "warning"
+reportDuplicateImport = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+reportUnnecessaryComparison = "warning"
+reportImplicitOverride = "warning"
+
+[tool.hatch.version]
+path = "src/mas/__version__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mas"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+    "pytest-asyncio>=0.24.0",
+    "isort>=5.12.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.14.3",
+    "pytest-timeout>=2.3.1",
+    "pyright>=1.1.407",
+    "openai>=2.6.1",
+    "pydantic-ai>=1.10.0",
+]
