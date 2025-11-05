@@ -1,0 +1,27 @@
+[project]
+name = "pyarchiveit"
+version = "0.2.0"
+description = "A Python library to interact with the Archive-It's API"
+readme = "README.md"
+authors = [
+    { name = "Ken Lui", email = "116421546+kenlhlui@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "ipykernel>=7.1.0",
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICENCSE"]
+
+[build-system]
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.ruff.lint]
+ignore = [
+    "G004"
+]
+
+[project.urls]
+Repository = "https://github.com/kenlhlui/pyarchiveit"
