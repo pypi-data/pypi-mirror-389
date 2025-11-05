@@ -1,0 +1,25 @@
+{
+  "N_LAGS": 60,
+  "N_FUTURE": 12,
+  "N_TEST": 12,
+  "TS_OOF_SPLITS": 4,
+  "DO_TUNING": false,
+  "RANDOM_STATE": 42,
+  "VERBOSE": true,
+  "OUT_DIR": "results",
+  "PLOTS_DIR": "plots",
+  "META_TYPE": "GRU",
+  "TRAINING": {
+    "epochs": 80,
+    "batch_size": 32,
+    "patience": 12,
+    "validation_split": 0.12
+  },
+  "MODELS": {
+    "LSTM": {"units": [128, 64], "dropout": 0.2},
+    "GRU": {"units": [128, 64], "dropout": 0.2},
+    "CNN": {"filters": 64, "kernel_size": 3, "pool_size": 2},
+    "MLP": {"hidden_units": [128, 64, 32], "dropout": 0.3},
+    "TRANSFORMER": {"embed_dim": 64, "num_heads": 4, "ff_dim": 128, "num_layers": 2}
+  }
+}

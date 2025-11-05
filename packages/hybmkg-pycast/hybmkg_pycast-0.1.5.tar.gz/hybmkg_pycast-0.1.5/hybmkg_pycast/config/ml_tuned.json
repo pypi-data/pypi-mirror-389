@@ -1,0 +1,8 @@
+{
+  "RandomForest": {"n_estimators": 500, "max_depth": 10, "min_samples_split": 2, "random_state": 42},
+  "XGBoost": {"n_estimators": 1000, "learning_rate": 0.05, "max_depth": 6, "subsample": 0.8, "colsample_bytree": 0.8},
+  "LightGBM": {"n_estimators": 1000, "learning_rate": 0.05, "num_leaves": 64, "feature_fraction": 0.8, "bagging_fraction": 0.8},
+  "SVR": {"kernel": "rbf", "C": 10.0, "epsilon": 0.05, "gamma": "scale"},
+  "KNN": {"n_neighbors": 10, "weights": "distance"},
+  "MLP": {"hidden_layer_sizes": [128, 64, 32], "activation": "relu", "max_iter": 1000, "learning_rate_init": 0.001}
+}

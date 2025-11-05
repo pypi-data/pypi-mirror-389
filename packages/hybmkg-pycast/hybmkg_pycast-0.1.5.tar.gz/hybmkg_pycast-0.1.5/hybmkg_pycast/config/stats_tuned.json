@@ -1,0 +1,8 @@
+{
+  "AR": {"order": [6, 0, 0]},
+  "MA": {"order": [0, 0, 8]},
+  "ARMA": {"order": [3, 0, 3]},
+  "SARIMA": {"order": [2, 0, 2], "seasonal_order": [1, 0, 2, 12]},
+  "SARIMAX": {"order": [2, 0, 2], "seasonal_order": [1, 0, 2, 12], "trend": "c"},
+  "AUTO_ARIMA": {"seasonal": true, "m": 12, "stepwise": true, "trace": true}
+}
