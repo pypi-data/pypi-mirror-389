@@ -1,0 +1,13 @@
+#!/bin/bash
+# GUI launcher for Smart Clipboard Manager
+# This script opens the clipboard manager UI
+
+# Check if the background service is running
+if ! systemctl --user is-active --quiet smart-clipboard.service; then
+    echo "Starting Smart Clipboard Manager service..."
+    systemctl --user start smart-clipboard.service
+    sleep 2
+fi
+
+# Open the clipboard manager UI
+python3 /usr/local/lib/smart-clipboard/main.py --show-ui
