@@ -1,0 +1,29 @@
+[project]
+name = "singhlab"
+dependencies = [
+    "setuptools",
+    "numpy", #< 1.24",
+]
+authors = [
+  { name="Aditya Parekh", email="aditya.parekh@duke.edu" }
+]
+description = "General functions useful to members of Rohit Singh lab."
+readme = "README.md"
+dynamic = ["version"]
+#requires-python = ">=3.9,<3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/rohitsinghlab/singhlab-main"
+"Bug Tracker" = "https://github.com/rohitsinghlab/singhlab-main/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["*test*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "singhlab.__version__" }
