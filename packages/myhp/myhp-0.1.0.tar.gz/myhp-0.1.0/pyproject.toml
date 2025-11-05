@@ -1,0 +1,63 @@
+[project]
+name = "myhp"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Joans",email = "joans@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "click (>=8.3.0,<9.0.0)",
+    "requests (>=2.32.5,<3.0.0)",
+    "desert (>=2022.9.22,<2023.0.0)",
+    "marshmallow (>=4.1.0,<5.0.0)",
+]
+
+
+[tool.poetry]
+packages = [
+    { include = "hp", from = "src" }
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+py = "py.console:main"
+
+[dependency-groups]
+dev = [
+    "pytest (>=8.4.2,<9.0.0)",
+    "coverage[toml] (>=7.11.0,<8.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)",
+    "pytest-mock (>=3.15.1,<4.0.0)",
+    "black (>=25.9.0,<26.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "flake8-bandit (>=4.1.1,<5.0.0)",
+    "flake8-black (>=0.4.0,<0.5.0)",
+    "flake8-bugbear (>=25.10.21,<26.0.0)",
+    "flake8-import-order (>=0.19.2,<0.20.0)",
+    "safety (>=3.6.2,<4.0.0)",
+    "mypy (>=1.18.2,<2.0.0)",
+    "typeguard (>=4.4.4,<5.0.0)",
+    "flake8-annotations (>=3.2.0,<4.0.0)",
+    "flake8-docstrings (>=1.7.0,<2.0.0)",
+    "darglint (>=1.8.1,<2.0.0)",
+    "xdoctest (>=1.3.0,<2.0.0)",
+    "sphinx (>=8.2.3,<9.0.0)",
+    "sphinx-autodoc-typehints (>=3.5.2,<4.0.0)",
+    "codecov (>=2.1.13,<3.0.0)"
+]
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["hp"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
