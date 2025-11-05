@@ -1,0 +1,146 @@
+Metadata-Version: 2.4
+Name: WrenchCL
+Version: 5.0.0
+Summary: Comprehensive library for seamless integration with AWS, OpenAI, and utility tools.
+Project-URL: Homepage, https://github.com/WrenchAI/WrenchCL
+Project-URL: Repository, https://github.com/WrenchAI/WrenchCL
+Project-URL: Bug Tracker, https://github.com/WrenchAI/WrenchCL/issues
+Project-URL: Documentation, https://wrenchcl.readthedocs.io/en/latest
+Project-URL: Changelog, https://github.com/WrenchAI/WrenchCL/blob/main/CHANGELOG.md
+Project-URL: PyPI, https://pypi.org/project/WrenchCL/
+Project-URL: Author GitHub, https://github.com/Kydoimos97
+Project-URL: Author PyPI, https://pypi.org/user/Kydoimos97/
+Project-URL: Maintainer GitHub, https://github.com/dalmad2
+Project-URL: Maintainer PyPI, https://pypi.org/user/sot232/
+Author-email: Willem van der Schans <willem@wrench.ai>
+Maintainer-email: Willem van der Schans <willem@wrench.ai>, Jeong Kim <jeong@wrench.ai>
+License: #  Copyright (c) $YEAR$. Copyright (c) $YEAR$ Wrench.AI., Willem van der Schans, Jeong Kim
+        #
+        #  MIT License
+        #
+        #  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+        #
+        #  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+        #
+        #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        #
+        #  All works within the Software are owned by their respective creators and are distributed by Wrench.AI.
+        #
+        #  For inquiries, please contact Willem van der Schans through the official Wrench.AI channels or directly via GitHub at [Kydoimos97](https://github.com/Kydoimos97).
+        #
+License-File: LICENSE
+Keywords: aws,cloud,database,openai,sdk,utilities
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.11
+Requires-Dist: ansi2txt<1.0.0,>=0.2.0
+Requires-Dist: filetype<2.0,>=1.2
+Requires-Dist: ftfy<7.0.0,>=6.3.1
+Requires-Dist: python-dotenv<2.0,>=1.0
+Requires-Dist: requests<3.0,>=2.32
+Description-Content-Type: text/markdown
+
+<h1 align="center">Wrench Code Library</h1>
+
+<p align="center">
+  <a href="https://github.com/wrenchai/wrenchcl/actions/workflows/run-tests.yml">
+    <img src="https://github.com/wrenchai/wrenchcl/actions/workflows/run-tests.yml/badge.svg" alt="Tests">
+  </a>
+  <a href="https://codecov.io/gh/Kydoimos97/xpytools">
+    <img src="https://codecov.io/gh/wrenchai/wrenchcl/branch/main/graph/badge.svg" alt="Coverage">
+  </a>
+  <a href="https://www.python.org/downloads/">
+    <img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT">
+  </a>
+</p>
+
+---
+
+### [ReadTheDocs](https://wrenchcl.readthedocs.io/en/latest)
+
+---
+
+## Description
+
+WrenchCL is a comprehensive library designed to facilitate seamless interactions with AWS services, OpenAI models, and various utility tools. This package aims to streamline the development process by providing robust components for database interactions, cloud storage, and AI-powered functionalities.
+
+**PyPI Link:** [WrenchCL on PyPI](https://pypi.org/project/WrenchCL/)
+
+## Installation
+
+### Basic Installation
+
+To install the core package with minimal dependencies:
+
+```bash
+pip install WrenchCL
+```
+
+### Optional Dependencies
+
+WrenchCL uses optional dependencies to keep the core package lightweight while providing additional functionality when needed:
+
+#### Color Support (Logger)
+
+```bash
+pip install WrenchCL[color]
+# Adds: colorama for beautiful terminal colors
+```
+
+#### AWS Services
+
+```bash
+pip install WrenchCL[aws]
+# Adds: boto3, psycopg2-binary, sshtunnel, and AWS service type hints
+# Enables: RDS connections, S3 operations, Lambda functions, Secrets Manager
+```
+
+#### Distributed Tracing
+
+```bash
+pip install WrenchCL[trace]
+# Adds: ddtrace for Datadog APM integration
+# Enables: Automatic trace correlation in logs
+```
+
+#### Development Tools
+
+```bash
+pip install WrenchCL[dev]
+# Adds: pytest, coverage, pydantic for development and testing
+```
+
+#### Complete Installation
+
+```bash
+pip install WrenchCL[all]
+# Installs all optional dependencies for full functionality
+```
+
+## Development
+
+To locally develop the plugin, clone the repository locally and make your changes.
+
+Open the console in your working directory; the building command is
+
+```bash
+python setup.py sdist bdist_wheel
+```
+
+You can then install the package with
+
+```bash
+pip install ./dist/WrenchCL-0.0.1.dev0-py3-none-any.whl --force-reinstall
+```
+
+Use the `--no-dependencies` flag to reinstall quickly if there are no dependency changes
+
+```bash
+pip install ./dist/WrenchCL-0.0.1.dev0-py3-none-any.whl --force-reinstall --no-dependencies
+```
