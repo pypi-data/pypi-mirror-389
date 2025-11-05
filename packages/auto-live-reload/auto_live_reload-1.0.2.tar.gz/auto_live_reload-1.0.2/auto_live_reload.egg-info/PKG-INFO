@@ -1,0 +1,126 @@
+Metadata-Version: 2.4
+Name: auto-live-reload
+Version: 1.0.2
+Summary: A Python library for live reloading scripts on file changes.
+Home-page: https://github.com/CrypterENC/auto-live-reload.git
+Author: CrypterENC
+Author-email: CrypterENC <a95899003@gmail.com>
+License-Expression: MIT
+Project-URL: Documentation, https://github.com/CrypterENC/auto-live-reload/blob/main/DOCUMENTATION.md
+Project-URL: Repository, https://github.com/CrypterENC/auto-live-reload.git
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# 🚀 auto-auto-live-reload
+
+[![PyPI version](https://badge.fury.io/py/auto-auto-live-reload.svg)](https://badge.fury.io/py/auto-auto-live-reload)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> **A lightweight Python utility that watches your project for source changes and automatically restarts the current process.**
+
+Perfect for speeding up local development of CLIs, scripts, and small services.
+
+---
+
+## 📚 Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Command-line Helper](#command-line-helper)
+- [Development](#development)
+- [License](#license)
+
+---
+
+## ✨ Features
+
+- 🔍 Watches files matching customizable glob patterns (defaults to `*.py`).
+- 🚫 Optional exclusion patterns keep temporary or generated files out of the watch list.
+- 🗂️ Recursive directory walking with the ability to opt out for flat projects.
+- ⏱️ Configurable polling interval and initial delay to fit your workload.
+- 🗒️ Verbose logging to understand which files triggered a restart.
+- 🧵 Runs the watcher on a daemon thread so your application code can proceed normally.
+
+## 📦 Installation
+
+```bash
+pip install auto-live-reload
+# Version: 1.0.1
+```
+
+Or, for local development:
+
+```bash
+pip install -e .
+```
+
+## ⚡ Quick Start
+
+Call `start_auto_live_reload()` as early as possible in your entry point (version 1.0.1):
+
+```python
+from auto_live_reload import start_auto_live_reload
+
+start_auto_live_reload()
+
+def main():
+    print("Running business logic…")
+    # ...
+
+if __name__ == "__main__":
+    main()
+```
+
+Any changes to watched files will restart your script automatically.
+
+## ⚙️ Configuration
+
+You can customize the behavior using arguments:
+
+```python
+start_auto_live_reload(
+    patterns=["*.py", "*.jinja"],
+    delay=1,
+)
+```
+- `patterns`: List of file patterns to watch (default: `['*.py']`).
+- `delay`: Initial delay before watching starts (default: 2).
+
+## 🖥️ Command-line Helper
+
+A thin CLI wrapper is exposed through `auto_live_reload.main()`. You can wire it into your own console script entry point or invoke it manually during development:
+
+```bash
+python -c "import auto_live_reload; auto_live_reload.main()" --interval 2 --patterns "*.py" "*.md"
+```
+
+The available flags mirror the keyword arguments listed above:
+- `--patterns`, `--exclude`, `--interval`, `--delay`, `--no-recursive`, and `--verbose`
+
+The CLI keeps the current process alive, making it ideal for quickly testing live reload behaviour without modifying your application code.
+
+## 🛠️ Development
+
+1. Clone the repository and install dependencies in editable mode:
+   ```bash
+   pip install -e .
+   ```
+2. Run your application or sample script with `start_auto_live_reload()` enabled.
+3. Make code changes and confirm that the process restarts automatically.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+🙌 Issues and pull requests are welcome!
