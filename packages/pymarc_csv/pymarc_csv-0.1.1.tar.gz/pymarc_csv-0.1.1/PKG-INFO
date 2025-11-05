@@ -1,0 +1,249 @@
+Metadata-Version: 2.4
+Name: pymarc_csv
+Version: 0.1.1
+Summary: CSV reader and writer for MARC records - an extension for pymarc
+License: Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this
+        list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice,
+        this list of conditions and the following disclaimer in the documentation
+        and/or other materials provided with the distribution.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+        ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        
+        Copyright for this project is held by its many contributors, including:
+        
+        Adam Constabaris <ajconsta@ncsu.edu>
+        Andrew Hankinson <andrew.hankinson@rism.digital>
+        André Nesse <an@macpro.lan>
+        Ben W <wrecksdart@gmail.com>
+        Chris Adams <chris@improbable.org>
+        Christian Clauss <cclauss@me.com>
+        Dan Chudnov <dchud@umich.edu>
+        Dan Davis <dan@danizen.net>
+        Dan Michael O. Heggø <danmichaelo@gmail.com>
+        Dan Scott <dan@coffeecode.net>
+        David Chouinard <david@davidchouinard.com>
+        Ed Hill <hill.charles2@gmail.com>
+        Ed Summers <ehs@pobox.com>
+        Edward Betts <edward@4angle.com>
+        Eric Hellman <eric@hellman.net>
+        Gabriel Farrell <gsf747@gmail.com>
+        Geoffrey Spear <geoffspear@gmail.com>
+        Godmar Back <godmar@gmail.com>
+        Harald Varner <harald.varner@gmail.com>
+        Helga <cdg013@gmail.com>
+        James Tayson <james.taysom@gmail.com>
+        Jay Luker <lbjay@reallywow.com>
+        Jeremy Nelson <jermnelson@gmail.com>
+        Jim Nicholls <jim.nicholls@gmail.com>
+        Jon Stroop <jpstroop@gmail.com>
+        Karol Sikora <me@karolsikora.me>
+        Lucas Souza <lucassouzaufpa@gmail.com>
+        María Matienzo <maria@matienzo.org>
+        Martin Czygan <martin.czygan@gmail.com>
+        Michael B. Klein <mbklein@gmail.com>
+        Michael J. Giarlo <leftwing@alumni.rutgers.edu>
+        Mikhail Terekhov <termim@gmail.com>
+        Nick Ruest <ruestn@gmail.com>
+        Pierre Verkest <pverkest@anybox.fr>
+        Radim Řehůřek <radimrehurek@seznam.cz>
+        Renaud Boyer <rboyer@anybox.fr>
+        Robert Marchman <robert.l.marchman@dartmouth.edu>
+        Sean Chen <schen@law.duke.edu>
+        Simon Hohl <simon.hohl@dainst.org>
+        Ted Lawless <tlawless@tuscola.(none)>
+        Theodor Tolstoy <gitlab.teddes@tolstoy.se>
+        Victor Seva <vseva@dlsi.ua.es>
+        Will Earp <will.earp@icloud.com>
+        cclauss <cclauss@bluewin.ch>
+        cyperus-papyrus <cdg013@gmail.com>
+        gitgovdoc <bwebb@gpo.gov>
+        klinga <klingaroo@gmail.com>
+        mmh <maherma@asdeguiaingenieria.com>
+        nemobis <federicoleva@tiscali.it>
+        wrCisco <lbjma@tiscali.it>
+License-File: LICENSE
+Requires-Python: >=3.10
+Requires-Dist: pymarc>=5.3.1
+Description-Content-Type: text/markdown
+
+# pymarc_csv
+
+CSV reader and writer for MARC records - an extension for [pymarc](https://gitlab.com/pymarc/pymarc).
+This can be useful where there's any value in making MARC records editable
+as a spreadsheet and for manipulating records with tools like Pandas.
+I admit, however, that the CSV serlialization implemented here,
+though far more readable than MARC21 itself, is still a bit
+of an eyesore.
+
+Note that for processing MARC records as CSV or Parquet files
+there's also [marctable](https://github.com/sul-dlss/marctable).
+The main advantage of _pymarc_csv_ is its integration with _pymarc_.
+
+## Overview
+
+`pymarc-csv` extends the [pymarc](https://pypi.org/project/pymarc/) library to provide CSV reading and writing capabilities for MARC21 bibliographic records. This allows you to work with MARC data in a more accessible CSV format while maintaining full compatibility with _pymarc_'s Record objects.
+
+## Features
+
+- **CSVReader**: Read MARC records from CSV files
+- **CSVWriter**: Write MARC records to CSV format
+- **CSV serialization**: Convert Record objects to/from CSV strings
+- **Duplicate field handling**: Automatically handles repeated MARC fields (e.g., multiple 650 fields become `650`, `650_2`, `650_3`)
+- **Field order preservation**: Maintains original field order through a `field_order` column
+- **Full pymarc compatibility**: Works with existing pymarc Record objects
+
+## Installation
+
+```bash
+pip install pymarc-csv
+```
+
+## Requirements
+
+- Python >= 3.10
+- pymarc >= 5.3.1
+
+## Quick Start
+
+### Reading CSV files
+
+This is closely analogous to reading `JSON` and `XML` records
+in _pymarc_.
+
+```python
+from pymarc_csv import CSVReader
+
+# Read MARC records from CSV
+with open('records.csv', 'r') as fh:
+    reader = CSVReader(fh)
+    for record in reader:
+        print(record.title)
+        print(record['245']['a'])
+```
+
+### Writing CSV files
+
+This is where things get a bit more complicated
+as compared to other file formats in _pymarc_.
+In general, the main difference is that all Record
+objects to be written should be collected as a list first.
+
+```python
+from pymarc_csv import CSVWriter
+
+
+writer = CSVWriter(open('output.csv','wt'))
+writer = CSVWriter(fh)
+writer.write([record1, record2, record3])  # Write multiple at once
+writer.close()
+```
+
+If you then wanted to add further records without introducing
+any new CSV headings (so no new fields or unseen duplicate fields),
+then before calling writer.close():
+
+```python
+
+record = Record()
+record.add_field(
+    Field(
+        tag='245',
+        indicators=Indicators('1', '0'),
+        subfields=[
+            Subfield(code='a', value='Python Programming'),
+            Subfield(code='c', value='Guido van Rossum')
+        ]
+    )
+)
+
+# Write to CSV
+writer.write(record)
+writer.close()
+```
+
+To avoid having to store a large list of Records first, you could also
+use the `add_tags` method and then write records one by one using `write_one`.
+This is rather cumbersome, however, so you might be better off just using
+_marctable_ at that point.
+
+### Converting records to/from CSV strings
+
+```python
+from pymarc_csv import as_csv, parse_csv_to_dict
+
+# Record to CSV string
+csv_string = as_csv(record)
+
+# CSV string back to dict
+record_dict = parse_csv_to_dict(csv_string)
+```
+
+## CSV Format
+
+The CSV format used by `pymarc-csv` has the following structure:
+
+- **LDR column**: Contains the record leader
+- **Field columns**: One column per MARC field (e.g., `001`, `245`, `650`)
+- **Duplicate fields**: Numbered with suffixes (e.g., `650`, `650_2`, `650_3`)
+- **field_order column**: Preserves the original order of fields
+
+**Example CSV output** (showing one MARC record as a table for readability):
+
+| Field           | Value                                                                     |
+| --------------- | ------------------------------------------------------------------------- |
+| **001**         | fol05731351                                                               |
+| **003**         | IMchF                                                                     |
+| **005**         | 20000613133448.0                                                          |
+| **008**         | 000107s2000 nyua 001 0 eng                                                |
+| **010**         | \\\$a 00020737                                                             |
+| **020**         | \\\$a0471383147 (paper/cd-rom : alk. paper)                                |
+| **040**         | \\\$aDLC\$cDLC\$dDLC                                                         |
+| **042**         | \\\$apcc                                                                   |
+| **050**         | 00\$aQA76.73.P22\$bM33 2000                                                 |
+| **082**         | 00\$a005.13/3\$221                                                          |
+| **100**         | 1\\\$aMartinsson, Tobias,\$d1976-                                            |
+| **245**         | 10\$aActivePerl with ASP and ADO /\$cTobias Martinsson.                     |
+| **260**         | \\\$aNew York :\$bJohn Wiley & Sons,\$c2000.                                 |
+| **300**         | \\\$axxi, 289 p. :\$bill. ;\$c23 cm. +\$e1 computer laser disc (4 3/4 in.)    |
+| **500**         | \\\$a"Wiley Computer Publishing."                                          |
+| **630**         | 00\$aActive server pages.                                                  |
+| **630\_2**       | 00\$aActiveX.                                                              |
+| **650**         | \\0\$aPerl (Computer program language)                                      |
+| **LDR**         | 00755cam 22002414a 4500                                                   |
+| **field\_order** | 001 003 005 008 010 020 040 042 050 082 100 245 260 300 500 630 630\_2 650 |
+
+An un-prettified version of this can be found in `test/one.csv`.
+
+## Development
+
+### Running Tests
+
+```
+python -m unittest
+```
+
+## License
+
+BSD 2-Clause License (same as pymarc)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Credits
+
+Built as an extension to the [pymarc](https://gitlab.com/pymarc/pymarc) library maintained by Ed Summers, Andrew Hankinson and contributors.

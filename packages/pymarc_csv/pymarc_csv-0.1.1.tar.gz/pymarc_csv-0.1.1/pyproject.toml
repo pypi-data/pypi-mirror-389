@@ -1,0 +1,25 @@
+[project]
+name = "pymarc_csv"
+version = "0.1.1"
+description = "CSV reader and writer for MARC records - an extension for pymarc"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = ["pymarc>=5.3.1"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+  "wheel>=0.42.0",
+  "pytest>=7.4.4",
+  "hatch>=0.23.1",
+  "coverage>=7.2.7",
+  "ruff>=0.11.5",
+  "pyright>=1.1.405",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pymarc_csv"]
