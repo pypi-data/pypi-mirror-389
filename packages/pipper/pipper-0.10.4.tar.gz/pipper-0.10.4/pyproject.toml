@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "pipper"
+version = "0.10.4"
+description = "A serverless Python package manager for private packages that runs on S3."
+authors = ["Scott Ernst <swernst@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://gitlab.com/rocket-boosters/pipper"
+repository = "https://gitlab.com/rocket-boosters/pipper"
+documentation = "https://gitlab.com/rocket-boosters/pipper"
+keywords = ["aws", "python", "package manager", "s3", "serverless"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Utilities",
+  "Typing :: Typed"
+]
+exclude = ["pipper/tests"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0.0"
+requests = ">=2.24.0"
+semver = ">=2.13.0"
+boto3 = ">=1.16.0"
+pip = "*"
+wheel = "*"
+setuptools = "*"
+toml = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-runner = "*"
+pytest-cov = "*"
+flake8 = "*"
+mypy = "*"
+coverage = "*"
+black = { version = "*", allow-prereleases = true }
+flake8-black = "*"
+taskipy = "*"
+lobotomy = ">=0.1.10"
+
+[tool.poetry.scripts]
+pipper = 'pipper.command:run'
+
+[tool.taskipy.tasks]
+# https://github.com/illBeRoy/taskipy
+black = "black ."
+mypy = "poetry run mypy ./pipper/ --ignore-missing-imports --explicit-package-bases --install-types --non-interactive"
+flake8 = "flake8 ."
+test = "pytest . --cov-report=term-missing --cov=."
+lint = "task black && task flake8 && task mypy"
+check = "task black && task flake8 && task mypy && task test"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
