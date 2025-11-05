@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm[toml]>=8", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pynasonde"
+dynamic = ["version"]
+description = "Precision ionospheric radio sounding tools"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "Shibaji Chakraborty"}]
+license = {text = "MIT"}
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=pynasonde --cov-report=xml --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["pynasonde"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "coverage",
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "opencv-python-headless",
+  "pytesseract",
+  "loguru",
+  "requests",
+  "beautifulsoup4",
+  "tqdm",
+  "lxml",
+  "toml",
+  "pytz",
+  "timezonefinder",
+  "SciencePlots",
+  "scipy",
+]
