@@ -1,0 +1,90 @@
+[project]
+name = "ml4gw-hermes"
+dynamic = ["version"]
+description = "Inference-as-a-Service deployment made simple"
+authors = [
+    { name = "Alec Gunny", email = "alec.gunny@ligo.org" },
+    { name = "Ethan Marx", email = "emarx@mit.edu" },
+]
+requires-python = ">=3.9,<3.13"
+dependencies = [
+    "tritonclient[all]~=2.22",
+    "numpy~=1.22",
+    "spython>=0.2,<0.3",
+    "tblib~=1.7",
+    "protobuf~=3.17",
+    "requests>=2.26.0,<3",
+]
+
+[project.optional-dependencies]
+tensorflow = [
+    "tensorflow<2.17",
+    "tf-keras>=2.16,<2.17",
+]
+torch = [
+    "torch~=2.0",
+    "onnx>=1.15.0,<2",
+    "urllib3~=1.26",
+    "onnxscript",
+]
+gcs = ["google-cloud-storage~=1.38"]
+tensorrt = ["nvidia-tensorrt~=8.0"]
+
+[dependency-groups]
+dev = [
+    "pre-commit~=2.16",
+    "pytest~=6.2",
+    "pytest-depends~=1.0",
+    "tox>=4.12.1,<5",
+]
+docs = [
+    "sphinx~=4.1",
+    "sphinx-material>=0.0.34,<0.0.35",
+]
+
+[tool.uv]
+default-groups = [
+    "dev",
+    "docs",
+]
+
+[tool.uv.sources]
+tensorrt = { index = "ngc" }
+
+[[tool.uv.index]]
+name = "ngc"
+url = "https://pypi.ngc.nvidia.com"
+explicit = true
+
+[build-system]
+requires = [ "setuptools>=77.0.3", "wheel", "setuptools-git-versioning>=2.0,<3",]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["hermes*"]
+
+[tool.setuptools-git-versioning]
+enabled = true
+dev_template = "{tag}.post{ccount}+git.{sha}"
+
+[tool.pytest.ini_options]
+markers = [
+    "tensorflow: tests that utilize TensorFlow backend",
+    "torch: tests that utilize Torch backend",
+    "gcs: tests that utilize Google Cloud Storage file system"
+]
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+extend-safe-fixes = ["C408"]
+mccabe = {"max-complexity" = 18}
+select = ["B", "C", "E", "F", "W", "B9"]
+# ignore W605 and E203 for consistency with black
+ignore = ["W605", "E203"]
+
+# ignore asterisk imports and unused
+# import errors in __init__ files
+per-file-ignores =  {"**/__init__.py" = ["F401", "F403"]}
