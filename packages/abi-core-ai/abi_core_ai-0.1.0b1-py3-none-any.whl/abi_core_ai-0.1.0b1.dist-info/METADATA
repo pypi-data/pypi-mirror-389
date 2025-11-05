@@ -1,0 +1,325 @@
+Metadata-Version: 2.4
+Name: abi-core-ai
+Version: 0.1.0b1
+Summary: Agent-Based Infrastructure Core - Runtime and CLI
+Author-email: José Luis Martínez Abundiz <jl.mrtz@gmail.com>
+License-Expression: Apache-2.0
+Project-URL: Homepage, https://github.com/Joselo-zn/abi-core
+Project-URL: Documentation, https://github.com/Joselo-zn/abi-core#readme
+Project-URL: Repository, https://github.com/Joselo-zn/abi-core
+Project-URL: Issues, https://github.com/Joselo-zn/abi-core/issues
+Keywords: ai,agents,infrastructure,semantic,security
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: jinja2>=3.1.0
+Requires-Dist: pyyaml>=6.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: langchain>=0.1.0
+Requires-Dist: langchain-core>=0.2.20
+Requires-Dist: langchain-ollama>=0.1.0
+Requires-Dist: langchain-community>=0.1.0
+Requires-Dist: langgraph>=0.1.0
+Requires-Dist: fastapi>=0.100.0
+Requires-Dist: uvicorn>=0.20.0
+Requires-Dist: starlette>=0.27.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: httpx>=0.25.0
+Requires-Dist: aiohttp>=3.8.0
+Requires-Dist: a2a-sdk
+Requires-Dist: mcp
+Requires-Dist: fastmcp>=0.1.0
+Requires-Dist: mcp-toolbox
+Requires-Dist: networkx>=3.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: redis>=4.5.0
+Requires-Dist: tinydb>=4.7.0
+Requires-Dist: psutil>=5.9.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Provides-Extra: semantic
+Requires-Dist: weaviate-client>=4.0.0; extra == "semantic"
+Requires-Dist: sentence-transformers>=2.2.0; extra == "semantic"
+Requires-Dist: numpy>=1.24.0; extra == "semantic"
+Provides-Extra: security
+Requires-Dist: opa-python-client>=1.0.0; extra == "security"
+Requires-Dist: cryptography>=41.0.0; extra == "security"
+Dynamic: license-file
+
+# ABI-Core 🤖
+
+**Agent-Based Infrastructure Core** - A comprehensive framework for building, deploying, and managing AI agent systems with semantic layers and security policies.
+
+> ⚠️ **Beta Release**: This is a beta version. APIs may change and some features are experimental.
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+pip install abi-core-ai
+```
+
+### Create Your First Project
+
+```bash
+# Create a new ABI project
+abi-core create project my-ai-system
+
+# Navigate to your project
+cd my-ai-system
+
+# Create an agent
+abi-core create agent my-agent
+
+# Run your project
+docker-compose up
+```
+
+## 🎯 What is ABI-Core?
+
+ABI-Core is a production-ready framework for building **Agent-Based Infrastructure** systems that combine:
+
+- **🤖 AI Agents**: LangChain-powered agents with A2A (Agent-to-Agent) communication
+- **🧠 Semantic Layer**: Vector embeddings and knowledge management
+- **🔒 Security**: OPA-based policy enforcement and access control
+- **🌐 Web Interfaces**: FastAPI-based REST APIs and real-time dashboards
+- **📦 Containerization**: Docker-ready deployments with orchestration
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   AI Agents     │◄──►│ Semantic Layer  │◄──►│   Guardian      │
+│                 │    │                 │    │   Security      │
+│ • LangChain     │    │ • Vector DB     │    │ • OPA Policies  │
+│ • A2A Protocol  │    │ • Embeddings    │    │ • Access Control│
+│ • Custom Logic  │    │ • Knowledge     │    │ • Monitoring    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌─────────────────┐
+                    │  Web Interface  │
+                    │                 │
+                    │ • FastAPI       │
+                    │ • Real-time UI  │
+                    │ • Monitoring    │
+                    └─────────────────┘
+```
+
+## 📋 Features
+
+### 🤖 Agent System
+- **Multi-Agent Architecture**: Create specialized agents for different tasks
+- **A2A Communication**: Agents can communicate and collaborate
+- **LangChain Integration**: Leverage the full LangChain ecosystem
+- **Custom Tools**: Extend agents with domain-specific capabilities
+
+### 🧠 Semantic Layer
+- **Vector Storage**: Weaviate integration for semantic search
+- **Embedding Management**: Automatic text-to-vector conversion
+- **Knowledge Graphs**: NetworkX-based relationship modeling
+- **Context Awareness**: Agents understand semantic relationships
+
+### 🔒 Security & Governance
+- **Policy Engine**: Open Policy Agent (OPA) integration
+- **Access Control**: Fine-grained permissions and roles
+- **Audit Logging**: Complete activity tracking
+- **Compliance**: Built-in security best practices
+
+### 🌐 Web & APIs
+- **REST APIs**: FastAPI-based service endpoints
+- **Real-time Updates**: WebSocket support for live data
+- **Admin Dashboard**: Monitor and manage your agent system
+- **Custom UIs**: Build domain-specific interfaces
+
+## 🛠️ CLI Commands
+
+### Project Management
+```bash
+# Create new project
+abi-core create project <name>
+
+# Project status
+abi-core status
+
+# Run project services
+abi-core run
+```
+
+### Agent Development
+```bash
+# Create new agent
+abi-core create agent <name>
+
+# List agents
+abi-core info agents
+
+# Agent-specific operations
+abi-core agent <name> status
+```
+
+### Services
+```bash
+# Create semantic layer service
+abi-core create service semantic-layer
+
+# Create security guardian
+abi-core create service guardian
+```
+
+## 📁 Project Structure
+
+When you create a new project, you get:
+
+```
+my-project/
+├── agents/                 # Your AI agents
+│   └── my-agent/
+│       ├── agent.py       # Agent implementation
+│       ├── main.py        # Entry point
+│       └── models.py      # Data models
+├── services/              # Supporting services
+│   ├── semantic-layer/    # Vector DB & embeddings
+│   └── guardian/          # Security & policies
+├── config/                # Configuration
+│   └── config.py
+├── docker-compose.yml     # Container orchestration
+└── README.md             # Project documentation
+```
+
+## 🔧 Configuration
+
+ABI-Core uses environment variables and YAML configuration:
+
+```yaml
+# .abi/runtime.yaml
+agents:
+  my-agent:
+    model: "llama3.2:3b"
+    port: 8000
+    
+semantic_layer:
+  provider: "weaviate"
+  host: "localhost:8080"
+  
+security:
+  opa_enabled: true
+  policies_path: "./policies"
+```
+
+## 🚀 Deployment
+
+### Docker (Recommended)
+```bash
+# Build and run all services
+docker-compose up --build
+
+# Scale specific services
+docker-compose up --scale my-agent=3
+```
+
+### Kubernetes
+```bash
+# Generate K8s manifests
+abi-core deploy kubernetes
+
+# Apply to cluster
+kubectl apply -f ./k8s/
+```
+
+## 🧪 Examples
+
+### Simple Agent
+```python
+from abi_core.agent.agent import AbiAgent
+from abi_core.common.utils import abi_logging
+
+class MyAgent(AbiAgent):
+    def __init__(self):
+        super().__init__(
+            agent_name='my-agent',
+            description='A helpful AI assistant'
+        )
+    
+    async def stream(self, query: str, context_id: str, task_id: str):
+        abi_logging(f"Processing: {query}")
+        
+        # Your agent logic here
+        response = await self.llm.ainvoke(query)
+        
+        yield {
+            'content': response.content,
+            'response_type': 'text',
+            'is_task_completed': True
+        }
+```
+
+### Agent Communication
+```python
+# Agent A sends message to Agent B
+await self.send_message(
+    target_agent="agent-b",
+    message="Process this data",
+    data={"items": [1, 2, 3]}
+)
+```
+
+## 📚 Documentation
+
+- **[Getting Started Guide](https://docs.abi-core.dev/getting-started)**
+- **[Agent Development](https://docs.abi-core.dev/agents)**
+- **[Semantic Layer](https://docs.abi-core.dev/semantic)**
+- **[Security & Policies](https://docs.abi-core.dev/security)**
+- **[API Reference](https://docs.abi-core.dev/api)**
+
+## 🤝 Contributing
+
+We welcome contributions! This is a beta release, so your feedback is especially valuable.
+
+### Development Setup
+```bash
+git clone https://github.com/Joselo-zn/abi-core
+cd abi-core
+uv sync --dev
+```
+
+### Running Tests
+```bash
+uv run pytest
+```
+
+## 📄 License
+
+Apache 2.0 License - see [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Joselo-zn/abi-core/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Joselo-zn/abi-core/discussions)
+- **Email**: jl.mrtz@gmail.com
+
+## 🗺️ Roadmap
+
+- [ ] **v0.2.0**: Enhanced agent orchestration
+- [ ] **v0.3.0**: Advanced semantic search
+- [ ] **v0.4.0**: Multi-cloud deployment
+- [ ] **v1.0.0**: Production-ready stable release
+
+---
+
+**Built with ❤️ by the ABI-Core Team**
