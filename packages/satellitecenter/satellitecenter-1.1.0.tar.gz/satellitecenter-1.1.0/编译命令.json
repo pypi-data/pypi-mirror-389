@@ -1,0 +1,1 @@
+python -m nuitka --module src/satellitecenter --follow-import-to=satellitecenter --include-package=autowaterqualitymodeler --include-package-data=satellitecenter --include-package-data=autowaterqualitymodeler --lto=yes --jobs=4 --output-dir=build
