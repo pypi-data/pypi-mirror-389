@@ -1,0 +1,10 @@
+include MANIFEST.in
+include LICENSE
+include README.md
+include requirements.txt
+graft globallock
+exclude tests
+exclude django_redis_global_lock_demo
+exclude django_redis_global_lock_example
+global-exclude __pycache__
+global-exclude *.py[co]
