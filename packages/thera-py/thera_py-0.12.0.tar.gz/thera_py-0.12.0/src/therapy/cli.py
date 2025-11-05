@@ -1,0 +1,239 @@
+"""Provides a CLI util to make updates to normalizer database."""
+
+import datetime
+import json
+import logging
+from pathlib import Path
+
+import click
+from disease.database import create_db as create_disease_db
+
+from therapy import __version__
+from therapy.config import get_config
+from therapy.database import create_db
+from therapy.schemas import RecordType, SourceName
+from therapy.utils import get_term_mappings, initialize_logs
+
+_logger = logging.getLogger(__name__)
+
+URL_DESCRIPTION = 'URL endpoint for the application database. Must be a URL to a local DynamoDB server (e.g. "http://localhost:8001").'
+SILENT_MODE_DESCRIPTION = "Suppress output to console."
+
+
+def _initialize_app() -> None:
+    log_level = logging.DEBUG if get_config().debug else logging.INFO
+    initialize_logs(log_level)
+
+
+@click.group()
+@click.version_option(__version__)
+def cli() -> None:
+    """Manage Thera-Py data."""
+
+
+@cli.command()
+@click.option("--db_url", help=URL_DESCRIPTION)
+@click.option("--silent", is_flag=True, default=False, help=SILENT_MODE_DESCRIPTION)
+def check_db(db_url: str, silent: bool) -> None:
+    """Perform basic checks on DB health and population. Exits with status code 1
+    if DB schema is uninitialized or if critical tables appear to be empty.
+
+        $ thera-py check-db
+        $ echo $?
+        1  # indicates failure
+
+    This command is equivalent to the combination of the database classes'
+    ``check_schema_initialized()`` and ``check_tables_populated()`` methods:
+
+    >>> from therapy.database import create_db
+    >>> db = create_db()
+    >>> db.check_schema_initialized() and db.check_tables_populated()
+    True  # DB passes checks
+    """
+    _initialize_app()
+    db = create_db(db_url, aws_instance=False)
+    if not db.check_schema_initialized():
+        if not silent:
+            click.echo("Health check failed: DB schema uninitialized.")
+        click.get_current_context().exit(1)
+
+    if not db.check_tables_populated():
+        if not silent:
+            click.echo("Health check failed: DB is incompletely populated.")
+        click.get_current_context().exit(1)
+
+    msg = "DB health check successful: tables appear complete."
+    if not silent:
+        click.echo(msg)
+    _logger.info(msg)
+
+
+def _ensure_diseases_updated(from_local: bool) -> None:
+    """Check disease DB. If it appears unpopulate, run a full update.
+
+    :param from_local: if True, update from most recent locally available data
+    """
+    disease_db = create_disease_db()
+    if (
+        not disease_db.check_schema_initialized()
+        or not disease_db.check_tables_populated()
+    ):
+        try:
+            from disease.etl.update import (  # noqa: PLC0415
+                update_all_sources as update_disease_sources,
+            )
+        except ImportError as e:
+            click.echo(
+                f"Encountered ImportError: {e.msg}. Updating source data requires the optional [etl] dependency group. See the data update instructions in the README."
+            )
+            click.get_current_context().exit(1)
+        update_disease_sources(disease_db, use_existing=from_local, silent=True)
+
+
+@cli.command()
+@click.argument("sources", nargs=-1)
+@click.option("--all", "all_", is_flag=True, help="Update records for all sources.")
+@click.option("--normalize", is_flag=True, help="Create normalized records.")
+@click.option("--db_url", help=URL_DESCRIPTION)
+@click.option("--aws_instance", is_flag=True, help="Use cloud DynamodDB instance.")
+@click.option(
+    "--use_existing",
+    is_flag=True,
+    default=False,
+    help="Use most recent locally-available source data instead of fetching latest version",
+)
+@click.option("--silent", is_flag=True, default=False, help=SILENT_MODE_DESCRIPTION)
+def update(
+    sources: tuple[str, ...],
+    aws_instance: bool,
+    db_url: str,
+    all_: bool,
+    normalize: bool,
+    use_existing: bool,
+    silent: bool,
+) -> None:
+    """Update provided normalizer SOURCES in the therapy database.
+
+    Valid SOURCES are "ChEMBL", "ChemIdPlus", "DrugBank", "DrugsAtFDA",
+    "GuideToPharmacology", "HemOnc", "NCIt", "RxNorm", and "Wikidata" (case is irrelevant).
+
+    SOURCES are optional, but if not provided, either --all or --normalize must be used.
+
+    For example, the following command will update NCIt and ChEMBL source records:
+
+        $ thera-py update ncit chembl
+
+    To completely reload all source records and construct normalized concepts, use the
+    --all and --normalize options:
+
+        $ thera-py update --all --normalize
+
+    Thera-Py will fetch the latest available data from all sources if local
+    data is out-of-date. To suppress this and force usage of local files only, use the
+    --use_existing flag:
+
+        $ thera-py update --all --use_existing
+    """
+    _initialize_app()
+    if len(sources) == 0 and (not all_) and (not normalize):
+        click.echo(
+            "Error: must provide SOURCES or at least one of --all, --normalize\n"
+        )
+        ctx = click.get_current_context()
+        click.echo(ctx.get_help())
+        ctx.exit(1)
+
+    db = create_db(db_url, aws_instance)
+
+    processed_ids = None
+    try:
+        from therapy.etl.update import (  # noqa: PLC0415
+            update_all_sources,
+            update_normalized,
+            update_source,
+        )
+    except ImportError as e:
+        click.echo(
+            f"Encountered ImportError: {e.msg}. Updating source data requires the optional [etl] dependency group. See the data update instructions in the README."
+        )
+        click.get_current_context().exit(1)
+    if all_:
+        _ensure_diseases_updated(use_existing)
+        processed_ids = update_all_sources(db, use_existing, silent=silent)
+    elif sources:
+        parsed_sources = set()
+        failed_source_names = []
+        for source in sources:
+            try:
+                parsed_sources.add(SourceName[source.upper()])
+            except KeyError:
+                failed_source_names.append(source)
+        if len(failed_source_names) != 0:
+            click.echo(f"Error: unrecognized sources: {failed_source_names}")
+            click.echo(f"Valid source options are {list(SourceName)}")
+            click.get_current_context().exit(1)
+
+        if SourceName.CHEMBL in parsed_sources or SourceName.HEMONC in parsed_sources:
+            _ensure_diseases_updated(use_existing)
+        working_processed_ids = set()
+        for source_name in parsed_sources:
+            working_processed_ids |= update_source(
+                source_name, db, use_existing=use_existing, silent=silent
+            )
+        if len(sources) == len(SourceName):
+            processed_ids = working_processed_ids
+
+    if normalize:
+        update_normalized(db, processed_ids, silent=silent)
+
+
+@cli.command()
+@click.option("--db_url", help=URL_DESCRIPTION)
+@click.option(
+    "--scope",
+    type=click.Choice(list(RecordType) + list(SourceName), case_sensitive=False),
+    nargs=1,
+    default=RecordType.MERGER,
+    help="Scope of mappings -- either an item type (merged/normalized vs base source records), or base records of an individual source",
+)
+@click.option(
+    "--outfile",
+    "-o",
+    help="Output location to write to",
+    type=click.Path(path_type=Path),
+)
+def dump_mappings(
+    db_url: str, scope: RecordType | SourceName, outfile: Path | None
+) -> None:
+    """Produce JSON Lines file dump of concept terms (e.g. name/label, alias, xrefs) and the associated concept.
+
+    By default, produces output for all known terms to a normalized ID. The --scope
+    option can be used to constrain this either to all non-merged identity records:
+
+        $ thera-py dump-mappings --scope identity
+
+    Or to the identity records of a specific source:
+
+        $ thera-py dump-mappings --scope ncit
+
+    The first object in the .jsonl file will include metadata about the parameters used to
+    create the document.
+    """
+    db = create_db(db_url, False)
+    if outfile is None:
+        outfile = Path() / "thera_py_mappings.jsonl"
+    with outfile.open("w") as f:
+        meta = {
+            "type": "meta",
+            "created_at": datetime.datetime.now(tz=datetime.UTC).isoformat(),
+            "scope": scope,
+        }
+        f.write(json.dumps(meta))
+        f.write("\n")
+        for mapping in get_term_mappings(db, scope):
+            f.write(json.dumps(mapping))
+            f.write("\n")
+
+
+if __name__ == "__main__":
+    cli()
