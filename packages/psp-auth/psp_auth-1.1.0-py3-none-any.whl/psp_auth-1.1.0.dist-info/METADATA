@@ -1,0 +1,98 @@
+Metadata-Version: 2.4
+Name: psp-auth
+Version: 1.1.0
+Summary: A Python library for authentication and authorisation in the PSP platform
+License: MIT License
+        
+        Copyright (c) 2025 Portfolio Solver Platform
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/Portfolio-Solver-Platform/python-auth-lib
+Keywords: psp,auth,authentication,authorisation,authorization
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: joserfc<2.0,>=1.3.4
+Requires-Dist: fastapi[standard]<0.121,>=0.120.1
+Requires-Dist: httpx<0.29.0,>=0.28.1
+Requires-Dist: itsdangerous<3.0,>=2.2.0
+Provides-Extra: dev
+Requires-Dist: pytest<9,>=8; extra == "dev"
+Requires-Dist: pytest-cov<8,>=7; extra == "dev"
+Requires-Dist: ruff<0.14.0,>=0.13.2; extra == "dev"
+Requires-Dist: bandit<2.0,>=1.7; extra == "dev"
+Requires-Dist: pip-audit<3.0,>=2.7; extra == "dev"
+Requires-Dist: pytest-asyncio<=2.0,>=1.2.0; extra == "dev"
+Dynamic: license-file
+
+# Auth Library for Python
+
+A library that implements authentication and authorisation for services in the Portfolio Solver Platform (PSP).
+
+## Installation
+
+You can find [the package on PyPI](https://pypi.org/project/psp-auth/) and install it like you would any other PyPI package.
+
+## Usage
+
+The `Auth` class contains the core authentication and authorisation functionality. You create it like this:
+```python
+auth_core = Auth(AuthConfig("my-service"))
+```
+where `"my-service"` is the service name, corresponding with the resource in the auth provider.
+
+> [!IMPORTANT]
+> See [Keycloak](https://github.com/Portfolio-Solver-Platform/keycloak) for how to set up the resource.
+
+### FastAPI
+
+This section will describe how to use the FastAPI module. You initialise it like this:
+```python
+auth = FastAPIAuth(auth_core)
+```
+
+You should then use the `FastAPIAuth.add_docs` function on your FastAPI app:
+```python
+app = FastAPI(...)
+
+auth.add_docs(app)
+```
+
+Then, for an endpoint, you can require that the request has scopes:
+```python
+SCOPES = ["my-scope"]
+@app.get("/protected-route", dependencies=[auth.require_scopes(SCOPES)], openapi_extra=auth.scope_docs(SCOPES))
+def protected_route():
+    # (...)
+```
+Note that the `openapi_extra` part provides the OpenAPI documentation, while the `dependencies` part provides the functionality.
+
+To get information about the user, you can use `auth.user()` in a `Depends`:
+```python
+@app.get("/protected-route")
+def protected_route(user: Annotated[User, Depends(auth.user())]):
+    # user has information like their ID, and optionally information like their name
+    # (...)
+```
+
+Similarly, you can get access to the token using `Annotated[Token, Depends(auth.token())]`.
