@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neco_agents"
+version = "0.2.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "fire>=0.7.1",
+    "loguru>=0.7.3",
+    "python-dotenv>=1.2.1",
+    "tqdm>=4.67.1",
+    "requests>=2.32.5",
+    "agno[tools]>=2.2.7",
+    "notion-client>=2.7.0",
+    "fastapi[standard]>=0.115.14",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "pytest-dotenv-modern>=0.3.0",
+    "pytest-xdist>=3.8.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["neco_agents*"]
+
+[tool.setuptools.package-data]
+neco_agents = ["../agents/**/*"]
+
+[project.scripts]
+neco_agents = "neco_agents.cli.bootstrap:main"
+
+
