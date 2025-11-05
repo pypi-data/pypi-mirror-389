@@ -1,0 +1,42 @@
+[build-system]
+requires = ["flit_core>=3.9"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "scraper2-hj3415"                          # PyPI 이름 (하이픈 허용)
+version = "1.0.1"
+description = "Naver WiseReport C103/C104 scraper + ingestion orchestrator"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{name = "Hyungjin Kim", email = "hj3415@gmail.com"}]
+keywords = ["example", "demo"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+
+dependencies = [
+  "logging-hj3415>=0.1",
+  "httpx>=0.28",
+  "tenacity>=9.1",
+  "playwright>=1.55",
+  "pandas>=2.3",
+  "tabulate>=0.9",
+  "contracts-hj3415>=0.1",
+  "db2-hj3415>=0.1",
+]
+
+# 선택적 의존성 (pip install your-pkg[dev] 형태)
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=7.0", "pytest-asyncio>=1.2", "ruff>=0.5", "mypy>=1.10"]
+
+
+[tool.flit.module]
+name = "scraper2_hj3415"
+path = "src/scraper2_hj3415"
+
+
+[project.scripts]
+scraper2 = "scraper2_hj3415.entrypoints.cli:app"
