@@ -1,0 +1,41 @@
+Metadata-Version: 2.4
+Name: apb_pandas_utils
+Version: 1.1.1
+Summary: Pandas and geopandas utils
+Home-page: https://github.com/portdebarcelona/PLANOL-generic_python_packages/tree/master/apb_pandas_utils_pckg
+Author: Ernesto Arredondo Martínez
+Author-email: ernestone@gmail.com
+Maintainer: Port de Barcelona
+Maintainer-email: planolport@portdebarcelona.cat
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Utilities
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Requires-Dist: geopandas>=1.0
+Requires-Dist: requests
+Provides-Extra: oracle
+Requires-Dist: apb_cx_oracle_spatial<1.1; extra == "oracle"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: home-page
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+##### Package <em>apb_pandas_utils</em>
+
+Modules to add functionality over `pandas` and `geopandas` 
+
+Requires `GDAL` library version 3.6<=3.9 and instant client Oracle installed.
+
+To install:
+```shell
+pip install apb_pandas_utils
+```
+
+Documentation here [apb_pandas_utils](https://serveis.portdebarcelona.cat/generic_python_packages/apb_pandas_utils.html)
