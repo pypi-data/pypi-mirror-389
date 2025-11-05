@@ -1,0 +1,51 @@
+[project]
+name = "rentry.py"
+version = "0.3.9"
+description = "A python wrapper for the rentry markdown service."
+authors = [{name = "Etorix", email = "admin@etorix.dev"}]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["rentry", "markdown", "api", "wrapper", "command line", "synchronous", "asynchronous"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14"
+]
+dependencies = [
+    "httpx>=0.28.1"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.3",
+]
+
+[project.urls]
+Homepage = "https://pypi.org/project/rentry.py/"
+Repository = "https://github.com/EtorixDev/rentry.py/"
+Sponsor = "https://github.com/sponsors/EtorixDev"
+Donate = "https://ko-fi.com/Etorix"
+
+[project.scripts]
+rentry = "rentry.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+allow-insecure-host = ["files.pythonhosted.org", "pypi.org"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["rentry"]
+
+[tool.ruff]
+line-length = 120
