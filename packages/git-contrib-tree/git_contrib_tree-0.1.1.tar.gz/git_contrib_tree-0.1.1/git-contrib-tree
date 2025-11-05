@@ -1,0 +1,619 @@
+#!/usr/bin/env python3
+"""
+git-contrib-tree
+
+Analyze git repository contributions and display a tree of files with top contributors for each.
+
+Repository: https://gitlab.com/wykwit/git-contrib-tree
+"""
+
+import argparse
+import subprocess
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List, Optional, Set, Tuple
+
+TOP_CONTRIBUTORS_LIMIT = 3
+NULL_SEPARATOR = "\x00"
+
+
+class GitContributionAnalyzer:
+    def __init__(
+        self,
+        repo_path: str = ".",
+        since: Optional[str] = None,
+        until: Optional[str] = None,
+        subtree_path: Optional[str] = None,
+        author_emails: Optional[Set[str]] = None,
+    ):
+        """
+        Initialize the analyzer.
+
+        Args:
+            repo_path: Path to the git repository
+            since: Start date for analysis (git date format)
+            until: End date for analysis (git date format)
+            subtree_path: Path within repo to analyze (e.g., "src/models")
+            author_emails: Filter to only show contributions by these author emails (set of emails)
+        """
+        self.repo_path = Path(repo_path).resolve()
+        self.since = since
+        self.until = until
+        self.subtree_path = subtree_path
+        self.author_emails = author_emails
+        self._file_contributors_cache: Dict[str, List[Tuple[str, int]]] = {}
+
+        if not self._is_git_repo():
+            raise ValueError(f"{self.repo_path} is not a git repository")
+
+    def _is_git_repo(self) -> bool:
+        """Check if the path is a git repository."""
+        try:
+            subprocess.run(
+                ["git", "rev-parse", "--git-dir"],
+                cwd=self.repo_path,
+                capture_output=True,
+                check=True,
+            )
+            return True
+        except subprocess.CalledProcessError:
+            return False
+
+    def _build_git_log_base_args(self) -> List[str]:
+        """Build base git log command with common date filters."""
+        args = ["git", "log"]
+        if self.since:
+            args.extend(["--since", self.since])
+        if self.until:
+            args.extend(["--until", self.until])
+        return args
+
+    def _parse_author_line(self, line: str) -> Optional[Tuple[str, str]]:
+        """
+        Parse a line containing author name and email.
+
+        Args:
+            line: Line in format "name\x00email"
+
+        Returns:
+            Tuple of (author_name, author_email) or None if invalid
+        """
+        if not line or NULL_SEPARATOR not in line:
+            return None
+
+        parts = line.split(NULL_SEPARATOR)
+        if len(parts) < 2:
+            return None
+
+        return parts[0], parts[1]
+
+    def _should_include_author(self, author_email: str) -> bool:
+        """Check if author should be included based on email filter."""
+        if not self.author_emails:
+            return True
+        return author_email in self.author_emails
+
+    def _get_git_log_args(self, file_path: Optional[str] = None) -> List[str]:
+        """Build git log command arguments."""
+        args = self._build_git_log_base_args()
+        args.append("--format=%aN%x00%aE")
+
+        if file_path:
+            args.extend(["--", file_path])
+
+        return args
+
+    def _get_top_contributors(
+        self, author_commits: Dict[str, int]
+    ) -> List[Tuple[str, int]]:
+        """
+        Get top N contributors from author commits dictionary.
+
+        Args:
+            author_commits: Dictionary mapping author names to commit counts
+
+        Returns:
+            List of top contributors as (author_name, commit_count) tuples
+        """
+        if not author_commits:
+            return []
+
+        sorted_authors = sorted(
+            author_commits.items(), key=lambda x: x[1], reverse=True
+        )
+        return sorted_authors[:TOP_CONTRIBUTORS_LIMIT]
+
+    def get_contributors(
+        self, file_path: Optional[str] = None
+    ) -> List[Tuple[str, int]]:
+        """
+        Get top 3 contributors for a file or entire project.
+        Uses caching to avoid duplicate git log calls.
+
+        Args:
+            file_path: Path to file relative to repo root, or None for entire project
+
+        Returns:
+            List of tuples (author_name, commit_count) for top 3 contributors
+        """
+        cache_key = file_path or "__PROJECT__"
+
+        if cache_key in self._file_contributors_cache:
+            return self._file_contributors_cache[cache_key]
+
+        try:
+            result = subprocess.run(
+                self._get_git_log_args(file_path),
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+
+            author_commits = defaultdict(int)
+            for line in result.stdout.strip().split("\n"):
+                parsed = self._parse_author_line(line)
+                if not parsed:
+                    continue
+
+                author_name, author_email = parsed
+                if not self._should_include_author(author_email):
+                    continue
+
+                author_commits[author_name] += 1
+
+            top_contributors = self._get_top_contributors(author_commits)
+            self._file_contributors_cache[cache_key] = top_contributors
+
+            return top_contributors
+
+        except subprocess.CalledProcessError:
+            return []
+
+    def _preload_all_contributors(self, files: List[str]):
+        """
+        Preload contributors for all files using git log --name-only.
+        This is much faster than running git log once per file.
+
+        Args:
+            files: List of file paths to analyze
+        """
+        if not files:
+            return
+
+        args = self._build_git_log_base_args()
+        args.extend(["--name-only", "--format=%H%x00%aN%x00%aE"])
+
+        try:
+            result = subprocess.run(
+                args, cwd=self.repo_path, capture_output=True, text=True, check=True
+            )
+
+            file_authors: Dict[str, Dict[str, int]] = defaultdict(
+                lambda: defaultdict(int)
+            )
+
+            lines = result.stdout.split("\n")
+            current_author: Optional[str] = None
+            current_email: Optional[str] = None
+
+            for line in lines:
+                if NULL_SEPARATOR in line:
+                    parts = line.split(NULL_SEPARATOR)
+                    if len(parts) >= 3:
+                        current_author = parts[1].strip()
+                        current_email = parts[2].strip()
+                    continue
+
+                line = line.strip()
+                if not line or not current_author or not current_email:
+                    continue
+
+                if not self._should_include_author(current_email):
+                    continue
+
+                file_authors[line][current_author] += 1
+
+            for file_path in files:
+                if file_path in file_authors:
+                    top_contributors = self._get_top_contributors(
+                        file_authors[file_path]
+                    )
+                    self._file_contributors_cache[file_path] = top_contributors
+                else:
+                    self._file_contributors_cache[file_path] = []
+
+        except subprocess.CalledProcessError:
+            pass
+
+    def get_all_contributor_emails(self) -> List[Tuple[str, str, int]]:
+        """
+        Get all unique contributor emails with their names and commit counts.
+
+        Returns:
+            List of tuples (author_name, author_email, commit_count) sorted by commit count
+        """
+        try:
+            args = self._build_git_log_base_args()
+            args.append("--format=%aN%x00%aE")
+
+            if self.subtree_path:
+                args.extend(["--", self.subtree_path])
+
+            result = subprocess.run(
+                args, cwd=self.repo_path, capture_output=True, text=True, check=True
+            )
+
+            author_data: Dict[str, Tuple[str, int]] = {}
+
+            for line in result.stdout.strip().split("\n"):
+                parsed = self._parse_author_line(line)
+                if not parsed:
+                    continue
+
+                author_name, author_email = parsed
+
+                if author_email in author_data:
+                    name, count = author_data[author_email]
+                    author_data[author_email] = (name, count + 1)
+                else:
+                    author_data[author_email] = (author_name, 1)
+
+            result_list = [
+                (name, email, count) for email, (name, count) in author_data.items()
+            ]
+
+            return sorted(result_list, key=lambda x: x[2], reverse=True)
+
+        except subprocess.CalledProcessError:
+            return []
+
+    def get_tracked_files(self, subtree_path: Optional[str] = None) -> List[str]:
+        """Get list of all tracked files in the repository or subtree."""
+        try:
+            args = ["git", "ls-files"]
+            if subtree_path:
+                args.append(subtree_path)
+
+            result = subprocess.run(
+                args, cwd=self.repo_path, capture_output=True, text=True, check=True
+            )
+            return [f for f in result.stdout.strip().split("\n") if f]
+        except subprocess.CalledProcessError:
+            return []
+
+    def build_file_tree(self, subtree_path: Optional[str] = None) -> Dict:
+        """
+        Build a complete tree structure of ALL files (no depth limit here).
+
+        Args:
+            subtree_path: Path within repo to analyze (e.g., "src/models")
+
+        Returns:
+            Nested dictionary representing file tree
+        """
+        files = self.get_tracked_files(subtree_path)
+        tree: Dict = {}
+
+        for file_path in files:
+            file_path_relative = self._get_relative_path(file_path, subtree_path)
+            if not file_path_relative:
+                continue
+
+            self._add_to_tree(tree, file_path_relative, file_path)
+
+        return tree
+
+    def _get_relative_path(
+        self, file_path: str, subtree_path: Optional[str]
+    ) -> Optional[str]:
+        """
+        Get relative path for a file within a subtree.
+
+        Args:
+            file_path: Full file path
+            subtree_path: Optional subtree path to make relative to
+
+        Returns:
+            Relative path or None if file is not in subtree
+        """
+        if not subtree_path:
+            return file_path
+
+        if file_path.startswith(subtree_path + "/"):
+            return file_path[len(subtree_path) + 1 :]
+        elif file_path == subtree_path:
+            return file_path.split("/")[-1]
+        else:
+            return None
+
+    def _add_to_tree(self, tree: Dict, relative_path: str, full_path: str):
+        """
+        Add a file to the tree structure.
+
+        Args:
+            tree: Tree dictionary to modify
+            relative_path: Relative path of the file
+            full_path: Full path for git operations
+        """
+        parts = relative_path.split("/")
+        current = tree
+
+        for part in parts[:-1]:
+            if part not in current:
+                current[part] = {}
+            current = current[part]
+
+        current[parts[-1]] = full_path
+
+    def format_contributors(self, contributors: List[Tuple[str, int]]) -> str:
+        """Format contributors list for display."""
+        if not contributors:
+            return "X"
+
+        return ", ".join(f"{name} ({count})" for name, count in contributors)
+
+    def _get_all_files_from_tree(self, tree: Dict) -> List[str]:
+        """
+        Recursively get all file paths from a tree structure.
+
+        Args:
+            tree: The tree structure or subtree
+
+        Returns:
+            List of all file paths in this tree
+        """
+        files = []
+        for name, value in tree.items():
+            if isinstance(value, dict):
+                files.extend(self._get_all_files_from_tree(value))
+            else:
+                files.append(value)
+        return files
+
+    def _calculate_directory_contributors(
+        self, tree: Dict
+    ) -> Dict[str, List[Tuple[str, int]]]:
+        """
+        Pre-calculate contributors for all directories in the tree.
+
+        Args:
+            tree: The complete file tree
+
+        Returns:
+            Dictionary mapping directory paths to their top 3 contributors
+        """
+        dir_contributors = {}
+
+        def process_subtree(subtree: Dict, path: str = "") -> Dict[str, int]:
+            """Process subtree and return aggregated author commits."""
+            author_commits = defaultdict(int)
+
+            for name, value in subtree.items():
+                if isinstance(value, dict):
+                    subpath = f"{path}/{name}" if path else name
+                    sub_author_commits = process_subtree(value, subpath)
+
+                    for author, count in sub_author_commits.items():
+                        author_commits[author] += count
+                else:
+                    file_path = value
+                    contributors = self.get_contributors(file_path)
+                    for author, count in contributors:
+                        author_commits[author] += count
+
+            if author_commits:
+                sorted_authors = sorted(
+                    author_commits.items(), key=lambda x: x[1], reverse=True
+                )
+                dir_contributors[path] = sorted_authors[:3]
+
+            return author_commits
+
+        process_subtree(tree)
+        return dir_contributors
+
+    def print_tree(self, max_depth: int = -1):
+        """
+        Print the file tree with contributors.
+
+        Args:
+            max_depth: Maximum depth to traverse (0 = project only, -1 = unlimited)
+        """
+        if max_depth == 0:
+            if self.subtree_path:
+                contributors = self.get_contributors(self.subtree_path)
+                print(f"Path: {self.subtree_path}")
+            else:
+                contributors = self.get_contributors()
+                print(f"Project: {self.repo_path.name}")
+            print(f"  Top contributors: {self.format_contributors(contributors)}")
+            return
+
+        tree = self.build_file_tree(self.subtree_path)
+        all_files = self._get_all_files_from_tree(tree)
+        self._preload_all_contributors(all_files)
+        dir_contributors = self._calculate_directory_contributors(tree)
+
+        if self.subtree_path:
+            print(f"Repository: {self.repo_path.name} (path: {self.subtree_path})")
+        else:
+            print(f"Repository: {self.repo_path.name}")
+        print()
+
+        self._print_tree_recursive(tree, "", max_depth, 1, "", dir_contributors)
+
+    def _should_print_item(
+        self, is_directory: bool, contributors: List[Tuple[str, int]]
+    ) -> bool:
+        """
+        Determine if a tree item should be printed.
+
+        Args:
+            is_directory: Whether the item is a directory
+            contributors: List of contributors for the item
+
+        Returns:
+            True if the item should be printed
+        """
+        if not self.author_emails:
+            return True
+        return bool(contributors)
+
+    def _print_tree_recursive(
+        self,
+        tree: Dict,
+        prefix: str,
+        max_depth: int,
+        depth: int,
+        current_path: str,
+        dir_contributors: Dict[str, List[Tuple[str, int]]],
+    ):
+        """Recursively print the tree structure up to max_depth."""
+        items = sorted(tree.items())
+
+        for i, (name, value) in enumerate(items):
+            is_last = i == len(items) - 1
+            connector = "└── " if is_last else "├── "
+            is_directory = isinstance(value, dict)
+
+            if is_directory:
+                dir_path = f"{current_path}/{name}" if current_path else name
+                contributors = dir_contributors.get(dir_path, [])
+
+                if not self._should_print_item(True, contributors):
+                    continue
+
+                contrib_str = self.format_contributors(contributors)
+                print(f"{prefix}{connector}{name}/ - {contrib_str}")
+
+                if max_depth == -1 or depth < max_depth:
+                    new_prefix = prefix + ("    " if is_last else "│   ")
+                    self._print_tree_recursive(
+                        value,
+                        new_prefix,
+                        max_depth,
+                        depth + 1,
+                        dir_path,
+                        dir_contributors,
+                    )
+            else:
+                if max_depth == -1 or depth <= max_depth:
+                    contributors = self.get_contributors(value)
+
+                    if not self._should_print_item(False, contributors):
+                        continue
+
+                    contrib_str = self.format_contributors(contributors)
+                    print(f"{prefix}{connector}{name} - {contrib_str}")
+
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Analyze git contributions and display file tree with top contributors",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s                              # Analyze entire repository
+  %(prog)s --depth 0                    # Show only project-level contributors
+  %(prog)s --depth 2                    # Show files up to depth 2
+  %(prog)s --path src                   # Analyze only src directory
+  %(prog)s --path src/models --depth 1  # Analyze src/models up to depth 1
+  %(prog)s --since "2024-01-01"         # Analyze from specific date
+  %(prog)s --since "6 months ago"       # Analyze last 6 months
+  %(prog)s --until "2024-12-31"         # Analyze until specific date
+  %(prog)s --repo /path/to/repo         # Analyze different repository
+  %(prog)s --email user@example.com     # Show only contributions by specific author
+  %(prog)s --email user1@ex.com,user2@ex.com  # Show contributions by multiple authors
+        """,
+    )
+
+    parser.add_argument(
+        "--repo",
+        default=".",
+        help="Path to git repository (default: current directory)",
+    )
+
+    parser.add_argument(
+        "--depth",
+        type=int,
+        default=-1,
+        help="Maximum tree depth (0 = project only, -1 = unlimited, default: -1)",
+    )
+
+    parser.add_argument(
+        "--path", help="Path within repository to analyze (e.g., 'src', 'src/models')"
+    )
+
+    parser.add_argument(
+        "--since",
+        help="Show commits after this date (git date format, e.g., '2024-01-01', '6 months ago')",
+    )
+
+    parser.add_argument(
+        "--until", help="Show commits before this date (git date format)"
+    )
+
+    parser.add_argument(
+        "--email",
+        help="Filter to only show contributions by these author emails (comma-separated, e.g., 'user1@example.com,user2@example.com')",
+    )
+
+    parser.add_argument(
+        "--list-emails",
+        action="store_true",
+        help="List all contributor emails and exit",
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    """Main entry point."""
+    args = parse_args()
+
+    try:
+        author_emails = None
+        if args.email:
+            author_emails = set(
+                email.strip() for email in args.email.split(",") if email.strip()
+            )
+
+        analyzer = GitContributionAnalyzer(
+            repo_path=args.repo,
+            since=args.since,
+            until=args.until,
+            subtree_path=args.path,
+            author_emails=author_emails,
+        )
+
+        if args.list_emails:
+            contributors = analyzer.get_all_contributor_emails()
+
+            if not contributors:
+                print("No contributors found.", file=sys.stderr)
+                sys.exit(1)
+
+            print("Contributors:")
+            for name, email, count in contributors:
+                print(f"  {name} <{email}> - {count} commit{'s' if count != 1 else ''}")
+
+            return
+
+        analyzer.print_tree(max_depth=args.depth)
+
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\nAborted.", file=sys.stderr)
+        sys.exit(130)
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
