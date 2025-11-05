@@ -1,0 +1,49 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="collective.faq"
+    >
+
+  <i18n:registerTranslations directory="locales" />
+
+  <include package=".browser" />
+
+  <include file="upgrades.zcml" />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="FAQ (collective.faq)"
+      description="Installs the FAQ add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      directory="profiles/default"
+      post_handler=".setuphandlers.post_install"
+      />
+
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="FAQ (collective.faq): uninstall"
+      description="Uninstalls the FAQ add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      directory="profiles/uninstall"
+      post_handler=".setuphandlers.uninstall"
+      />
+
+  <utility
+      factory=".setuphandlers.HiddenProfiles"
+      name="collective.faq-hiddenprofiles"
+      />
+
+  <!-- Adapters for patterns settings -->
+  <adapter
+      factory=".adapters.RestrictedTinyMCEPatternSettingsAdapter"
+      provides="plone.base.interfaces.IPatternsSettings"
+      for="*
+           *
+           plone.app.textfield.interfaces.IRichText"
+      name="pattern_settings"
+      zcml:condition="envvar COLLECTIVE_FAQ_RESTRICT_TINYMCE"
+      />
+
+</configure>
