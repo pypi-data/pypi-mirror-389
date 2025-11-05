@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dailyDecisionPackage"
+description = "A lighthearted Python package that helps you make everyday decisions."
+version = "0.0.2"
+authors = [
+    { name = "Jubilee Tang" },
+    { name = "Maria Lee" },
+    { name = "Reece Huey" },
+    { name = "Anshu Aramandla"},
+    { name = "Natalie Han"}
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+readme = "README.md"
+keywords = ["python", "package", "daily", "decision", "helper", "color", "food"]
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Education",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "build", "twine"]
+
+[project.urls]
+"Homepage" = "https://github.com/swe-students-fall2025/3-python-package-team_aurora"
+"Repository" = "https://github.com/swe-students-fall2025/3-python-package-team_aurora.git"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dailyDecisionPackage = ["*.txt", "*.md"]
