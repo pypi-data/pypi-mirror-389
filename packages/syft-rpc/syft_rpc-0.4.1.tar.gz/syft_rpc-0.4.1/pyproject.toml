@@ -1,0 +1,45 @@
+[project]
+name = "syft-rpc"
+version = "0.4.1"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "syft-core>=0.3.0",
+    "syft-crypto>=0.1.2",
+    "pydantic>=2.9.2",
+    "typing-extensions>=4.12.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["syft_rpc"]
+only-include = ["syft_rpc"]
+exclude = ["syft_rpc/**/__pycache__"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["syft_rpc", "pyproject.toml", "README.md"]
+exclude = ["syft_rpc/**/__pycache__"]
+
+[tool.uv.sources]
+syft-core = { workspace = true }
+syft-crypto = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest>=8.3.4"]
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "pep621"
+tag_format = "syft-rpc-$version"
+update_changelog_on_bump = false
+
+version_files = [
+    "pyproject.toml:^version\\s*=\\s*\"(?P<version>.*)\"$",
+    "syft_rpc/__init__.py:^__version__\\s*=\\s*\"(?P<version>.*)\"$",
+    "../syft-event/pyproject.toml:syft-rpc>=(?P<version>\\d+\\.\\d+\\.\\d+)",
+]
