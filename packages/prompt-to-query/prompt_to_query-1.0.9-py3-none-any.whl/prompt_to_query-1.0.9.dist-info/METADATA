@@ -1,0 +1,719 @@
+Metadata-Version: 2.4
+Name: prompt-to-query
+Version: 1.0.9
+Summary: High-performance SDK to convert natural language prompts to MongoDB queries using AI (OpenAI GPT or Anthropic Claude)
+Home-page: https://github.com/dimarborda/prompt-to-query
+Author: Dimar Borda
+Author-email: Dimar Borda <dimarborda@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/dimarb/prompt-to-query
+Project-URL: Documentation, https://github.com/dimarb/prompt-to-query#readme
+Project-URL: Repository, https://github.com/dimarb/prompt-to-query
+Project-URL: Bug Tracker, https://github.com/dimarb/prompt-to-query/issues
+Keywords: mongodb,query,natural-language,nlp,ai,llm,openai,gpt,gpt-4,anthropic,claude,database,text-to-query,prompt-engineering,sdk
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Database
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
+# Prompt to Query - Python SDK
+
+[![PyPI version](https://badge.fury.io/py/prompt-to-query.svg)](https://pypi.org/project/prompt-to-query/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)](https://www.python.org)
+
+SDK de alto rendimiento para convertir lenguaje natural en queries de MongoDB usando IA (OpenAI GPT o Anthropic Claude).
+
+## Características
+
+- **Alto Rendimiento**: Core nativo en Go con bindings Python para máxima velocidad
+- **Multiplataforma**: Soporta Linux, macOS y Windows (AMD64 y ARM64)
+- **Múltiples LLMs**: Compatible con OpenAI (GPT-4, GPT-3.5) y Anthropic (Claude)
+- **Sin Dependencias Externas**: Usa solo la librería estándar de Python (ctypes)
+- **Detección de Columnas**: Genera automáticamente títulos legibles para las columnas de resultados
+- **Sugerencias Inteligentes**: Análisis de queries con recomendaciones basadas exclusivamente en tu esquema de base de datos
+- **Optimización de Prompts**: Mejora tus consultas en lenguaje natural con sugerencias contextuales
+- **Fácil de Usar**: API simple y consistente
+
+## Instalación
+
+```bash
+pip install prompt-to-query
+```
+
+## Requisitos
+
+- Python >= 3.8 (recomendado >= 3.10)
+- Una API key de OpenAI o Anthropic
+- Las librerías nativas se incluyen para las siguientes plataformas:
+  - Linux (AMD64, ARM64) - glibc y musl (Alpine)
+  - macOS (AMD64/Intel, ARM64/Apple Silicon)
+  - Windows (AMD64)
+
+**Nota técnica**: Este paquete usa `ctypes` de la librería estándar de Python para FFI (Foreign Function Interface), lo que significa cero dependencias externas.
+
+## Uso Rápido
+
+### Uso Básico
+
+```python
+from prompt_to_query import PromptToQuery
+
+# Inicializar el SDK
+ptq = PromptToQuery(
+    llm_provider="openai",  # o "anthropic"
+    api_key="your-api-key",
+    db_schema_path="schema.json"
+)
+
+# Generar query desde lenguaje natural
+result = ptq.generate_query("Get all active users from last month")
+
+print(result['query'])
+# Output: {'operation': 'find', 'collection': 'users', 'filter': {...}}
+
+print(result['columnTitles'])
+# Output: ['User Name', 'Email', 'Status', 'Created At']
+
+# Obtener versión del SDK
+print(ptq.get_version())
+```
+
+### Uso con Variables de Entorno
+
+```python
+import os
+from prompt_to_query import PromptToQuery
+
+ptq = PromptToQuery(
+    llm_provider="openai",
+    api_key=os.getenv("OPENAI_API_KEY"),
+    db_schema_path="./schema.json"
+)
+
+try:
+    result = ptq.generate_query('Count orders from last week')
+    print('Query:', result['query'])
+    print('Columns:', result['columnTitles'])
+except Exception as e:
+    print(f'Error: {e}')
+```
+
+## Configuración
+
+### Opciones del Constructor
+
+```python
+PromptToQuery(
+    llm_provider: str,        # 'openai' o 'anthropic' (requerido)
+    api_key: str,            # Tu API key (requerido)
+    db_schema: dict = None,  # Esquema de DB como diccionario (opcional)
+    db_schema_path: str = None,  # Path al archivo JSON del esquema (opcional)
+    model: str = None,       # Modelo específico a usar (opcional)
+    lib_path: str = None     # Path personalizado a la librería nativa (opcional)
+)
+```
+
+**Nota**: Debes proporcionar o bien `db_schema` o bien `db_schema_path`.
+
+### Esquema de Base de Datos
+
+#### Formato Recomendado: TOON
+
+**⚠️ Recomendación importante**: Para reducir significativamente los costos de tokenización al usar LLMs, te recomendamos usar el formato [TOON (Token-Oriented Object Notation)](https://github.com/toon-format/toon) en lugar de JSON para tu esquema de base de datos.
+
+**Ventajas del formato TOON:**
+- **30-60% menos tokens** que JSON, lo que reduce directamente los costos de API
+- Mantiene la legibilidad humana
+- Especialmente eficiente para estructuras uniformes como esquemas de base de datos
+- Elimina redundancia en la repetición de claves y puntuación innecesaria
+
+**Ejemplo de esquema en formato TOON** (`schema.toon`):
+
+```toon
+collections[2]{name,fields}:
+  users,{name:string;email:string;status:string;created_at:date;last_login:date}
+  products,{name:string;price:number;category:string;stock:number}
+```
+
+**Comparación con JSON equivalente** (`schema.json`):
+
+```json
+{
+  "users": {
+    "fields": {
+      "name": "string",
+      "email": "string",
+      "status": "string",
+      "created_at": "date",
+      "last_login": "date"
+    }
+  },
+  "products": {
+    "fields": {
+      "name": "string",
+      "price": "number",
+      "category": "string",
+      "stock": "number"
+    }
+  }
+}
+```
+
+**Ahorro**: El formato TOON usa aproximadamente 42% menos tokens en este ejemplo.
+
+#### Uso con formato TOON
+
+Para usar el formato TOON, simplemente pasa el archivo `.toon` como string:
+
+```python
+with open('./schema.toon', 'r') as f:
+    schema = f.read()
+
+ptq = PromptToQuery(
+    llm_provider="openai",
+    api_key=os.getenv("OPENAI_API_KEY"),
+    db_schema=schema  # Pasa el contenido TOON como string
+)
+```
+
+También puedes seguir usando JSON si lo prefieres con `db_schema_path`:
+
+```python
+ptq = PromptToQuery(
+    llm_provider="openai",
+    api_key=os.getenv("OPENAI_API_KEY"),
+    db_schema_path="./schema.json"
+)
+```
+
+## API
+
+### `PromptToQuery(config)`
+
+Crea una nueva instancia del SDK.
+
+**Parámetros:**
+- `llm_provider` (str): Proveedor de LLM - 'openai' o 'anthropic'
+- `api_key` (str): Tu API key
+- `db_schema` (dict, opcional): Esquema de base de datos como diccionario
+- `db_schema_path` (str, opcional): Path al archivo JSON del esquema
+- `model` (str, opcional): Modelo específico a usar
+- `lib_path` (str, opcional): Path personalizado a la librería nativa
+
+**Raises:**
+- `Exception`: Si la inicialización falla o la configuración es inválida
+
+### `generate_query(prompt: str) -> dict`
+
+Genera una query de MongoDB desde un prompt en lenguaje natural.
+
+**Parámetros:**
+- `prompt` (str): Descripción en lenguaje natural de la query deseada
+
+**Returns:**
+- `dict`: Diccionario con las siguientes claves:
+  - `query`: Diccionario de query de MongoDB con:
+    - `operation`: "find", "aggregate", o "count"
+    - `collection`: Nombre de la colección
+    - `filter`: Filtro de query (para find/count)
+    - `pipeline`: Pipeline de agregación (para aggregate)
+    - `projection`, `sort`, `limit`, `skip`: Parámetros opcionales
+  - `columnTitles`: Lista de strings con títulos legibles para las columnas
+
+**Raises:**
+- `Exception`: Si la generación de query falla
+
+**Ejemplo:**
+
+```python
+result = ptq.generate_query('Top 10 products by price')
+print(result['query'])
+# {
+#   'operation': 'find',
+#   'collection': 'products',
+#   'sort': {'price': -1},
+#   'limit': 10
+# }
+
+print(result['columnTitles'])
+# ['Product Name', 'Price', 'Category', 'Stock']
+```
+
+### `explain_query(query: dict) -> dict`
+
+Explica qué hace una query de MongoDB en lenguaje natural.
+
+**Parámetros:**
+- `query` (dict): Diccionario de query de MongoDB (del resultado de `generate_query`)
+
+**Returns:**
+- `dict`: Diccionario con las siguientes claves:
+  - `explanation` (str): Explicación completa en lenguaje natural de lo que hace la query
+  - `operation` (str): Tipo de operación ("find", "aggregate", o "count")
+  - `targetCollection` (str): Colección siendo consultada
+  - `dataReturned` (list): Lista de campos/datos que serán retornados
+  - `filters` (list): Lista de descripciones de filtros en lenguaje natural
+  - `sorting` (str): Descripción del ordenamiento (si aplica)
+  - `limitations` (str): Descripción de limit/skip (si aplica)
+  - `complexity` (str): Complejidad de la query ("low", "medium", o "high")
+  - `estimatedDocuments` (str): Número estimado de documentos ("1-10", "10-100", "100-1000", "1000+", o "all")
+
+**Raises:**
+- `Exception`: Si la explicación falla
+
+**Ejemplo:**
+
+```python
+result = ptq.generate_query('Get top 10 products by price')
+explanation = ptq.explain_query(result['query'])
+print(explanation['explanation'])
+# "Esta query recupera los 10 productos principales ordenados por precio en orden descendente"
+print(explanation['operation'])  # "find"
+print(explanation['complexity'])  # "low"
+```
+
+### `suggest_database_improvements(query: dict) -> dict`
+
+Obtiene sugerencias de optimización de base de datos para una query.
+
+**Parámetros:**
+- `query` (dict): Diccionario de query de MongoDB (del resultado de `generate_query`)
+
+**Returns:**
+- `dict`: Diccionario con las siguientes claves:
+  - `indexRecommendations` (list): Lista de recomendaciones específicas de índices con comandos MongoDB. Cada objeto contiene:
+    - `collection` (str): Nombre de la colección
+    - `fields` (list): Lista de campos para el índice
+    - `type` (str): Tipo de índice ("single", "compound", "text", etc.)
+    - `reason` (str): Razón para crear el índice
+    - `impact` (str): Impacto esperado ("high", "medium", "low")
+    - `createQuery` (str): Comando MongoDB para crear el índice
+  - `performanceHints` (list): Lista de sugerencias de optimización de rendimiento
+  - `schemaOptimizations` (list): Lista de sugerencias de diseño de esquema
+  - `queryOptimization` (str): Descripción de enfoque alternativo de query
+  - `estimatedImprovement` (str): Ganancia de rendimiento esperada
+  - `priority` (str): Nivel de prioridad ("high", "medium", o "low")
+
+**Raises:**
+- `Exception`: Si el análisis falla
+
+**Ejemplo:**
+
+```python
+result = ptq.generate_query('Get top 10 products by price')
+improvements = ptq.suggest_database_improvements(result['query'])
+print(improvements['indexRecommendations'])
+# [{'collection': 'products', 'fields': ['price'], 'type': 'single', ...}]
+print(improvements['estimatedImprovement'])
+# "10-100x más rápido para operaciones de ordenamiento"
+```
+
+### `improve_prompt(query: dict, original_prompt: str) -> dict`
+
+Obtiene sugerencias para mejorar el prompt en lenguaje natural.
+
+**Parámetros:**
+- `query` (dict): Diccionario de query de MongoDB (del resultado de `generate_query`)
+- `original_prompt` (str): El prompt original en lenguaje natural
+
+**Returns:**
+- `dict`: Diccionario con las siguientes claves:
+  - `originalPrompt` (str): El prompt original del usuario
+  - `improvedPrompt` (str): Versión mejorada sugerida del prompt
+  - `ambiguities` (list): Lista de ambigüedades detectadas
+  - `missingDetails` (list): Lista de detalles que podrían agregarse
+  - `suggestions` (list): Lista de sugerencias específicas de mejora
+  - `clarityScore` (str): Evaluación de claridad ("excellent", "good", "fair", o "poor")
+  - `availableFields` (list): Lista de campos relevantes del esquema
+  - `examplePrompts` (list): Lista de ejemplos de prompts bien escritos
+
+**Raises:**
+- `Exception`: Si el análisis falla
+
+**Ejemplo:**
+
+```python
+result = ptq.generate_query('Get products')
+improvement = ptq.improve_prompt(result['query'], 'Get products')
+print(improvement['improvedPrompt'])
+# "Obtener todos los productos activos ordenados por precio en orden descendente, limitado a 10 resultados"
+print(improvement['clarityScore'])  # "poor"
+print(improvement['suggestions'])
+# ["Agregar orden de clasificación", "Especificar filtros", "Agregar límite"]
+```
+
+### `get_version() -> str`
+
+Obtiene la versión del SDK.
+
+**Returns:**
+- `str`: String de versión
+
+## Ejemplos
+
+### Ejemplo 1: Query Simple
+
+```python
+result = ptq.generate_query('Get all active users')
+print(result['query'])
+# {'operation': 'find', 'collection': 'users', 'filter': {'status': 'active'}}
+
+print(result['columnTitles'])
+# ['Name', 'Email', 'Status', 'Created At']
+```
+
+### Ejemplo 2: Query con Filtros Complejos
+
+```python
+result = ptq.generate_query(
+    'Find products with price greater than 100 dollars'
+)
+print(result['query'])
+# {
+#   'operation': 'find',
+#   'collection': 'products',
+#   'filter': {'price': {'$gt': 100}}
+# }
+
+print(result['columnTitles'])
+# ['Product Name', 'Price', 'Category']
+```
+
+### Ejemplo 3: Query de Agregación
+
+```python
+result = ptq.generate_query(
+    'Get top 10 products by sales with their categories'
+)
+print(result['query'])
+# {
+#   'operation': 'aggregate',
+#   'collection': 'products',
+#   'pipeline': [
+#     {'$sort': {'sales': -1}},
+#     {'$limit': 10},
+#     {'$project': {'name': 1, 'sales': 1, 'category': 1}}
+#   ]
+# }
+
+print(result['columnTitles'])
+# ['Product Name', 'Sales', 'Category']
+```
+
+### Ejemplo 4: Query de Conteo
+
+```python
+result = ptq.generate_query('Count orders from last month')
+print(result['query'])
+# {
+#   'operation': 'count',
+#   'collection': 'orders',
+#   'filter': {'created_at': {'$gte': '...'}}
+# }
+
+print(result['columnTitles'])
+# ['Total Orders']
+```
+
+### Ejemplo 5: Explicar Queries
+
+```python
+result = ptq.generate_query('Get top 10 products by price')
+
+# Obtener explicación de lo que hace la query
+explanation = ptq.explain_query(result['query'])
+
+print(explanation['explanation'])
+# "Esta query recupera los 10 productos principales ordenados por precio en orden descendente"
+
+print(f"Operación: {explanation['operation']}")  # "find"
+print(f"Colección: {explanation['targetCollection']}")  # "products"
+
+print(f"Datos retornados: {explanation['dataReturned']}")
+# ['name', 'price', 'category', 'stock']
+
+print(f"Filtros aplicados: {explanation['filters']}")
+# [] (no hay filtros en esta query)
+
+print(f"Ordenamiento: {explanation['sorting']}")
+# "Ordenado por precio en orden descendente"
+
+print(f"Limitaciones: {explanation['limitations']}")
+# "Limitado a 10 documentos"
+
+print(f"Complejidad: {explanation['complexity']}")  # "low"
+print(f"Documentos estimados: {explanation['estimatedDocuments']}")  # "10"
+```
+
+### Ejemplo 6: Sugerencias de Optimización de Base de Datos
+
+```python
+result = ptq.generate_query('Get top 10 products by price')
+
+# Obtener sugerencias de optimización de base de datos
+improvements = ptq.suggest_database_improvements(result['query'])
+
+print("Recomendaciones de índices:")
+for idx in improvements['indexRecommendations']:
+    print(f"  Colección: {idx['collection']}")
+    print(f"  Campos: {idx['fields']}")
+    print(f"  Tipo: {idx['type']}")
+    print(f"  Razón: {idx['reason']}")
+    print(f"  Impacto: {idx['impact']}")
+    print(f"  Comando: {idx['createQuery']}")
+    # Ejemplo:
+    # Colección: products
+    # Campos: ['price']
+    # Tipo: single
+    # Razón: Mejorar rendimiento de ordenamiento
+    # Impacto: high
+    # Comando: db.products.createIndex({"price": -1})
+
+print("\nSugerencias de rendimiento:")
+for hint in improvements['performanceHints']:
+    print(f"  - {hint}")
+# ["Considerar cachear resultados si la data no cambia frecuentemente"]
+
+print("\nOptimizaciones de esquema:")
+for opt in improvements['schemaOptimizations']:
+    print(f"  - {opt}")
+# ["Considerar denormalizar datos de categoría si se accede frecuentemente"]
+
+print(f"\nMejora estimada: {improvements['estimatedImprovement']}")
+# "10-100x más rápido para operaciones de ordenamiento"
+
+print(f"Prioridad: {improvements['priority']}")  # "high"
+```
+
+### Ejemplo 7: Mejorar Prompts en Lenguaje Natural
+
+```python
+# Prompt poco claro
+result = ptq.generate_query('Get products')
+
+# Obtener sugerencias para mejorar el prompt
+improvement = ptq.improve_prompt(result['query'], 'Get products')
+
+print(f"Prompt original: {improvement['originalPrompt']}")
+# "Get products"
+
+print(f"\nPrompt mejorado sugerido: {improvement['improvedPrompt']}")
+# "Obtener todos los productos activos ordenados por precio en orden descendente, limitado a 10 resultados"
+
+print(f"\nPuntaje de claridad: {improvement['clarityScore']}")  # "poor"
+
+print("\nAmbigüedades detectadas:")
+for amb in improvement['ambiguities']:
+    print(f"  - {amb}")
+# ["No se especifica orden de clasificación",
+#  "No se especifican criterios de filtrado",
+#  "No se especifica límite de resultados"]
+
+print("\nDetalles faltantes:")
+for detail in improvement['missingDetails']:
+    print(f"  - {detail}")
+# ["¿Ordenar por precio, nombre, o fecha?",
+#  "¿Incluir solo productos activos?",
+#  "¿Cuántos resultados retornar?"]
+
+print("\nSugerencias específicas:")
+for suggestion in improvement['suggestions']:
+    print(f"  - {suggestion}")
+# ["Agregar orden de clasificación (ej: 'ordenados por precio')",
+#  "Especificar filtros (ej: 'productos activos')",
+#  "Agregar límite (ej: 'los 10 primeros')"]
+
+print("\nCampos disponibles en el esquema:")
+print(improvement['availableFields'])
+# ['name', 'price', 'category', 'stock', 'status', 'created_at']
+
+print("\nEjemplos de buenos prompts:")
+for example in improvement['examplePrompts']:
+    print(f"  - {example}")
+# ["Obtener los 10 productos más caros de la categoría electrónica",
+#  "Buscar productos con stock menor a 5 ordenados por nombre",
+#  "Contar productos activos creados en el último mes"]
+```
+
+### Ejemplo 8: Manejo de Errores
+
+```python
+try:
+    result = ptq.generate_query('invalid query')
+    print(result['query'])
+    print(result['columnTitles'])
+except Exception as e:
+    print(f'Error del SDK: {e}')
+```
+
+## Documentación Adicional
+
+Para casos de uso más avanzados, consulta la documentación especializada:
+
+### [Guía de Docker](./DOCKER.md)
+
+Documentación completa para usar el SDK con Docker:
+- Configuración con Alpine Linux y Ubuntu/Debian
+- Multi-stage builds para optimizar tamaño de imagen
+- Docker Compose con MongoDB
+- Kubernetes deployments
+- CI/CD con GitHub Actions
+- Seguridad y best practices
+- Ejemplos con FastAPI y Django
+
+### [Características Avanzadas](./ADVANCED.md)
+
+Funcionalidades avanzadas y optimización:
+- Detección automática de columnas
+- Uso del esquema como diccionario
+- Configuración de librería nativa personalizada
+- Benchmarking y profiling con cProfile
+- Manejo avanzado de errores (retry, circuit breaker, decoradores)
+- Type hints y Mypy
+- Patrones de diseño (Singleton, Factory, Context Manager)
+- Debugging y logging con OpenTelemetry
+
+
+## Proveedores LLM
+
+### OpenAI
+
+```python
+ptq = PromptToQuery(
+    llm_provider="openai",
+    api_key=os.getenv("OPENAI_API_KEY"),
+    model="gpt-4",  # opcional, por defecto: gpt-3.5-turbo
+    db_schema_path="./schema.json"
+)
+```
+
+**Modelos soportados:**
+- `gpt-4`
+- `gpt-4-turbo-preview`
+- `gpt-3.5-turbo` (por defecto)
+
+### Anthropic Claude
+
+```python
+ptq = PromptToQuery(
+    llm_provider="anthropic",
+    api_key=os.getenv("ANTHROPIC_API_KEY"),
+    model="claude-3-opus-20240229",  # opcional
+    db_schema_path="./schema.json"
+)
+```
+
+**Modelos soportados:**
+- `claude-3-opus-20240229`
+- `claude-3-sonnet-20240229` (por defecto)
+- `claude-3-haiku-20240307`
+
+## Solución de Problemas
+
+### Error: "Library not found"
+
+Si ves este error, significa que la librería nativa no se encuentra. Soluciones:
+
+1. Verifica que tu plataforma sea compatible
+2. Reinstala el paquete: `pip install --force-reinstall prompt-to-query`
+3. Especifica un path personalizado:
+
+```python
+ptq = PromptToQuery(
+    llm_provider="openai",
+    api_key="your-key",
+    db_schema_path="./schema.json",
+    lib_path="/path/to/libprompttoquery.so"
+)
+```
+
+### Error: "Initialization failed"
+
+Verifica:
+- Que tu API key sea válida
+- Que el archivo de esquema exista y sea JSON válido
+- Que el provider sea 'openai' o 'anthropic'
+
+### Error en Alpine Linux (musl)
+
+El SDK incluye librerías nativas para Alpine Linux. Si experimentas problemas:
+
+1. Verifica que estés usando una imagen Alpine oficial
+2. El SDK detecta automáticamente Alpine y selecciona la librería correcta
+3. Si falla, puedes especificar manualmente el path a la librería musl
+
+### Problemas con Permisos en Linux
+
+Si ves errores de permisos al cargar la librería:
+
+```bash
+chmod +x /path/to/libprompttoquery.so
+```
+
+O en Docker, asegúrate de que el usuario tenga permisos de lectura:
+
+```dockerfile
+RUN chmod 755 /usr/local/lib/python3.x/site-packages/prompt_to_query/lib/*
+```
+
+
+## Seguridad
+
+- Nunca incluyas API keys en el código o control de versiones
+- Usa variables de entorno (`os.getenv()`) para credenciales
+- El SDK valida todas las queries generadas antes de retornarlas
+- No ejecuta queries automáticamente - siempre tienes control
+- Las librerías nativas están firmadas y verificadas
+
+## Plataformas Soportadas
+
+| OS | AMD64 | ARM64 | Alpine (musl) |
+|----|-------|-------|---------------|
+| Linux | ✅ | ✅ | ✅ |
+| macOS | ✅ | ✅ | N/A |
+| Windows | ✅ | ❌ | N/A |
+
+
+### Contribuir
+
+Las contribuciones son bienvenidas! Por favor:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/amazing-feature`)
+3. Commit tus cambios (`git commit -m 'Add amazing feature'`)
+4. Push a la rama (`git push origin feature/amazing-feature`)
+5. Abre un Pull Request
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Links
+
+- **GitHub**: https://github.com/dimarb/prompt-to-query
+- **PyPI**: https://pypi.org/project/prompt-to-query/
+- **Issues**: https://github.com/dimarb/prompt-to-query/issues
+- **Documentación completa**: [GitHub](https://github.com/dimarb/prompt-to-query)
+- **Ejemplos**: Ver directorio `examples/`
+
+---
+
+Hecho con ❤️ usando Go + Python
