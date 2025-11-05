@@ -1,0 +1,43 @@
+Metadata-Version: 2.4
+Name: epic-sql
+Version: 1.1.6
+Summary: Conveniences for working with SQL
+License: MIT
+License-File: LICENSE.md
+Author: Yonatan Perry
+Requires-Python: >=3.10,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Provides-Extra: bigquery
+Requires-Dist: epic-common
+Requires-Dist: epic-jupyter ; extra == "bigquery"
+Requires-Dist: google-api-core ; extra == "bigquery"
+Requires-Dist: google-cloud-bigquery ; extra == "bigquery"
+Requires-Dist: pandas
+Requires-Dist: pyarrow (>=22.0.0,<23.0.0)
+Requires-Dist: tqdm ; extra == "bigquery"
+Project-URL: Repository, https://github.com/epic-framework/epic-sql
+Description-Content-Type: text/markdown
+
+# Epic sql &mdash; Conveniences for working with SQL
+[![Epic-sql CI](https://github.com/epic-framework/epic-sql/actions/workflows/ci.yml/badge.svg)](https://github.com/epic-framework/epic-sql/actions/workflows/ci.yml)
+
+## What is it?
+
+The **epic-sql** Python library provides several utilities that make it easier to write SQL code in python.
+It can also provide utilities for working with Google BigQuery. 
+
+
+## Modules
+
+- `general`: Functions for generating SQL expressions in python.
+- `bigquery`
+  - `query`: Run queries in Google BigQuery; Get information on a BigQuery table.
+  - `temptable`: Write data into a BigQuery table; Set expiration time on a table.
+  - `ipythonmagic`: Register a convenient IPython magic to query BigQuery and return the results as a pandas DataFrame.
+

@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "epic-sql"
+version = "1.1.6"
+description = "Conveniences for working with SQL"
+authors = ["Yonatan Perry", "Assaf Ben-David"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/epic-framework/epic-sql"
+packages = [{include = "epic"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "*"
+epic-common = "*"
+tqdm = {version = "*", optional = true}
+google-api-core = {version = "*", optional = true}
+google-cloud-bigquery = {version = "*", optional = true}
+epic-jupyter = {version = "*", optional = true}
+pyarrow = "^22.0.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+
+[tool.poetry.extras]
+bigquery = [
+    "tqdm",
+    "google-api-core",
+    "google-cloud-bigquery",
+    "epic-jupyter",
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
