@@ -1,0 +1,64 @@
+from __future__ import annotations
+
+import os
+import re
+
+import mcp
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import model_validator
+from ragops_agent_ce.schemas.config_schemas import RagConfig
+
+
+class RagConfigPlanArgs(BaseModel):
+    project_id: str
+    goal: str
+    rag_config: RagConfig = Field(default_factory=RagConfig)
+
+    @model_validator(mode="after")
+    def _set_default_collection_name(self) -> RagConfigPlanArgs:
+        """Ensure retriever_options.collection_name is set.
+        If missing/empty, use project_id as a sensible default.
+        For Milvus, ensure collection name starts with underscore or letter.
+        """
+        if not getattr(self.rag_config.retriever_options, "collection_name", None):
+            self.rag_config.retriever_options.collection_name = self.project_id
+
+        # Fix collection name for Milvus if needed
+        if self.rag_config.db_type == "milvus":
+            collection_name = self.rag_config.retriever_options.collection_name
+            if not re.match(r"^[a-zA-Z_]", collection_name):
+                self.rag_config.retriever_options.collection_name = f"_{collection_name}"
+        
+        # Ensure embedder.embedder_type is preserved if explicitly set
+        # If embedder was passed but embedder_type is default (vertex), check if we should preserve it
+        # This prevents overwriting user's choice
+        return self
+
+
+server = mcp.server.FastMCP(
+    "rag-config-planner",
+    log_level=os.getenv("RAGOPS_LOG_LEVEL", "CRITICAL"),  # noqa
+)
+
+
+@server.tool(
+    name="rag_config_plan",
+    description=(
+        "Suggest a RAG configuration (vectorstore/chunking/retriever/ranker) "
+        "for the given project and sources. "
+        "IMPORTANT: When passing rag_config parameter, ensure embedder.embedder_type is explicitly set "
+        "to match user's choice (openai, vertex, or azure_openai). Do not rely on defaults."
+    ),
+)
+async def rag_config_plan(args: RagConfigPlanArgs) -> mcp.types.TextContent:
+    plan = args.rag_config.model_dump_json()
+    return mcp.types.TextContent(type="text", text=plan)
+
+
+def main() -> None:
+    server.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()
