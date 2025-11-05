@@ -1,0 +1,121 @@
+[project]
+name = "zabbixci"
+description = "Source control for Zabbix templates in Git"
+readme = "README.md"
+dynamic = ["version"]
+keywords = ["zabbix", "git", "source control", "templates"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Version Control",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Networking :: Monitoring",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+    "Environment :: Console",
+]
+authors = [{ name = "Retigra", email = "info@retigra.nl" }]
+
+maintainers = [
+    { name = "Wouter de Bruijn", email = "wouter.debruijn@retigra.nl" },
+    { name = "Raymond Kuiper", email = "raymond.kuiper@retigra.nl" },
+]
+
+dependencies = [
+    "aiohttp>=3.12.14",
+    "pygit2>=1.18.0",
+    "regex>=2024.11.6",
+    "ruamel.yaml>=0.18.13",
+    "zabbix_utils>=2.0.3",
+    "Wand>=0.6.13",
+]
+license-files = ["LICENSE.txt"]
+
+[project.urls]
+Homepage = "https://github.com/retigra/zabbixci"
+Repository = "https://github.com/retigra/zabbixci"
+Issues = "https://github.com/retigra/zabbixci/issues"
+Changelog = "https://github.com/retigra/zabbixci/releases"
+Discussions = "https://github.com/retigra/ZabbixCI/discussions"
+
+[project.scripts]
+zabbixci = "zabbixci.cli:parse_cli"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "ruff>=0.12.1",
+    "types-regex>=2025.10.23.20251023",
+]
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["zabbixci*"]
+exclude = ["zabbixci.tests*"]
+
+[tool.setuptools_scm]
+version_file = "zabbixci/_version.py"
+
+[tool.ruff.lint]
+ignore = [
+    # Ignore line-length
+    "E501",
+    # Ignore too many arguments
+    "PLR0913",
+    # Ignore too many statements
+    "PLR0915",
+    # Ignore too many branches
+    "PLR0912",
+]
+
+select = [
+    # commented-out-code
+    "ERA001",
+    # flake8-bandit
+    "S",
+    # flake8-logging-format
+    "G",
+    # flake8-print
+    "T20",
+    # pep8-naming
+    "N",
+    # Pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pyupgrade
+    "UP",
+    # flake8-2020
+    "YTT",
+    # flake8-async
+    "ASYNC",
+    # flake8-bugbear
+    "B",
+    # flake8-executable
+    "EXE",
+    # flake8-pie
+    "PIE",
+    # flake8-pyi
+    "PYI",
+    # flake8-simplify
+    "SIM",
+    # pylint
+    "PL",
+    # Ruff-specific rules
+    "RUF",
+]
