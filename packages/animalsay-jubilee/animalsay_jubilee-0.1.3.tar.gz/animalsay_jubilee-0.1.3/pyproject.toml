@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "animalsay-jubilee"
+description = "A fun package that makes animals say things with moods in ASCII art!"
+version = "0.1.3"
+authors = [
+  { name="Your Name", email="your.email@example.com" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+keywords = ["python", "package", "ascii", "animals", "fun", "terminal"]
+requires-python = ">=3.8"
+dependencies = []  
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "build",
+    "twine",
+    "coverage",
+    "pytest-cov"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/swe-students-fall2025/3-python-package-team_jubilee"
+"Repository" = "https://github.com/swe-students-fall2025/3-python-package-team_jubilee.git"
+"Bug Tracker" = "https://github.com/swe-students-fall2025/3-python-package-team_jubilee/issues"
+
+[project.scripts]
+animalsay = "animalsay.__main__:main"
+
+[tool.setuptools]
+packages = ["animalsay"]
+
+[tool.setuptools.package-dir]
+animalsay = "src/animalsay"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v"
