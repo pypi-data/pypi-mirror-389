@@ -1,0 +1,119 @@
+Metadata-Version: 2.4
+Name: tastyerrors
+Version: 2025.0.1
+Summary: An awesome library for  40+ additional useful Python exceptions
+Author: Arjun Singh
+Author-email: arjunpride15@gmail.com
+License: Apache License 2.0
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: license.txt
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license
+Dynamic: license-file
+Dynamic: summary
+
+﻿
+# 🌶️ tastyerrors: The Exception Library That Just Gets It
+
+[![PyPI Version](https://img.shields.io/pypi/v/tastyerrors?label=Latest%20Release)](https://pypi.org/project/tastyerrors/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+![Maintenance](https://img.shields.io/badge/Status-Engineered-brightgreen.svg)
+
+## 🤯 Why Use `tastyerrors`?
+
+Look, we've all been there. You're writing code, things break, and Python throws a generic `Exception`. You stare at the traceback and think, "What am I, a detective?"
+
+**`tastyerrors`** is here to stop the madness. We don't just raise exceptions; we give them names, docstrings, and a dedicated place in the hierarchy so you know *exactly* why your user's password was too short, or why their database connection is on the fritz. We believe every error message should be a small, dramatic novella.
+
+Plus, we’ve made sure our foundation is solid. All of our code, including the whopping 43+ exceptions, is released under the **Apache License, Version 2.0**. This means you can use, modify, and distribute this library freely, even in commercial applications, as long as you provide proper attribution and adhere to the license terms. Go forth and fail elegantly!
+
+---
+
+## 🍴 Installation
+
+```bash
+pip install tastyerrors
+```
+---
+
+## 👩‍🍳 Quick Usage: Catching Them All
+
+Thanks to our beautiful, new architecture, you can catch any error from this entire library with a single line. No more long lists of imports!
+
+### Example
+
+```python
+from tastyerrors import * # Wildcard is approved for quick use!
+
+def check_user_input(username, password):
+    if len(password) < 8:
+        # A specific error with a clear name
+        raise PasswordTooShort("Password requires at least 8 characters, please.")
+    if username in ["admin", "root", "dev"]:
+        # Another specific error
+        raise InappropriateUsername("Reserved names are not allowed.")
+    # ... and 41 other fun ways to fail
+
+try:
+    check_user_input("my_user", "short")
+except TastyErrors as e:
+    # Catch ALL 43 custom exceptions from the package in one go!
+    print(f"❌ Application Error Caught: {type(e).__name__}")
+    print(f"   Reason: {e}")
+except Exception as e:
+    # Catch general Python errors (like BadType)
+    print(f"Python Standard Error: {type(e).__name__}")
+```
+---
+
+## 📋 Exception Documentation (The Full Menu)
+
+We currently feature **43** exceptions across 7 delicious categories. Yes, that's right—we blew past the answer to the universe (**42**) and gave you one more for good measure.
+
+### Featured Category: Color Picking (New in v2025.0.1)
+
+| Exception Class | Inherits From | When to Use |
+| :--- | :--- | :--- |
+| `ColorError` | `InputError` | Base class for all color-related validation issues. |
+| **`InvalidColorFormatError`** | `ColorError` | The user gave you `"banana"` when you needed a hex code (`#FFD700`). |
+| **`ColorNotInPaletteError`** | `ColorError` | The color is valid, but your design constraints (e.g., brand guidelines) don't allow it. |
+
+### Full List by Category (Excluding Base Classes)
+
+| Category | Base Class | Examples |
+| :--- | :--- | :--- |
+| **Authentication** | `AuthError` | `UsernameNotFound`, `IncorrectPassword`, `RetryLimitExceededError` |
+| **Validation** | `BadPassword` / `BadUsername` | `PasswordTooShort`, `NotUniqueUsername`, `InappropriatePassword` |
+| **Processing** | `ProcessingError` | `RateLimitExceededError`, `APIException`, `NetworkError` |
+| **Data Integrity** | `ProcessingError` | `DataIntegrityError`, `DataNotFoundError` |
+| **Financial/Inventory** | `TastyErrors` | `InsufficientFundsError`, `InventoryError` |
+| **System & Resources** | `SystemError` | `MemoryExhaustedError`, `ConcurrencyException`, `DependencyError` |
+| **Network/Built-in Wrappers** | (Various Built-ins) | `ServiceNotAvailable`, `TimeOutException`, `BadType` |
+
+---
+
+## 🚀 Release Notes: v2025.0.1
+
+This is the big one. We didn't just add features; we rebuilt the kitchen foundation.
+
+### **BREAKING CHANGES (And Why They Are Good)**
+
+* **Goodbye `BaseException`:** All custom classes now inherit from the standard Python **`Exception`** class (via `TastyErrors`), meaning your users' code won't accidentally catch critical system errors like `SystemExit` or `KeyboardInterrupt`. **You must now catch `TastyErrors` instead of previous base classes.**
+
+### **Features & Expansion (The 43 Club)**
+
+* **New Base Class:** Introduced **`TastyErrors`** as the single root catch-all for the entire library.
+* **New Exceptions:** Added **5 new, highly requested classes**, bringing the total count to **43**:
+    * `RateLimitExceededError`
+    * `DataIntegrityError`
+    * `ColorError`
+    * `InvalidColorFormatError`
+    * `ColorNotInPaletteError`
+* **Professional Docstrings:** Every single class now has a clear, professional docstring explaining its intended use case.
