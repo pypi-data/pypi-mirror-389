@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swagger-sdk"
+version = "0.1.0"
+description = "一个独立、灵活的 Python SDK，用于自动生成符合 OpenAPI 3.0 规范的 Swagger 文档"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "songxulin", email = "songandco99@gmail.com"},
+]
+keywords = ["swagger", "openapi", "api", "documentation", "openapi3", "swagger-ui"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Documentation",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/AndsGo/swagger-sdk"
+Documentation = "https://github.com/AndsGo/swagger-sdk#readme"
+Repository = "https://github.com/AndsGo/swagger-sdk"
+Issues = "https://github.com/AndsGo/swagger-sdk/issues"
+
+[tool.setuptools]
+packages = ["swagger_sdk"]
+
+[tool.setuptools.package-data]
+swagger_sdk = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
