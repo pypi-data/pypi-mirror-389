@@ -1,0 +1,98 @@
+[package]
+name = "zpack"
+description = "A fast, configurable package manager which builds programs from source"
+version = "0.1.17"
+authors = ["Toby Davis"]
+edition = "2024"
+readme = "README.md"
+homepage = "https://github.com/Pencilcaseman/zpack"
+repository = "https://github.com/Pencilcaseman/zpack"
+license-file = "./LICENSE"
+keywords = ["package-manager", "build-tool", "hpc", "tooling"]
+categories = ["command-line-utilities", "config", "development-tools::build-utils", "science"]
+rust-version = "1.88.0"
+
+include = []
+exclude = []
+
+publish = true
+
+[lib]
+name = "zpack"
+crate-type = ["rlib", "cdylib"]
+
+[features]
+default = ["tracing_release_max_level_warn"]
+
+cheap_errors = []
+
+z3_static_link = ["z3/static-link-z3"]
+z3_gh_release = ["z3/gh-release"]
+z3_bundled = ["z3/bundled"]
+z3_vcpkg = ["z3/vcpkg"]
+
+tracing_max_level_off = ["tracing/max_level_off", "tracing_release_max_level_off"]
+tracing_max_level_error = ["tracing/max_level_error", "tracing_release_max_level_error"]
+tracing_max_level_warn = ["tracing/max_level_warn", "tracing_release_max_level_warn"]
+tracing_max_level_info = ["tracing/max_level_info", "tracing_release_max_level_info"]
+tracing_max_level_debug = ["tracing/max_level_debug", "tracing_release_max_level_debug"]
+tracing_max_level_trace = ["tracing/max_level_trace", "tracing_release_max_level_trace"]
+
+tracing_release_max_level_off = ["tracing/release_max_level_off"]
+tracing_release_max_level_error = ["tracing/release_max_level_error"]
+tracing_release_max_level_warn = ["tracing/release_max_level_warn"]
+tracing_release_max_level_info = ["tracing/release_max_level_info"]
+tracing_release_max_level_debug = ["tracing/release_max_level_debug"]
+tracing_release_max_level_trace = ["tracing/release_max_level_trace"]
+
+mpi = ["dep:mpi"]
+
+[dependencies]
+anyhow = { version = "1.0.100" }
+ariadne = { version = "0.6.0", features = ["auto-color"] }
+chumsky = { version = "0.11.1", features = [] }
+clap = { version = "4.5.51", features = ["derive", "cargo", "env", "unicode", "wrap_help", "string"] }
+clap_complete = { version = "4.5.60", features = [] }
+config = { version = "0.15.18", features = ["yaml"] }
+derive = "1.0.0"
+dyn-clone = "1.0.20"
+either = "1.15.0"
+itertools = "0.14.0"
+mpi = { version = "0.8.0", optional=true, features = ["user-operations", "derive", "complex"] }
+num-traits = { version = "0.2.19", features = ["i128"] }
+petgraph = { version = "0.8.3", features = ["serde-1", "rayon", "generate"] }
+pyo3 = { version = "0.27.1", features = ["full"] }
+saphyr = "0.0.6"
+serde = { version = "1.0.228", features = ["alloc", "derive"] }
+smallvec = "1.15.1"
+syntect = { version = "5.3.0", features = ["default-fancy"] }
+tempfile = "3.23.0"
+tracing = {version = "0.1.41", features = [] }
+tracing-subscriber = "0.3.20"
+z3 = "0.19.2"
+
+[dev-dependencies]
+criterion = { version = "0.7.0", features = ["html_reports", "real_blackbox"] }
+
+[[bench]]
+name = "version_parser"
+harness = false
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+strip = true
+debug = false
+debug-assertions = false
+
+[profile.release.package."*"]
+codegen-units = 1
+opt-level = 3
+strip = true
+debug = false
+debug-assertions = false
+
+[profile.profile]
+inherits = "release"
+debug = true
