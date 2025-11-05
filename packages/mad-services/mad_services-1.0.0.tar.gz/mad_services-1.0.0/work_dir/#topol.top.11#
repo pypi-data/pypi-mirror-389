@@ -1,0 +1,10 @@
+#include "/data/prod/mad/parameters/force_fields/kasper/martini_v3.0.0.itp"
+#include "/data/prod/mad/parameters/force_fields/kasper/martini_v3.0.0_ffbonded_v2_openbeta.itp"
+#include "/data/prod/mad/parameters/force_fields/kasper/martini_v3.0.0_solvents_v1.itp"
+#include "/data/prod/mad/mad_services/test_data/POPC/POPC.itp"
+#include "/data/prod/mad/mad_services/work_dir/posres.itp"
+[system]
+Get starting structure: /data/prod/mad/mad_services/work_dir/b7c9cdbb-f57d-462e-bfd3-0e009553859e.gro
+
+[ molecules ]
+POPC    1
