@@ -1,0 +1,28 @@
+Metadata-Version: 2.4
+Name: arabic-conjugator
+Version: 0.1.0
+Summary: Utilities for Arabic verb root parsing and conjugation.
+Author: hmolavi
+License-Expression: MIT
+Project-URL: Source, https://github.com/hmolavi/ArabicConjugator
+Keywords: arabic,conjugation,triliteral
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# Arabic Conjugator
+
+Small Python package providing functions to parse Arabic three-letter roots with harakat and generate conjugations for past and present tenses.
+
+Usage example
+
+```python
+from arabic_conjugator import conjugate_verb
+
+title, forms = conjugate_verb("فَتَحَ", tense="past")
+print(title)
+for f in forms:
+    print(f)
+```
+
+License: MIT
