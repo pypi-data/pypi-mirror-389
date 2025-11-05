@@ -1,0 +1,29 @@
+# krx300_hj3415/core/ports.py
+from __future__ import annotations
+import httpx
+from pathlib import Path
+from typing import Protocol, Optional, Sequence, Any
+import pandas as pd
+
+class HttpClient(Protocol):
+    @property
+    def raw(self) -> httpx.AsyncClient: ...
+    async def aclose(self) -> None: ...
+    # 필요한 메서드만 노출(get/post 등). 지금은 download_excel 내부에서만 사용되므로 생략 가능.
+
+class ExcelDownloader(Protocol):
+    async def download(self, client: HttpClient) -> Path: ...
+
+class ExcelReader(Protocol):
+    async def to_dataframe(self, xls_path: Path) -> pd.DataFrame: ...
+
+class CodesRepo(Protocol):
+    async def replace_table(self, df: pd.DataFrame) -> None: ...
+    async def get_codes(self) -> Sequence[str]: ...
+
+class Hasher(Protocol):
+    def file_sha256(self, path: Path) -> Optional[str]: ...
+
+class CodesStorePort(Protocol):
+    async def load_snapshot(self) -> dict[str, Any]: ...
+    async def save(self, codes: Sequence[str], *, source_ymd: str, etag: Optional[str]) -> Path: ...
