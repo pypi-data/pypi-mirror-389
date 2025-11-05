@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crusty"
+version = "0.10.6"
+description="A convinience python package for HPC computation, science and plotting."
+dependencies = [
+	"requests",
+   	'importlib-metadata; python_version=="3.11"',
+	"pip",
+	"colorcet",
+	"numpy==1.26.4",
+	"pandas",
+	"matplotlib",
+	"cartopy",
+	"mpi4py",
+	"pyarrow",
+	"netCDF4",
+	"xarray",
+	"scipy",
+	"pint",
+	"pint-pandas",
+	"pint-xarray",
+	"psutil",
+	"scikit-learn",
+	"uncertainties",
+	"openpyxl",
+	"pymannkendall",
+    "plottable",
+]
+
+[tool.setuptools]
+packages = ["neoplot", "datarie", "blitzcomp", "sciency"]
+package-dir = {"" = "src"}
