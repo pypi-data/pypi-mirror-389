@@ -1,0 +1,395 @@
+Metadata-Version: 2.4
+Name: inceptum
+Version: 0.4.0
+Summary: Dependency Injection and Configuration
+Author-email: Hans Gremmen <hans@leptonix.net>
+License-Expression: MIT
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: pyyaml>=6.0.0
+
+# inceptum
+
+Dependency Injection and Configuration for Python.
+
+- Python: 3.12+
+- License: MIT
+
+inceptum provides:
+- A layered configuration loader with environment, host, and “extras” overlays.
+- A flexible require() resolver with aliasing, prefix probing, CLI discovery, and an optional registry decorator.
+
+
+## Installation
+
+```bash
+pip install inceptum
+```
+
+## Quickstart
+
+### Configuration
+
+Inceptum looks for configuration under a “base directory”. It merges multiple layers to produce a service config:
+
+1) extras (lowest precedence)
+2) any/<name>
+3) <hostname>/<name>
+4) <env>/<name>
+
+Where each “layer” can be one of:
+- name.yaml
+- name.yml
+- name.json
+
+Default environment is run; set INCEPTUM_ENV to override, or pass env=... to config().
+
+Directory resolution order:
+1) Environment variable INCEPTUM, if set.
+2) If in a venv/conda:
+   - <venv>/config/inceptum, if it exists; otherwise
+   - <venv>/inceptum, if it exists.
+3) Otherwise:
+   - Linux/Unix: $XDG_CONFIG_HOME/inceptum or ~/.config/inceptum
+   - macOS: ~/Library/Application Support/inceptum
+   - Windows: %APPDATA%/inceptum
+
+Example tree:
+```
+~/.config/inceptum/
+  any/
+    svc.json
+  my-hostname/
+    svc.yaml
+  dev/
+    svc.yml
+  extras.json
+```
+
+Example files:
+```json
+// any/svc.json
+{
+  "a": 1,
+  "b": {"x": 10},
+  "ENVIRONMENT": {
+    "dev": {"a": 2}
+  }
+}
+```
+
+```yaml
+# dev/svc.yml
+b:
+  y: 200
+```
+
+```yaml
+# extras.yaml
+# Can be either a list of stems or an object with key "extras"
+- "/opt/company/shared"        # when it doesn't contain {name}, it appends "/<name>"
+- "{env}-common/services"      # placeholders: {name}, {env}, {host}
+```
+
+```json
+// /opt/company/shared/svc.json
+{ "a": 1, "b": {"x": 1}, "from": "defaults" }
+```
+
+Load your config:
+```python
+from inceptum import config
+
+cfg = config("svc", env="dev")
+# => merged dict, with ENVIRONMENT blocks applied and removed
+# Precedence: extras < any < host < env
+```
+
+Look up nested keys and provide defaults:
+```python
+val = config("svc.a")                # 2 (from ENVIRONMENT override)
+missing = config("svc.missing", default="fallback")  # "fallback"
+```
+
+Meta pseudo-keys:
+```python
+config("dir")   # absolute base config directory (string)
+config("env")   # effective environment ("run" by default)
+config("host")  # current hostname
+
+# If you actually have a group named "env", disable meta:
+config("env", meta=False)        # returns the "env" group config
+config("env.value", meta=False)  # nested key
+```
+
+### Dependency resolution with require()
+
+```python
+from inceptum.require import require, register
+
+# Simple resolution by module name
+mod = require("json")  # returns the json module
+
+# Dotted resolution to attributes/functions
+loads = require("json.loads")
+print(loads('{"x":1}'))  # -> {'x': 1}
+
+# Variadic segments are equivalent to dotted form
+loads2 = require("json", "loads")
+assert loads2 is loads
+```
+
+Configure prefixes and aliases in your config group “inceptum”:
+```json
+// any/inceptum.json
+{
+  "prefixes": ["my"],
+  "module": {"wps": "leptonix_wps"},
+  "registry": {
+    "alias": "pkg.bar",         // string-to-string mapping
+    "markdown": "my.markdown.from_html"
+  },
+  "require": {"special_config": true}
+}
+```
+
+- prefixes: Try require("x") → “x”, then “my.x” (and other prefixes). Unprefixed wins if it exists.
+- module: Map toplevel module names (“wps” → “leptonix_wps”).
+- registry: String-to-string aliasing done before prefix probing (aliased seed is not re-prefixed).
+
+Aliases and prefixes in action:
+```python
+# Suppose pkg.bar exists
+obj = require("alias")         # resolves via registry to pkg.bar
+
+# Suppose my.markdown and my.markdown.from_html exist
+fn = require("markdown")       # resolves to my.markdown.from_html (callable)
+fn2 = require("markdown.from_html")
+assert fn is fn2
+```
+
+CLI discovery:
+```python
+# With prefixes ["tools"], require("convert", cli=True)
+# will try tools.convert.cli.main and return the callable.
+fn = require("convert", cli=True)
+print(fn())  # calls tools.convert.cli.main()
+```
+
+Attribute vs submodule preference:
+```python
+# If util has attribute "isiterator", it is preferred over submodule util.isiterator
+res = require("util.isiterator")  # returns the attribute if available
+```
+
+Error behavior:
+- SyntaxError: stops probing immediately and re-raises.
+- ImportError (non-ModuleNotFoundError): stops probing and re-raises.
+- ModuleNotFoundError: continues probing only if the missing module is the candidate itself (not an internal dependency).
+- Alias cycles are detected (no infinite loop) and result in a ModuleNotFoundError after probing fails.
+
+Registering callables:
+```python
+@register()            # uses function name as key (hyphens normalized to underscores)
+def do_work():
+    return "OK"
+
+assert require("do_work")() == "OK"
+
+@register("my-tool")
+def my_tool():
+    ...
+
+# Keys are normalized: "my-tool" → "my_tool"
+assert require("my_tool") is my_tool
+```
+
+Builtins:
+- The package injects require into builtins for convenience:
+  - require(...)
+  - I(...) and leptonix(...) are deprecated aliases.
+
+If you prefer no global mutation, import explicitly:
+```python
+from inceptum.require import require
+```
+
+
+## Configuration reference
+
+### Base directory resolution
+
+Order:
+1) INCEPTUM environment variable (path).
+2) Virtual environment root:
+   - <venv>/config/inceptum (if exists), else
+   - <venv>/inceptum (if exists).
+3) Per-user config dir + “inceptum”:
+   - Linux/Unix: $XDG_CONFIG_HOME or ~/.config
+   - macOS: ~/Library/Application Support
+   - Windows: %APPDATA%
+
+You can always inspect the chosen directory:
+```python
+config("dir")  # absolute path as string
+```
+
+### Layers and precedence
+
+For a service name “svc”, inceptum probes:
+- extras-defined stems (lowest precedence; see below)
+- any/svc.{yaml,yml,json}
+- <hostname>/svc.{...}
+- <env>/svc.{...}
+
+Data types:
+- Each layer must decode to a JSON/YAML object (mapping). Non-mapping or errors are ignored as empty.
+- Deep merge semantics: nested dicts are merged; non-dict values replace.
+
+### ENVIRONMENT overrides
+
+Any layer may include:
+```yaml
+ENVIRONMENT:
+  dev:
+    key: value
+  run:
+    key: other
+```
+
+If config(env="dev") (or INCEPTUM_ENV=dev), the block for that environment is merged into the layer.
+The ENVIRONMENT key is removed from the final merged result.
+
+### Extras
+
+Optional extras file at the base directory:
+- extras.yaml | extras.yml | extras.json
+
+Allowed formats:
+- List of strings
+- Object with key “extras”: list of strings
+
+Each entry is a “stem” template with placeholders {name}, {env}, {host}.
+
+Resolution rules:
+- If the entry contains {name}, it is used as-is after placeholder substitution.
+- If the entry does not contain {name}, “/<name>” is appended to form the final stem.
+- Relative paths are resolved against the base directory; ~ and environment variables are expanded.
+- Each stem yields candidate files stem.{yaml,yml,json}.
+
+Example:
+```yaml
+# extras.yaml
+- "{env}-common/services"
+- "/opt/shared/{name}"
+```
+
+### Meta pseudo-keys
+
+- config("dir"): base directory (string)
+- config("env"): effective environment (string; default "run")
+- config("host"): hostname (string)
+
+To disable meta behavior (e.g., you have a group literally named "env"):
+```python
+config("env", meta=False)
+```
+
+### Caching
+
+Configs are cached per tuple:
+(base_dir, env, host, name)
+
+The cache is internal; in tests you may clear it:
+```python
+from inceptum.config import _CACHE
+_CACHE.clear()
+```
+
+Note: _CACHE is not part of the public API and may change.
+
+
+## API reference
+
+### config
+
+```python
+from inceptum import config
+
+config(*keys: str, default: Any = None, env: str | None = None, meta: bool = True) -> Any
+```
+
+- keys: One or more key segments; dotted segments are supported (e.g., "service.key.subkey").
+- default: Value returned if missing.
+- env: Override effective environment for this call (otherwise INCEPTUM_ENV or "run").
+- meta: When True (default), pseudo-keys "dir", "env", "host" are handled specially.
+
+Returns:
+- If called with a single top-level group (e.g., config("service")), returns the merged dict (or default if empty/missing).
+- If called with deeper keys (e.g., config("service.key.subkey")), returns the nested value or default.
+
+### require
+
+```python
+from inceptum import require
+
+require(name, *segments, cli: bool = False)
+```
+
+- name and additional segments are joined with dots.
+- cli: When True, apply implicit ".cli.main" discovery for short names:
+  - If name has one segment, or two segments where the first is a configured prefix, append ".cli.main".
+- Probing order:
+  1) Alias resolution via config("inceptum.registry"): string-to-string mapping; hyphens normalize to underscores.
+     - Alias is applied once; aliased seed is NOT re-prefixed automatically.
+  2) Unprefixed candidate
+  3) Prefixed candidates using config("inceptum.prefixes"), skipping if the seed already starts with that prefix.
+  4) Toplevel module mapping via config("inceptum.module") for the head segment.
+
+Resolution behavior:
+- Prefers attribute on an imported module over importing a same-named submodule.
+- For dotted names, if an unprefixed candidate is a plain module and a prefixed candidate yields a callable, the callable is preferred.
+- Stops on SyntaxError and non-ModuleNotFoundError ImportError.
+- Continues probing on ModuleNotFoundError only if it clearly refers to the candidate (not an internal dependency).
+- Returns the first non-module object found; otherwise, returns a module if available.
+
+Special case:
+- If config("inceptum.require.special_config") is True and you call require("config"), it returns the function inceptum.config.config instead of importing a module named "config".
+
+### register
+
+```python
+from inceptum import register
+
+@register(name: str | None = None, *, override: bool = False)
+def some_callable(...): ...
+```
+
+- Registers a callable under a key (default: function name).
+- Hyphens are normalized to underscores.
+- If override=False and the key is already in use by a different callable, raises ValueError.
+- Registry lookups match exact keys and do not use prefix mapping.
+
+## Tips and troubleshooting
+
+- Nothing loads? Check config("dir") to verify the base directory.
+- YAML errors? Ensure PyYAML is installed and files are valid.
+- require() keeps falling back to prefixed modules: Double-check your prefixes and alias mappings; unprefixed modules win when present.
+- SyntaxError or ImportError during probing will halt resolution for that candidate and stop further fallbacks.
+- Aliases form a chain; cycles are detected (resolution stops and raises ModuleNotFoundError).
+
+## Development
+
+Run tests:
+```bash
+pip install -e ".[test]"  # or ensure pytest is installed
+pytest -q
+```
+
+Python version:
+- Requires Python 3.12+
+
+## License
+
+MIT © Hans Gremmen
+
