@@ -1,0 +1,45 @@
+[project]
+name = "residuum"
+version = "0.1.0.a2"
+description = "Converting peptidoforms to residue SMILES using the PSI-MOD CV"
+authors = [{ name = "Ralf Gabriels" }]
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+keywords = [
+    "proteomics",
+    "peptides",
+    "residues",
+    "proforma",
+    "smiles",
+    "psi-mod",
+    "mass-spectrometry",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+
+dependencies = ["pronto>=2.7.0", "rdkit>=2023.0.0", "pyteomics>=4.6.0"]
+
+[dependency-groups]
+dev = ["pytest"]
+docs = ["sphinx", "sphinx-rtd-theme", "sphinx-mdinclude", "sphinx-autobuild"]
+notebooks = ["ipykernel", "ipywidgets"]
+
+[project.urls]
+Homepage = "https://github.com/CompOmics/residuum"
+Documentation = "https://residuum.readthedocs.io"
+Repository = "https://github.com/CompOmics/residuum"
+Issues = "https://github.com/CompOmics/residuum/issues"
+
+[build-system]
+requires = ["uv_build>=0.9.6,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
