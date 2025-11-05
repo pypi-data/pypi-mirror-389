@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "duplicate_images"
+version = "0.11.10"
+description = "Finds equal or similar images in a directory containing (many) image files"
+authors = ["Lene Preuss <lene.preuss@gmail.com>"]
+repository = "https://github.com/lene/DuplicateImages.git"
+homepage = "https://github.com/lene/DuplicateImages"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Utilities"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+Wand = ">=0.6"
+pillow = ">=11.0"
+imagehash = ">=4.3"
+coloredlogs = ">=15.0"
+tqdm = ">=4.67"
+pillow-heif = ">=0.21"
+six = ">=1.17"
+numpy = ">=2.0"
+filetype = ">=1.2"
+setuptools = ">=75.6"
+
+[tool.poetry.group.dev.dependencies]
+bandit = ">=1.8"
+lz4 = ">=4.0"
+mypy = ">=1.14"
+flake8 = ">=7.1"
+pytest = ">=7.1"
+pylint = ">=3.3"
+pytest-xdist = ">=3.6"
+ptpython = ">=3.0"
+sphinx = "^8.2.3"
+
+[tool.poetry.scripts]
+find-dups = "duplicate_images.duplicate:main"
+
+
+[build-system]
+requires = ["poetry-core>=1.6"]
+build-backend = "poetry.core.masonry.api"
