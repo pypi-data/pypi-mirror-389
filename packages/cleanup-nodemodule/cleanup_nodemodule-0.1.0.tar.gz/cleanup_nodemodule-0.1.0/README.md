@@ -1,0 +1,72 @@
+# deleteNodeModules.py
+
+A small utility to find and remove common build/artifact folders such as `node_modules`, `.next`, and `dist` recursively.
+
+## What it does
+- Recursively walks from a specified root directory and finds directories named `node_modules`, `.next`, or `dist`.
+- By default the script runs in a safe "dry run" mode where it only prints what would be deleted.
+
+## Tested
+I tested this on macOS (zsh) and it works fine in dry-run mode. Use with care before disabling dry-run.
+
+## Safety / Dry-run
+The script has a safety flag at the top of the file:
+
+```python
+# Safety: set to True to do a dry run (only log what would be deleted).
+# Set to False to actually remove files/directories.
+DRY_RUN = True
+```
+
+- Default: `DRY_RUN = True` (dry-run).
+- To perform actual deletion, open `deleteNodeModules.py` and change `DRY_RUN = True` to `DRY_RUN = False`.
+
+Important: disabling dry-run will delete files and directories permanently (via `shutil.rmtree`). Make sure you have backups or use version control and run the script from the correct directory.
+
+## Usage
+1. Open a terminal in the repository folder (or specify your target directory by editing the script):
+
+```bash
+cd /path/to/your/project
+python3 deleteNodeModules.py
+```
+
+2. By default the script starts at `./` (the current directory) and `min_depth = 0` (so it will consider matches at any depth). If you want to change those defaults, edit the bottom section of the script:
+
+```python
+if __name__ == '__main__':
+    target_directory = './'  # Replace with your root folder path
+    min_depth = 0  # Minimum depth to start deleting (0 = all levels)
+    
+    find_and_delete_targets(target_directory, min_depth)
+```
+
+- Set `target_directory` to the path you want to scan.
+- Increase `min_depth` to avoid deleting shallow matches (for example, `min_depth = 1` will skip immediate children of the root).
+
+## Examples
+- Dry run from current directory (default):
+
+```bash
+python3 deleteNodeModules.py
+```
+
+- Dry run from a custom folder (edit `target_directory` in the file), or run it from that folder:
+
+```bash
+cd /Users/alice/projects
+python3 /path/to/deleteNodeModules.py
+```
+
+- To actually delete, edit `deleteNodeModules.py` and set `DRY_RUN = False`, then run the script. Double-check the path and `min_depth` first.
+
+## Notes & Recommendations
+- Always run the script in dry-run mode first to verify which directories it will remove.
+- Consider adding a CLI wrapper (argparse) if you'd like to toggle dry-run, set target path, and set min depth without editing the file.
+- The script removes directories using `shutil.rmtree` when `DRY_RUN` is `False` — this is irreversible.
+
+## Troubleshooting
+- If you hit permission errors, run as a user with the appropriate permissions or adjust ownership/permissions for target folders. Use caution with `sudo`.
+
+## License / Contribution
+This is a small utility — feel free to adapt it. If you'd like, I can add CLI flags (safe defaults) or a confirmation prompt before destructive runs.
