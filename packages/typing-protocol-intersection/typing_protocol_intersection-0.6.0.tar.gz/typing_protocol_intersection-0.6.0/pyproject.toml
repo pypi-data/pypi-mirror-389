@@ -1,0 +1,110 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "typing-protocol-intersection"
+version = "0.6.0"
+description = "Protocol intersection for mypy"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+free-threaded-support = true
+
+[project.urls]
+Homepage = "https://github.com/klausweiss/typing-protocol-intersection"
+"Bug Tracker" = "https://github.com/klausweiss/typing-protocol-intersection/issues"
+
+[dependency-groups]
+dev = [
+    "mypy",
+    "pylint",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "twine",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+include = ["**/*.py", "**/*.pyi", "**/py.typed"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "S",      # flake8-bandit
+    "C4",     # flake8-comprehensions
+    "DTZ",    # flake8-datetimez
+    "PIE",    # flake8-pie
+    "Q",      # flake8-quotes
+    "RET",    # flake8-return
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "S101",   # allow assert statements
+    "E501",   # some tests have too-long lines
+    "D",      # pydocstyle - no docstrings required
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_any_unimported = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+implicit_reexport = false
+no_implicit_optional = true
+show_column_numbers = true
+show_error_codes = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pylint.MASTER]
+extension-pkg-allow-list = "mypy"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = """
+    duplicate-code,
+    line-too-long,
+    missing-class-docstring,
+    missing-function-docstring,
+    missing-module-docstring,
+    no-name-in-module,
+    redefined-outer-name,
+    too-few-public-methods,
+    typevar-name-incorrect-variance,
+    """
