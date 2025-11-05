@@ -1,0 +1,128 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zpdatafetch"
+version = "1.5.0"
+description = "A package for fetching data from Zwiftpower and Zwiftracing.app"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  {name = "Doug Morris", email = "doug@mhost.com"}
+]
+keywords = ["zwift", "zwiftpower", "cycling", "racing", "data"]
+
+dependencies = [
+  "beautifulsoup4>=4.12.3",
+  "cryptography>=44.0.0",
+  # Note: httpx 0.28.0 depends on httpcore 1.1.x which has a compatibility
+  # issue with Python 3.14's typing.Union. This causes test failures on 3.14.
+  # Workaround: test_shared_client_connection_pooling is marked as xfail on 3.14.
+  # This will be resolved when httpx 0.29.0+ is released (depends on httpcore 1.2.0+).
+  "httpx>=0.28.0",
+  "keyring>=25.2.0",
+  "keyrings-alt",
+  "lxml>=5.4.0",
+  # Async support (anyio provides backend-agnostic async utilities)
+  "anyio>=4.4.0",
+]
+
+[project.optional-dependencies]
+# Optional async backends - users can choose which to install
+trio = ["trio>=0.26.0"]
+# For users who want both backends
+async-full = ["trio>=0.26.0"]
+
+[project.urls]
+Homepage = "https://github.com/puckdoug/zpdatafetch"
+Repository = "https://github.com/puckdoug/zpdatafetch"
+Issues = "https://github.com/puckdoug/zpdatafetch/issues"
+
+[project.scripts]
+zpdata = "zpdatafetch.cli:main"
+zrdata = "zrdatafetch.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["test*"]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pyenv",
+  ".pytest_cache",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "site-packages",
+  "venv",
+]
+
+line-length = 80
+indent-width = 2
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pyright]
+venv = "3.12"
+venvPath = ".."
+
+[dependency-groups]
+dev = [
+  "wheel>=0.44.0",
+  "setuptools>=73.0.1",
+  "pytest>=8.3.2",
+  "packaging>=24.1",
+  "ruff>=0.6.2",
+  "build>=1.2.1",
+  "tox>=4.31.0",
+  "pytest-cov>=4.1.0",
+  # Async testing support - trio for testing both backends
+  "trio>=0.26.0",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  # HTTPX warnings from libraries
+  "ignore:.*strip_cdata.*HTMLParser().*:DeprecationWarning",
+  "ignore:.*Setting per-request cookies=.*is being deprecated, because the expected behaviour on cookie persistence is ambiguous.*:DeprecationWarning",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py310,py311,py312,py313,py314
+
+[testenv]
+commands = pytest {posargs}
+deps =
+  pytest
+"""
