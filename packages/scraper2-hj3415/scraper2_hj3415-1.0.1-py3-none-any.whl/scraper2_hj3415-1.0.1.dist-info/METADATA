@@ -1,0 +1,66 @@
+Metadata-Version: 2.4
+Name: scraper2-hj3415
+Version: 1.0.1
+Summary: Naver WiseReport C103/C104 scraper + ingestion orchestrator
+Keywords: example,demo
+Author-email: Hyungjin Kim <hj3415@gmail.com>
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Typing :: Typed
+License-File: LICENSE
+Requires-Dist: logging-hj3415>=0.1
+Requires-Dist: httpx>=0.28
+Requires-Dist: tenacity>=9.1
+Requires-Dist: playwright>=1.55
+Requires-Dist: pandas>=2.3
+Requires-Dist: tabulate>=0.9
+Requires-Dist: contracts-hj3415>=0.1
+Requires-Dist: db2-hj3415>=0.1
+Requires-Dist: pytest>=8 ; extra == "dev"
+Requires-Dist: pytest-cov>=7.0 ; extra == "dev"
+Requires-Dist: pytest-asyncio>=1.2 ; extra == "dev"
+Requires-Dist: ruff>=0.5 ; extra == "dev"
+Requires-Dist: mypy>=1.10 ; extra == "dev"
+Provides-Extra: dev
+
+## 단일 종목 수집 후 저장  
+  
+### 환경변수로 기본값 제어 가능  
+export SCRAPER_HEADLESS=true  
+export SCRAPER_SINK_CHUNK=1000  
+  
+### Mongo 연결은 db2-hj3415 쪽 init 로직이 CLI 내부에 있다면, 옵션 또는 env로 지정  
+export MONGO_URI="mongodb://localhost:27017"  
+export MONGO_DB="nfs_db"  
+  
+### 삼성전자: c103 + c104 모두 저장  
+scraper2 ingest one 005930 --pages c103 c104
+
+### 예: 저장하지 않고 번들만 수집  
+
+scraper2 ingest one 005930 --pages c103 c104 --no-save --collect-only
+
+#### 가능 옵션:  
+    •  --pages c103 c104 : 처리할 페이지 선택  
+    •  --save/--no-save : DB 저장 여부(defalut --save)
+    •  --collect-only : 수집만 하고 저장하지 않음(defalut False)
+
+---
+
+## 여러 종목 동시 수집  
+  
+### 쉼표 구분  
+scraper2 ingest many 005930,000660 --pages c103 c104 --concurrency 2 
+  
+### 파일 입력 (한 줄에 하나)  
+scraper2 ingest many --file ./codes.txt --pages c103 c104 --concurrency 3  
+
+---
+
+## 헬스체크/버전  
+  
+scraper2 health  
+scraper2 version  
+
