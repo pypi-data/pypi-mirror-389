@@ -1,0 +1,35 @@
+Metadata-Version: 2.4
+Name: ros-rmw-fastrtps-cpp
+Version: 9.3.3
+Summary: A ROS package implementing the middleware interface with eProsima Fast DDS using static C++ code generation.
+Description-Content-Type: text/markdown
+Requires-Dist: ros-rosidl-dynamic-typesupport~=0.3.1
+Requires-Dist: ros-rosidl-runtime-c~=4.9.5
+Requires-Dist: ros-fastcdr~=2.3.3
+Requires-Dist: ros-rmw~=7.8.2
+Requires-Dist: ros-rosidl-dynamic-typesupport-fastrtps~=0.4.1
+Requires-Dist: ros-rcpputils~=2.13.5
+Requires-Dist: ros-rcutils~=6.9.8
+Requires-Dist: ros-rmw-fastrtps-shared-cpp~=9.3.3
+Requires-Dist: ros-rosidl-typesupport-fastrtps-c~=3.8.1
+Requires-Dist: ros-rosidl-typesupport-fastrtps-cpp~=3.8.1
+Requires-Dist: ros-rosidl-runtime-cpp~=4.9.5
+Requires-Dist: ros-rmw-dds-common~=4.0.0
+Requires-Dist: ros-tracetools~=8.6.0
+Requires-Dist: ros-fastdds~=3.2.3
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-dist
+Dynamic: summary
+
+Built using https://github.com/ycheng517/ros-python-wheels.
+
+# `rmw_fastrtps_cpp`
+
+`rmw_fastrtps_cpp` implements the ROS middleware interface using eProsima Fast DDS static code generation in C++.
+
+For more information see the repository level [README](../README.md)
+
+## Quality Declaration
+
+This package claims to be in the **Quality Level 2** category, see the [Quality Declaration](QUALITY_DECLARATION.md) for more details.
