@@ -1,0 +1,22 @@
+Metadata-Version: 2.4
+Name: dctag
+Version: 0.8.0
+Summary: Annotate .rtdc files for machine-learning training in deformability cytometry
+Author: Eoghan O'Connell, Maximilian Schlögel, Paul Müller, Shada Abuhattum
+Maintainer-email: Paul Müller <dev@craban.de>
+License-Expression: GPL-3.0-or-later
+Project-URL: source, https://github.com/DC-analysis/DCTag
+Project-URL: tracker, https://github.com/DC-analysis/DCTag/issues
+Project-URL: changelog, https://github.com/DC-analysis/DCTag/blob/main/CHANGELOG
+Keywords: RT-DC,DC,deformability,cytometry,machine-learning
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Science/Research
+Requires-Python: <4,>=3.10
+License-File: LICENSE
+Requires-Dist: dclab>=0.67.1
+Requires-Dist: h5py>=3.0.0
+Requires-Dist: numpy>=1.21
+Requires-Dist: pyqt5
+Requires-Dist: pyqtgraph==0.13.7
+Dynamic: license-file
