@@ -1,0 +1,33 @@
+{
+    "root": "..",
+    "version_bump": {
+        "places": {
+            "pyproject.toml": "version = \"<VERSION>\""
+        }
+    },
+    "images": {
+        "src_max": "",
+        "src_min": "",
+        "enc_max": "",
+        "enc_min": ""
+    },
+    "encryption_options": {
+        "key": "",
+        "packages": [],
+        "output": ""
+    },
+    "minideps_options": {
+        "tree_shaking_model": {
+            "search_paths": [".venv", "."],
+            "entries": [
+                ".venv/streamlit/__main__.py",
+                "run.py"
+            ],
+            "sole_export": {
+                "source": ".venv",
+                "target": ""
+            }
+        }
+    },
+    "post_script": ""
+}
