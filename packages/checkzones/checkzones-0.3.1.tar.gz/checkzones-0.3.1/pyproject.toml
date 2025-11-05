@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "checkzones"
+version = "0.3.1"
+description = "Check bind zonefiles for validity, to be used in CI/CD pipeline"
+authors = ["Alex Kelly <alex.kelly@franklin.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+rich = "^10.9.0"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^5.5"
+pyflakes = "^2.3.1"
+python-semantic-release = "^7.19.1"
+pytest = "^6.2.5"
+pylint = "^2.10.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+checkzones = 'checkzones.checkzones:main'
+
+[tool.semantic_release]
+version_variable = [
+    "pyproject.toml:version",
+    "checkzones/__init__.py:__version__",
+]
