@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "JythonMusic"
+version = "0.0.0"
+description = "A Python-based software environment for developing algorithmic art projects."
+readme = "README.md"
+license = "MIT"
+license-files = ["*LICEN[CS]E*"]
+authors = [
+	{ name = "Dr. Bill Manaris", email = "manaris@cofc.edu" },
+	{ name = "Taj Ballinger", email = "ballingertj@g.cofc.edu" },
+	{ name = "Trevor Ritchie", email = "ritchiets@g.cofc.edu" },
+]
+keywords = ["algorithmic art", "algoart", "interactive art", "creative coding", "live coding", "music", "audio", "gui", "graphics", "multimedia", "midi", "osc", "learning", "iannix", "markov", "zipf"]
+requires-python = ">=3.9"
+classifiers = [
+	"Programming Language :: Python :: 3",
+	"Operating System :: OS Independent",
+]
+dependencies = [
+   "setuptools>=69.0",
+]
+
+[tool.setuptools]
+package-dir = {}
+py-modules  = []
+
+[tool.setuptools.packages.find]
+where = []
+
+[tool.setuptools.package-data]
+"CreativePython" = []
+
+[project.urls]
+Homepage = "https://jythonmusic.me"
+
+[project.optional-dependencies]
+dev = ["build", "twine"]
