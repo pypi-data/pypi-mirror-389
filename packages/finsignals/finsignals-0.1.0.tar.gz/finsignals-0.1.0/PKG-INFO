@@ -1,0 +1,35 @@
+Metadata-Version: 2.4
+Name: finsignals
+Version: 0.1.0
+Summary: Lightweight library for financial signal generation and analysis
+Author-email: Yash Kothari <yash.kothari39@nmims.in>
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Office/Business :: Financial :: Investment
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas>=1.3
+Requires-Dist: numpy>=1.20
+Requires-Dist: matplotlib>=3.4
+Dynamic: license-file
+
+# FinSignals
+
+Lightweight Python package for generating financial signals and indicators.
+
+## Installation
+```bash
+pip install finsignals
+```
+
+## Example
+```python
+import pandas as pd
+from finsignals import indicators, preprocessing
+
+data = pd.Series([100, 101, 99, 102, 105])
+returns = preprocessing.compute_returns(data)
+mid, up, low = indicators.bollinger_bands(data)
+```
