@@ -1,0 +1,109 @@
+Metadata-Version: 2.4
+Name: dataforge-cli
+Version: 0.2.1
+Summary: A CLI for reproducible data cleaning pipelines.
+Author-email: Aditya <bit2swaz@gmail.com>
+Project-URL: Homepage, https://github.com/bit2swaz/dataforge-python
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: mysql-connector-python
+Requires-Dist: python-dotenv
+Requires-Dist: click
+Requires-Dist: scikit-learn
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+
+# DataForge CLI
+
+[![PyPI](https://img.shields.io/pypi/v/dataforge-cli.svg)](https://pypi.org/project/dataforge-cli) [![Python Version](https://img.shields.io/pypi/pyversions/dataforge-cli.svg)](#)
+
+DataForge is a local-first, Python-based CLI for building and running reproducible data-cleaning pipelines. Think of it as a "recipe book" for messy data.
+
+[![asciicast](https://asciinema.org/a/T3bVARb6ziALIl5sdZIj4gkxL.svg)](https://asciinema.org/a/T3bVARb6ziALIl5sdZIj4gkxL)
+
+
+## The Problem
+
+The status quo for data cleaning is a maze of ever-growing Jupyter notebooks and manual Excel workbooks. Each refresh of a dataset means re-running cells in the right order, copying formulas, and hoping nothing breaks. The repetition is draining, and the chance of subtle mistakes is ever present.
+
+## The Solution
+
+DataForge turns ad-hoc scripts into durable, versioned pipelines stored in MySQL. Capture each transformation step once, then rerun that exact recipe on demand—no notebook spelunking required and no manual tweaks lost to history.
+
+## Installation (The Easy Way)
+
+DataForge is published on PyPI and works great with `pipx`.
+
+```bash
+sudo apt install pipx
+pipx ensurepath
+pipx install dataforge-cli
+```
+
+## First-Time Setup (Database)
+
+1. **Provision MySQL access**
+   ```bash
+   sudo mysql
+   ```
+   ```sql
+   CREATE USER 'dataforge_user'@'localhost' IDENTIFIED BY 'your_password_here';
+   GRANT ALL PRIVILEGES ON dataforge.* TO 'dataforge_user'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
+2. **Run the interactive setup wizard** (creates `~/.dataforge.env` and initializes the schema):
+   ```bash
+   dataforge init
+   ```
+   You can re-run `dataforge init` at any time to update credentials, or use `dataforge db init` if you only need to recreate the tables.
+
+## Quick Start (Usage)
+
+```bash
+# 1. Profile your data
+dataforge profile messy_data.csv
+
+# 2. Create a pipeline
+dataforge pipeline create "my-first-cleaner"
+
+# 3. Add cleaning steps
+dataforge pipeline add "my-first-cleaner" -op "regex_replace" --params '{"column": "product_name", "pattern": "SKU-", "replace": ""}' --order 1
+dataforge pipeline add "my-first-cleaner" -op "drop_nulls" --params '{"column": "email"}' --order 2
+
+# 4. Run the pipeline!
+dataforge run "my-first-cleaner" -i "messy_data.csv" -o "clean_output.csv"
+```
+
+## Commands & Features
+
+- **`dataforge profile <filepath>`** – Generate a full CSV profile showing null counts, column types, and descriptive statistics.
+- **`dataforge init`** – Guided wizard that writes `~/.dataforge.env` and provisions the schema.
+- **`dataforge pipeline …`** – Manage cleaning recipes: `create`, `add`, `show`, `rename`, and `delete` steps stored in MySQL.
+- **`dataforge run …`** – Execute an entire pipeline in batch mode to produce a clean dataset.
+- **`dataforge run … --interactive`** – Walk through the pipeline step-by-step with a built-in Undo stack for experimentation.
+
+## Available Transformers
+
+- `op_regex_replace`
+- `op_drop_nulls`
+- `op_fill_nulls`
+- `op_rename_column`
+- `op_drop_column`
+- `op_change_type`
+- `op_scale_minmax`
+- `op_one_hot_encode`
+
+## Development & Running Tests
+
+```bash
+git clone https://github.com/bit2swaz/dataforge-python.git
+cd dataforge-python
+python -m venv venv
+source venv/bin/activate
+pip install -e ".[dev]"
+pytest
+```
