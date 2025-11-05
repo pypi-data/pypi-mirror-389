@@ -1,0 +1,14 @@
+[project]
+name = "{{ app_name }}"
+version = "0.0.0"  # TODO: Take version from Git tag
+requires-python = ">=3.10"
+dependencies = [
+    "spacebee_commander (>=0.5.0, <1.0.0)",
+]
+
+[project.entry-points."spacebee_commander.command"]
+{{ app_name_snake }} = "{{ app_name_snake }}:get_commands"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

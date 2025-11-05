@@ -1,0 +1,104 @@
+from __future__ import annotations
+
+import struct
+import dataclasses
+{%- if has_enum %}
+import enum
+{%- endif %}
+
+from spacebee_commander.telecommand_interface import TelecommandInterface
+{%- if enums %}
+{%- for enum in enums %}
+
+class {{ enum.name }}(enum.IntEnum):
+{%- for key, value in enum.entries.items() %}
+    {{ key }} = {{ value }}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
+
+{%- if has_input_args %}
+
+@dataclasses.dataclass
+class {{ command_name }}Args:
+{%- for arg in args %}
+    {{ arg.name }}: {{ arg.type }}
+{%- endfor %}
+
+    _STRUCT_FORMAT = "{{ struct_format }}"
+
+    @classmethod
+    def pack(cls, args: {{ command_name }}Args) -> bytes:
+        """Pack a {{ command_name }}Args dataclass into raw bytes."""
+        return struct.pack(cls._STRUCT_FORMAT, *dataclasses.astuple(args))
+
+    @classmethod
+    def size(cls) -> int:
+        """Return the size in bytes of the packet."""
+        return struct.calcsize(cls._STRUCT_FORMAT)
+{%- endif %}
+
+{%- if has_output_args %}
+
+@dataclasses.dataclass
+class {{ command_name }}Response:
+{%- for field in response_fields %}
+    {{ field.name }}: {{ field.type }}
+{%- endfor %}
+
+    _STRUCT_FORMAT = "{{ response_struct_format }}"
+
+    @classmethod
+    def unpack(cls, raw: bytes) -> {{ command_name }}Response:
+        """Unpack raw bytes into a {{ command_name }}Response dataclass."""
+{%- set string_fields = response_fields | selectattr("type", "equalto", "str") | list %}
+{%- if string_fields|length == 1 and response_fields|length == 1 %}
+        (raw_{{ response_fields[0].name }},) = struct.unpack(cls._STRUCT_FORMAT, raw)
+        {{ response_fields[0].name }} = raw_{{ response_fields[0].name }}.split(b"\x00", 1)[0].strip().decode("ascii", errors="ignore")
+        return cls({{ response_fields[0].name }})
+{%- elif string_fields|length == 0 %}
+        values = struct.unpack(cls._STRUCT_FORMAT, raw)
+        return cls(*values)
+{%- else %}
+        values = struct.unpack(cls._STRUCT_FORMAT, raw)
+        decoded = []
+        for value, field in zip(values, dataclasses.fields(cls)):
+            if field.type == str:
+                decoded.append(value.split(b"\x00", 1)[0].strip().decode("ascii", errors="ignore"))
+            else:
+                decoded.append(value)
+        return cls(*decoded)
+{%- endif %}
+{%- endif %}
+
+class {{ command_name }}(TelecommandInterface):
+
+    def __init__(self):
+        self.name = "{{ command_name_snake }}"
+        self.operation = {{ operation_id }}
+        self.body = b""
+        self.body_length = 0
+
+    @classmethod
+    def get_input_type(cls){% if has_input_args %} -> type[{{ command_name }}Args]{% else %} -> None{% endif %}:
+        {%- if has_input_args %}
+        return {{ command_name }}Args
+        {%- else %}
+        return None
+        {%- endif %}
+
+    def load_input_arguments(self, args{% if has_input_args %}: {{ command_name }}Args{% else %}: None{% endif %}) -> None:
+        {%- if has_input_args %}
+        self.body = {{ command_name }}Args.pack(args)
+        self.body_length = {{ command_name }}Args.size()
+        {%- else %}
+        self.body = b""
+        self.body_length = 0
+        {%- endif %}
+
+    def parse_output_arguments(self, response: bytes){% if has_output_args %} -> {{ command_name }}Response{% else %} -> None{% endif %}:
+        {%- if has_output_args %}
+        return {{ command_name }}Response.unpack(response)
+        {%- else %}
+        return None
+        {%- endif %}
