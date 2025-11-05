@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: moat-kv-wago
+Version: 0.8.5
+Summary: 1wire connector for MoaT-KV
+Author-email: Matthias Urlichs <matthias@urlichs.de>
+Project-URL: homepage, https://m-o-a-t.org
+Project-URL: repository, https://github.com/M-o-a-T/moat
+Keywords: MoaT
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Information Technology
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Database
+Classifier: Topic :: Home Automation
+Requires-Python: >=3.8
+Description-Content-Type: text/x-rst
+License-File: LICENSE.txt
+Requires-Dist: moat-kv~=0.70.24
+Requires-Dist: asyncwago~=0.31.6
+Dynamic: license-file
+
+============
+Moat-KV-Wago
+============
+
+MoaT-KV-Wago is a link between WAGO controllers and MoaT-KV.
+
+It will
+
+* add all discovered wago ports
+
+* monitor inputs as specified
+
+* write values that it reads from them to some MoaT-KV entry
+
+* monitor a MoaT-KV entry and write any updates to wago
+
+* work with MoaT-KV's runner system, either centrally or distributed
