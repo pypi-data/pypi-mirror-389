@@ -1,0 +1,65 @@
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[project]
+name = "codemapper"
+version = "4.8.1"
+description = "A tool to generate comprehensive Markdown artifacts of directory structures and file contents"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Shane Holloman", email = "shaneholloman@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+keywords = ["codemapper", "markdown", "directory", "file contents"]
+dependencies = [
+  "chardet",
+  "pathspec",
+]
+[project.urls]
+"Homepage" = "https://github.com/shaneholloman/codemapper"
+
+[project.scripts]
+codemapper = "codemapper.cli:main"
+
+[project.optional-dependencies]
+dev = [
+  "ruff",
+  "ty",
+  "pytest",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+]
