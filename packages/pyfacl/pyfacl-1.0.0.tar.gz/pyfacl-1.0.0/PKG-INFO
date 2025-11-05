@@ -1,0 +1,65 @@
+Metadata-Version: 2.3
+Name: pyfacl
+Version: 1.0.0
+Summary: Package to manage access control using POSIX ACLs
+License: MIT
+Author: tobiaspk
+Author-email: tobiaspk1@gmail.com
+Requires-Python: >=3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Provides-Extra: dev
+Requires-Dist: black (>=23.0.0) ; extra == "dev"
+Requires-Dist: flake8 (>=6.0.0) ; extra == "dev"
+Requires-Dist: isort (>=5.12.0) ; extra == "dev"
+Requires-Dist: pre-commit (>=3.0.0) ; extra == "dev"
+Requires-Dist: pytest (>=7.0.0) ; extra == "dev"
+Description-Content-Type: text/markdown
+
+# PyFACL
+
+A Python library for parsing and checking POSIX File Access Control Lists (FACL).
+
+## Installation
+
+### From PyPI
+```bash
+pip install pyfacl
+```
+
+## Usage
+
+```python
+from pyfacl import FACL
+
+# Initialize and parse FACL for a file/directory
+facl = FACL()
+facl.parse("/path/to/file")
+
+# Check permissions with different modes
+facl.has_permission("user:username:r-x", mode="exact")     # exact match
+facl.has_permission("user:username:r--", mode="at_least") # has at least read
+facl.has_permission("user:username:rwx", mode="at_most")  # has at most rwx
+```
+
+### Permission Modes
+
+- **`exact`**: Permissions must match exactly
+- **`at_least`**: Must have at least the specified permissions
+- **`at_most`**: Must have at most the specified permissions
+
+## Development
+
+### Setup Development Environment
+```bash
+pip install -e ".[dev]"
+pre-commit install
+```
+
+### Run Pre-commit Checks
+```bash
+pre-commit run --all-files
+```
+
