@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "ash-dal"
+version = "0.4.0"
+description = "The library provides a standardized way to connect to DB, and Base DAO class implementation"
+authors = ["Dmitry Marchuk <dmarchuk@remedypointsolutions.com>"]
+readme = "README.md"
+packages = [{include = "ash_dal"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+SQLAlchemy = "^2.0.44"
+pymysql = "^1.1.2"
+aiomysql = "^0.3.0"
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.407"
+ruff = "^0.14.3"
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+ipython = "^8.14.0"
+faker = "^37.12.0"
+parameterized = "^0.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+line-length = 120
+src = ["src"]
+extend-exclude = ["tests"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "N818",
+    "RET504",
+    "S311",
+    "COM812",
+    "ISC001",
+    "D",
+    "FBT",
+    "ANN401",
+    "ANN202",
+    "BLE001",
+    "FAST003",
+    "S324",
+    "PLR0911"
+]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+preview = true
+docstring-code-format = true
+docstring-code-line-length = 120
+
+[tool.pyright]
+typeCheckingMode = "strict"
+ignore = [
+    "tests/*"
+]
+executionEnvironments = [
+  { root = "./src" }
+]
