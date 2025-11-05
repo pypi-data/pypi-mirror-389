@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sphinx-deck"
+description = "Sphinx extension to generate Markdown for k1LoW/deck from Sphinx documentation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT License" }
+authors = [{ name = "nikkie", email = "takuyafjp+develop@gmail.com" }]
+keywords = ["Sphinx", "k1LoW/deck"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Framework :: Sphinx",
+    "Framework :: Sphinx :: Extension",
+    "Topic :: Documentation",
+    "Topic :: Documentation :: Sphinx",
+    "Topic :: Software Development :: Documentation",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dynamic = ["version"]
+dependencies = ["sphinx-markdown-builder", "sphinxcontrib-extdevhelper-kasane"]
+
+[project.urls]
+Repository = "https://github.com/ftnext/sphinx-deck"
+
+[tool.setuptools.dynamic]
+version = { attr = "sphinx_deck.__version__" }
+
+[tool.ruff]
+extend-exclude = ["tests/roots", "example"]
