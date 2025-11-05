@@ -1,0 +1,468 @@
+Metadata-Version: 2.4
+Name: celery-mongobeat
+Version: 0.1.18
+Summary: A Celery Beat scheduler that stores the schedule in MongoDB.
+Author-email: William Thomas <52611686+sockmysox@users.noreply.github.com>
+License:                                  Apache License
+                                   Version 2.0, January 2004
+                                http://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright [yyyy] [name of copyright owner]
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               http://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
+        
+Project-URL: Homepage, https://github.com/sockmysox/celery-mongobeat
+Project-URL: Bug Tracker, https://github.com/sockmysox/celery-mongobeat/issues
+Keywords: celery,beat,scheduler,mongodb,mongo
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: celery>=5.0
+Requires-Dist: pymongo>=3.12
+Provides-Extra: test
+Requires-Dist: ephem; extra == "test"
+Requires-Dist: mongomock; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Dynamic: license-file
+
+# Celery-MongoBeat
+
+<!--
+[![PyPI Version](https://img.shields.io/pypi/v/celery-mongobeat.svg)](https://pypi.org/project/celery-mongobeat/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/celery-mongobeat)](https://pypi.org/project/celery-mongobeat)
+[![License](https://img.shields.io/pypi/l/celery-mongobeat.svg)](https://opensource.org/licenses/Apache-2.0)
+-->
+
+A modern, drop-in replacement for `celerybeat-mongo`. This project provides a Celery Beat scheduler that stores and retrieves task schedules from a MongoDB collection, allowing for dynamic management of periodic tasks without restarting the Celery Beat service.
+
+## Why `celery-mongobeat`?
+
+The original `celerybeat-mongo` library is no longer actively maintained and contains several critical bugs. This project was created to provide a stable, reliable, and modern alternative for the community, ensuring continued support for dynamic, database-backed Celery schedules.
+
+## Features
+
+- **Stable and Reliable**: Fixes critical bugs from `celerybeat-mongo`, such as the issue where disabling one task would prevent all tasks from running.
+- **Dynamic Task Management**: Add, modify, and remove periodic tasks on the fly without restarting the beat service.
+- **MongoDB Backend**: Leverages MongoDB for a robust and scalable schedule store.
+- **Fine-Grained Control**:
+  - **Run Count Limiting**: Use `max_run_count` to run a task a specific number of times and then automatically disable it.
+- **Flexible Configuration**: Full support for advanced `pymongo.MongoClient` options (like SSL) via `mongodb_scheduler_client_kwargs`.
+- **Backwards Compatible**: Supports legacy configuration variables from `celerybeat-mongo` for a smoother transition.
+- **Modern Tooling**: Built with a modern Python packaging structure (`pyproject.toml`).
+- **All Schedule Types**: Natively supports `interval`, `crontab`, and `solar` schedules.
+
+## Installation
+
+Install the package from PyPI:
+
+```bash
+pip install celery-mongobeat
+```
+
+## Configuration
+
+To use this scheduler, set the `beat_scheduler` option in your Celery configuration.
+
+### Recommended Configuration
+
+```python
+# celeryconfig.py
+
+mongodb_scheduler_url = "mongodb://localhost:27017/"
+mongodb_scheduler_db = "celery"
+mongodb_scheduler_collection = "schedules"
+
+beat_scheduler = "celery_mongobeat.beat:MongoScheduler"
+```
+
+## Migrating from `celerybeat-mongo`
+
+`celery-mongobeat` is designed as a near drop-in replacement, but there is one important configuration change you must make when migrating:
+
+*   **Update the Scheduler Path**: The import path for the scheduler has been updated to align with modern package structures and Celery best practices.
+
+You must change your `beat_scheduler` setting from:
+`'celerybeat_mongo.schedulers.MongoScheduler'` (the old path)
+to:
+`'celery_mongobeat.beat:MongoScheduler'` (the new path)
+```
+
+### Legacy (Backwards-Compatible) Configuration
+
+If you are migrating from `celerybeat-mongo`, this library provides backward compatibility for the uppercase configuration variables. Modern, lowercase settings (e.g., `mongodb_scheduler_url`) will always take precedence.
+
+```python
+# celeryconfig.py
+
+# Legacy uppercase individual settings (from celerybeat-mongo)
+CELERY_MONGODB_SCHEDULER_URL = "mongodb://localhost:27017/"
+CELERY_MONGODB_SCHEDULER_DB = "celery"
+CELERY_MONGODB_SCHEDULER_COLLECTION = "schedules"
+
+beat_scheduler = "celery_mongobeat.beat:MongoScheduler"
+```
+
+## Usage
+
+Once configured, start Celery Beat as you normally would:
+
+```bash
+celery -A your_app beat -l info
+```
+
+You can now manage your schedules by adding, updating, or removing documents in the configured MongoDB collection.
+
+## Programmatic Usage Example
+
+For users who prefer a programmatic API over manually inserting documents into MongoDB, `celery-mongobeat` provides a convenient `ScheduleManager` helper class.
+
+This allows you to easily create, update, and disable tasks from within your application code.
+
+### Example Usage
+
+```python
+# In your application code (e.g., a Flask view, Django management command, etc.)
+from celery_mongobeat.helpers import ScheduleManager
+
+# Get a manager instance. This automatically finds the current Celery app
+# and uses its configuration to connect to MongoDB.
+manager = ScheduleManager.from_celery_app()
+
+# Example: Create a task to run every 30 seconds
+task_doc = manager.create_interval_task(
+    name='my-periodic-task',
+    task='your_project.tasks.some_task',
+    every=30,
+    period='seconds',
+    args=[1, 2, 3]
+)
+print(f"Upserted task '{task_doc['name']}' with ID: {task_doc['_id']}")
+
+# Example: Create a task with a description and other custom fields
+manager.create_crontab_task(
+    name='daily-report',
+    task='your_project.tasks.generate_report',
+    minute='0',
+    hour='4',  # Run at 4:00 AM daily
+    description='This is a custom description for the daily report task.',
+    owner='data-science-team',  # Custom field
+    version='1.2'               # Custom field
+)
+
+# Example: Create a task that runs 5 times and then stops
+manager.create_interval_task(
+    name='run-five-times-task',
+    task='your_project.tasks.some_task',
+    every=60,
+    period='seconds',
+    max_run_count=5
+)
+print("Upserted task 'run-five-times-task' that will run 5 times.")
+
+# Example: Retrieve a task by its name or ID
+task_by_name = manager.get_task(name='my-periodic-task')
+task_by_id = manager.get_task(id=task_doc['_id'])
+print(f"Retrieved task '{task_by_name['name']}' by name.")
+print(f"Retrieved task '{task_by_id['name']}' by ID.")
+
+# Example: Update an existing task's description
+updated_task = manager.update_task(name='daily-report', description='This is the new description.')
+if updated_task:
+    print(f"Updated task '{updated_task['name']}' with new description: {updated_task['description']}")
+
+# Example: Disable a task (the task remains in the database)
+manager.disable_task(name='my-periodic-task')
+print("Disabled task 'my-periodic-task'.")
+
+# Example: Delete a task (the task is permanently removed)
+manager.delete_task(id=task_doc['_id'])
+print(f"Deleted task with ID: {task_doc['_id']}")
+
+# Example: Get all remaining enabled tasks
+remaining_tasks = manager.get_tasks(enabled=True)
+print(f"\nFound {len(remaining_tasks)} remaining enabled tasks:")
+for task in remaining_tasks:
+    print(f" - {task['name']} (ID: {task['_id']})")
+
+### Creating Tasks from a Dictionary
+
+The `create_*_task` methods are designed to be flexible. You can use Python's keyword argument unpacking (`**`) to create tasks from a dictionary. This is especially useful when processing data from an API or another data source.
+
+Any keys in the dictionary that do not match a defined method parameter (like `name`, `task`, `every`, etc.) will be saved as custom fields in the task document.
+
+```python
+# Example data that might come from a web form or API
+task_data = {
+    'name': 'api-created-task',
+    'task': 'your_project.tasks.process_data',
+    'every': 15,
+    'period': 'minutes',
+    'args': [12345],
+    'description': 'Process data from the API.',
+    'owner': 'api-service',          # This will be saved as a custom field
+    'request_id': 'xyz-789'          # This will also be saved
+}
+
+task_doc = manager.create_interval_task(**task_data)
+print(f"Successfully created task from dictionary with ID: {task_doc['_id']}")
+```
+
+```
+
+### Advanced Usage: Subclassing and Direct Database Access
+
+The `ScheduleManager` is designed to be a flexible base. For more complex applications, it is highly recommended to subclass it to create a domain-specific API for your tasks. This encapsulates your application's scheduling logic, making your code cleaner and more maintainable.
+ 
+**1. Subclassing `ScheduleManager`**
+
+```python
+# In your_app/scheduling.py
+
+from celery_mongobeat.helpers import ScheduleManager
+
+class AppScheduleManager(ScheduleManager):
+    """A custom manager for our application's specific tasks."""
+
+    def create_user_report_task(self, user_id: int):
+        """Creates a recurring daily report for a specific user."""
+        task_name = f"user-report-{user_id}"
+        super().create_crontab_task(
+            name=task_name,
+            task='your_app.tasks.generate_report',
+            kwargs={'user_id': user_id},
+            minute='0',  # At the start of the hour
+            hour='3'     # At 3 AM
+        )
+        print(f"Scheduled daily report for user {user_id}.")
+
+# In your application code, you can now use this custom manager:
+# from celery import current_app
+# from your_app.scheduling import AppScheduleManager
+
+# app = current_app._get_current_object()
+# app_manager = AppScheduleManager.from_celery_app(app)
+# app_manager.create_user_report_task(user_id=123)
+```
+
+**2. Direct Database Access**
+
+For advanced queries, such as MongoDB aggregation pipelines, you can and should use the `pymongo` collection object that you used to initialize the manager. This gives you the full power of `pymongo` for any use case not directly covered by the helper.
+
+You can access the collection object directly from the manager instance:
+
+```python
+# schedules_collection = manager.collection
+
+# For example, to find the most common task paths using an aggregation:
+pipeline = [
+    {"$group": {"_id": "$task", "count": {"$sum": 1}}},
+    {"$sort": {"count": -1}}
+]
+# most_common_tasks = list(schedules_collection.aggregate(pipeline))
+print("Most common tasks:", most_common_tasks)
+```
