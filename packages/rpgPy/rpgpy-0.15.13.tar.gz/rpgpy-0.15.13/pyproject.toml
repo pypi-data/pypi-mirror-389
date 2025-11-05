@@ -1,0 +1,88 @@
+[build-system]
+requires = ["Cython", "setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpgPy"
+description = "Cython code for reading binary files from RPG cloud radar."
+authors = [{name = "Simo Tukiainen", email = "simo.tukiainen@fmi.fi"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = ["cython", "netCDF4", "numpy", "tqdm"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+full = ["numba"]
+test = [
+  "mypy",
+  "pytest-flakefinder",
+  "types-tqdm",
+]
+dev = ["pre-commit", "release-version"]
+
+[project.urls]
+Homepage = "https://github.com/actris-cloudnet/rpgpy"
+Repository = "https://github.com/actris-cloudnet/rpgpy"
+Changelog = "https://github.com/actris-cloudnet/rpgpy/blob/main/CHANGELOG.md"
+
+[tool.mypy]
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["Cython.Build", "netCDF4", "numba", "rpgpy.data", "setuptools"]
+ignore_missing_imports = true
+
+[tool.release-version]
+filename = "rpgpy/version.py"
+pattern = ["MAJOR = (?P<major>\\d+)", "MINOR = (?P<minor>\\d+)", "PATCH = (?P<patch>\\d+)"]
+changelog = "CHANGELOG.md"
+
+[tool.ruff]
+extend-select = ["I"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "ANN", # missing types, use mypy for this
+  "C9", # too complex, fix me later
+  "COM812", # Formatting
+  "D", # documentation
+  "DTZ00", # do not check timezone info
+  "FIX002", # TODOs
+  "INP",
+  "ISC001", # Formatter wants me
+  "N8", # uppercase variable names
+  "PD011", # false positive
+  "PERF", # try except in loop
+  "PLR", # too many arguments etc.
+  "PTH", # use pathlib, fix me later
+  "RUF002", # unicode in doc string
+  "S101", # use assert
+  "S60",
+  "TD002", # TODOs
+  "TD003", # TODOs
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.setuptools]
+packages = ["rpgpy"]
+
+[tool.setuptools.dynamic]
+version = {attr = "rpgpy.version.__version__"}
+
+[tool.tomlsort]
+trailing_comma_inline_array = true
+sort_inline_arrays = true

@@ -1,0 +1,16 @@
+cython
+netCDF4
+numpy
+tqdm
+
+[dev]
+pre-commit
+release-version
+
+[full]
+numba
+
+[test]
+mypy
+pytest-flakefinder
+types-tqdm
