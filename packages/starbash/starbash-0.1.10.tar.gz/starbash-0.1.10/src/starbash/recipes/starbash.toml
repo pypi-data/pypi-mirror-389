@@ -1,0 +1,59 @@
+[repo]
+kind = "repo"
+
+# recipes for generating master flats, bias, darks...
+[[repo-ref]]
+dir = "master_bias"
+[[repo-ref]]
+dir = "master_dark"
+[[repo-ref]]
+dir = "master_flat"
+
+# Note: For automated recipe finding, it is important to list more demanding recipes first.  For instance:
+# osc_dual_duo (which needs a HaOiii and a SiiOiii filter) should be listed first, so that if we see
+# dataset containing both HaOiii and SiiOiii filters we will assume that is the recipe to use.
+#
+# But later if we see a dataset containing only HaOiii data, assume osc_single_duo should be used.
+
+[[repo-ref]]
+dir = "osc_dual_duo"
+
+[[repo-ref]]
+dir = "osc_single_duo"
+
+# processing stages, currently all declared here, but possibly in the future they could be added by user/other toml files
+
+# Not included in standard list - for now we run manually
+#[[stages]]
+#name = "setup-masters" # for flat processing, master generation etc
+#priority = 5
+
+#
+# master specific stages
+#
+[[master-stages]]
+name = "setup.master.bias" # generate master bias frames
+priority = 10
+
+[[master-stages]]
+name = "setup.master.dark" # generate master bias frames
+priority = 10
+
+[[master-stages]]
+name = "setup.master.flat" # generate master flat frames
+priority = 20
+
+#
+# session specific processing stages
+#
+[[stages]]
+name = "session.config" # for flat processing, master generation etc
+priority = 10
+
+[[stages]]
+name = "session.light" # generate light frames from lights and with reference to flats/bias
+priority = 20
+
+[[stages]]
+name = "session.stack" # stack frames
+priority = 30
