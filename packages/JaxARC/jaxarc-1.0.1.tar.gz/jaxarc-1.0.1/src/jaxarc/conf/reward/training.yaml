@@ -1,0 +1,8 @@
+# Training-optimized reward configuration
+# Designed for efficient multi-demonstration training with step-by-step feedback
+
+# Basic reward settings optimized for training
+step_penalty: -0.005 # Smaller penalty to encourage exploration
+success_bonus: 10.0 # Higher success bonus for motivation
+unsolved_submission_penalty: -1.0 # Penalty for submitting an unsolved task to prevent reward hacking.
+similarity_weight: 1.0
