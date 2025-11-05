@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "async-lambda-unstable"
+dynamic = ["version"]
+readme = "README.md"
+authors = [{ name = "Nuclei, Inc", email = "engineering@nuclei.ai" }]
+description = "A framework for creating AWS Lambda Async Workflows. - Unstable Branch"
+dependencies = ["click>=8.0.0", "typing-extensions>=4.0.0"]
+
+[project.optional-dependencies]
+local = ["boto3", "flask>=2.3.0,<3.0.0"]
+
+[project.scripts]
+async-lambda = "async_lambda.cli:cli"
+
+# Version from __version__ in your package (replacement for setuptools dynamic attr)
+[tool.hatch.version]
+path = "async_lambda/__init__.py"
+
+# Replacement for setuptools package-data (MANIFEST.in not used)
+[tool.hatch.build]
+include = ["async_lambda/py.typed"]
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-n auto"
+testpaths = ["test"]
+log_cli_level = "info"
+log_cli = true
+
+[tool.coverage.report]
+exclude_lines = ["pragma: not covered", "@overload"]
+show_missing = true
