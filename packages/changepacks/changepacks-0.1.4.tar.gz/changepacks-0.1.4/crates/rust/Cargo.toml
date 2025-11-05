@@ -1,0 +1,13 @@
+[package]
+name = "rust"
+version = "0.1.1"
+edition = "2024"
+
+[dependencies]
+toml = "0.9"
+changepacks-core = { path = "../core" }
+utils = { path = "../utils" }
+anyhow = "1.0"
+tokio = { version = "1.48", features = ["fs"] }
+async-trait = "0.1"
+toml_edit = "0.23"

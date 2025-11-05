@@ -1,0 +1,20 @@
+[package]
+name = "cli"
+version = "0.1.1"
+edition = "2024"
+
+[dependencies]
+nanoid = "0.4"
+clap = { version = "^4", features = ["derive"] }
+utils = { path = "../utils" }
+changepacks-core = { path = "../core" }
+node = { path = "../node" }
+rust = { path = "../rust" }
+python = { path = "../python" }
+dart = { path = "../dart" }
+anyhow = "1.0"
+inquire = "0.9"
+colored = "3"
+serde_json = "1.0"
+tokio = { version = "1.48", features = ["fs"] }
+futures = "0.3"
