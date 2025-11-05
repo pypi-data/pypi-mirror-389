@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pybwa-lite"
+version = "0.1.2"
+description = "A lightweight Python implementation of the Burrows–Wheeler Aligner (BWA) with FM-index and multithreaded alignment."
+readme = "README.md"
+authors = [
+  { name = "Soumyapriya Goswami", email = "soumyapriya.goswami.it2023@kgec.ac.in" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+dependencies = ["numpy>=1.20", "tqdm>=4.60", "pysam>=0.22"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://github.com/soumyapriyagoswami/pybwa"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pybwa_lite"]
+
+[tool.setuptools]
+package-dir = {"" = "."}
