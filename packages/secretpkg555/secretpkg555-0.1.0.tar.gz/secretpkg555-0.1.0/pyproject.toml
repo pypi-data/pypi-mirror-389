@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secretpkg555"
+version = "0.1.0"
+description = "简单的1+1计算包"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "None555", email = "none555@example.com"}
+]
+
+[tool.setuptools]
+packages = ["secretpkg555"]
+
+[tool.setuptools.package-data]
+secretpkg555 = ["*.pyd", "*.so"]
+
+# 排除源码
+[tool.setuptools.exclude-package-data]
+secretpkg555 = ["core_logic.py"]
+
+# 自定义配置
+[tool.nuitka-build]
+modules = ["secretpkg555/core_logic.py"]
+remove-source = true
