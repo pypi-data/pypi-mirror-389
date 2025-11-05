@@ -1,0 +1,26 @@
+# Include documentation and license files
+include README.md
+include LICENSE
+include CLAUDE.md
+include MCP_PLAN.md
+
+# Include all CSV data files from both external and package-internal directories
+recursive-include references *.csv *.md
+recursive-include data *.csv
+recursive-include src/bunduk_mcp/references *.csv *.md
+recursive-include src/bunduk_mcp/data *.csv
+
+# Include package configuration
+include MANIFEST.in
+include pyproject.toml
+
+# Exclude development and cache files
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+exclude .gitignore
+exclude .pytest_cache
+exclude .coverage
+exclude htmlcov
+exclude build
+exclude dist
+exclude *.egg-info
