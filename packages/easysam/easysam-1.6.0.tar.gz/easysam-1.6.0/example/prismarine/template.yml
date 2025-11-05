@@ -1,0 +1,140 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  MyAppWithPrismarine
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+Globals:
+  Function:
+    Runtime: python3.13
+    Handler: index.handler
+    Architectures:
+      - x86_64
+    Timeout: 30
+    Environment:
+      Variables:
+        ENV: !Ref Stage
+  Api:
+    Cors:
+      AllowOrigin: "'*'"
+      AllowHeaders: "'*'"
+      AllowMethods: "'*'"
+      AllowCredentials: False
+Resources:
+    # end paths
+  # Streams
+    # end streams 
+  # Tables
+  GatewayDynamoRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+      Policies:
+        - PolicyName: APIGatewayDynamoDBPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:GetItem'
+## Todo: provide only required resources list
+                Resource: '*'
+    # end tables
+  # Queues
+    # end queues
+  # Streams
+    # end streams
+  # Buckets
+    # end buckets
+  # Queues
+    # end queues
+  # Tables
+  MyAppWithPrismarineItem:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub MyAppWithPrismarineItem-${Stage}
+      AttributeDefinitions:
+        - AttributeName: Foo
+          AttributeType: S
+        - AttributeName: Bar
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Foo
+          KeyType: HASH
+        - AttributeName: Bar
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+        RecoveryPeriodInDays: 14
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+    # end tables
+  # Lambda Layer
+  PythonLambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub myappwithprismarine-pythonthirdparty-${Stage}
+      Description: Dependencies for all python lambdas
+      ContentUri: thirdparty/.
+      CompatibleRuntimes:
+        - python3.13
+    Metadata:
+      BuildMethod: python3.13
+      BuildArchitecture: x86_64
+    # end lambda layer
+  # Functions
+  itemloggerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "itemlogger-${Stage}"
+      CodeUri: backend/function/itemlogger
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*
+        - SSMParameterReadPolicy:
+            ParameterName: "*"
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MyAppWithPrismarineItem
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:ListStreams
+              Resource: !GetAtt MyAppWithPrismarineItem.StreamArn
+      Layers:
+        # Common layer
+        - !Ref PythonLambdaLayer
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+      Events:
+    # end functions
+  # DynamoDB Stream Event Source Mappings (from table definitions)
+  ItemStreamEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    DependsOn:
+      - itemloggerFunction
+      - MyAppWithPrismarineItem
+    Properties:
+      EventSourceArn: !GetAtt MyAppWithPrismarineItem.StreamArn
+      FunctionName: !GetAtt itemloggerFunction.Arn
+      StartingPosition: LATEST
+    # end stream event source mappings
+  # Search
+    # end search

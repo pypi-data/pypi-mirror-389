@@ -1,0 +1,8 @@
+lambda:
+  name: indexfunc
+  resources:
+    tables:
+      - SearchableItem
+    searches:
+      # This is the default search index and can be omitted
+      - searchable

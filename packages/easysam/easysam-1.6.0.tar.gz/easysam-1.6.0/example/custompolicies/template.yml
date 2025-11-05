@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  cpol
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+Globals:
+  Function:
+    Runtime: python3.13
+    Handler: index.handler
+    Architectures:
+      - x86_64
+    Timeout: 30
+    Environment:
+      Variables:
+        ENV: !Ref Stage
+  Api:
+    Cors:
+      AllowOrigin: "'*'"
+      AllowHeaders: "'*'"
+      AllowMethods: "'*'"
+      AllowCredentials: False
+Resources:
+    # end paths
+  # Streams
+    # end streams 
+  # Tables
+    # end tables
+  # Queues
+  GatewaySQSRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: AllowSqsIntegration
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'sqs:SendMessage'
+                - 'sqs:GetQueueUrl'
+                - 'sqs:SendMessageBatch'
+              Resource: '*'
+        # end authorizers
+    # end queues
+  # Streams
+    # end streams
+  # Buckets
+    # end buckets
+  # Queues
+  cpolnotifyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "cpol-notify-${Stage}"
+  cpolnotifyQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref cpolnotifyQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt cpolnotifyQueue.Arn
+            Principal:
+              AWS: "arn:aws:iam::123456789012:root"
+          - Effect: Allow
+            Action: ["sqs:ReceiveMessage", "sqs:DeleteMessage"]
+            Resource: !GetAtt cpolnotifyQueue.Arn
+            Principal:
+              AWS: "arn:aws:iam::123456789012:root"
+    # end queues
+  # Tables
+    # end tables
+  # Lambda Layer
+  PythonLambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub cpol-pythonthirdparty-${Stage}
+      Description: Dependencies for all python lambdas
+      ContentUri: thirdparty/.
+      CompatibleRuntimes:
+        - python3.13
+    Metadata:
+      BuildMethod: python3.13
+      BuildArchitecture: x86_64
+    # end lambda layer
+  # Functions
+  myfunctionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "myfunction-${Stage}"
+      CodeUri: backend/function/myfunction
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*
+        - SSMParameterReadPolicy:
+            ParameterName: "*"
+      Layers:
+        # Common layer
+        - !Ref PythonLambdaLayer
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+      Events:
+    # end functions
+  # DynamoDB Stream Event Source Mappings (from table definitions)
+    # end stream event source mappings
+  # Search
+    # end search

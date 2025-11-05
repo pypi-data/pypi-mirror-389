@@ -1,0 +1,271 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Aoss
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+Globals:
+  Function:
+    Runtime: python3.13
+    Handler: index.handler
+    Architectures:
+      - x86_64
+    Timeout: 30
+    Environment:
+      Variables:
+        ENV: !Ref Stage
+  Api:
+    Cors:
+      AllowOrigin: "'*'"
+      AllowHeaders: "'*'"
+      AllowMethods: "'*'"
+      AllowCredentials: False
+Resources:
+    # end paths
+  # Streams
+    # end streams 
+  # Tables
+  GatewayDynamoRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+      Policies:
+        - PolicyName: APIGatewayDynamoDBPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:GetItem'
+## Todo: provide only required resources list
+                Resource: '*'
+    # end tables
+  # Queues
+    # end queues
+  # Streams
+    # end streams
+  # Buckets
+    # end buckets
+  # Queues
+    # end queues
+  # Tables
+  AossSearchableItem:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub AossSearchableItem-${Stage}
+      AttributeDefinitions:
+        - AttributeName: ItemID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ItemID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+        RecoveryPeriodInDays: 14
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+    # end tables
+  # Lambda Layer
+  PythonLambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub aoss-pythonthirdparty-${Stage}
+      Description: Dependencies for all python lambdas
+      ContentUri: thirdparty/.
+      CompatibleRuntimes:
+        - python3.13
+    Metadata:
+      BuildMethod: python3.13
+      BuildArchitecture: x86_64
+    # end lambda layer
+  # Functions
+  indexfuncFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "indexfunc-${Stage}"
+      CodeUri: backend/function/indexfunc
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*
+        - SSMParameterReadPolicy:
+            ParameterName: "*"
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AossSearchableItem
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:ListStreams
+              Resource: !GetAtt AossSearchableItem.StreamArn
+        - Version: "2012-10-17"
+          Statement:
+          - Effect: Allow
+            Action:
+              - aoss:*
+            Resource:
+              - !GetAtt searchableCollection.Arn
+      Layers:
+        # Common layer
+        - !Ref PythonLambdaLayer
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+          SEARCH_SEARCHABLE_COLLECTION_ID: !GetAtt searchableCollection.Id
+      Events:
+  searchfuncFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "searchfunc-${Stage}"
+      CodeUri: backend/function/searchfunc
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*
+        - SSMParameterReadPolicy:
+            ParameterName: "*"
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AossSearchableItem
+        - Version: "2012-10-17"
+          Statement:
+          - Effect: Allow
+            Action:
+              - aoss:*
+            Resource:
+              - !GetAtt searchableCollection.Arn
+      Layers:
+        # Common layer
+        - !Ref PythonLambdaLayer
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+          SEARCH_SEARCHABLE_COLLECTION_ID: !GetAtt searchableCollection.Id
+      Events:
+    # end functions
+  # DynamoDB Stream Event Source Mappings (from table definitions)
+  SearchableItemStreamEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    DependsOn:
+      - indexfuncFunction
+      - AossSearchableItem
+    Properties:
+      EventSourceArn: !GetAtt AossSearchableItem.StreamArn
+      FunctionName: !GetAtt indexfuncFunction.Arn
+      StartingPosition: LATEST
+    # end stream event source mappings
+  # Search
+  VpcEndpointSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow Lambda access to OpenSearch Serverless
+      VpcId: vpc-3875a041
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+  VpcEndpoint:
+    Type: AWS::OpenSearchServerless::VpcEndpoint
+    Properties:
+      Name: !Sub "aoss-vpce-${Stage}"
+      VpcId: vpc-3875a041
+      SubnetIds: ['subnet-5fd0d639', 'subnet-8a2063d0', 'subnet-71677639']
+      SecurityGroupIds:
+        - !GetAtt VpcEndpointSG.GroupId
+  # Encryption is required by the service. Using AWS-owned key.
+  searchableEP:
+    Type: AWS::OpenSearchServerless::SecurityPolicy
+    Properties:
+      Name: !Sub aoss-searchable-ep-${Stage}
+      Type: encryption
+      Policy: !Sub |
+        {
+          "Rules": [
+            {
+              "ResourceType": "collection",
+              "Resource": [
+                "collection/aoss-searchable-${Stage}"
+              ]
+            }
+          ],
+          "AWSOwnedKey": true
+        }
+  # No public access. Restrict to specific VPC endpoints only.
+  searchableNP:
+    Type: AWS::OpenSearchServerless::SecurityPolicy
+    Properties:
+      Name: !Sub aoss-searchable-np-${Stage}
+      Type: network
+      Policy: !Sub |
+        [
+          {
+            "Rules": [
+              {
+                "ResourceType": "collection",
+                "Resource": [
+                  "collection/aoss-searchable-${Stage}"
+                ]
+              }
+            ],
+            "AllowFromPublic": true
+          }
+        ]
+  # Allow all IAM roles in the account (covers any Lambda execution role).
+  searchableAP:
+    Type: AWS::OpenSearchServerless::AccessPolicy
+    Properties:
+      Name: !Sub aoss-searchable-ap-${Stage}
+      Type: data
+      Policy: !Sub |
+        [
+          {
+            "Description": "Data access for all roles in account",
+            "Rules": [
+              {
+                "ResourceType": "collection",
+                "Resource": [
+                  "collection/aoss-searchable-${Stage}"
+                ],
+                "Permission": ["aoss:*"]
+              },
+              {
+                "ResourceType": "index",
+                "Resource": [
+                  "index/aoss-searchable-${Stage}/*"
+                ],
+                "Permission": ["aoss:*"]
+              }
+            ],
+            "Principal": [
+                "${indexfuncFunctionRole.Arn}",
+                "${searchfuncFunctionRole.Arn}"
+            ]
+          }
+        ]
+  searchableCollection:
+    Type: AWS::OpenSearchServerless::Collection
+    Properties:
+      Name: !Sub aoss-searchable-${Stage}
+      Type: SEARCH
+      Description: "Serverless collection searchable"
+    DependsOn: 
+      - searchableEP
+      - searchableNP
+    # end search
