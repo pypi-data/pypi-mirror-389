@@ -1,0 +1,477 @@
+# Optelier
+
+DX-first evaluator: **submission → evaluation → score**
+
+A minimal, local-first framework for evaluating code submissions against problems. Start with simple toy problems and grow toward safe execution later.
+
+## Installation
+
+```bash
+pip install optelier
+```
+
+For development:
+```bash
+git clone <repo-url>
+cd optelier
+pip install -e .
+```
+
+**Optional**: Install Docker for maximum security isolation (required for `DockerProblem`):
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Mac/Windows
+- [Docker Engine](https://docs.docker.com/engine/install/) for Linux
+
+## Quick Start
+
+### Using the CLI
+
+```bash
+# Sum problem with a Python script submission
+optelier run sum-json --submission examples/candidates/sum_candidate.py --print-artifacts
+
+# Regex problem with a JSON submission
+optelier run text-regex --submission examples/candidates/regex.json --print-artifacts
+```
+
+### Using the API
+
+```python
+from optelier import evaluate, load_submission
+from optelier.problems import REGISTRY
+
+# Create problem with fixtures directory
+problem = REGISTRY["sum-json"](fixtures_dir="examples/fixtures")
+
+# Load submission
+submission = load_submission("examples/candidates/sum_candidate.py")
+
+# Evaluate - it's that simple!
+result = evaluate(problem, submission)
+
+# Access results
+print(f"Score: {result.score}, Time: {result.time_ms}ms, OK: {result.ok}")
+
+# Or unpack as tuple (Gym-style)
+score, ok, artifacts, error, time_ms = result
+print(f"Score: {score}, OK: {ok}")
+```
+
+## Core Concepts
+
+### Problem Protocol
+
+**Minimal API**: Problems implement a single `evaluate()` method.
+
+```python
+class MyProblem:
+    name = "my-problem"
+
+    def __init__(self, data_dir):
+        # Configure with whatever you need
+        self.data_dir = data_dir
+
+    def evaluate(self, submission) -> dict | float | EvalResult:
+        # submission can be ANY format you define (path, dict, object, etc.)
+
+        # Option 1: Just artifacts (no score - useful for analysis/reports)
+        return {"backtest_results": ..., "metrics": ...}
+
+        # Option 2: Just score (simple case)
+        return 0.95
+
+        # Option 3: Both score and artifacts
+        return EvalResult(score=0.95, artifacts={"details": ...})
+```
+
+**Key principles:**
+- **One method**: `evaluate(submission) -> dict | float | EvalResult`
+- **You choose submission format**: Path, dict, object - whatever makes sense
+- **Pass config via __init__**: No forced abstractions
+- **Scoring is optional**: Return just artifacts for analysis, score later
+- **Flexible returns**: Dict (artifacts), float (score), or EvalResult (both)
+
+### Submission Format
+
+**You decide!** Each problem defines what a submission is:
+- Path to file: `problem.evaluate("submission.py")`
+- Dictionary: `problem.evaluate({"code": "...", "params": {...}})`
+- Custom object: `problem.evaluate(MySubmission(...))`
+
+The `load_submission()` utility is optional:
+- `.py` files → `{"kind": "python_script", "code": "..."}`
+- `.json` files → parsed dict
+
+### EvalResult (NamedTuple)
+
+```python
+from optelier import EvalResult
+
+# Create results
+result = EvalResult(score=0.95)
+result = EvalResult(score=0.95, artifacts={"details": ...})
+
+# Access by name
+print(result.score)      # 0.95
+print(result.ok)         # True
+print(result.artifacts)  # {...}
+print(result.time_ms)    # Timing added by evaluate()
+
+# Or unpack as tuple (Gym-style)
+score, ok, artifacts, error, time_ms = result
+```
+
+Fields:
+- `score`: Numeric score (float, `-inf` if not provided)
+- `ok`: Whether evaluation succeeded (bool)
+- `artifacts`: Data produced by evaluation (dict)
+- `error`: Error traceback if failed (str | None)
+- `time_ms`: Execution time in milliseconds (int)
+
+**Note**: If your `evaluate()` returns just a dict (artifacts only), `score` will be `-inf`. This is useful for:
+- Backtesting / simulation workflows where you analyze results before scoring
+- Data collection / exploratory analysis
+- Applying multiple scoring functions to the same artifacts
+- Generating reports without immediate scoring
+
+See `examples/artifacts_only_example.py` for a complete example.
+
+## Security
+
+Optelier provides three levels of code execution security for evaluating Python code submissions. Choose the level that matches your threat model and performance requirements.
+
+### Security Levels
+
+| Level | Class | Isolation | Overhead | Use Case |
+|-------|-------|-----------|----------|----------|
+| **None** | `SecureCodeProblem` | In-process | ~0ms | Trusted internal code, maximum speed |
+| **Medium** | `SubprocessProblem` | Process isolation | ~400ms | Semi-trusted teams, internal tools |
+| **Maximum** | `DockerProblem` | Container isolation | ~600ms | Untrusted external code, competitions |
+
+All three levels include **AST-based validation** to prevent malicious imports and dangerous builtins.
+
+### Quick Start: Secure Code Evaluation
+
+**Level 1: In-Process (Fast, Trusted Code)**
+
+```python
+from optelier.problems.secure import SecureCodeProblem
+
+class FastFunctionProblem(SecureCodeProblem):
+    def __init__(self):
+        super().__init__(
+            name="fast_math",
+            allowed_imports=set(),  # No imports needed
+        )
+
+    def setup_environment(self):
+        return {"x": 10, "y": 20}
+
+    def validate_output(self, namespace):
+        if "result" not in namespace:
+            raise ValueError("Must assign to 'result'")
+        score = 1.0 if namespace["result"] == 30 else 0.0
+        return score, {"result": namespace["result"]}
+
+    def _execute_code(self, code, environment):
+        namespace = environment.copy()
+        exec(code, namespace)  # In-process execution
+        return namespace
+
+# Use it
+problem = FastFunctionProblem()
+result = problem.evaluate({"code": "result = x + y"})
+print(f"Score: {result.score}")  # 1.0
+```
+
+**Level 2: Subprocess (Medium Security)**
+
+```python
+from optelier.problems.secure import SubprocessProblem
+
+class FeatureProblem(SubprocessProblem):
+    def __init__(self, data):
+        super().__init__(
+            name="feature_eng",
+            timeout=30,
+            allowed_imports={"pandas", "numpy"}
+        )
+        self.data = data
+
+    def setup_environment(self):
+        return {"df": self.data}
+
+    def validate_output(self, namespace):
+        if "feature" not in namespace:
+            raise ValueError("Must assign to 'feature'")
+
+        feature = namespace["feature"]
+        variance = feature.var()
+        score = min(1.0, variance / 1.0)
+
+        return score, {
+            "variance": variance,
+            "null_rate": feature.isna().mean()
+        }
+
+# Use it
+import pandas as pd
+problem = FeatureProblem(pd.DataFrame({"price": [100, 200, 150]}))
+result = problem.evaluate({
+    "code": "feature = df['price'].pct_change()"
+})
+print(f"Score: {result.score}")
+```
+
+**Level 3: Docker (Maximum Security)**
+
+```python
+from optelier.problems.secure import DockerProblem
+
+class UntrustedCodeProblem(DockerProblem):
+    def __init__(self, test_cases):
+        super().__init__(
+            name="untrusted_challenge",
+            image="python:3.10-slim",
+            timeout=30,
+            memory_limit="256m"
+        )
+        self.test_cases = test_cases  # [(inputs, expected), ...]
+
+    def setup_environment(self):
+        return {}  # No environment needed
+
+    def validate_output(self, namespace):
+        if "solve" not in namespace:
+            raise ValueError("Must define 'solve' function")
+
+        func = namespace["solve"]
+        passed = sum(1 for inputs, expected in self.test_cases
+                    if func(*inputs) == expected)
+        score = passed / len(self.test_cases)
+
+        return score, {
+            "passed": passed,
+            "total": len(self.test_cases)
+        }
+
+# Use it
+problem = UntrustedCodeProblem([
+    ((2, 3), 5),
+    ((10, 5), 15)
+])
+result = problem.evaluate({
+    "code": "def solve(a, b): return a + b"
+})
+print(f"Score: {result.score}")  # 1.0
+```
+
+### Security Features
+
+**AST-Based Validation** (All Levels):
+- Whitelist allowed imports (e.g., `pandas`, `numpy`)
+- Blacklist dangerous builtins (`eval`, `exec`, `compile`, `__import__`, `open`)
+- Code length limits
+- Syntax validation
+
+**Subprocess Isolation** (Medium):
+- Separate process space (crashes don't affect parent)
+- Configurable timeout
+- Pickle serialization (supports DataFrames, complex objects)
+- Automatic cleanup
+
+**Docker Isolation** (Maximum):
+- Complete filesystem isolation
+- Network disabled by default
+- Memory and CPU limits enforced
+- Read-only execution
+- Automatic container cleanup
+
+### When to Use Each Level
+
+**Use `SecureCodeProblem` (in-process)** when:
+- Code is from trusted internal developers
+- Maximum speed is critical
+- AST validation provides sufficient safety
+
+**Use `SubprocessProblem`** when:
+- Code is from semi-trusted sources (internal teams, controlled access)
+- You need crash isolation
+- Working with DataFrames or complex objects
+- ~400ms overhead is acceptable
+
+**Use `DockerProblem`** when:
+- Code is from untrusted external sources
+- Running competitions or public APIs
+- Maximum isolation is required
+- ~600ms overhead is acceptable
+- Network access must be blocked
+
+### Learn More
+
+- **[Security Guide](docs/security.md)** - Detailed security documentation
+- **[Migration Guide](docs/migration.md)** - Migrate from other evaluation frameworks
+- **[Validation Helpers](docs/validation_helpers.md)** - Reusable validation utilities
+
+## Included Problems
+
+### sum-json
+
+Evaluates Python scripts that read a JSON file with numbers and output their sum.
+
+**Contract:**
+- Input: `numbers.json` with `{"numbers": [...]}`
+- Script receives: `python script.py <input> <output>`
+- Expected output: `{"sum": <int>}`
+
+**Example submission:** `examples/candidates/sum_candidate.py`
+
+### text-regex
+
+Evaluates regex patterns (or Python scripts that output patterns) against a labeled text dataset.
+
+**Contract:**
+- Input: `text.txt` with lines labeled `OK:` (match) or `NO:` (no match)
+- Submission provides: `{"pattern": "regex"}` or Python script printing pattern
+- Scoring: F1 score of matches
+
+**Example submission:** `examples/candidates/regex.json`
+
+## Integrating Existing Evaluators
+
+**Don't rewrite your code!** Wrap any existing evaluator in ~15 lines:
+
+```python
+# Wrap a simple function - NO context needed!
+from your_legacy_code import evaluate_submission
+
+class MyAdapter:
+    name = "my-evaluator"
+
+    def __init__(self, data_dir):
+        self.data_dir = data_dir  # Pass config via init
+
+    def evaluate(self, submission_path: str) -> float:
+        # Just call your existing function!
+        return evaluate_submission(submission_path)
+```
+
+That's it. No Context objects, no two-step evaluation, no forced dict formats.
+
+### Supported Patterns
+
+- ✅ **Functions**: Single callable returning a score
+- ✅ **Classes**: Evaluator with `__init__` and `evaluate()` methods
+- ✅ **CLI Tools**: Command-line scripts outputting JSON/scores
+- ✅ **Test Suites**: pytest, unittest, or custom test runners
+- ✅ **ML Pipelines**: scikit-learn, PyTorch, TensorFlow evaluations
+
+### Documentation
+
+- **[Adapter Patterns](docs/adapters.md)** - Complete guide to all adapter types
+- **[Integration Guide](docs/integration-guide.md)** - Step-by-step integration (30-60 min)
+- **[Dockerization](docs/dockerization.md)** - Containerize evaluators for isolation & scale
+
+### Example Adapters
+
+See `examples/adapters/` for working examples:
+- `callable_adapter.py` - Wrap simple functions
+- `class_adapter.py` - Wrap class-based evaluators with scoring policies
+- `cli_adapter.py` - Wrap command-line tools
+
+See `examples/legacy/` for mock legacy code you can adapt.
+
+---
+
+## Extending
+
+### Adding New Problems
+
+1. Create a new problem class in `src/optelier/problems/`:
+
+```python
+# src/optelier/problems/my_problem.py
+from ..core import EvalContext
+
+class MyProblem:
+    name = "my-problem"
+
+    def run(self, submission, ctx: EvalContext):
+        # Your execution logic
+        return {"result": "..."}
+
+    def score(self, artifacts, ctx: EvalContext) -> float:
+        # Your scoring logic
+        return 1.0
+```
+
+2. Register it in `src/optelier/problems/__init__.py`:
+
+```python
+from .my_problem import MyProblem
+
+REGISTRY = {
+    # ... existing problems
+    "my-problem": MyProblem,
+}
+```
+
+3. Add fixtures to `examples/fixtures/` and candidates to `examples/candidates/`
+
+### Adding Execution Environments
+
+The framework is designed to grow:
+- Add time/memory limits
+- Add Docker/WASM runners
+- Add parallel execution
+- Add result caching
+- Add leaderboard storage
+
+Start simple with local execution, then add safety layers as needed.
+
+## Project Structure
+
+```
+optelier/
+├── src/optelier/
+│   ├── __init__.py          # Main exports
+│   ├── core.py              # Evaluation framework
+│   ├── cli.py               # CLI interface
+│   └── problems/
+│       ├── __init__.py      # Problem registry
+│       ├── secure.py        # Secure code evaluation base classes
+│       ├── validation.py    # Validation helpers
+│       ├── sum_json.py      # Sum problem
+│       ├── text_regex.py    # Regex problem
+│       └── examples/        # Example problem implementations
+│           ├── feature.py           # Feature engineering example
+│           ├── untrusted.py         # Untrusted code example
+│           └── function_test.py     # Function testing example
+├── examples/
+│   ├── adapters/            # Adapter pattern examples
+│   │   ├── callable_adapter.py
+│   │   ├── class_adapter.py
+│   │   └── cli_adapter.py
+│   ├── legacy/              # Mock legacy code to adapt
+│   │   ├── simple_evaluator.py
+│   │   └── class_evaluator.py
+│   ├── fixtures/            # Test data
+│   │   ├── numbers.json
+│   │   └── text.txt
+│   └── candidates/          # Example submissions
+│       ├── sum_candidate.py
+│       └── regex.json
+├── docs/
+│   ├── adapters.md          # Adapter pattern guide
+│   ├── integration-guide.md # Step-by-step integration
+│   ├── dockerization.md     # Docker & deployment guide
+│   ├── security.md          # Security guide (3 levels)
+│   ├── migration.md         # Migration from other frameworks
+│   └── validation_helpers.md # Validation utilities
+├── Dockerfile
+├── pyproject.toml
+└── README.md
+```
+
+## License
+
+MIT License - see LICENSE file for details.
