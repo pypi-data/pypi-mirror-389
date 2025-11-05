@@ -1,0 +1,81 @@
+\doxysection{mathutils\+::Simple\+Generator\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classmathutils_1_1SimpleGenerator}{}\label{classmathutils_1_1SimpleGenerator}\index{mathutils::SimpleGenerator$<$ T $>$@{mathutils::SimpleGenerator$<$ T $>$}}
+
+
+Template class for a coroutine that yields values of type T.  
+
+
+
+
+{\ttfamily \#include $<$simple\+\_\+generator.\+hpp$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classmathutils_1_1SimpleGenerator_1_1promise__type}{promise\+\_\+type}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a129b0cc0a96fddbce207b92842a03c3f}\label{classmathutils_1_1SimpleGenerator_a129b0cc0a96fddbce207b92842a03c3f} 
+using {\bfseries handle\+\_\+type} = std\+::coroutine\+\_\+handle$<$\mbox{\hyperlink{classmathutils_1_1SimpleGenerator_1_1promise__type}{promise\+\_\+type}}$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a0b59a5bbc7c15386a68da04c1fedf68f}\label{classmathutils_1_1SimpleGenerator_a0b59a5bbc7c15386a68da04c1fedf68f} 
+{\bfseries Simple\+Generator} (handle\+\_\+type h)
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a7ea13d828e9e75d6db7ee237fde016ae}\label{classmathutils_1_1SimpleGenerator_a7ea13d828e9e75d6db7ee237fde016ae} 
+{\bfseries Simple\+Generator} (\mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{Simple\+Generator}} \&\&other\+\_\+sg) noexcept
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a448be82dc803aca55929f1af649f514f}\label{classmathutils_1_1SimpleGenerator_a448be82dc803aca55929f1af649f514f} 
+\mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{Simple\+Generator}} \& {\bfseries operator=} (\mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{Simple\+Generator}} \&\&other) noexcept
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_ac2f5f67fc0fbe562c5a578a070728925}\label{classmathutils_1_1SimpleGenerator_ac2f5f67fc0fbe562c5a578a070728925} 
+{\bfseries Simple\+Generator} (const \mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{Simple\+Generator}} \&)=delete
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_afb13b6fde25b5b1b24081e45c7459a01}\label{classmathutils_1_1SimpleGenerator_afb13b6fde25b5b1b24081e45c7459a01} 
+\mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{Simple\+Generator}} \& {\bfseries operator=} (const \mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{Simple\+Generator}} \&)=delete
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a11967257c79f5333742ed0f5c5e95a4d}\label{classmathutils_1_1SimpleGenerator_a11967257c79f5333742ed0f5c5e95a4d} 
+void {\bfseries start} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a5e6045dfc3258012e6e0a43080fd1c3e}\label{classmathutils_1_1SimpleGenerator_a5e6045dfc3258012e6e0a43080fd1c3e} 
+bool {\bfseries running} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a10a40b2549dcd4392a407d8880f82567}\label{classmathutils_1_1SimpleGenerator_a10a40b2549dcd4392a407d8880f82567} 
+void {\bfseries try\+\_\+next} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a8d0373f3048a0cc0308ab12282a4f3f3}\label{classmathutils_1_1SimpleGenerator_a8d0373f3048a0cc0308ab12282a4f3f3} 
+T {\bfseries take} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a6e9c70440809e04bae77def06a6f85ac}\label{classmathutils_1_1SimpleGenerator_a6e9c70440809e04bae77def06a6f85ac} 
+iterator {\bfseries begin} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_ae243cb5343e8f39256b4bf87d2fd215f}\label{classmathutils_1_1SimpleGenerator_ae243cb5343e8f39256b4bf87d2fd215f} 
+iterator {\bfseries end} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_a6712a4654453c24c0bf86e1e03d4a659}\label{classmathutils_1_1SimpleGenerator_a6712a4654453c24c0bf86e1e03d4a659} 
+std\+::unordered\+\_\+set$<$ T $>$ {\bfseries to\+\_\+unordered\+\_\+set} ()
+\item 
+\Hypertarget{classmathutils_1_1SimpleGenerator_ab6bf01724aec9d06e8edba7c188f29d3}\label{classmathutils_1_1SimpleGenerator_ab6bf01724aec9d06e8edba7c188f29d3} 
+std\+::vector$<$ T $>$ {\bfseries to\+\_\+vector} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$\newline
+class mathutils\+::\+Simple\+Generator$<$ T $>$}
+Template class for a coroutine that yields values of type T. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type of values generated. \\
+\hline
+\end{DoxyTemplParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/mathutils/\mbox{\hyperlink{simple__generator_8hpp}{simple\+\_\+generator.\+hpp}}\end{DoxyCompactItemize}

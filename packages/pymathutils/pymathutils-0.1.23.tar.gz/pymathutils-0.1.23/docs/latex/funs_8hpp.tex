@@ -1,0 +1,549 @@
+\doxysection{include/mathutils/funs.hpp File Reference}
+\hypertarget{funs_8hpp}{}\label{funs_8hpp}\index{include/mathutils/funs.hpp@{include/mathutils/funs.hpp}}
+
+
+Numerical functions.  
+
+
+{\ttfamily \#include "{}mathutils/log\+\_\+factorial\+\_\+lookup\+\_\+table.\+hpp"{}}\newline
+{\ttfamily \#include "{}mathutils/simple\+\_\+generator.\+hpp"{}}\newline
+{\ttfamily \#include "{}mathutils/spherical\+\_\+harmonics\+\_\+index\+\_\+lookup\+\_\+table.\+hpp"{}}\newline
+{\ttfamily \#include $<$Eigen/\+Dense$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$complex$>$}\newline
+{\ttfamily \#include $<$coroutine$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+Include dependency graph for funs.\+hpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{funs_8hpp__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T$>$ }\\int \mbox{\hyperlink{funs_8hpp_a792aa7c8cdcbdcdc13ea13360b839b51}{mathutils\+::sign}} (T x)
+\begin{DoxyCompactList}\small\item\em Compute the sign (1,-\/1, or 0) of a value. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_ad21b262566385dd135450e57ad4389fa}\label{funs_8hpp_ad21b262566385dd135450e57ad4389fa} 
+int {\bfseries mathutils\+::special\+::minus\+\_\+one\+\_\+to\+\_\+int\+\_\+pow} (int n)
+\begin{DoxyCompactList}\small\item\em Compute $(-1)^n$ for integer n. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{mathutils\+::special\+::log\+\_\+factorial}} (uint64\+\_\+t n)
+\begin{DoxyCompactList}\small\item\em Compute $\ln(n!)$ for a non-\/negative integer n. Uses a lookup table for small values and lgamma for larger values. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T$>$ }\\double \mbox{\hyperlink{funs_8hpp_a28f0e2594c5534dcc25b3e4b8add8235}{mathutils\+::special\+::\+Heaviside}} (T x)
+\begin{DoxyCompactList}\small\item\em The Heaviside step function. Returns 0.\+0 for negative values, 1.\+0 for positive values, and 0.\+5 for zero. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T$>$ }\\double \mbox{\hyperlink{funs_8hpp_ac18089c076ae6244dc6054958f065cd7}{mathutils\+::special\+::\+Re\+Log}} (const T \&x)
+\begin{DoxyCompactList}\small\item\em Compute the real part of the complex logarithm  $Re(Log(x))=
+ln(|x|)$. Returns $Re(Log(0))=-\infty$ for $x=0$. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T$>$ }\\std\+::pair$<$ double, int $>$ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{mathutils\+::special\+::\+Re\+Log\+Re\+\_\+\+Im\+Log\+Re\+\_\+over\+\_\+pi}} (const T \&x)
+\begin{DoxyCompactList}\small\item\em Compute $Re(Log(Re(x)))$ and $Im(Log(Re(x)))/\pi$. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_ab0c2f86fe7562e99c9480200876ceb67}\label{funs_8hpp_ab0c2f86fe7562e99c9480200876ceb67} 
+{\footnotesize template$<$typename T$>$ }\\std\+::pair$<$ double, int $>$ {\bfseries mathutils\+::special\+::\+Re\+Log\+Re\+\_\+\+Im\+Log\+Re\+\_\+over\+\_\+pi\+\_\+of\+\_\+x\+\_\+to\+\_\+pow} (const T \&x, int n)
+\item 
+int \mbox{\hyperlink{funs_8hpp_a448d999a45f277a4090ae4e84738fb62}{mathutils\+::special\+::spherical\+\_\+harmonic\+\_\+index\+\_\+n\+\_\+\+LM}} (int l, int m)
+\begin{DoxyCompactList}\small\item\em Compute the index of (l,m) in \mbox{[}(0,0), (1,-\/1), (1,0), (1,1), (2,-\/2), ...\mbox{]}. \end{DoxyCompactList}\item 
+std\+::array$<$ int, 2 $>$ \mbox{\hyperlink{funs_8hpp_ae97cd7b18cf1e1ffc2da83aa1761d4db}{mathutils\+::special\+::spherical\+\_\+harmonic\+\_\+index\+\_\+lm\+\_\+N}} (int n)
+\begin{DoxyCompactList}\small\item\em Compute the n-\/th element of the sequence \mbox{[}(0,0), (1,-\/1), (1,0), (1,1), (2,-\/2), ...\mbox{]}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{funs_8hpp_a8ef8266a4ce5f68145377986f18e384b}{mathutils\+::special\+::reduced\+\_\+spherical\+\_\+\+Pmm}} (int m, double theta)
+\begin{DoxyCompactList}\small\item\em Compute the associated Legendre polynomial with spherical harmonics normalization $P_{m m}(\theta) = e^{-im\phi}Y_{m m}(\theta, \phi)$ for $0\leq\theta\leq\pi/2$ and $m\geq 0$. Used to initialize the recursion. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_a9afd87c80f40d9c15c5b3fa97a6252a3}\label{funs_8hpp_a9afd87c80f40d9c15c5b3fa97a6252a3} 
+\mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{mathutils\+::\+Simple\+Generator}}$<$ double $>$ {\bfseries mathutils\+::special\+::generate\+\_\+reduced\+\_\+spherical\+\_\+\+Plm\+\_\+recursion\+\_\+three\+\_\+term\+\_\+upward\+\_\+ell} (int l\+\_\+start, int l\+\_\+end, double theta)
+\begin{DoxyCompactList}\small\item\em Generate the associated Legendre polynomial with spherical harmonics normalization  $P_{\ell m}(\theta) = e^{-im\phi}Y_{\ell m}(\theta,
+\phi)$ for $\ell = \ell_{start}, \ell_{start} + 1, \ldots, \ell_{end}$ and $m=\ell_{start}$. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_ab708d111ee35388d9c8fc90379ea3ab1}\label{funs_8hpp_ab708d111ee35388d9c8fc90379ea3ab1} 
+\mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{mathutils\+::\+Simple\+Generator}}$<$ std\+::pair$<$ int, double $>$ $>$ {\bfseries mathutils\+::special\+::enumerate\+\_\+reduced\+\_\+spherical\+\_\+\+Plm\+\_\+recursion\+\_\+three\+\_\+term\+\_\+upward\+\_\+ell} (int l\+\_\+start, int l\+\_\+end, double theta)
+\item 
+double \mbox{\hyperlink{funs_8hpp_ad3801cc8f3434b64bba273aa512e323c}{mathutils\+::special\+::reduced\+\_\+spherical\+\_\+\+Plm}} (int l, int m, double theta)
+\begin{DoxyCompactList}\small\item\em Compute the associated Legendre polynomial with spherical harmonics normalization $P_{\ell m}(\theta) = e^{-im\phi}Y_{\ell m}(\theta, \phi)$ for $0\leq\theta\leq\pi/2$ and $m\geq 0$. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{funs_8hpp_a5fb439a33067977a8115f3d31310855a}{mathutils\+::special\+::spherical\+\_\+\+Plm}} (int l, int m, double theta)
+\begin{DoxyCompactList}\small\item\em Compute the associated Legendre polynomial with spherical harmonics normalization $P_{\ell m}(\theta) = e^{-im\phi}Y_{\ell m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{funs_8hpp_ac438d0a4d710f9031782228f53caa7fb}{mathutils\+::special\+::recursive\+\_\+real\+\_\+\+Ylm}} (int l, int m, double theta, double phi)
+\begin{DoxyCompactList}\small\item\em Compute the real spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{funs_8hpp_a14eb778df40fbda4f8d7010372e948aa}{mathutils\+::special\+::real\+\_\+\+Ylm}} (int l, int m, double theta, double phi)
+\begin{DoxyCompactList}\small\item\em Compute the real spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+Eigen\+::\+Vector\+Xd \mbox{\hyperlink{funs_8hpp_a6fedfb63d616b218c4e66aec52f6d12e}{mathutils\+::special\+::real\+\_\+\+Ylm}} (int l, int m, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\begin{DoxyCompactList}\small\item\em Compute the real spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{funs_8hpp_a8e111ca809adef2abe974bf87b78a7dd}{mathutils\+::special\+::compute\+\_\+all\+\_\+real\+\_\+\+Ylm}} (int l\+\_\+max, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\begin{DoxyCompactList}\small\item\em Compute real spherical harmonics $y_{l m}(\theta, \phi)$ for $\ell=0,...,\ell_{max}$ at the given coordinates. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_aff737e2f915090d0561d655594d63aca}\label{funs_8hpp_aff737e2f915090d0561d655594d63aca} 
+Eigen\+::\+Matrix\+Xcd {\bfseries mathutils\+::special\+::compute\+\_\+all\+\_\+\+Ylm} (int l\+\_\+max, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\item 
+std\+::complex$<$ double $>$ \mbox{\hyperlink{funs_8hpp_a1ccdc6f0ab2dc55cf89ca46924ff5e15}{mathutils\+::special\+::recursive\+\_\+\+Ylm}} (int l, int m, double theta, double phi)
+\begin{DoxyCompactList}\small\item\em Compute the spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+std\+::complex$<$ double $>$ \mbox{\hyperlink{funs_8hpp_a5e552709880cecd4db1d6fae9c3b8f09}{mathutils\+::special\+::\+Ylm}} (int l, int m, double theta, double phi)
+\begin{DoxyCompactList}\small\item\em Compute the spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+Eigen\+::\+Vector\+Xcd \mbox{\hyperlink{funs_8hpp_a2740e3181118b0a18f363fc225c17f59}{mathutils\+::special\+::\+Ylm}} (int l, int m, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\begin{DoxyCompactList}\small\item\em Compute the spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_aa6d84c4f7cbb401ae2318cc82466f766}\label{funs_8hpp_aa6d84c4f7cbb401ae2318cc82466f766} 
+double {\bfseries mathutils\+::special\+::series\+\_\+real\+\_\+\+Ylm} (int l, int m, double theta, double phi)
+\item 
+\Hypertarget{funs_8hpp_a2c2cc11e4a5d7e279d4877cc1a43fd35}\label{funs_8hpp_a2c2cc11e4a5d7e279d4877cc1a43fd35} 
+Eigen\+::\+Vector\+Xd {\bfseries mathutils\+::special\+::series\+\_\+real\+\_\+\+Ylm} (int l, int m, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\item 
+\Hypertarget{funs_8hpp_a21fda6e62e00eb96a0f95dc3d60da30b}\label{funs_8hpp_a21fda6e62e00eb96a0f95dc3d60da30b} 
+std\+::complex$<$ double $>$ {\bfseries mathutils\+::special\+::series\+\_\+\+Ylm} (int l, int m, double theta, double phi)
+\item 
+\Hypertarget{funs_8hpp_ab87b59e181b58c2a548b6e3cb95cbd9d}\label{funs_8hpp_ab87b59e181b58c2a548b6e3cb95cbd9d} 
+Eigen\+::\+Vector\+Xcd {\bfseries mathutils\+::special\+::series\+\_\+\+Ylm} (int l, int m, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{funs_8hpp_a3967c7cc460069f19961b96d62905402}{mathutils\+::special\+::compute\+\_\+all\+\_\+series\+\_\+real\+\_\+\+Ylm}} (int l\+\_\+max, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\begin{DoxyCompactList}\small\item\em Compute real spherical harmonics $y_{l m}(\theta, \phi)$ for $\ell=0,...,\ell_{max}$ at the given coordinates. \end{DoxyCompactList}\item 
+Eigen\+::\+Matrix\+Xcd \mbox{\hyperlink{funs_8hpp_abd333e3f0c80e542ece392db9036d08f}{mathutils\+::special\+::compute\+\_\+all\+\_\+series\+\_\+\+Ylm}} (int l\+\_\+max, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\begin{DoxyCompactList}\small\item\em Compute spherical harmonics $Y_{l m}(\theta, \phi)$ for $\ell=0,...,\ell_{max}$ at the given coordinates. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{funs_8hpp_a34b8be655fce338b873a136b7316577c}{mathutils\+::special\+::phi\+\_\+independent\+\_\+\+Ylm}} (int l, int m, double theta)
+\begin{DoxyCompactList}\small\item\em Compute Ylm(theta, phi)/exp(i\texorpdfstring{$\ast$}{*}theta\texorpdfstring{$\ast$}{*}phi) for m\texorpdfstring{$>$}{>}=0 and 0\texorpdfstring{$<$}{<}=theta\texorpdfstring{$<$}{<}=pi. \end{DoxyCompactList}\item 
+\Hypertarget{funs_8hpp_a85099174ac83e4ed27c73d4d91497f92}\label{funs_8hpp_a85099174ac83e4ed27c73d4d91497f92} 
+std\+::complex$<$ double $>$ {\bfseries mathutils\+::special\+::old\+\_\+\+Ylm} (int l, int m, double theta, double phi)
+\item 
+\Hypertarget{funs_8hpp_a6e8ed9f93c83070644899073f437548a}\label{funs_8hpp_a6e8ed9f93c83070644899073f437548a} 
+double {\bfseries mathutils\+::special\+::old\+\_\+real\+\_\+\+Ylm} (int l, int m, double theta, double phi)
+\item 
+\Hypertarget{funs_8hpp_ac1e67efd4b1428ca7bf25b3bef10d357}\label{funs_8hpp_ac1e67efd4b1428ca7bf25b3bef10d357} 
+Eigen\+::\+Matrix\+Xd {\bfseries mathutils\+::special\+::old\+\_\+compute\+\_\+all\+\_\+real\+\_\+\+Ylm} (int l\+\_\+max, const Eigen\+::\+Matrix\+Xd \&thetaphi\+\_\+coord\+\_\+P)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Numerical functions. 
+
+
+
+\label{doc-func-members}
+\Hypertarget{funs_8hpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{funs_8hpp_a8e111ca809adef2abe974bf87b78a7dd}\index{funs.hpp@{funs.hpp}!compute\_all\_real\_Ylm@{compute\_all\_real\_Ylm}}
+\index{compute\_all\_real\_Ylm@{compute\_all\_real\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{compute\_all\_real\_Ylm()}{compute\_all\_real\_Ylm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a8e111ca809adef2abe974bf87b78a7dd} 
+Eigen\+::\+Matrix\+Xd mathutils\+::special\+::compute\+\_\+all\+\_\+real\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l\+\_\+max}{, }\item[{const Eigen\+::\+Matrix\+Xd \&}]{thetaphi\+\_\+coord\+\_\+P}{}\end{DoxyParamCaption})}
+
+
+
+Compute real spherical harmonics $y_{l m}(\theta, \phi)$ for $\ell=0,...,\ell_{max}$ at the given coordinates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l\+\_\+max} & The maximum order of the spherical harmonics (non-\/negative integer). \\
+\hline
+{\em thetaphi\+\_\+coord\+\_\+P} & A matrix of shape (num\+\_\+points, 2) where each row contains the polar angle $\theta$ and azimuthal angle $\phi$ in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix of shape (num\+\_\+points, l\+\_\+max \texorpdfstring{$\ast$}{*} (l\+\_\+max + 2) + 1) 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a3967c7cc460069f19961b96d62905402}\index{funs.hpp@{funs.hpp}!compute\_all\_series\_real\_Ylm@{compute\_all\_series\_real\_Ylm}}
+\index{compute\_all\_series\_real\_Ylm@{compute\_all\_series\_real\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{compute\_all\_series\_real\_Ylm()}{compute\_all\_series\_real\_Ylm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a3967c7cc460069f19961b96d62905402} 
+Eigen\+::\+Matrix\+Xd mathutils\+::special\+::compute\+\_\+all\+\_\+series\+\_\+real\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l\+\_\+max}{, }\item[{const Eigen\+::\+Matrix\+Xd \&}]{thetaphi\+\_\+coord\+\_\+P}{}\end{DoxyParamCaption})}
+
+
+
+Compute real spherical harmonics $y_{l m}(\theta, \phi)$ for $\ell=0,...,\ell_{max}$ at the given coordinates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l\+\_\+max} & The maximum order of the spherical harmonics (non-\/negative integer). \\
+\hline
+{\em thetaphi\+\_\+coord\+\_\+P} & A matrix of shape (num\+\_\+points, 2) where each row contains the polar angle $\theta$ and azimuthal angle $\phi$ in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix of shape (num\+\_\+points, l\+\_\+max \texorpdfstring{$\ast$}{*} (l\+\_\+max + 2) + 1) 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_abd333e3f0c80e542ece392db9036d08f}\index{funs.hpp@{funs.hpp}!compute\_all\_series\_Ylm@{compute\_all\_series\_Ylm}}
+\index{compute\_all\_series\_Ylm@{compute\_all\_series\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{compute\_all\_series\_Ylm()}{compute\_all\_series\_Ylm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_abd333e3f0c80e542ece392db9036d08f} 
+Eigen\+::\+Matrix\+Xcd mathutils\+::special\+::compute\+\_\+all\+\_\+series\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l\+\_\+max}{, }\item[{const Eigen\+::\+Matrix\+Xd \&}]{thetaphi\+\_\+coord\+\_\+P}{}\end{DoxyParamCaption})}
+
+
+
+Compute spherical harmonics $Y_{l m}(\theta, \phi)$ for $\ell=0,...,\ell_{max}$ at the given coordinates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l\+\_\+max} & The maximum order of the spherical harmonics (non-\/negative integer). \\
+\hline
+{\em thetaphi\+\_\+coord\+\_\+P} & A matrix of shape (num\+\_\+points, 2) where each row contains the polar angle $\theta$ and azimuthal angle $\phi$ in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix of shape (num\+\_\+points, l\+\_\+max \texorpdfstring{$\ast$}{*} (l\+\_\+max + 2) + 1) 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a28f0e2594c5534dcc25b3e4b8add8235}\index{funs.hpp@{funs.hpp}!Heaviside@{Heaviside}}
+\index{Heaviside@{Heaviside}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{Heaviside()}{Heaviside()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a28f0e2594c5534dcc25b3e4b8add8235} 
+template$<$typename T$>$ \\
+double mathutils\+::special\+::\+Heaviside (\begin{DoxyParamCaption}\item[{T}]{x}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The Heaviside step function. Returns 0.\+0 for negative values, 1.\+0 for positive values, and 0.\+5 for zero. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type of the input value (must be comparable to T\{0\}). \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The input value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Heaviside step function value. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}\index{funs.hpp@{funs.hpp}!log\_factorial@{log\_factorial}}
+\index{log\_factorial@{log\_factorial}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{log\_factorial()}{log\_factorial()}}
+{\footnotesize\ttfamily \label{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25} 
+double mathutils\+::special\+::log\+\_\+factorial (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{n}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute $\ln(n!)$ for a non-\/negative integer n. Uses a lookup table for small values and lgamma for larger values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The non-\/negative integer for which to compute log(n!). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The logarithm of the factorial of n. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a34b8be655fce338b873a136b7316577c}\index{funs.hpp@{funs.hpp}!phi\_independent\_Ylm@{phi\_independent\_Ylm}}
+\index{phi\_independent\_Ylm@{phi\_independent\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{phi\_independent\_Ylm()}{phi\_independent\_Ylm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a34b8be655fce338b873a136b7316577c} 
+double mathutils\+::special\+::phi\+\_\+independent\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute Ylm(theta, phi)/exp(i\texorpdfstring{$\ast$}{*}theta\texorpdfstring{$\ast$}{*}phi) for m\texorpdfstring{$>$}{>}=0 and 0\texorpdfstring{$<$}{<}=theta\texorpdfstring{$<$}{<}=pi. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic. \\
+\hline
+{\em m} & Order of the spherical harmonic. \\
+\hline
+{\em theta} & Polar angle in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Value of Ylm(theta, phi)/exp(i\texorpdfstring{$\ast$}{*}theta\texorpdfstring{$\ast$}{*}phi) 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a6fedfb63d616b218c4e66aec52f6d12e}\index{funs.hpp@{funs.hpp}!real\_Ylm@{real\_Ylm}}
+\index{real\_Ylm@{real\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{real\_Ylm()}{real\_Ylm()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{funs_8hpp_a6fedfb63d616b218c4e66aec52f6d12e} 
+Eigen\+::\+Vector\+Xd mathutils\+::special\+::real\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{const Eigen\+::\+Matrix\+Xd \&}]{thetaphi\+\_\+coord\+\_\+P}{}\end{DoxyParamCaption})}
+
+
+
+Compute the real spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the spherical harmonic ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em thetaphi\+\_\+coord\+\_\+P} & Matrix containing the polar and azimuthal angles. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Eigen\+::\+Vector\+Xd Values of the real spherical harmonics. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a14eb778df40fbda4f8d7010372e948aa}\index{funs.hpp@{funs.hpp}!real\_Ylm@{real\_Ylm}}
+\index{real\_Ylm@{real\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{real\_Ylm()}{real\_Ylm()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{funs_8hpp_a14eb778df40fbda4f8d7010372e948aa} 
+double mathutils\+::special\+::real\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{, }\item[{double}]{phi}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the real spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the spherical harmonic ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi$). \\
+\hline
+{\em phi} & Azimuthal angle in radians ( $0\leq\phi<2\pi$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double Value of the real spherical harmonic. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_ac438d0a4d710f9031782228f53caa7fb}\index{funs.hpp@{funs.hpp}!recursive\_real\_Ylm@{recursive\_real\_Ylm}}
+\index{recursive\_real\_Ylm@{recursive\_real\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{recursive\_real\_Ylm()}{recursive\_real\_Ylm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_ac438d0a4d710f9031782228f53caa7fb} 
+double mathutils\+::special\+::recursive\+\_\+real\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{, }\item[{double}]{phi}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the real spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the spherical harmonic ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi$). \\
+\hline
+{\em phi} & Azimuthal angle in radians ( $0\leq\phi<2\pi$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double Value of the real spherical harmonic. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a1ccdc6f0ab2dc55cf89ca46924ff5e15}\index{funs.hpp@{funs.hpp}!recursive\_Ylm@{recursive\_Ylm}}
+\index{recursive\_Ylm@{recursive\_Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{recursive\_Ylm()}{recursive\_Ylm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a1ccdc6f0ab2dc55cf89ca46924ff5e15} 
+std\+::complex$<$ double $>$ mathutils\+::special\+::recursive\+\_\+\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{, }\item[{double}]{phi}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the spherical harmonic ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi$). \\
+\hline
+{\em phi} & Azimuthal angle in radians ( $0\leq\phi<2\pi$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::complex$<$double$>$ Value of the spherical harmonic. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_ad3801cc8f3434b64bba273aa512e323c}\index{funs.hpp@{funs.hpp}!reduced\_spherical\_Plm@{reduced\_spherical\_Plm}}
+\index{reduced\_spherical\_Plm@{reduced\_spherical\_Plm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{reduced\_spherical\_Plm()}{reduced\_spherical\_Plm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_ad3801cc8f3434b64bba273aa512e323c} 
+double mathutils\+::special\+::reduced\+\_\+spherical\+\_\+\+Plm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the associated Legendre polynomial with spherical harmonics normalization $P_{\ell m}(\theta) = e^{-im\phi}Y_{\ell m}(\theta, \phi)$ for $0\leq\theta\leq\pi/2$ and $m\geq 0$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the polynomial ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the polynomial ( $m=0,1,\ldots,\ell$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi/2$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double Value of the associated normalized Legendre polynomial. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a8ef8266a4ce5f68145377986f18e384b}\index{funs.hpp@{funs.hpp}!reduced\_spherical\_Pmm@{reduced\_spherical\_Pmm}}
+\index{reduced\_spherical\_Pmm@{reduced\_spherical\_Pmm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{reduced\_spherical\_Pmm()}{reduced\_spherical\_Pmm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a8ef8266a4ce5f68145377986f18e384b} 
+double mathutils\+::special\+::reduced\+\_\+spherical\+\_\+\+Pmm (\begin{DoxyParamCaption}\item[{int}]{m}{, }\item[{double}]{theta}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the associated Legendre polynomial with spherical harmonics normalization $P_{m m}(\theta) = e^{-im\phi}Y_{m m}(\theta, \phi)$ for $0\leq\theta\leq\pi/2$ and $m\geq 0$. Used to initialize the recursion. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & Degree/order of the polynomial ( $m=0,1,\ldots$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi/2$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double Value of the associated normalized Legendre polynomial. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_ac18089c076ae6244dc6054958f065cd7}\index{funs.hpp@{funs.hpp}!ReLog@{ReLog}}
+\index{ReLog@{ReLog}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{ReLog()}{ReLog()}}
+{\footnotesize\ttfamily \label{funs_8hpp_ac18089c076ae6244dc6054958f065cd7} 
+template$<$typename T$>$ \\
+double mathutils\+::special\+::\+Re\+Log (\begin{DoxyParamCaption}\item[{const T \&}]{x}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the real part of the complex logarithm  $Re(Log(x))=
+ln(|x|)$. Returns $Re(Log(0))=-\infty$ for $x=0$. 
+
+\[\mathbb{C}\rightarrow \mathbb{R}\cup\lbrace-\infty\rbrace\\
+x\mapsto Re(Log(x))
+\]
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The input value (can be floating-\/point or integral). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The logarithm of the input value. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_ae40c3aa268a373171514e835d6868a27}\index{funs.hpp@{funs.hpp}!ReLogRe\_ImLogRe\_over\_pi@{ReLogRe\_ImLogRe\_over\_pi}}
+\index{ReLogRe\_ImLogRe\_over\_pi@{ReLogRe\_ImLogRe\_over\_pi}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{ReLogRe\_ImLogRe\_over\_pi()}{ReLogRe\_ImLogRe\_over\_pi()}}
+{\footnotesize\ttfamily \label{funs_8hpp_ae40c3aa268a373171514e835d6868a27} 
+template$<$typename T$>$ \\
+std\+::pair$<$ double, int $>$ mathutils\+::special\+::\+Re\+Log\+Re\+\_\+\+Im\+Log\+Re\+\_\+over\+\_\+pi (\begin{DoxyParamCaption}\item[{const T \&}]{x}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute $Re(Log(Re(x)))$ and $Im(Log(Re(x)))/\pi$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The input value (can be floating-\/point or integral). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::pair$<$double, int$>$ \{re\+\_\+log, arg\+\_\+over\+\_\+pi\} 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a792aa7c8cdcbdcdc13ea13360b839b51}\index{funs.hpp@{funs.hpp}!sign@{sign}}
+\index{sign@{sign}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{sign()}{sign()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a792aa7c8cdcbdcdc13ea13360b839b51} 
+template$<$typename T$>$ \\
+int mathutils\+::sign (\begin{DoxyParamCaption}\item[{T}]{x}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the sign (1,-\/1, or 0) of a value. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type of the input value (must be comparable to T\{0\}). \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The input value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sign of the input value. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_ae97cd7b18cf1e1ffc2da83aa1761d4db}\index{funs.hpp@{funs.hpp}!spherical\_harmonic\_index\_lm\_N@{spherical\_harmonic\_index\_lm\_N}}
+\index{spherical\_harmonic\_index\_lm\_N@{spherical\_harmonic\_index\_lm\_N}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{spherical\_harmonic\_index\_lm\_N()}{spherical\_harmonic\_index\_lm\_N()}}
+{\footnotesize\ttfamily \label{funs_8hpp_ae97cd7b18cf1e1ffc2da83aa1761d4db} 
+std\+::array$<$ int, 2 $>$ mathutils\+::special\+::spherical\+\_\+harmonic\+\_\+index\+\_\+lm\+\_\+N (\begin{DoxyParamCaption}\item[{int}]{n}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the n-\/th element of the sequence \mbox{[}(0,0), (1,-\/1), (1,0), (1,1), (2,-\/2), ...\mbox{]}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The linear index (must be non-\/negative). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::array$<$int, 2$>$ The (l,m) pair. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a448d999a45f277a4090ae4e84738fb62}\index{funs.hpp@{funs.hpp}!spherical\_harmonic\_index\_n\_LM@{spherical\_harmonic\_index\_n\_LM}}
+\index{spherical\_harmonic\_index\_n\_LM@{spherical\_harmonic\_index\_n\_LM}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{spherical\_harmonic\_index\_n\_LM()}{spherical\_harmonic\_index\_n\_LM()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a448d999a45f277a4090ae4e84738fb62} 
+int mathutils\+::special\+::spherical\+\_\+harmonic\+\_\+index\+\_\+n\+\_\+\+LM (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the index of (l,m) in \mbox{[}(0,0), (1,-\/1), (1,0), (1,1), (2,-\/2), ...\mbox{]}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & The degree (non-\/negative). \\
+\hline
+{\em m} & The order (must be in the range \mbox{[}-\/l, l\mbox{]}). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int The spherical harmonic index. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a5fb439a33067977a8115f3d31310855a}\index{funs.hpp@{funs.hpp}!spherical\_Plm@{spherical\_Plm}}
+\index{spherical\_Plm@{spherical\_Plm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{spherical\_Plm()}{spherical\_Plm()}}
+{\footnotesize\ttfamily \label{funs_8hpp_a5fb439a33067977a8115f3d31310855a} 
+double mathutils\+::special\+::spherical\+\_\+\+Plm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the associated Legendre polynomial with spherical harmonics normalization $P_{\ell m}(\theta) = e^{-im\phi}Y_{\ell m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the polynomial ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the polynomial ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double Value of the associated normalized Legendre polynomial. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a2740e3181118b0a18f363fc225c17f59}\index{funs.hpp@{funs.hpp}!Ylm@{Ylm}}
+\index{Ylm@{Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{Ylm()}{Ylm()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{funs_8hpp_a2740e3181118b0a18f363fc225c17f59} 
+Eigen\+::\+Vector\+Xcd mathutils\+::special\+::\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{const Eigen\+::\+Matrix\+Xd \&}]{thetaphi\+\_\+coord\+\_\+P}{}\end{DoxyParamCaption})}
+
+
+
+Compute the spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the spherical harmonic ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em thetaphi\+\_\+coord\+\_\+P} & Matrix containing the polar and azimuthal angles. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Eigen\+::\+Vector\+Xcd Values of the spherical harmonics. 
+\end{DoxyReturn}
+\Hypertarget{funs_8hpp_a5e552709880cecd4db1d6fae9c3b8f09}\index{funs.hpp@{funs.hpp}!Ylm@{Ylm}}
+\index{Ylm@{Ylm}!funs.hpp@{funs.hpp}}
+\doxysubsubsection{\texorpdfstring{Ylm()}{Ylm()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{funs_8hpp_a5e552709880cecd4db1d6fae9c3b8f09} 
+std\+::complex$<$ double $>$ mathutils\+::special\+::\+Ylm (\begin{DoxyParamCaption}\item[{int}]{l}{, }\item[{int}]{m}{, }\item[{double}]{theta}{, }\item[{double}]{phi}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Compute the spherical harmonics $Y_{l m}(\theta, \phi)$ for $0\leq\theta\leq\pi$ and $-\ell \leq m\geq \ell$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & Degree of the spherical harmonic ( $\ell=0,1,\ldots$). \\
+\hline
+{\em m} & Order of the spherical harmonic ( $m=-\ell,\ldots,\ell$). \\
+\hline
+{\em theta} & Polar angle in radians ( $0\leq\theta\leq\pi$). \\
+\hline
+{\em phi} & Azimuthal angle in radians ( $0\leq\phi<2\pi$). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::complex$<$double$>$ Value of the spherical harmonic. 
+\end{DoxyReturn}

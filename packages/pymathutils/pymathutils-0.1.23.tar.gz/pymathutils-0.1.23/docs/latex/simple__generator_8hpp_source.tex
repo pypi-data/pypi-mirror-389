@@ -1,0 +1,131 @@
+\doxysection{simple\+\_\+generator.\+hpp}
+\hypertarget{simple__generator_8hpp_source}{}\label{simple__generator_8hpp_source}\index{include/mathutils/simple\_generator.hpp@{include/mathutils/simple\_generator.hpp}}
+\mbox{\hyperlink{simple__generator_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <coroutine>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <unordered\_set>}\ \textcolor{comment}{//\ std::unordered\_set}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{namespace\ }mathutils\ \{}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>\ \textcolor{keyword}{class\ }SimpleGenerator\ \{}
+\DoxyCodeLine{00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00027\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{classmathutils_1_1SimpleGenerator_1_1promise__type}{promise\_type}};}
+\DoxyCodeLine{00028\ \ \ \textcolor{keyword}{using\ }handle\_type\ =\ std::coroutine\_handle<promise\_type>;}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00031\ \ \ handle\_type\ mCoro;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{keyword}{explicit}\ SimpleGenerator(handle\_type\ h)\ :\ mCoro(h)\ \{\}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ SimpleGenerator(SimpleGenerator\ \&\&other\_sg)\ noexcept\ :\ mCoro(other\_sg.mCoro)\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ other\_sg.mCoro\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00038\ \ \ \}}
+\DoxyCodeLine{00039\ \ \ SimpleGenerator\ \&operator=(SimpleGenerator\ \&\&other)\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ !=\ other)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ mCoro\ =\ other.mCoro;}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ other.mCoro\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+\DoxyCodeLine{00045\ \ \ \}}
+\DoxyCodeLine{00046\ \ \ SimpleGenerator(\textcolor{keyword}{const}\ SimpleGenerator\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00047\ \ \ SimpleGenerator\ \&operator=(\textcolor{keyword}{const}\ SimpleGenerator\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00048\ \ \ \string~SimpleGenerator()\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{if}\ (mCoro)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ mCoro.destroy();}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ Implementation\ of\ the\ external\ API\ called\ by\ the\ user\ to\ actually\ use\ the}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{//\ generator}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ start()\ \{\ try\_next();\ \}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{bool}\ running()\ \{\ \textcolor{keywordflow}{return}\ not\ mCoro.done();\ \}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ try\_next()\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ mCoro.resume();}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{if}\ (mCoro.promise().m\_latest\_exception)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ std::rethrow\_exception(mCoro.promise().m\_latest\_exception);}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ \ \ T\ take()\ \{\ \textcolor{keywordflow}{return}\ std::move(mCoro.promise().m\_current\_value);\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ Implementation\ of\ the\ internal\ API\ called\ when\ co\_yield/etc\ are\ triggered}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{//\ inside\ the\ coroutine}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classmathutils_1_1SimpleGenerator_1_1promise__type}{promise\_type}}\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ T\ m\_current\_value;}
+\DoxyCodeLine{00070\ \ \ \ \ std::exception\_ptr\ m\_latest\_exception;}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{friend}\ SimpleGenerator;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{auto}\ get\_return\_object()\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SimpleGenerator\{handle\_type::from\_promise(*\textcolor{keyword}{this})\};}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keyword}{auto}\ yield\_value(T\ some\_value)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ m\_current\_value\ =\ some\_value;\ \textcolor{comment}{//\ Capture\ the\ yielded\ value}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::suspend\_always\{\};}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{auto}\ unhandled\_exception()\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ m\_latest\_exception\ =\ std::current\_exception();}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{auto}\ initial\_suspend()\ \{\ \textcolor{keywordflow}{return}\ std::suspend\_always\{\};\ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{auto}\ final\_suspend()\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ std::suspend\_always\{\};\ \}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{auto}\ return\_void()\ \{\ \textcolor{keywordflow}{return}\ std::suspend\_never\{\};\ \}}
+\DoxyCodeLine{00087\ \ \ \};}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{//\ Implementation\ of\ the\ iterator\ protocol}}
+\DoxyCodeLine{00091\ \ \ \textcolor{keyword}{class\ }iterator\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ SimpleGenerator<T>\ \&owner;}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{bool}\ done;}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{void}\ iter\_next()\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ owner.try\_next();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ done\ =\ not\ owner.running();}
+\DoxyCodeLine{00097\ \ \ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ iterator\ \&r)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ done\ !=\ r.done;\ \}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{auto}\ operator*()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ owner.take();\ \}}
+\DoxyCodeLine{00102\ \ \ \ \ iterator\ \&operator++()\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ iter\_next();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ iterator(SimpleGenerator<T>\ \&o,\ \textcolor{keywordtype}{bool}\ d)\ :\ owner(o),\ done(d)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ done)}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ iter\_next();}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \};}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{//\ Public\ access\ to\ the\ internal\ iterator\ protocol}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ iterator\ begin()\ \{\ \textcolor{keywordflow}{return}\ iterator\{*\textcolor{keyword}{this},\ \textcolor{keyword}{false}\};\ \}}
+\DoxyCodeLine{00116\ \ \ iterator\ end()\ \{\ \textcolor{keywordflow}{return}\ iterator\{*\textcolor{keyword}{this},\ \textcolor{keyword}{true}\};\ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{//\ Convert\ generator\ to\ a\ unordered\_set}}
+\DoxyCodeLine{00120\ \ \ std::unordered\_set<T>\ to\_unordered\_set()\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ std::unordered\_set<T>\ result;}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&value\ :\ *\textcolor{keyword}{this})\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ result.insert(value);}
+\DoxyCodeLine{00124\ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00126\ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{//\ Convert\ generator\ to\ a\ vector}}
+\DoxyCodeLine{00129\ \ \ std::vector<T>\ to\_vector()\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ std::vector<T>\ result;}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&value\ :\ *\textcolor{keyword}{this})\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ result.push\_back(value);}
+\DoxyCodeLine{00133\ \ \ \ \ \}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \}\ \textcolor{comment}{//\ namespace\ mathutils}}
+\DoxyCodeLine{00139\ }
+
+\end{DoxyCode}

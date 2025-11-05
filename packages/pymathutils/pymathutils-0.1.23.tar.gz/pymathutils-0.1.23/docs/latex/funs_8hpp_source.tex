@@ -1,0 +1,1020 @@
+\doxysection{funs.\+hpp}
+\hypertarget{funs_8hpp_source}{}\label{funs_8hpp_source}\index{include/mathutils/funs.hpp@{include/mathutils/funs.hpp}}
+\mbox{\hyperlink{funs_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{log__factorial__lookup__table_8hpp}{mathutils/log\_factorial\_lookup\_table.hpp}}"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{simple__generator_8hpp}{mathutils/simple\_generator.hpp}}"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}mathutils/spherical\_harmonics\_index\_lookup\_table.hpp"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <Eigen/Dense>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <complex>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <coroutine>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00021\ \textcolor{comment}{//\ Simple\ non-\/vectorized\ functions\ //}}
+\DoxyCodeLine{00024\ \textcolor{keyword}{namespace\ }mathutils\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{funs_8hpp_a792aa7c8cdcbdcdc13ea13360b839b51}{sign}}(T\ x)\ \{\ \textcolor{keywordflow}{return}\ (x\ >\ T\{0\})\ -\/\ (x\ <\ T\{0\});\ \}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \}\ \textcolor{comment}{//\ namespace\ mathutils}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{//\ Special\ functions\ ////////////////}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{namespace\ }mathutils\ \{}
+\DoxyCodeLine{00047\ \textcolor{keyword}{namespace\ }special\ \{}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(\textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{//\ Returns\ -\/1\ if\ n\ is\ odd,\ 1\ if\ n\ is\ even}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordflow}{return}\ 1\ -\/\ 2\ *\ (n\ \&\ 1);}
+\DoxyCodeLine{00055\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(uint64\_t\ n)\ \{}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordflow}{return}\ (n\ <\ LOG\_FACTORIAL\_LOOKUP\_TABLE\_SIZE)}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ LOG\_FACTORIAL\_LOOKUP\_TABLE[n]}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::lgamma(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(n\ +\ 1));\ \textcolor{comment}{//\ lgamma(n+1)\ =\ log(n!)}}
+\DoxyCodeLine{00068\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_a28f0e2594c5534dcc25b3e4b8add8235}{Heaviside}}(T\ x)\ \{}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordflow}{return}\ 0.5\ +\ 0.5\ *\ ((x\ >\ T\{0\})\ -\/\ (x\ <\ T\{0\}));}
+\DoxyCodeLine{00080\ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00093\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_ac18089c076ae6244dc6054958f065cd7}{ReLog}}(\textcolor{keyword}{const}\ T\ \&x)\ \{}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordflow}{return}\ (x\ ==\ T\{0\})\ ?\ -\/std::numeric\_limits<double>::infinity()}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::log(std::abs(x));}
+\DoxyCodeLine{00096\ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00104\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00105\ \textcolor{keyword}{inline}\ std::pair<double,\ int>\ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(\textcolor{keyword}{const}\ T\ \&x)\ \{}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_floating\_point\_v<T>\ ||\ std::is\_integral\_v<T>)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//\ return\ (x\ ==\ T\{0\})\ ?\ \{-\/std::numeric\_limits<double>::infinity(),\ 0\}}}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \{std::log(std::abs(x)),\ static\_cast<int>(x\ <\ T\{0\})\};}}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ (x\ ==\ T\{0\})}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ std::make\_pair(-\/std::numeric\_limits<double>::infinity(),\ 0)}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::make\_pair(std::log(std::abs(x)),}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(x\ <\ T\{0\}));}
+\DoxyCodeLine{00113\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{double}\ Re\_x\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(x);}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{//\ return\ (Re\_x\ ==\ 0.0)}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ ?\ \{-\/std::numeric\_limits<double>::infinity(),\ 0\}}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ :\ \{std::log(std::abs(Re\_x)),\ static\_cast<int>(Re\_x\ <\ 0.0)\};}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{return}\ (Re\_x\ ==\ 0.0)}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ std::make\_pair(-\/std::numeric\_limits<double>::infinity(),\ 0)}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::make\_pair(std::log(std::abs(Re\_x)),}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(Re\_x\ <\ 0.0));}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00126\ \textcolor{keyword}{inline}\ std::pair<double,\ int>\ ReLogRe\_ImLogRe\_over\_pi\_of\_x\_to\_pow(\textcolor{keyword}{const}\ T\ \&x,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{00128\ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_floating\_point\_v<T>\ ||\ std::is\_integral\_v<T>)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{return}\ (n\ ==\ 0)\ ?\ std::make\_pair(0.0,\ 0)}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ :\ (x\ ==\ T\{0\})}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ std::make\_pair(-\/n\ *\ std::numeric\_limits<double>::infinity(),\ 0)}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::make\_pair(n\ *\ std::log(std::abs(x)),}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ static\_cast<int>(x\ <\ T\{0\}\ \&\&\ (n\ \&\ 1)));}
+\DoxyCodeLine{00134\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordtype}{double}\ Re\_x\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(x);}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{return}\ (n\ ==\ 0)\ ?\ std::make\_pair(0.0,\ 0)}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ :\ (Re\_x\ ==\ 0.0)}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ std::make\_pair(-\/n\ *\ std::numeric\_limits<double>::infinity(),\ 0)}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::make\_pair(n\ *\ std::log(std::abs(Re\_x)),}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ static\_cast<int>(Re\_x\ <\ 0.0\ \&\&\ (n\ \&\ 1)));}
+\DoxyCodeLine{00141\ \ \ \}}
+\DoxyCodeLine{00142\ \}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00145\ \textcolor{comment}{//\ Spherical\ harmonics\ //}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00156\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{funs_8hpp_a448d999a45f277a4090ae4e84738fb62}{spherical\_harmonic\_index\_n\_LM}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m)\ \{}
+\DoxyCodeLine{00157\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00159\ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00162\ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordflow}{return}\ l\ *\ (l\ +\ 1)\ +\ m;}
+\DoxyCodeLine{00164\ \}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00174\ \textcolor{keyword}{inline}\ std::array<int,\ 2>\ \mbox{\hyperlink{funs_8hpp_ae97cd7b18cf1e1ffc2da83aa1761d4db}{spherical\_harmonic\_index\_lm\_N}}(\textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordflow}{if}\ (n\ <\ 0)\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}n\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordflow}{if}\ (n\ >\ SPHERICAL\_HARMONIC\_INDEX\_N\_MAX)\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordtype}{int}\ l\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(std::floor(std::sqrt(n)));}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{return}\ \{l,\ n\ -\/\ l\ *\ (l\ +\ 1)\};}
+\DoxyCodeLine{00181\ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordflow}{return}\ \{SPHERICAL\_HARMONIC\_INDEX\_LM\_N\_LOOKUP\_TABLE[n][0],}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ SPHERICAL\_HARMONIC\_INDEX\_LM\_N\_LOOKUP\_TABLE[n][1]\};}
+\DoxyCodeLine{00184\ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00195\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_a8ef8266a4ce5f68145377986f18e384b}{reduced\_spherical\_Pmm}}(\textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta)\ \{}
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{//\ if\ (theta\ ==\ 0.0)\ \{}}
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{//\ \ \ if\ (m\ ==\ 0)\ \{}}
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{//\ \ \ \ \ return\ 1.0\ /\ std::sqrt(4\ *\ M\_PI);}}
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{//\ \ \ \}}}
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{//\ \ \ return\ 0.0;}}
+\DoxyCodeLine{00201\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{//\ double\ sigma\ =\ (1\ -\/\ 2\ *\ (m\ \&\ 1));\ //\ this\ is\ just\ std::pow(-\/1,\ m);}}
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{//\ return\ sigma\ *\ std::exp(m\ *\ std::log(std::sin(theta))\ -\/}}
+\DoxyCodeLine{00204\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ m\ *\ std::log(2)\ +}}
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::lgamma(2\ *\ m\ +\ 2)\ -\/\ std::lgamma(m\ +\ 1));}}
+\DoxyCodeLine{00206\ \ \ \textcolor{keywordflow}{return}\ (theta\ ==\ 0.0)}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ (m\ ==\ 0)\ /\ std::sqrt(4\ *\ M\_PI)}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ (1\ -\/\ 2\ *\ (m\ \&\ 1))\ *}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::exp(m\ *\ std::log(std::sin(theta))\ -\/}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ m\ *\ std::log(2)\ +}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::lgamma(2\ *\ m\ +\ 2)\ -\/\ std::lgamma(m\ +\ 1));}
+\DoxyCodeLine{00212\ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \textcolor{comment}{//\ inline\ std::pair<double,\ double>}}
+\DoxyCodeLine{00215\ \textcolor{comment}{//\ init\_Plm\_recursion\_three\_term\_upward\_ell(int\ m,\ double\ theta)\ \{}}
+\DoxyCodeLine{00216\ \textcolor{comment}{//\ \ \ double\ P\_m\_m\ =}}
+\DoxyCodeLine{00217\ \textcolor{comment}{//\ \ \ \ \ \ \ (theta\ ==\ 0.0)}}
+\DoxyCodeLine{00218\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ ?\ (m\ ==\ 0)\ /\ std::sqrt(4\ *\ M\_PI)}}
+\DoxyCodeLine{00219\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ :\ (1\ -\/\ 2\ *\ (m\ \&\ 1))\ *}}
+\DoxyCodeLine{00220\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::exp(m\ *\ std::log(std::sin(theta))\ -\/}}
+\DoxyCodeLine{00221\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ m\ *\ std::log(2)\ +}}
+\DoxyCodeLine{00222\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::lgamma(2\ *\ m\ +\ 2)\ -\/\ std::lgamma(m\ +\ 1));}}
+\DoxyCodeLine{00223\ \textcolor{comment}{//\ \ \ double\ P\_m\_plus\_one\_m\ =\ std::sqrt(2\ *\ m\ +\ 3)\ *\ std::cos(theta)\ *\ P\_m\_m;}}
+\DoxyCodeLine{00224\ \textcolor{comment}{//\ \ \ return\ \{P\_m\_m,\ P\_m\_plus\_one\_m\};}}
+\DoxyCodeLine{00225\ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00233\ \mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{mathutils::SimpleGenerator<double>}}}
+\DoxyCodeLine{00234\ \mbox{\hyperlink{funs_8hpp_a9afd87c80f40d9c15c5b3fa97a6252a3}{generate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell}}(\textcolor{keywordtype}{int}\ l\_start,}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ l\_end,}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theta)\ \{}
+\DoxyCodeLine{00237\ \ \ \textcolor{keywordflow}{if}\ (l\_start\ <\ 0\ ||\ l\_end\ <\ l\_start)\ \{}
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keyword}{co\_return};}
+\DoxyCodeLine{00239\ \ \ \}}
+\DoxyCodeLine{00240\ \ \ \textcolor{keywordtype}{int}\ m\ =\ l\_start;}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{double}\ P\_ell\_minus\_one\_m\ =\ \mbox{\hyperlink{funs_8hpp_a8ef8266a4ce5f68145377986f18e384b}{reduced\_spherical\_Pmm}}(m,\ theta);}
+\DoxyCodeLine{00242\ \ \ \textcolor{comment}{//\ ell\ =\ l\_start}}
+\DoxyCodeLine{00243\ \ \ \textcolor{keyword}{co\_yield}\ P\_ell\_minus\_one\_m;}
+\DoxyCodeLine{00244\ \ \ \textcolor{keywordflow}{if}\ (l\_start\ ==\ l\_end)\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keyword}{co\_return};}
+\DoxyCodeLine{00246\ \ \ \}}
+\DoxyCodeLine{00247\ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00248\ \ \ \textcolor{keywordtype}{double}\ P\_ell\_m\ =\ cos\_theta\ *\ std::sqrt(2\ *\ m\ +\ 3)\ *\ P\_ell\_minus\_one\_m;}
+\DoxyCodeLine{00249\ \ \ \textcolor{comment}{//\ ell\ =\ l\_start\ +\ 1}}
+\DoxyCodeLine{00250\ \ \ \textcolor{keyword}{co\_yield}\ P\_ell\_m;}
+\DoxyCodeLine{00251\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ ell\ =\ m\ +\ 2;\ ell\ <=\ l\_end;\ ++ell)\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ den\_ell\_m\ =\ (ell\ -\/\ m)\ *\ 1.0\ *\ (ell\ +\ m);}
+\DoxyCodeLine{00253\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ c\_ell\_m\ =}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ std::sqrt(((2.0\ *\ ell\ -\/\ 1.0)\ *\ (2.0\ *\ ell\ +\ 1.0))\ /\ den\_ell\_m);}
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ den\_ell\_minus\_one\_m\ =}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ (ell\ -\/\ m)\ *\ 1.0\ *\ (ell\ +\ m)\ *\ (2.0\ *\ ell\ -\/\ 3.0);}
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ c\_ell\_minus\_one\_m\ =}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ std::sqrt(((ell\ -\/\ m\ -\/\ 1.0)\ *\ (ell\ +\ m\ -\/\ 1.0)\ *\ (2.0\ *\ ell\ +\ 1.0))\ /}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ den\_ell\_minus\_one\_m);}
+\DoxyCodeLine{00260\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ q\ =}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ cos\_theta\ *\ c\_ell\_m\ *\ P\_ell\_m\ -\/\ c\_ell\_minus\_one\_m\ *\ P\_ell\_minus\_one\_m;}
+\DoxyCodeLine{00262\ \ \ \ \ P\_ell\_minus\_one\_m\ =\ P\_ell\_m;}
+\DoxyCodeLine{00263\ \ \ \ \ P\_ell\_m\ =\ q;}
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keyword}{co\_yield}\ P\_ell\_m;}
+\DoxyCodeLine{00265\ \ \ \}}
+\DoxyCodeLine{00266\ \}}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \mbox{\hyperlink{classmathutils_1_1SimpleGenerator}{mathutils::SimpleGenerator<std::pair<int,\ double>}}>}
+\DoxyCodeLine{00269\ enumerate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell(\textcolor{keywordtype}{int}\ l\_start,}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ l\_end,}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theta)\ \{}
+\DoxyCodeLine{00272\ \ \ \textcolor{keywordflow}{if}\ (l\_start\ <\ 0\ ||\ l\_end\ <\ l\_start)\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \textcolor{keyword}{co\_return};}
+\DoxyCodeLine{00274\ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \textcolor{keywordtype}{int}\ m\ =\ l\_start;}
+\DoxyCodeLine{00276\ \ \ \textcolor{keywordtype}{double}\ P\_ell\_minus\_one\_m\ =\ reduced\_spherical\_Pmm(m,\ theta);}
+\DoxyCodeLine{00277\ \ \ \textcolor{comment}{//\ ell\ =\ l\_start}}
+\DoxyCodeLine{00278\ \ \ \textcolor{keyword}{co\_yield}\ \{l\_start,\ P\_ell\_minus\_one\_m\};}
+\DoxyCodeLine{00279\ \ \ \textcolor{keywordflow}{if}\ (l\_start\ ==\ l\_end)\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \textcolor{keyword}{co\_return};}
+\DoxyCodeLine{00281\ \ \ \}}
+\DoxyCodeLine{00282\ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00283\ \ \ \textcolor{keywordtype}{double}\ P\_ell\_m\ =\ cos\_theta\ *\ std::sqrt(2\ *\ m\ +\ 3)\ *\ P\_ell\_minus\_one\_m;}
+\DoxyCodeLine{00284\ \ \ \textcolor{comment}{//\ ell\ =\ l\_start\ +\ 1}}
+\DoxyCodeLine{00285\ \ \ \textcolor{keyword}{co\_yield}\ \{l\_start\ +\ 1,\ P\_ell\_m\};}
+\DoxyCodeLine{00286\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ ell\ =\ m\ +\ 2;\ ell\ <=\ l\_end;\ ++ell)\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ den\_ell\_m\ =\ (ell\ -\/\ m)\ *\ 1.0\ *\ (ell\ +\ m);}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ c\_ell\_m\ =}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ std::sqrt(((2.0\ *\ ell\ -\/\ 1.0)\ *\ (2.0\ *\ ell\ +\ 1.0))\ /\ den\_ell\_m);}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ den\_ell\_minus\_one\_m\ =}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ (ell\ -\/\ m)\ *\ 1.0\ *\ (ell\ +\ m)\ *\ (2.0\ *\ ell\ -\/\ 3.0);}
+\DoxyCodeLine{00292\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ c\_ell\_minus\_one\_m\ =}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ std::sqrt(((ell\ -\/\ m\ -\/\ 1.0)\ *\ (ell\ +\ m\ -\/\ 1.0)\ *\ (2.0\ *\ ell\ +\ 1.0))\ /}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ den\_ell\_minus\_one\_m);}
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ q\ =}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ cos\_theta\ *\ c\_ell\_m\ *\ P\_ell\_m\ -\/\ c\_ell\_minus\_one\_m\ *\ P\_ell\_minus\_one\_m;}
+\DoxyCodeLine{00297\ \ \ \ \ P\_ell\_minus\_one\_m\ =\ P\_ell\_m;}
+\DoxyCodeLine{00298\ \ \ \ \ P\_ell\_m\ =\ q;}
+\DoxyCodeLine{00299\ \ \ \ \ \textcolor{keyword}{co\_yield}\ \{ell,\ P\_ell\_m\};}
+\DoxyCodeLine{00300\ \ \ \}}
+\DoxyCodeLine{00301\ \}}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00313\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_ad3801cc8f3434b64bba273aa512e323c}{reduced\_spherical\_Plm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta)\ \{}
+\DoxyCodeLine{00314\ \ \ \textcolor{comment}{//\ double\ cos\_theta\ =\ std::cos(theta);}}
+\DoxyCodeLine{00315\ \ \ \textcolor{comment}{//\ //\ P\_\{m\ m\}}}
+\DoxyCodeLine{00316\ \ \ \textcolor{comment}{//\ double\ P\_ell\_minus\_one\_m\ =\ reduced\_spherical\_Pmm(m,\ theta);}}
+\DoxyCodeLine{00317\ \ \ \textcolor{comment}{//\ if\ (l\ ==\ m)\ \{}}
+\DoxyCodeLine{00318\ \ \ \textcolor{comment}{//\ \ \ return\ P\_ell\_minus\_one\_m;}}
+\DoxyCodeLine{00319\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00320\ \ \ \textcolor{comment}{//\ //\ P\_\{m+1\ m\}}}
+\DoxyCodeLine{00321\ \ \ \textcolor{comment}{//\ double\ P\_ell\_m\ =\ cos\_theta\ *\ std::sqrt(2\ *\ m\ +\ 3)\ *\ P\_ell\_minus\_one\_m;}}
+\DoxyCodeLine{00322\ \ \ \textcolor{comment}{//\ for\ (int\ ell\ =\ m\ +\ 2;\ ell\ <=\ l;\ ++ell)\ \{}}
+\DoxyCodeLine{00323\ \ \ \textcolor{comment}{//\ \ \ //\ double\ q\ =}}
+\DoxyCodeLine{00324\ \ \ \textcolor{comment}{//\ \ \ //\ \ \ \ \ cos\_theta\ *}}
+\DoxyCodeLine{00325\ \ \ \textcolor{comment}{//\ \ \ //\ \ \ \ \ \ \ \ \ std::sqrt((2\ *\ ell\ -\/\ 1)\ *\ (2\ *\ ell\ +\ 1)\ /\ ((ell\ -\/\ m)\ *\ (ell\ +}}
+\DoxyCodeLine{00326\ \ \ \textcolor{comment}{//\ \ \ //\ \ \ \ \ \ \ \ \ m)))\ *\ P\_ell\_m\ -\/}}
+\DoxyCodeLine{00327\ \ \ \textcolor{comment}{//\ \ \ //\ \ \ \ \ std::sqrt((ell\ -\/\ m\ -\/\ 1)\ *\ (ell\ +\ m\ -\/\ 1)\ *\ (2\ *\ ell\ +\ 1)\ /}}
+\DoxyCodeLine{00328\ \ \ \textcolor{comment}{//\ \ \ //\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((ell\ -\/\ m)\ *\ (ell\ +\ m)\ *\ (2\ *\ ell\ -\/\ 3)))\ *}}
+\DoxyCodeLine{00329\ \ \ \textcolor{comment}{//\ \ \ //\ \ \ \ \ \ \ \ \ P\_ell\_minus\_one\_m;}}
+\DoxyCodeLine{00330\ \ \ \textcolor{comment}{//\ \ \ const\ double\ den\_ell\_m\ =\ (ell\ -\/\ m)\ *\ 1.0\ *\ (ell\ +\ m);}}
+\DoxyCodeLine{00331\ \ \ \textcolor{comment}{//\ \ \ const\ double\ c\_ell\_m\ =}}
+\DoxyCodeLine{00332\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ std::sqrt(((2.0\ *\ ell\ -\/\ 1.0)\ *\ (2.0\ *\ ell\ +\ 1.0))\ /\ den\_ell\_m);}}
+\DoxyCodeLine{00333\ \ \ \textcolor{comment}{//\ \ \ const\ double\ den\_ell\_minus\_one\_m\ =}}
+\DoxyCodeLine{00334\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ (ell\ -\/\ m)\ *\ 1.0\ *\ (ell\ +\ m)\ *\ (2.0\ *\ ell\ -\/\ 3.0);}}
+\DoxyCodeLine{00335\ \ \ \textcolor{comment}{//\ \ \ const\ double\ c\_ell\_minus\_one\_m\ =}}
+\DoxyCodeLine{00336\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ std::sqrt(((ell\ -\/\ m\ -\/\ 1.0)\ *\ (ell\ +\ m\ -\/\ 1.0)\ *\ (2.0\ *\ ell\ +\ 1.0))\ /}}
+\DoxyCodeLine{00337\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ den\_ell\_minus\_one\_m);}}
+\DoxyCodeLine{00338\ \ \ \textcolor{comment}{//\ \ \ const\ double\ q\ =}}
+\DoxyCodeLine{00339\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ cos\_theta\ *\ c\_ell\_m\ *\ P\_ell\_m\ -\/\ c\_ell\_minus\_one\_m\ *}}
+\DoxyCodeLine{00340\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ P\_ell\_minus\_one\_m;}}
+\DoxyCodeLine{00341\ \ \ \textcolor{comment}{//\ \ \ P\_ell\_minus\_one\_m\ =\ P\_ell\_m;}}
+\DoxyCodeLine{00342\ \ \ \textcolor{comment}{//\ \ \ P\_ell\_m\ =\ q;}}
+\DoxyCodeLine{00343\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00344\ \ \ \textcolor{comment}{//\ return\ P\_ell\_m;}}
+\DoxyCodeLine{00345\ \ \ \textcolor{keywordtype}{double}\ P\_ell\_m\{0.0\};}
+\DoxyCodeLine{00346\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ P\ :\ \mbox{\hyperlink{funs_8hpp_a9afd87c80f40d9c15c5b3fa97a6252a3}{generate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell}}(}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ m,\ l,\ theta))\ \{}
+\DoxyCodeLine{00348\ \ \ \ \ \textcolor{comment}{//\ ell\_start\ =\ m}}
+\DoxyCodeLine{00349\ \ \ \ \ \textcolor{comment}{//\ ell\_end\ =\ l}}
+\DoxyCodeLine{00350\ \ \ \ \ P\_ell\_m\ =\ P;}
+\DoxyCodeLine{00351\ \ \ \}}
+\DoxyCodeLine{00352\ \ \ \textcolor{keywordflow}{return}\ P\_ell\_m;}
+\DoxyCodeLine{00353\ \}}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00365\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_a5fb439a33067977a8115f3d31310855a}{spherical\_Plm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta)\ \{}
+\DoxyCodeLine{00366\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{00367\ \ \ \textcolor{comment}{//\ int\ sigma\ =\ 1;}}
+\DoxyCodeLine{00368\ \ \ \textcolor{comment}{//\ if\ (m\ <\ 0)\ \{}}
+\DoxyCodeLine{00369\ \ \ \textcolor{comment}{//\ \ \ sigma\ *=\ std::pow(-\/1,\ m);}}
+\DoxyCodeLine{00370\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00371\ \ \ \textcolor{comment}{//\ if\ (theta\ >\ M\_PI\_2)\ \{}}
+\DoxyCodeLine{00372\ \ \ \textcolor{comment}{//\ \ \ sigma\ *=\ std::pow(-\/1,\ l-\/abs\_m);}}
+\DoxyCodeLine{00373\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00374\ \ \ \textcolor{comment}{//\ sign\ difference\ between\ spherical\_Plm\ and\ reduced\_spherical\_Plm}}
+\DoxyCodeLine{00375\ \ \ \textcolor{comment}{//\ int\ sigma\ =}}
+\DoxyCodeLine{00376\ \ \ \textcolor{comment}{//\ \ \ \ \ ((m\ <\ 0)\ \&\&\ (m\ \&\ 1))\ \string^\ ((theta\ >\ M\_PI\_2)\ \&\&\ ((l\ -\/\ abs\_m)\ \&\ 1))\ ?\ -\/1\ :}}
+\DoxyCodeLine{00377\ \ \ \textcolor{comment}{//\ \ \ \ \ 1;}}
+\DoxyCodeLine{00378\ \ \ \textcolor{comment}{//\ //\ transform\ theta\ to\ [0,\ pi/2]}}
+\DoxyCodeLine{00379\ \ \ \textcolor{comment}{//\ theta\ =\ std::min(theta,\ M\_PI\ -\/\ theta);}}
+\DoxyCodeLine{00380\ \ \ \textcolor{comment}{//\ m\ =\ abs\_m;}}
+\DoxyCodeLine{00381\ \ \ \textcolor{comment}{//\ return\ sigma\ *\ reduced\_spherical\_Plm(l,\ abs\_m,\ theta);}}
+\DoxyCodeLine{00382\ \ \ \textcolor{keywordflow}{return}\ ((m\ <\ 0)\ \&\&\ (m\ \&\ 1))\ \string^\ ((theta\ >\ M\_PI\_2)\ \&\&\ ((l\ -\/\ abs\_m)\ \&\ 1))}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ -\/\mbox{\hyperlink{funs_8hpp_ad3801cc8f3434b64bba273aa512e323c}{reduced\_spherical\_Plm}}(l,\ abs\_m,\ std::min(theta,\ M\_PI\ -\/\ theta))}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{funs_8hpp_ad3801cc8f3434b64bba273aa512e323c}{reduced\_spherical\_Plm}}(l,\ abs\_m,\ std::min(theta,\ M\_PI\ -\/\ theta));}
+\DoxyCodeLine{00385\ \}}
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00397\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_ac438d0a4d710f9031782228f53caa7fb}{recursive\_real\_Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{00398\ \ \ \textcolor{comment}{//\ int\ abs\_m\ =\ std::abs(m);}}
+\DoxyCodeLine{00399\ \ \ \textcolor{comment}{//\ double\ Plm\ =\ spherical\_Plm(l,\ abs\_m,\ theta);}}
+\DoxyCodeLine{00400\ \ \ \textcolor{comment}{//\ if\ (m\ <\ 0)\ \{}}
+\DoxyCodeLine{00401\ \ \ \textcolor{comment}{//\ \ \ return\ (1\ -\/\ 2\ *\ (m\ \&\ 1))\ *\ std::sqrt(2)\ *\ std::sin(abs\_m\ *\ phi)\ *\ Plm;}}
+\DoxyCodeLine{00402\ \ \ \textcolor{comment}{//\ \}\ else\ if\ (m\ >\ 0)\ \{}}
+\DoxyCodeLine{00403\ \ \ \textcolor{comment}{//\ \ \ return\ (1\ -\/\ 2\ *\ (m\ \&\ 1))\ *\ std::sqrt(2)\ *\ std::cos(abs\_m\ *\ phi)\ *\ Plm;}}
+\DoxyCodeLine{00404\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00405\ \ \ \textcolor{comment}{//\ //\ m\ ==\ 0}}
+\DoxyCodeLine{00406\ \ \ \textcolor{comment}{//\ return\ Plm;}}
+\DoxyCodeLine{00407\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ 0)\ \{}
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keywordflow}{return}\ -\/std::sqrt(2)\ *\ std::sin(m\ *\ phi)\ *\ \mbox{\hyperlink{funs_8hpp_a5fb439a33067977a8115f3d31310855a}{spherical\_Plm}}(l,\ m,\ theta);}
+\DoxyCodeLine{00409\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (m\ >\ 0)\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keywordflow}{return}\ (1\ -\/\ 2\ *\ (m\ \&\ 1))\ *\ std::sqrt(2)\ *\ std::cos(m\ *\ phi)\ *}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_a5fb439a33067977a8115f3d31310855a}{spherical\_Plm}}(l,\ m,\ theta);}
+\DoxyCodeLine{00412\ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \textcolor{comment}{//\ m\ ==\ 0}}
+\DoxyCodeLine{00414\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{funs_8hpp_a5fb439a33067977a8115f3d31310855a}{spherical\_Plm}}(l,\ m,\ theta);}
+\DoxyCodeLine{00415\ \}}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00427\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_a14eb778df40fbda4f8d7010372e948aa}{real\_Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{00428\ \ \ \textcolor{comment}{//\ check\ l\ and\ m}}
+\DoxyCodeLine{00429\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00431\ \ \ \}}
+\DoxyCodeLine{00432\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00433\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00434\ \ \ \}}
+\DoxyCodeLine{00435\ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00436\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00437\ \ \ \}}
+\DoxyCodeLine{00438\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{funs_8hpp_ac438d0a4d710f9031782228f53caa7fb}{recursive\_real\_Ylm}}(l,\ m,\ theta,\ phi);}
+\DoxyCodeLine{00439\ \}}
+\DoxyCodeLine{00440\ }
+\DoxyCodeLine{00450\ Eigen::VectorXd\ \mbox{\hyperlink{funs_8hpp_a14eb778df40fbda4f8d7010372e948aa}{real\_Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00452\ \ \ \textcolor{comment}{//\ check\ l\ and\ m}}
+\DoxyCodeLine{00453\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00454\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00455\ \ \ \}}
+\DoxyCodeLine{00456\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00457\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00458\ \ \ \}}
+\DoxyCodeLine{00459\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{00460\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00461\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00462\ \ \ \}}
+\DoxyCodeLine{00463\ \ \ Eigen::VectorXd\ result(thetaphi\_coord\_P.rows());}
+\DoxyCodeLine{00464\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ thetaphi\_coord\_P.rows();\ ++i)\ \{}
+\DoxyCodeLine{00465\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(i,\ 0);}
+\DoxyCodeLine{00466\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00468\ \ \ \ \ \}}
+\DoxyCodeLine{00469\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(i,\ 1);}
+\DoxyCodeLine{00470\ \ \ \ \ result(i)\ =\ \mbox{\hyperlink{funs_8hpp_ac438d0a4d710f9031782228f53caa7fb}{recursive\_real\_Ylm}}(l,\ m,\ theta,\ phi);}
+\DoxyCodeLine{00471\ \ \ \}}
+\DoxyCodeLine{00472\ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00473\ \}}
+\DoxyCodeLine{00474\ }
+\DoxyCodeLine{00486\ Eigen::MatrixXd\ \mbox{\hyperlink{funs_8hpp_a8e111ca809adef2abe974bf87b78a7dd}{compute\_all\_real\_Ylm}}(\textcolor{keywordtype}{int}\ l\_max,}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00488\ \ \ \textcolor{comment}{//\ check\ l\_max}}
+\DoxyCodeLine{00489\ \ \ \textcolor{keywordflow}{if}\ (l\_max\ <\ 0)\ \{}
+\DoxyCodeLine{00490\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\_max\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00491\ \ \ \}}
+\DoxyCodeLine{00492\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{00493\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00494\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00495\ \ \ \}}
+\DoxyCodeLine{00496\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{00497\ \ \ \textcolor{keywordflow}{if}\ (num\_points\ <=\ 0)\ \{}
+\DoxyCodeLine{00498\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ at\ least\ one\ row"{}});}
+\DoxyCodeLine{00499\ \ \ \}}
+\DoxyCodeLine{00501\ \ \ \textcolor{keywordtype}{int}\ num\_modes\ =\ l\_max\ *\ (l\_max\ +\ 2)\ +\ 1;\ \textcolor{comment}{//\ =\ n\_LM(l\_max,\ l\_max)+1}}
+\DoxyCodeLine{00502\ \ \ Eigen::MatrixXd\ Y(num\_points,\ num\_modes);}
+\DoxyCodeLine{00503\ \ \ Y.setZero();}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\{0\};\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{00506\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{00507\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00509\ \ \ \ \ \}}
+\DoxyCodeLine{00510\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{00511\ \ \ \ \ \textcolor{keywordtype}{double}\ reduced\_theta\ =}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ std::min(theta,\ M\_PI\ -\/\ theta);\ \textcolor{comment}{//\ transform\ theta\ to\ [0,\ pi/2]}}
+\DoxyCodeLine{00513\ \ \ \ \ \textcolor{comment}{//\ m\ =\ 0}}
+\DoxyCodeLine{00514\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ [l,\ reduced\_P]\ :}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ enumerate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell(}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0,\ l\_max,\ reduced\_theta))\ \{}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\ =\ l\ *\ (l\ +\ 1);}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ Y(p,\ n)\ =\ ((theta\ >\ M\_PI\_2)\ \&\&\ (l\ \&\ 1))\ ?\ -\/reduced\_P\ :\ reduced\_P;}
+\DoxyCodeLine{00519\ \ \ \ \ \}}
+\DoxyCodeLine{00520\ \ \ \ \ \textcolor{comment}{//\ m\ =\ +/-\/1,\ ...\ ,\ +/-\/l\_max}}
+\DoxyCodeLine{00521\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m\ =\ 1;\ m\ <=\ l\_max;\ ++m)\ \{}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ [l,\ reduced\_P]\ :}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ enumerate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell(}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m,\ l\_max,\ reduced\_theta))\ \{}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_plus\ =\ l\ *\ (l\ +\ 1)\ +\ m;}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_minus\ =\ l\ *\ (l\ +\ 1)\ -\/\ m;}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Q\ =\ (-\/1)\string^m\ *\ sqrt(2)\ *\ P\_\{l|m|\}(theta)}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Q\ =\ ((m\ \&\ 1)\ \string^\ ((theta\ >\ M\_PI\_2)\ \&\&\ ((l\ -\/\ m)\ \&\ 1)))}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ -\/std::sqrt(2)\ *\ reduced\_P}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ std::sqrt(2)\ *\ reduced\_P;}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Y\_\{l\ |m|\}\ =\ (-\/1)\string^m\ *\ sqrt(2)\ *\ P\_\{l|m|\}*cos(|m|*phi)}}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ =\ std::cos(m\ *\ phi)\ *\ Q;}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Y\_\{l,\ -\/|m|\}\ =\ (-\/1)\string^m\ *\ sqrt(2)\ *\ P\_\{l|m|\}*sin(|m|*phi)}}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ Y(p,\ n\_minus)\ =\ std::sin(m\ *\ phi)\ *\ Q;}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00536\ \ \ \ \ \}}
+\DoxyCodeLine{00537\ \ \ \}\ \textcolor{comment}{//\ end\ for\ p}}
+\DoxyCodeLine{00538\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{00539\ \}}
+\DoxyCodeLine{00540\ }
+\DoxyCodeLine{00541\ Eigen::MatrixXcd\ compute\_all\_Ylm(\textcolor{keywordtype}{int}\ l\_max,}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00543\ \ \ \textcolor{comment}{//\ check\ l\_max}}
+\DoxyCodeLine{00544\ \ \ \textcolor{keywordflow}{if}\ (l\_max\ <\ 0)\ \{}
+\DoxyCodeLine{00545\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\_max\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00546\ \ \ \}}
+\DoxyCodeLine{00547\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{00548\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00549\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00550\ \ \ \}}
+\DoxyCodeLine{00551\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{00552\ \ \ \textcolor{keywordflow}{if}\ (num\_points\ <=\ 0)\ \{}
+\DoxyCodeLine{00553\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ at\ least\ one\ row"{}});}
+\DoxyCodeLine{00554\ \ \ \}}
+\DoxyCodeLine{00556\ \ \ \textcolor{keywordtype}{int}\ num\_modes\ =\ l\_max\ *\ (l\_max\ +\ 2)\ +\ 1;\ \textcolor{comment}{//\ =\ n\_LM(l\_max,\ l\_max)+1}}
+\DoxyCodeLine{00557\ \ \ Eigen::MatrixXcd\ Y(num\_points,\ num\_modes);}
+\DoxyCodeLine{00558\ \ \ Y.setZero();}
+\DoxyCodeLine{00559\ }
+\DoxyCodeLine{00560\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\{0\};\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{00561\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{00562\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00564\ \ \ \ \ \}}
+\DoxyCodeLine{00565\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{00566\ \ \ \ \ \textcolor{keywordtype}{double}\ reduced\_theta\ =}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ std::min(theta,\ M\_PI\ -\/\ theta);\ \textcolor{comment}{//\ transform\ theta\ to\ [0,\ pi/2]}}
+\DoxyCodeLine{00568\ \ \ \ \ \textcolor{comment}{//\ m\ =\ 0}}
+\DoxyCodeLine{00569\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ [l,\ reduced\_P]\ :}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ enumerate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell(}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0,\ l\_max,\ reduced\_theta))\ \{}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\ =\ l\ *\ (l\ +\ 1);}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ Y(p,\ n)\ =\ ((theta\ >\ M\_PI\_2)\ \&\&\ (l\ \&\ 1))\ ?\ -\/reduced\_P\ :\ reduced\_P;}
+\DoxyCodeLine{00574\ \ \ \ \ \}}
+\DoxyCodeLine{00575\ \ \ \ \ \textcolor{comment}{//\ m\ =\ +/-\/1,\ ...\ ,\ +/-\/l\_max}}
+\DoxyCodeLine{00576\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m\ =\ 1;\ m\ <=\ l\_max;\ ++m)\ \{}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ [l,\ reduced\_P]\ :}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ enumerate\_reduced\_spherical\_Plm\_recursion\_three\_term\_upward\_ell(}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m,\ l\_max,\ reduced\_theta))\ \{}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_plus\ =\ l\ *\ (l\ +\ 1)\ +\ m;}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_minus\ =\ l\ *\ (l\ +\ 1)\ -\/\ m;}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Y\_\{l\ |m|\}\ =\ P\_\{l|m|\}*exp(i|m|phi)}}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ =}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ ((theta\ >\ M\_PI\_2)\ \&\&\ ((l\ -\/\ m)\ \&\ 1))}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ -\/reduced\_P\ *\ std::exp(std::complex<double>(0,\ m\ *\ phi))}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ reduced\_P\ *\ std::exp(std::complex<double>(0,\ m\ *\ phi));}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Y\_\{l,\ -\/|m|\}\ =\ (-\/1)\string^m\ conj(Y\_\{l|m|\})}}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ Y(p,\ n\_minus)\ =}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ \ \ \ (m\ \&\ 1)\ ?\ -\/std::conj(Y(p,\ n\_plus))\ :\ std::conj(Y(p,\ n\_plus));}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00591\ \ \ \ \ \}}
+\DoxyCodeLine{00592\ \ \ \}\ \textcolor{comment}{//\ end\ for\ p}}
+\DoxyCodeLine{00593\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{00594\ \}}
+\DoxyCodeLine{00595\ }
+\DoxyCodeLine{00606\ \textcolor{keyword}{inline}\ std::complex<double>\ \mbox{\hyperlink{funs_8hpp_a1ccdc6f0ab2dc55cf89ca46924ff5e15}{recursive\_Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{00608\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{funs_8hpp_a5fb439a33067977a8115f3d31310855a}{spherical\_Plm}}(l,\ m,\ theta)\ *}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ std::exp(std::complex<double>(0,\ m\ *\ phi));}
+\DoxyCodeLine{00610\ \}}
+\DoxyCodeLine{00611\ }
+\DoxyCodeLine{00622\ \textcolor{keyword}{inline}\ std::complex<double>\ \mbox{\hyperlink{funs_8hpp_a5e552709880cecd4db1d6fae9c3b8f09}{Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{00623\ \ \ \textcolor{comment}{//\ check\ l\ and\ m}}
+\DoxyCodeLine{00624\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00625\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00626\ \ \ \}}
+\DoxyCodeLine{00627\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00628\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00629\ \ \ \}}
+\DoxyCodeLine{00630\ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00631\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00632\ \ \ \}}
+\DoxyCodeLine{00633\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{funs_8hpp_a1ccdc6f0ab2dc55cf89ca46924ff5e15}{recursive\_Ylm}}(l,\ m,\ theta,\ phi);}
+\DoxyCodeLine{00634\ \}}
+\DoxyCodeLine{00635\ }
+\DoxyCodeLine{00645\ Eigen::VectorXcd\ \mbox{\hyperlink{funs_8hpp_a5e552709880cecd4db1d6fae9c3b8f09}{Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00646\ }
+\DoxyCodeLine{00647\ \ \ \textcolor{comment}{//\ check\ l\ and\ m}}
+\DoxyCodeLine{00648\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00649\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00650\ \ \ \}}
+\DoxyCodeLine{00651\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00652\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00653\ \ \ \}}
+\DoxyCodeLine{00654\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{00655\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00656\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00657\ \ \ \}}
+\DoxyCodeLine{00658\ \ \ Eigen::VectorXcd\ result(thetaphi\_coord\_P.rows());}
+\DoxyCodeLine{00659\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ thetaphi\_coord\_P.rows();\ ++i)\ \{}
+\DoxyCodeLine{00660\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(i,\ 0);}
+\DoxyCodeLine{00661\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00663\ \ \ \ \ \}}
+\DoxyCodeLine{00664\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(i,\ 1);}
+\DoxyCodeLine{00665\ \ \ \ \ result(i)\ =\ \mbox{\hyperlink{funs_8hpp_a1ccdc6f0ab2dc55cf89ca46924ff5e15}{recursive\_Ylm}}(l,\ m,\ theta,\ phi);}
+\DoxyCodeLine{00666\ \ \ \}}
+\DoxyCodeLine{00667\ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00668\ \}}
+\DoxyCodeLine{00669\ }
+\DoxyCodeLine{00674\ }
+\DoxyCodeLine{00675\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ series\_real\_Ylm(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{00676\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00677\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00678\ \ \ \}}
+\DoxyCodeLine{00679\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00680\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00681\ \ \ \}}
+\DoxyCodeLine{00682\ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00683\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00684\ \ \ \}}
+\DoxyCodeLine{00685\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{00686\ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00687\ \ \ \textcolor{keywordtype}{double}\ sin\_theta\ =\ std::sin(theta);}
+\DoxyCodeLine{00688\ \ \ \textcolor{keyword}{auto}\ [log\_abs\_cos\_theta,\ arg\_over\_pi\_cos\_theta]\ =}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(cos\_theta);}
+\DoxyCodeLine{00690\ \ \ \textcolor{keyword}{auto}\ [log\_abs\_sin\_theta,\ arg\_over\_pi\_sin\_theta]\ =}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(sin\_theta);}
+\DoxyCodeLine{00692\ \ \ \textcolor{keywordtype}{double}\ Xlm\ =\ 0.0;}
+\DoxyCodeLine{00693\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ (l\ -\/\ abs\_m)\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00694\ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ k\ +\ (l\ -\/\ abs\_m)\ *\ arg\_over\_pi\_cos\_theta\ +\ abs\_m\ *\ arg\_over\_pi\_sin\_theta;}
+\DoxyCodeLine{00696\ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (abs\_m\ +\ 2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ abs\_m)\ +}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(abs\_m\ +\ k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{00701\ \ \ \ \ \textcolor{comment}{//\ \ +}}
+\DoxyCodeLine{00702\ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{00703\ \ \ \ \ \textcolor{comment}{//\ (abs\_m\ +\ 2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{00704\ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{00705\ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ (abs\_m\ +\ 2\ *\ k);}
+\DoxyCodeLine{00706\ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00707\ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00708\ \ \ \ \ Xlm\ +=\ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{00709\ \ \ \}}
+\DoxyCodeLine{00710\ \ \ \textcolor{keywordflow}{return}\ (m\ <\ 0)\ \ \ ?\ std::sqrt(2)\ *\ std::sin(abs\_m\ *\ phi)\ *\ Xlm}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ :\ (m\ >\ 0)\ ?\ std::sqrt(2)\ *\ std::cos(abs\_m\ *\ phi)\ *\ Xlm}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ Xlm;}
+\DoxyCodeLine{00713\ \}}
+\DoxyCodeLine{00714\ }
+\DoxyCodeLine{00715\ Eigen::VectorXd\ series\_real\_Ylm(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00717\ }
+\DoxyCodeLine{00718\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00719\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00720\ \ \ \}}
+\DoxyCodeLine{00721\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00722\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00723\ \ \ \}}
+\DoxyCodeLine{00724\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00725\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00726\ \ \ \}}
+\DoxyCodeLine{00727\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{00728\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{00729\ \ \ Eigen::VectorXd\ Y(num\_points);}
+\DoxyCodeLine{00730\ \ \ Y.setZero();}
+\DoxyCodeLine{00731\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\ =\ 0;\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{00732\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{00733\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{00734\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00736\ \ \ \ \ \}}
+\DoxyCodeLine{00737\ \ \ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00738\ \ \ \ \ \textcolor{keywordtype}{double}\ sin\_theta\ =\ std::sin(theta);}
+\DoxyCodeLine{00739\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_cos\_theta,\ arg\_over\_pi\_cos\_theta]\ =}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(cos\_theta);}
+\DoxyCodeLine{00741\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_sin\_theta,\ arg\_over\_pi\_sin\_theta]\ =}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(sin\_theta);}
+\DoxyCodeLine{00743\ \ \ \ \ \textcolor{keywordtype}{double}\ Xlm\ =\ 0.0;}
+\DoxyCodeLine{00744\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ (l\ -\/\ abs\_m)\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00745\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =\ k\ +\ (l\ -\/\ abs\_m)\ *\ arg\_over\_pi\_cos\_theta\ +}
+\DoxyCodeLine{00746\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abs\_m\ *\ arg\_over\_pi\_sin\_theta;}
+\DoxyCodeLine{00747\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ \ \ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (abs\_m\ +\ 2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ abs\_m)\ +}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(abs\_m\ +\ k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \textcolor{comment}{//\ +}}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \textcolor{comment}{//\ (abs\_m\ +\ 2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ (abs\_m\ +\ 2\ *\ k);}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ Xlm\ +=\ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{00760\ \ \ \ \ \}}
+\DoxyCodeLine{00761\ \ \ \ \ Y(p)\ =\ (m\ <\ 0)\ \ \ ?\ std::sqrt(2)\ *\ std::sin(abs\_m\ *\ phi)\ *\ Xlm}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \ \ \ :\ (m\ >\ 0)\ ?\ std::sqrt(2)\ *\ std::cos(abs\_m\ *\ phi)\ *\ Xlm}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ Xlm;\ \textcolor{comment}{//\ m\ ==\ 0}}
+\DoxyCodeLine{00764\ \ \ \}}
+\DoxyCodeLine{00765\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{00766\ \}}
+\DoxyCodeLine{00767\ }
+\DoxyCodeLine{00768\ \textcolor{keyword}{inline}\ std::complex<double>\ series\_Ylm(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{00769\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00770\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00771\ \ \ \}}
+\DoxyCodeLine{00772\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00773\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00774\ \ \ \}}
+\DoxyCodeLine{00775\ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00776\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00777\ \ \ \}}
+\DoxyCodeLine{00778\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{00779\ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00780\ \ \ \textcolor{keywordtype}{double}\ sin\_theta\ =\ std::sin(theta);}
+\DoxyCodeLine{00781\ \ \ \textcolor{keyword}{auto}\ [log\_abs\_cos\_theta,\ arg\_over\_pi\_cos\_theta]\ =}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(cos\_theta);}
+\DoxyCodeLine{00783\ \ \ \textcolor{keyword}{auto}\ [log\_abs\_sin\_theta,\ arg\_over\_pi\_sin\_theta]\ =}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(sin\_theta);}
+\DoxyCodeLine{00785\ \ \ \textcolor{keywordtype}{double}\ Xlm\ =\ 0.0;}
+\DoxyCodeLine{00786\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ (l\ -\/\ abs\_m)\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00787\ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ k\ +\ (l\ -\/\ abs\_m)\ *\ arg\_over\_pi\_cos\_theta\ +\ abs\_m\ *\ arg\_over\_pi\_sin\_theta;}
+\DoxyCodeLine{00789\ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =\ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ abs\_m\ *\ std::log(2)\ +}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ abs\_m)\ +}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m)\ -\/\ 2\ *\ k\ *\ std::log(2)\ -\/}
+\DoxyCodeLine{00793\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(abs\_m\ +\ k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{00795\ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{00796\ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ (abs\_m\ +\ 2\ *\ k);}
+\DoxyCodeLine{00797\ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00798\ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00799\ \ \ \ \ Xlm\ +=\ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{00800\ \ \ \}}
+\DoxyCodeLine{00801\ \ \ \textcolor{keywordflow}{return}\ (m\ <\ 0)\ ?\ std::exp(std::complex<double>(0,\ m\ *\ phi))\ *\ Xlm}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \ :\ (m\ >\ 0)}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ \textcolor{keyword}{static\_cast<}std::complex<double>\textcolor{keyword}{>}(\mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(m))\ *}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::exp(std::complex<double>(0,\ m\ *\ phi))\ *\ Xlm}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \textcolor{keyword}{static\_cast<}std::complex<double>\textcolor{keyword}{>}(Xlm);}
+\DoxyCodeLine{00806\ \}}
+\DoxyCodeLine{00807\ }
+\DoxyCodeLine{00808\ Eigen::VectorXcd\ series\_Ylm(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00810\ }
+\DoxyCodeLine{00811\ \ \ \textcolor{keywordflow}{if}\ (l\ <\ 0)\ \{}
+\DoxyCodeLine{00812\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00813\ \ \ \}}
+\DoxyCodeLine{00814\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ -\/l\ ||\ m\ >\ l)\ \{}
+\DoxyCodeLine{00815\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}m\ must\ be\ in\ the\ range\ [-\/l,\ l]"{}});}
+\DoxyCodeLine{00816\ \ \ \}}
+\DoxyCodeLine{00817\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00818\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00819\ \ \ \}}
+\DoxyCodeLine{00820\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{00821\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{00822\ \ \ Eigen::VectorXcd\ Y(num\_points);}
+\DoxyCodeLine{00823\ \ \ Y.setZero();}
+\DoxyCodeLine{00824\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\ =\ 0;\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{00825\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{00826\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{00827\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00828\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00829\ \ \ \ \ \}}
+\DoxyCodeLine{00830\ \ \ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00831\ \ \ \ \ \textcolor{keywordtype}{double}\ sin\_theta\ =\ std::sin(theta);}
+\DoxyCodeLine{00832\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_cos\_theta,\ arg\_over\_pi\_cos\_theta]\ =}
+\DoxyCodeLine{00833\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(cos\_theta);}
+\DoxyCodeLine{00834\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_sin\_theta,\ arg\_over\_pi\_sin\_theta]\ =}
+\DoxyCodeLine{00835\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(sin\_theta);}
+\DoxyCodeLine{00836\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ (l\ -\/\ abs\_m)\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \textcolor{comment}{//\ adding\ (m\ +\ abs\_m)\ /\ 2\ here\ takes\ care\ of\ (-\/1)\string^m\ for\ m>0}}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =\ (m\ +\ abs\_m)\ /\ 2\ +\ k\ +}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (l\ -\/\ abs\_m)\ *\ arg\_over\_pi\_cos\_theta\ +}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abs\_m\ *\ arg\_over\_pi\_sin\_theta;}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =}
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \ \ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (abs\_m\ +\ 2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ abs\_m)\ +}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(abs\_m\ +\ k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \textcolor{comment}{//\ \ +}}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \textcolor{comment}{//\ (abs\_m\ +\ 2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ (l\ -\/\ abs\_m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ (abs\_m\ +\ 2\ *\ k);}
+\DoxyCodeLine{00851\ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ Y(p)\ +=\ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{00854\ \ \ \ \ \}}
+\DoxyCodeLine{00855\ \ \ \ \ Y(p)\ *=\ std::exp(std::complex<double>(0,\ m\ *\ phi));}
+\DoxyCodeLine{00856\ \ \ \}}
+\DoxyCodeLine{00857\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{00858\ \}}
+\DoxyCodeLine{00859\ }
+\DoxyCodeLine{00871\ Eigen::MatrixXd}
+\DoxyCodeLine{00872\ \mbox{\hyperlink{funs_8hpp_a3967c7cc460069f19961b96d62905402}{compute\_all\_series\_real\_Ylm}}(\textcolor{keywordtype}{int}\ l\_max,}
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00874\ \ \ \textcolor{comment}{//\ check\ l\_max}}
+\DoxyCodeLine{00875\ \ \ \textcolor{keywordflow}{if}\ (l\_max\ <\ 0)\ \{}
+\DoxyCodeLine{00876\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\_max\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00877\ \ \ \}}
+\DoxyCodeLine{00878\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{00879\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00880\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00881\ \ \ \}}
+\DoxyCodeLine{00882\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{00883\ \ \ \textcolor{keywordflow}{if}\ (num\_points\ <=\ 0)\ \{}
+\DoxyCodeLine{00884\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ at\ least\ one\ row"{}});}
+\DoxyCodeLine{00885\ \ \ \}}
+\DoxyCodeLine{00887\ \ \ \textcolor{keywordtype}{int}\ num\_modes\ =\ l\_max\ *\ (l\_max\ +\ 2)\ +\ 1;\ \textcolor{comment}{//\ =\ n\_LM(l\_max,\ l\_max)+1}}
+\DoxyCodeLine{00888\ \ \ Eigen::MatrixXd\ Y(num\_points,\ num\_modes);}
+\DoxyCodeLine{00889\ \ \ Y.setZero();}
+\DoxyCodeLine{00890\ }
+\DoxyCodeLine{00891\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\{0\};\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{00892\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{00893\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00894\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00895\ \ \ \ \ \}}
+\DoxyCodeLine{00896\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{00897\ \ \ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00898\ \ \ \ \ \textcolor{keywordtype}{double}\ sin\_theta\ =\ std::sin(theta);}
+\DoxyCodeLine{00899\ \ \ \ \ \textcolor{comment}{//\ get\ ReLogRe\_ImLogRe\_over\_pi\ for\ cos(theta)\ and\ sin(theta)}}
+\DoxyCodeLine{00900\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_cos\_theta,\ arg\_over\_pi\_cos\_theta]\ =}
+\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(cos\_theta);}
+\DoxyCodeLine{00902\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_sin\_theta,\ arg\_over\_pi\_sin\_theta]\ =}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(sin\_theta);}
+\DoxyCodeLine{00904\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l\{0\};\ l\ <=\ l\_max;\ l++)\ \{}
+\DoxyCodeLine{00905\ \ \ \ \ \ \ \textcolor{comment}{//\ m\ =\ 0\ case}}
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\ =\ l\ *\ (l\ +\ 1);}
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ l\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =\ k\ +\ l\ *\ arg\_over\_pi\_cos\_theta;}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =\ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{00910\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l)\ +}
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{00913\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ +}}
+\DoxyCodeLine{00914\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{00915\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ l\ -\/\ 2\ *\ k;}
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ 2\ *\ k;}
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00919\ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ Y(p,\ n)\ +=}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m\{1\};\ m\ <=\ l;\ m++)\ \{}
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_plus\ =\ l\ *\ (l\ +\ 1)\ +\ m;}
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_minus\ =\ l\ *\ (l\ +\ 1)\ -\/\ m;}
+\DoxyCodeLine{00926\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ (l\ -\/\ m)\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00927\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =}
+\DoxyCodeLine{00928\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\ +\ (l\ -\/\ m)\ *\ arg\_over\_pi\_cos\_theta\ +\ m\ *\ arg\_over\_pi\_sin\_theta;}
+\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (m\ +\ 2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{00931\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ m)\ +}
+\DoxyCodeLine{00932\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ m)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ m\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{00933\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(m\ +\ k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ +}}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ m\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (m\ +\ 2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ (l\ -\/\ m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ (m\ +\ 2\ *\ k);}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00940\ \ \ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ +=}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ Y(p,\ n\_minus)\ =\ std::sqrt(2)\ *\ std::sin(m\ *\ phi)\ *\ Y(p,\ n\_plus);}
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ *=\ std::sqrt(2)\ *\ std::cos(m\ *\ phi);}
+\DoxyCodeLine{00946\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00947\ \ \ \ \ \}}
+\DoxyCodeLine{00948\ \ \ \}}
+\DoxyCodeLine{00949\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{00950\ \}}
+\DoxyCodeLine{00951\ }
+\DoxyCodeLine{00963\ Eigen::MatrixXcd}
+\DoxyCodeLine{00964\ \mbox{\hyperlink{funs_8hpp_abd333e3f0c80e542ece392db9036d08f}{compute\_all\_series\_Ylm}}(\textcolor{keywordtype}{int}\ l\_max,\ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{00965\ \ \ \textcolor{comment}{//\ check\ l\_max}}
+\DoxyCodeLine{00966\ \ \ \textcolor{keywordflow}{if}\ (l\_max\ <\ 0)\ \{}
+\DoxyCodeLine{00967\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\_max\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{00968\ \ \ \}}
+\DoxyCodeLine{00969\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{00970\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{00971\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{00972\ \ \ \}}
+\DoxyCodeLine{00973\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{00974\ \ \ \textcolor{keywordflow}{if}\ (num\_points\ <=\ 0)\ \{}
+\DoxyCodeLine{00975\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ at\ least\ one\ row"{}});}
+\DoxyCodeLine{00976\ \ \ \}}
+\DoxyCodeLine{00978\ \ \ \textcolor{keywordtype}{int}\ num\_modes\ =\ l\_max\ *\ (l\_max\ +\ 2)\ +\ 1;\ \textcolor{comment}{//\ =\ n\_LM(l\_max,\ l\_max)+1}}
+\DoxyCodeLine{00979\ \ \ Eigen::MatrixXcd\ Y(num\_points,\ num\_modes);}
+\DoxyCodeLine{00980\ \ \ Y.setZero();}
+\DoxyCodeLine{00981\ }
+\DoxyCodeLine{00982\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\{0\};\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{00983\ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{00984\ \ \ \ \ \textcolor{keywordflow}{if}\ (theta\ <\ 0\ ||\ theta\ >\ M\_PI)\ \{}
+\DoxyCodeLine{00985\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{00986\ \ \ \ \ \}}
+\DoxyCodeLine{00987\ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{00988\ \ \ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{00989\ \ \ \ \ \textcolor{keywordtype}{double}\ sin\_theta\ =\ std::sin(theta);}
+\DoxyCodeLine{00990\ \ \ \ \ \textcolor{comment}{//\ get\ ReLogRe\_ImLogRe\_over\_pi\ for\ cos(theta)\ and\ sin(theta)}}
+\DoxyCodeLine{00991\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_cos\_theta,\ arg\_over\_pi\_cos\_theta]\ =}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(cos\_theta);}
+\DoxyCodeLine{00993\ \ \ \ \ \textcolor{keyword}{auto}\ [log\_abs\_sin\_theta,\ arg\_over\_pi\_sin\_theta]\ =}
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ae40c3aa268a373171514e835d6868a27}{ReLogRe\_ImLogRe\_over\_pi}}(sin\_theta);}
+\DoxyCodeLine{00995\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l\{0\};\ l\ <=\ l\_max;\ l++)\ \{}
+\DoxyCodeLine{00996\ \ \ \ \ \ \ \textcolor{comment}{//\ m\ =\ 0\ case}}
+\DoxyCodeLine{00997\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\ =\ l\ *\ (l\ +\ 1);}
+\DoxyCodeLine{00998\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ l\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =\ k\ +\ l\ *\ arg\_over\_pi\_cos\_theta;}
+\DoxyCodeLine{01000\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =\ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l)\ +}
+\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{01004\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ +}}
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ l\ -\/\ 2\ *\ k;}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ 2\ *\ k;}
+\DoxyCodeLine{01009\ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{01010\ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{01011\ \ \ \ \ \ \ \ \ Y(p,\ n)\ +=}
+\DoxyCodeLine{01012\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{01013\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01014\ \ \ \ \ \ \ \textcolor{comment}{//\ m=-\/l,...,l}}
+\DoxyCodeLine{01015\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m\{1\};\ m\ <=\ l;\ m++)\ \{}
+\DoxyCodeLine{01016\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_plus\ =\ l\ *\ (l\ +\ 1)\ +\ m;}
+\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\_minus\ =\ l\ *\ (l\ +\ 1)\ -\/\ m;}
+\DoxyCodeLine{01018\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\{0\};\ k\ <=\ (l\ -\/\ m)\ /\ 2;\ k++)\ \{}
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ImLog\_over\_pi\_Xklm\ =}
+\DoxyCodeLine{01020\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\ +\ (l\ -\/\ m)\ *\ arg\_over\_pi\_cos\_theta\ +\ m\ *\ arg\_over\_pi\_sin\_theta;}
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ReLog\_Xklm\ =}
+\DoxyCodeLine{01022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/0.5\ *\ std::log(4\ *\ M\_PI)\ -\/\ (m\ +\ 2\ *\ k)\ *\ std::log(2)\ +}
+\DoxyCodeLine{01023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ m)\ +}
+\DoxyCodeLine{01024\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ m)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ -\/\ m\ -\/\ 2\ *\ k)\ -\/}
+\DoxyCodeLine{01025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(m\ +\ k)\ -\/\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(k);}
+\DoxyCodeLine{01026\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ +}}
+\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (l\ -\/\ m\ -\/\ 2\ *\ k)\ *\ log\_abs\_cos\_theta\ +}}
+\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (m\ +\ 2\ *\ k)\ *\ log\_abs\_sin\_theta;}}
+\DoxyCodeLine{01029\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_cos\ =\ (l\ -\/\ m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pow\_sin\ =\ (m\ +\ 2\ *\ k);}
+\DoxyCodeLine{01031\ \ \ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_cos\ >\ 0)\ ?\ (pow\_cos\ *\ log\_abs\_cos\_theta)\ :\ 0.0;}
+\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \ \ ReLog\_Xklm\ +=\ (pow\_sin\ >\ 0)\ ?\ (pow\_sin\ *\ log\_abs\_sin\_theta)\ :\ 0.0;}
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ +=}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(ImLog\_over\_pi\_Xklm)\ *\ std::exp(ReLog\_Xklm);}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01036\ \ \ \ \ \ \ \ \ Y(p,\ n\_minus)\ =}
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ *\ std::exp(std::complex<double>(0,\ -\/m\ *\ phi));}
+\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ Y(p,\ n\_plus)\ *=}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}std::complex<double>\textcolor{keyword}{>}(\mbox{\hyperlink{funs_8hpp_ad21b262566385dd135450e57ad4389fa}{minus\_one\_to\_int\_pow}}(m))\ *}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \ \ \ \ std::exp(std::complex<double>(0,\ m\ *\ phi));}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01042\ \ \ \ \ \}}
+\DoxyCodeLine{01043\ \ \ \}}
+\DoxyCodeLine{01044\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{01045\ \}}
+\DoxyCodeLine{01046\ }
+\DoxyCodeLine{01054\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{funs_8hpp_a34b8be655fce338b873a136b7316577c}{phi\_independent\_Ylm}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta)\ \{}
+\DoxyCodeLine{01055\ \ \ \textcolor{keywordtype}{double}\ epsilon\ =\ 1e-\/8;}
+\DoxyCodeLine{01056\ \ \ \textcolor{keywordtype}{double}\ minus\_log4\ =\ std::log(0.25);}
+\DoxyCodeLine{01057\ }
+\DoxyCodeLine{01058\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{01059\ }
+\DoxyCodeLine{01060\ \ \ \textcolor{keywordtype}{int}\ ell\_minus\_m\ =\ l\ -\/\ abs\_m;}
+\DoxyCodeLine{01061\ \ \ \textcolor{keywordtype}{double}\ cos\_theta\ =\ std::cos(theta);}
+\DoxyCodeLine{01062\ \ \ \textcolor{keywordtype}{double}\ abs\_cos\_theta\ =\ std::abs(cos\_theta);}
+\DoxyCodeLine{01063\ \ \ \textcolor{comment}{//\ double\ sin\_theta\ =\ std::sin(theta);\ //\ always\ positive\ for\ theta\ in\ [0,\ pi]}}
+\DoxyCodeLine{01064\ \ \ \textcolor{keywordtype}{double}\ abs\_sin\_theta\ =\ std::sin(theta);\ \textcolor{comment}{//\ std::abs(sin\_theta);}}
+\DoxyCodeLine{01065\ }
+\DoxyCodeLine{01066\ \ \ \textcolor{keywordtype}{double}\ rlm\ =\ 1.0\ /\ (2.0\ *\ std::sqrt(M\_PI));}
+\DoxyCodeLine{01067\ \ \ \textcolor{keywordflow}{if}\ ((m\ >\ 0)\ \&\&\ (abs\_m\ \%\ 2\ ==\ 1))\ \{}
+\DoxyCodeLine{01068\ \ \ \ \ rlm\ *=\ -\/1;}
+\DoxyCodeLine{01069\ \ \ \}}
+\DoxyCodeLine{01070\ \ \ \textcolor{comment}{//\ if\ ((m\ <\ 0)\ \&\&\ (abs\_m\ \%\ 2\ ==\ 1))\ \{}}
+\DoxyCodeLine{01071\ \ \ \textcolor{comment}{//\ \ \ rlm\ *=\ -\/1;}}
+\DoxyCodeLine{01072\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{01073\ \ \ \textcolor{comment}{//\ if\ (abs\_m\ \%\ 2\ ==\ 1)\ \{}}
+\DoxyCodeLine{01074\ \ \ \textcolor{comment}{//\ \ \ rlm\ *=\ -\/1;}}
+\DoxyCodeLine{01075\ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{01076\ \ \ \textcolor{keywordflow}{if}\ ((cos\_theta\ <\ 0)\ \&\&\ (ell\_minus\_m\ \%\ 2\ ==\ 1))\ \{}
+\DoxyCodeLine{01077\ \ \ \ \ rlm\ *=\ -\/1;}
+\DoxyCodeLine{01078\ \ \ \}}
+\DoxyCodeLine{01079\ \ \ \textcolor{keywordtype}{int}\ k\_bound\ =\ (ell\_minus\_m)\ /\ 2;}
+\DoxyCodeLine{01080\ \ \ \textcolor{keywordtype}{int}\ sk\ =\ 1;}
+\DoxyCodeLine{01081\ \ \ \textcolor{comment}{//\ double\ log\_qk;}}
+\DoxyCodeLine{01082\ \ \ \textcolor{comment}{//\ double\ sum\_Qk;}}
+\DoxyCodeLine{01083\ \ \ \textcolor{keywordtype}{double}\ log\_qk\ =\ 0.5\ *\ std::log(2\ *\ l\ +\ 1)\ +\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(l\ +\ abs\_m)\ -\/}
+\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abs\_m\ *\ std::log(2)\ -\/\ 0.5\ *\ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(ell\_minus\_m)\ -\/}
+\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{funs_8hpp_af1456a55c6854dc1d66f5cb10420ee25}{log\_factorial}}(abs\_m);}
+\DoxyCodeLine{01086\ }
+\DoxyCodeLine{01092\ \ \ \textcolor{comment}{//\ If\ cos(theta)\ \string~\ +/-\/sin(theta)\ replace\ sin(theta)\ with\ tan(theta)}}
+\DoxyCodeLine{01093\ \ \ \textcolor{keywordflow}{if}\ (std::abs(abs\_cos\_theta\ -\/\ abs\_sin\_theta)\ <\ epsilon)\ \{}
+\DoxyCodeLine{01094\ \ \ \ \ \textcolor{keywordtype}{double}\ tan\_theta\ =\ std::tan(theta);}
+\DoxyCodeLine{01095\ \ \ \ \ \textcolor{keywordtype}{double}\ abs\_tan\_theta\ =\ std::abs(tan\_theta);}
+\DoxyCodeLine{01096\ \ \ \ \ \textcolor{keywordtype}{double}\ log\_abs\_cos\_theta\ =\ std::log(abs\_cos\_theta);}
+\DoxyCodeLine{01097\ \ \ \ \ \textcolor{keywordtype}{double}\ log\_abs\_tan\_theta\ =\ std::log(abs\_tan\_theta);}
+\DoxyCodeLine{01098\ \ \ \ \ log\_qk\ +=\ l\ *\ log\_abs\_cos\_theta\ +\ abs\_m\ *\ log\_abs\_tan\_theta;}
+\DoxyCodeLine{01099\ \ \ \ \ \textcolor{keywordtype}{double}\ sum\_Qk\ =\ sk\ *\ std::exp(log\_qk);}
+\DoxyCodeLine{01100\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <=\ k\_bound;\ ++k)\ \{}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ sk\ *=\ -\/1;}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ log\_qk\ +=\ 2\ *\ log\_abs\_tan\_theta;}
+\DoxyCodeLine{01103\ \ \ \ \ \ \ log\_qk\ +=\ minus\_log4\ +\ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 2)\ +}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 1)\ -\/\ std::log(abs\_m\ +\ k)\ -\/}
+\DoxyCodeLine{01105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(k);}
+\DoxyCodeLine{01106\ \ \ \ \ \ \ sum\_Qk\ +=\ sk\ *\ std::exp(log\_qk);}
+\DoxyCodeLine{01107\ \ \ \ \ \}}
+\DoxyCodeLine{01108\ \ \ \ \ \textcolor{keywordflow}{return}\ rlm\ *\ sum\_Qk;}
+\DoxyCodeLine{01109\ \ \ \}}
+\DoxyCodeLine{01110\ }
+\DoxyCodeLine{01111\ \ \ \textcolor{comment}{//\ if\ cos(theta)\ \string~\ 0,\ sin(theta)\ \string~\ 1}}
+\DoxyCodeLine{01112\ \ \ \textcolor{keywordflow}{if}\ (abs\_cos\_theta\ <\ epsilon)\ \{}
+\DoxyCodeLine{01113\ \ \ \ \ \textcolor{keywordtype}{double}\ log\_abs\_sin\_theta\ =\ std::log(abs\_sin\_theta);}
+\DoxyCodeLine{01114\ \ \ \ \ log\_qk\ +=\ abs\_m\ *\ log\_abs\_sin\_theta;}
+\DoxyCodeLine{01115\ \ \ \ \ \textcolor{keywordtype}{double}\ abs\_cos\_theta\_pow\ =\ std::pow(abs\_cos\_theta,\ ell\_minus\_m);}
+\DoxyCodeLine{01116\ \ \ \ \ \textcolor{keywordtype}{double}\ sum\_Qk\ =\ sk\ *\ std::exp(log\_qk)\ *\ abs\_cos\_theta\_pow;}
+\DoxyCodeLine{01117\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <=\ k\_bound;\ ++k)\ \{}
+\DoxyCodeLine{01118\ \ \ \ \ \ \ sk\ *=\ -\/1;}
+\DoxyCodeLine{01119\ \ \ \ \ \ \ log\_qk\ +=\ minus\_log4\ +\ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 2)\ +}
+\DoxyCodeLine{01120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 1)\ -\/\ std::log(abs\_m\ +\ k)\ -\/}
+\DoxyCodeLine{01121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(k);}
+\DoxyCodeLine{01122\ \ \ \ \ \ \ abs\_cos\_theta\_pow\ =\ std::pow(abs\_cos\_theta,\ ell\_minus\_m\ -\/\ 2\ *\ k);}
+\DoxyCodeLine{01123\ \ \ \ \ \ \ sum\_Qk\ +=\ sk\ *\ std::exp(log\_qk)\ *\ abs\_cos\_theta\_pow;}
+\DoxyCodeLine{01124\ \ \ \ \ \}}
+\DoxyCodeLine{01125\ }
+\DoxyCodeLine{01126\ \ \ \ \ \textcolor{keywordflow}{return}\ rlm\ *\ sum\_Qk;}
+\DoxyCodeLine{01127\ \ \ \}}
+\DoxyCodeLine{01128\ }
+\DoxyCodeLine{01129\ \ \ \textcolor{comment}{//\ if\ sin(theta)\ \string~\ 0,\ cos(theta)\ \string~\ +/-\/1}}
+\DoxyCodeLine{01130\ \ \ \textcolor{keywordflow}{if}\ (abs\_sin\_theta\ <\ epsilon)\ \{}
+\DoxyCodeLine{01131\ \ \ \ \ \textcolor{comment}{//\ double\ log\_abs\_cos\_theta\ =\ std::log(abs\_cos\_theta);}}
+\DoxyCodeLine{01132\ \ \ \ \ \textcolor{comment}{//\ log\_qk\ +=\ ell\_minus\_m\ *\ log\_abs\_cos\_theta;}}
+\DoxyCodeLine{01133\ \ \ \ \ \textcolor{comment}{//\ double\ abs\_sin\_theta\_pow\ =\ std::pow(abs\_sin\_theta,\ abs\_m);}}
+\DoxyCodeLine{01134\ \ \ \ \ \textcolor{comment}{//\ double\ sum\_Qk\ =\ sk\ *\ std::exp(log\_qk);}}
+\DoxyCodeLine{01135\ \ \ \ \ \textcolor{comment}{//\ for\ (int\ k\ =\ 1;\ k\ <=\ k\_bound;\ ++k)\ \{}}
+\DoxyCodeLine{01136\ \ \ \ \ \textcolor{comment}{//\ \ \ sk\ *=\ -\/1;}}
+\DoxyCodeLine{01137\ \ \ \ \ \textcolor{comment}{//\ \ \ log\_qk\ +=\ -\/2\ *\ log\_abs\_cos\_theta;}}
+\DoxyCodeLine{01138\ \ \ \ \ \textcolor{comment}{//\ \ \ log\_qk\ +=\ minus\_log4\ +\ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 2)\ +}}
+\DoxyCodeLine{01139\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 1)\ -\/\ std::log(abs\_m\ +\ k)\ -\/}}
+\DoxyCodeLine{01140\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ std::log(k);}}
+\DoxyCodeLine{01141\ \ \ \ \ \textcolor{comment}{//\ \ \ abs\_sin\_theta\_pow\ =\ std::pow(abs\_sin\_theta,\ abs\_m\ +\ 2\ *\ k);}}
+\DoxyCodeLine{01142\ \ \ \ \ \textcolor{comment}{//\ \ \ sum\_Qk\ +=\ sk\ *\ std::exp(log\_qk)\ *\ abs\_sin\_theta\_pow;}}
+\DoxyCodeLine{01143\ \ \ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{01144\ \ \ \ \ \textcolor{comment}{//\ return\ rlm\ *\ sum\_Qk;}}
+\DoxyCodeLine{01145\ \ \ \ \ \textcolor{comment}{//\ double\ log\_abs\_cos\_theta\ =\ std::log(abs\_cos\_theta);}}
+\DoxyCodeLine{01146\ \ \ \ \ \textcolor{comment}{//\ log\_qk\ +=\ ell\_minus\_m\ *\ log\_abs\_cos\_theta;}}
+\DoxyCodeLine{01147\ \ \ \ \ \textcolor{keywordtype}{double}\ trig\_term\ =}
+\DoxyCodeLine{01148\ \ \ \ \ \ \ \ \ std::pow(abs\_cos\_theta,\ ell\_minus\_m)\ *\ std::pow(abs\_sin\_theta,\ abs\_m);}
+\DoxyCodeLine{01149\ \ \ \ \ \textcolor{keywordtype}{double}\ sum\_Qk\ =\ sk\ *\ std::exp(log\_qk)\ *\ trig\_term;}
+\DoxyCodeLine{01150\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <=\ k\_bound;\ ++k)\ \{}
+\DoxyCodeLine{01151\ \ \ \ \ \ \ sk\ *=\ -\/1;}
+\DoxyCodeLine{01152\ \ \ \ \ \ \ log\_qk\ +=\ minus\_log4\ +\ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 2)\ +}
+\DoxyCodeLine{01153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 1)\ -\/\ std::log(abs\_m\ +\ k)\ -\/}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(k);}
+\DoxyCodeLine{01155\ \ \ \ \ \ \ trig\_term\ =\ std::pow(abs\_cos\_theta,\ ell\_minus\_m\ -\/\ 2\ *\ k)\ *}
+\DoxyCodeLine{01156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::pow(abs\_sin\_theta,\ abs\_m\ +\ 2\ *\ k);}
+\DoxyCodeLine{01157\ \ \ \ \ \ \ sum\_Qk\ +=\ sk\ *\ std::exp(log\_qk)\ *\ trig\_term;}
+\DoxyCodeLine{01158\ \ \ \ \ \}}
+\DoxyCodeLine{01159\ \ \ \ \ \textcolor{keywordflow}{return}\ rlm\ *\ sum\_Qk;}
+\DoxyCodeLine{01160\ \ \ \}}
+\DoxyCodeLine{01161\ }
+\DoxyCodeLine{01167\ \ \ \textcolor{comment}{//\ if\ log(cos(theta))\ and\ log(sin(theta))\ are\ defined}}
+\DoxyCodeLine{01168\ \ \ \textcolor{keywordtype}{double}\ log\_abs\_cos\_theta\ =\ std::log(abs\_cos\_theta);}
+\DoxyCodeLine{01169\ \ \ \textcolor{keywordtype}{double}\ log\_abs\_sin\_theta\ =\ std::log(abs\_sin\_theta);}
+\DoxyCodeLine{01170\ \ \ log\_qk\ +=\ ell\_minus\_m\ *\ log\_abs\_cos\_theta\ +\ abs\_m\ *\ log\_abs\_sin\_theta;}
+\DoxyCodeLine{01171\ \ \ \textcolor{keywordtype}{double}\ sum\_Qk\ =\ sk\ *\ std::exp(log\_qk);}
+\DoxyCodeLine{01172\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <=\ k\_bound;\ ++k)\ \{}
+\DoxyCodeLine{01173\ \ \ \ \ sk\ *=\ -\/1;}
+\DoxyCodeLine{01174\ \ \ \ \ log\_qk\ +=\ -\/2\ *\ log\_abs\_cos\_theta\ +\ 2\ *\ log\_abs\_sin\_theta;}
+\DoxyCodeLine{01175\ \ \ \ \ log\_qk\ +=\ minus\_log4\ +\ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 2)\ +}
+\DoxyCodeLine{01176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(ell\_minus\_m\ -\/\ 2\ *\ k\ +\ 1)\ -\/\ std::log(abs\_m\ +\ k)\ -\/}
+\DoxyCodeLine{01177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::log(k);}
+\DoxyCodeLine{01178\ \ \ \ \ sum\_Qk\ +=\ sk\ *\ std::exp(log\_qk);}
+\DoxyCodeLine{01179\ \ \ \}}
+\DoxyCodeLine{01180\ }
+\DoxyCodeLine{01181\ \ \ \textcolor{keywordflow}{return}\ rlm\ *\ sum\_Qk;}
+\DoxyCodeLine{01182\ \}}
+\DoxyCodeLine{01183\ }
+\DoxyCodeLine{01184\ \textcolor{keyword}{inline}\ std::complex<double>\ old\_Ylm(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{01185\ \ \ \textcolor{keywordflow}{if}\ (theta\ >\ M\_PI\ ||\ theta\ <\ 0.0)\ \{}
+\DoxyCodeLine{01186\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{01187\ \ \ \}}
+\DoxyCodeLine{01188\ \ \ \textcolor{keywordflow}{return}\ std::exp(std::complex<double>(0,\ m\ *\ phi))\ *}
+\DoxyCodeLine{01189\ \ \ \ \ \ \ \ \ \ phi\_independent\_Ylm(l,\ m,\ theta);}
+\DoxyCodeLine{01190\ \}}
+\DoxyCodeLine{01191\ }
+\DoxyCodeLine{01192\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ old\_real\_Ylm(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{int}\ m,\ \textcolor{keywordtype}{double}\ theta,\ \textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{01193\ }
+\DoxyCodeLine{01194\ \ \ \textcolor{keywordflow}{if}\ (theta\ >\ M\_PI\ ||\ theta\ <\ 0.0)\ \{}
+\DoxyCodeLine{01195\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}theta\ must\ be\ in\ the\ range\ [0,\ pi]"{}});}
+\DoxyCodeLine{01196\ \ \ \}}
+\DoxyCodeLine{01197\ \ \ \textcolor{keywordtype}{int}\ abs\_m\ =\ std::abs(m);}
+\DoxyCodeLine{01198\ \ \ \textcolor{keywordtype}{double}\ val\ =\ \mbox{\hyperlink{funs_8hpp_a34b8be655fce338b873a136b7316577c}{phi\_independent\_Ylm}}(l,\ abs\_m,\ theta);}
+\DoxyCodeLine{01199\ \ \ \textcolor{keywordflow}{if}\ (abs\_m\ \%\ 2\ ==\ 1)\ \{}
+\DoxyCodeLine{01200\ \ \ \ \ val\ *=\ -\/1;}
+\DoxyCodeLine{01201\ \ \ \}}
+\DoxyCodeLine{01202\ \ \ \textcolor{keywordflow}{if}\ (m\ <\ 0)\ \{}
+\DoxyCodeLine{01203\ \ \ \ \ \textcolor{keywordflow}{return}\ val\ *\ std::sqrt(2)\ *\ std::sin(abs\_m\ *\ phi);}
+\DoxyCodeLine{01204\ \ \ \}}
+\DoxyCodeLine{01205\ \ \ \textcolor{keywordflow}{if}\ (m\ ==\ 0)\ \{}
+\DoxyCodeLine{01206\ \ \ \ \ \textcolor{keywordflow}{return}\ val;}
+\DoxyCodeLine{01207\ \ \ \}}
+\DoxyCodeLine{01208\ \ \ \textcolor{keywordflow}{return}\ val\ *\ std::sqrt(2)\ *\ std::cos(abs\_m\ *\ phi);}
+\DoxyCodeLine{01209\ \}}
+\DoxyCodeLine{01210\ }
+\DoxyCodeLine{01211\ Eigen::MatrixXd}
+\DoxyCodeLine{01212\ old\_compute\_all\_real\_Ylm(\textcolor{keywordtype}{int}\ l\_max,\ \textcolor{keyword}{const}\ Eigen::MatrixXd\ \&thetaphi\_coord\_P)\ \{}
+\DoxyCodeLine{01213\ \ \ \textcolor{comment}{//\ check\ l\_max}}
+\DoxyCodeLine{01214\ \ \ \textcolor{keywordflow}{if}\ (l\_max\ <\ 0)\ \{}
+\DoxyCodeLine{01215\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}l\_max\ must\ be\ non-\/negative"{}});}
+\DoxyCodeLine{01216\ \ \ \}}
+\DoxyCodeLine{01217\ \ \ \textcolor{comment}{//\ check\ thetaphi\_coord\_P}}
+\DoxyCodeLine{01218\ \ \ \textcolor{keywordflow}{if}\ (thetaphi\_coord\_P.cols()\ !=\ 2)\ \{}
+\DoxyCodeLine{01219\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ 2\ columns"{}});}
+\DoxyCodeLine{01220\ \ \ \}}
+\DoxyCodeLine{01221\ \ \ \textcolor{keywordtype}{int}\ num\_points\ =\ thetaphi\_coord\_P.rows();}
+\DoxyCodeLine{01222\ \ \ \textcolor{keywordflow}{if}\ (num\_points\ <=\ 0)\ \{}
+\DoxyCodeLine{01223\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}thetaphi\_coord\_P\ must\ have\ at\ least\ one\ row"{}});}
+\DoxyCodeLine{01224\ \ \ \}}
+\DoxyCodeLine{01226\ \ \ \textcolor{keywordtype}{int}\ num\_modes\ =\ l\_max\ *\ (l\_max\ +\ 2)\ +\ 1;\ \textcolor{comment}{//\ =\ n\_LM(l\_max,\ l\_max)+1}}
+\DoxyCodeLine{01227\ \ \ Eigen::MatrixXd\ Y(num\_points,\ num\_modes);}
+\DoxyCodeLine{01228\ \ \ Y.setZero();}
+\DoxyCodeLine{01229\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l\{0\};\ l\ <=\ l\_max;\ l++)\ \{}
+\DoxyCodeLine{01230\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m\{-\/l\};\ m\ <=\ l;\ m++)\ \{}
+\DoxyCodeLine{01231\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n\ =\ l\ *\ (l\ +\ 1)\ +\ m;}
+\DoxyCodeLine{01232\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p\{0\};\ p\ <\ num\_points;\ ++p)\ \{}
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ thetaphi\_coord\_P(p,\ 0);}
+\DoxyCodeLine{01234\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ thetaphi\_coord\_P(p,\ 1);}
+\DoxyCodeLine{01235\ \ \ \ \ \ \ \ \ Y(p,\ n)\ =\ old\_real\_Ylm(l,\ m,\ theta,\ phi);}
+\DoxyCodeLine{01236\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01237\ \ \ \ \ \}}
+\DoxyCodeLine{01238\ \ \ \}}
+\DoxyCodeLine{01239\ \ \ \textcolor{keywordflow}{return}\ Y;}
+\DoxyCodeLine{01240\ \}}
+\DoxyCodeLine{01241\ }
+\DoxyCodeLine{01242\ \}\ \textcolor{comment}{//\ namespace\ special}}
+\DoxyCodeLine{01243\ \}\ \textcolor{comment}{//\ namespace\ mathutils}}
+
+\end{DoxyCode}

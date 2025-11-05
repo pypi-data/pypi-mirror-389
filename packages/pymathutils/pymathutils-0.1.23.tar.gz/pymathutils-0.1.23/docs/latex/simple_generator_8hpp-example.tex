@@ -1,0 +1,55 @@
+\doxysection{simple\+\_\+generator.\+hpp}
+\hypertarget{simple_generator_8hpp-example}{}\label{simple_generator_8hpp-example}Generate the Fibonacci sequence\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{SimpleGenerator<int>\ fibs(\textcolor{keywordtype}{int}\ max)\ \{}
+\DoxyCodeLine{\ \ \textcolor{keywordtype}{int}\ a\{1\},\ b\{1\},\ n\{0\};}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ max;\ i++)\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{co\_yield}\ a;}
+\DoxyCodeLine{\ \ \ \ n\ =\ a\ +\ b;}
+\DoxyCodeLine{\ \ \ \ a\ =\ b;}
+\DoxyCodeLine{\ \ \ \ b\ =\ n;}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{int}\ main()\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Create\ a\ generator\ for\ Fibonacci\ numbers}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{auto}\ generator\ =\ fibs(10);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Use\ the\ generator\ with\ a\ range-\/based\ for\ loop}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ value\ :\ generator)\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ std::cout\ <<\ value\ <<\ \textcolor{stringliteral}{"{}\ "{}};}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ std::cout\ <<\ std::endl;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+Generate a sequence of vertices in a clockwise order around a vertex\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}meshbrane/simple\_generator.hpp"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ <meshbrane/half\_edge\_mesh.hpp>}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{using\ }Vert\ =\ meshbrane::HalfEdgeVertexBase;}
+\DoxyCodeLine{SimpleGenerator<Vert>\ *CCW\_vertex\_cycle(Vert\ \&v)\ \{}
+\DoxyCodeLine{\ \textcolor{keyword}{auto}\ h\ =\ v.h\_out\_;}
+\DoxyCodeLine{\textcolor{keyword}{auto}\ h\_start\ =\ h;}
+\DoxyCodeLine{\textcolor{keywordflow}{do}\ \{...\}\ \textcolor{keywordflow}{while}\ (h\ !=\ h\_start);}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCodeInclude}{0}
+
+\end{DoxyCodeInclude}
+ 
