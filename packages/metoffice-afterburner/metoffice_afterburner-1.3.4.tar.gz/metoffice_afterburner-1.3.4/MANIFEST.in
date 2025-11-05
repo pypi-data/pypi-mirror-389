@@ -1,0 +1,8 @@
+include LICENSE.TXT
+graft etc
+graft tests
+graft tools
+graft doc
+prune doc/src/_build
+prune doc/src/apidoc
+global-exclude *.py[cod]

@@ -1,0 +1,211 @@
+#!/usr/bin/env python
+# (C) British Crown Copyright 2016-2018, Met Office
+#
+# See the LICENSE.TXT file included with the Afterburner
+# software distribution for full license details.
+"""
+SYNOPSIS
+
+    abconfig [options]
+
+DESCRIPTION
+
+    Script for querying the location of various Afterburner software artifacts.
+    Assumes that the software is laid out in the familiar distutils/setuptools
+    pattern of top-level directories: bin, etc, lib, and so on.
+
+    The script is designed to process a single option. This is to facilitate its
+    use in setting shell variables, e.g.
+
+    $ export PYTHONPATH=$PYTHONPATH:$(abconfig --pythonpath)
+
+    At present, if multiple options are specified then the behaviour is undefined.
+
+ARGUMENTS
+
+    None
+
+OPTIONS
+
+    -h, --help
+        Show the command-line usage for this script.
+
+    --bin
+        Display the pathname of the Afterburner software suite's bin directory.
+
+    --env
+        Print all configuration properties in a format suitable for setting as
+        environment variables, i.e. one VARNAME=value pair per line. The output
+        may then be eval'd by the calling shell.
+
+    --etc
+        Display the pathname of the Afterburner software suite's etc directory.
+
+    --home
+        Display the pathname of the Afterburner software suite's home directory.
+
+    --pythonpath
+        Display the pathname of the Afterburner python package directory.
+        Useful for setting the PYTHONPATH environment variable.
+
+    --site-config
+        Display the pathname of the Afterburner site configuration file.
+
+    --user-config
+        Display the pathname of the Afterburner user configuration file.
+
+    --version
+        Display the version number of the current Afterburner software suite.
+"""
+from __future__ import (absolute_import, division, print_function)
+from six.moves import (filter, input, map, range, zip)
+from six import iteritems
+
+import sys
+import os
+import traceback
+
+
+def parse_args():
+    """Parse command-line arguments."""
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(
+        usage="%(prog)s [options]",
+        description="Display information about the Afterburner software suite.")
+
+    parser.add_argument("--bin", action="store_true",
+        help="Display the pathname of the Afterburner bin directory")
+    parser.add_argument("--env", action="store_true",
+        help="Display all properties as a list of environment variable NAME=VALUE pairs")
+    parser.add_argument("--etc", action="store_true",
+        help="Display the pathname of the Afterburner etc directory")
+    parser.add_argument("--home", action="store_true",
+        help="Display the pathname of the Afterburner home directory")
+    parser.add_argument("--pythonpath", action="store_true",
+        help="Display the pathname of the Afterburner python package directory")
+    parser.add_argument("--site-config", action="store_true",
+        help="Display the pathname of the Afterburner site configuration file")
+    parser.add_argument("--user-config", action="store_true",
+        help="Display the pathname of the Afterburner user configuration file")
+    parser.add_argument("--version", action="store_true",
+        help="Display the current Afterburner version number")
+
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    return parser.parse_args()
+
+
+def get_home_dir():
+    """Get the home directory of the Afterburner software suite."""
+    # Returns the grandparent directory below which the current script resides,
+    # e.g. '/abhome' if this script resides at '/abhome/bin/abconfig'.
+    mod_path = os.path.abspath(__file__)
+    return os.path.split(os.path.dirname(mod_path))[0]
+
+
+def get_bin_dir():
+    """Get the bin directory of the Afterburner software suite."""
+    return config_provider.bin_dir
+
+
+def get_etc_dir():
+    """Get the etc directory of the Afterburner software suite."""
+    return config_provider.etc_dir
+
+
+def get_site_config_file():
+    """Get the pathname of the Afterburner site configuration file."""
+    return config_provider.site_config_file
+
+
+def get_user_config_file():
+    """Get the pathname of the Afterburner user configuration file."""
+    return config_provider.user_config_file
+
+
+def get_python_path():
+    """Get the python package directory of the Afterburner software suite."""
+    # Search directories corresponding to one of the distuils installation schemes
+    # see https://docs.python.org/2/install/index.html#alternate-installation
+    home_dir = get_home_dir()
+    pythonvn = 'python{0}.{1}'.format(*sys.version_info[:2])
+    test_paths = [
+        os.path.join(home_dir, 'lib', pythonvn, 'site-packages'),
+        os.path.join(home_dir, 'lib', 'python'),
+        os.path.join(home_dir, 'lib'),   # picks up dir location in source tree
+    ]
+
+    for test_path in test_paths:
+        if os.path.exists(test_path):
+            return test_path
+
+    raise RuntimeError("Unable to find Afterburner python package directory.")
+
+
+def get_version():
+    """Get the version number of the current Afterburner software."""
+    try:
+        return afterburner.__version__
+    except:
+        raise RuntimeError("Unable to detect afterburner.__version__ attribute.")
+
+
+# Define mapping between environment variable names and the local functions
+# that assign their value.
+VAR_FUNC_MAP = {
+    'AFTERBURNER_HOME_DIR': get_home_dir,
+    'AFTERBURNER_BIN_DIR': get_bin_dir,
+    'AFTERBURNER_ETC_DIR': get_etc_dir,
+    'AFTERBURNER_SITE_CONFIG_FILE': get_site_config_file,
+    'AFTERBURNER_USER_CONFIG_FILE': get_user_config_file,
+    'AFTERBURNER_PYTHONPATH': get_python_path,
+    'AFTERBURNER_VERSION': get_version,
+}
+
+
+def main():
+    """Main control function."""
+
+    args = parse_args()
+
+    try:
+        if args.home:
+            print(get_home_dir())
+
+        if args.bin:
+            print(get_bin_dir())
+
+        if args.etc:
+            print(get_etc_dir())
+
+        if args.pythonpath:
+            print(get_python_path())
+
+        if args.site_config:
+            print(get_site_config_file())
+
+        if args.user_config:
+            print(get_user_config_file())
+
+        if args.version:
+            print(get_version())
+
+        if args.env:
+            for var, func in iteritems(VAR_FUNC_MAP):
+                print("export {0}={1}".format(var, func()))
+
+    except:
+        traceback.print_exc(3)
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    sys.path.insert(0, get_python_path())
+    os.environ['AFTERBURNER_PKG_LOG_LEVEL'] = '0'   # disable package usage logging
+    import afterburner
+    import afterburner.config
+    config_provider = afterburner.config.ConfigProvider()
+    main()

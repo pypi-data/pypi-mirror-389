@@ -1,0 +1,65 @@
+#!jinja2
+
+# Edit the following variables, as appropriate: ROOT_TEST_PATH, BRANCH_NAME
+# Use the following commands to run this workflow:
+#   export CYLC_VERSION=8
+#   cylc vip
+
+[scheduler]
+    UTC mode = True
+
+# Note: the 'production-os44-2' environment is excluded from the 'module' list
+# below as it does not contain pytest (which is used to run the tests).
+[task parameters]
+    module = default-current, default-previous, default-next, production-os46-3, production-os47-1, production-os47-2
+
+[scheduling]
+    [[graph]]
+        R1 = test<module>
+
+[runtime]
+    [[root]]
+        platform = spice
+        [[[directives]]]
+            --wckey = Afterburner
+            --ntasks = 4
+            --time = 2
+            --mem = 2G
+        [[[environment]]]
+            ROOT_TEST_PATH = ${HOME}/afterburner
+            BRANCH_NAME = turbofan
+            TEST_COMMAND = pytest
+
+    [[SSS]]
+        script = """
+            module load scitools/${MODULE_NAME}
+            cd ${ROOT_TEST_PATH}/${BRANCH_NAME}
+            ${TEST_COMMAND}
+        """
+        [[[environment]]]
+            MODULE_NAME = ${CYLC_TASK_PARAM_module}
+
+    [[test<module=default-current>]]
+        inherit = None, SSS
+
+    [[test<module=default-previous>]]
+        inherit = None, SSS
+
+    [[test<module=default-next>]]
+        inherit = None, SSS
+
+    [[PRODUCTION]]
+        [[[environment]]]
+            # Manually set the PYTHONPATH to point to afterburner, as the versions
+            # of pytest in the production environments are too early to accept the
+            # pyproject.toml configuration
+            PYTHONPATH=${ROOT_TEST_PATH}/${BRANCH_NAME}/lib:$PYTHONPATH
+
+    [[test<module=production-os46-3>]]
+        inherit = None, PRODUCTION, SSS
+
+    [[test<module=production-os47-1>]]
+        inherit = None, PRODUCTION, SSS
+
+    [[test<module=production-os47-2>]]
+        inherit = None, PRODUCTION, SSS
