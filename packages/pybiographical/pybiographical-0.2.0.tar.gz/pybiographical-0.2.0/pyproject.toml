@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pybiographical"
+version = "0.2.0"
+description = "Python library for working with biographical data points for persons and locations"
+authors = [
+    {name = "Jane Smith", email = "developer@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+keywords = [
+    "biographical",
+    "metadata",
+    "person-data",
+    "location-data",
+    "fuzzy-matching",
+    "yaml",
+    "data-management",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "ruamel.yaml>=0.17.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/rickhohler/PyBiographical"
+Repository = "https://github.com/rickhohler/PyBiographical"
+Issues = "https://github.com/rickhohler/PyBiographical/issues"
+Changelog = "https://github.com/rickhohler/PyBiographical/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1",
+]
+matching = [
+    "rapidfuzz>=3.0.0",
+]
+full = [
+    "ruamel.yaml>=0.17.0",
+    "rapidfuzz>=3.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
