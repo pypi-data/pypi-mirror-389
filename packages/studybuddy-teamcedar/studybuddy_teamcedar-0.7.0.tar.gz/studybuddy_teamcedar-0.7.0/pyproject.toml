@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "studybuddy_teamcedar"
+version = "0.7.0"
+description = "A lighthearted Python package for funny study tips, excuses, and motivation."
+readme = "README.md"
+authors = [{name = "Team Cedar"}]
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+studybuddy = "studybuddy.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
