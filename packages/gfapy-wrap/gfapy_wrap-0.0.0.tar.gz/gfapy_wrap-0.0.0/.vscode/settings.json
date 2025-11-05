@@ -1,0 +1,113 @@
+{
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "always",
+            "source.organizeImports": "always"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true
+    },
+    "[toml]": {
+        "editor.formatOnSave": true
+    },
+    "autoDocstring.docstringFormat": "numpy",
+    "comment-divider.length": 88,
+    "editor.formatOnSave": false,
+    "files.exclude": {
+        ".nextflow": true,
+        ".pytest_cache": true,
+        ".ruff_cache": true,
+        "**/__pycache__": true,
+        "**/.mypy_cache": true,
+        "**/*.egg-info": true
+    },
+    "markdownlint.config": {
+        "MD024": false
+    },
+    "mypy-type-checker.args": [
+        "--config-file=${workspaceFolder}/mypy.ini",
+        "--exclude=${workspaceFolder}/tests"
+    ],
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUndefinedVariable": "none"
+    },
+    "python.analysis.extraPaths": [],
+    "python.analysis.typeCheckingMode": "off",
+    "python.testing.pytestArgs": [
+        "--config-file=${workspaceFolder}/pytest.ini",
+        "--cov=src/wgfapy"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "todo-tree.filtering.excludeGlobs": [
+        "**/node_modules",
+        "**/.vscode/settings.json",
+        "backup"
+    ],
+    "todo-tree.general.tags": [
+        "BUG",
+        "HACK",
+        "FIXME",
+        "TODO",
+        "XXX",
+        "OPTIMIZE",
+        "IDEA",
+        "DOCU",
+        "TOTEST",
+        "REFACTOR",
+        "FEATURE"
+    ],
+    "todo-tree.highlights.customHighlight": {
+        "BUG": {
+            "foreground": "#FF7F50",
+            "icon": "bug"
+        },
+        "DOCU": {
+            "foreground": "#008B8B",
+            "icon": "repo"
+        },
+        "FEATURE": {
+            "foreground": "#FFD700",
+            "icon": "star-fill"
+        },
+        "FIXME": {
+            "foreground": "#B22222",
+            "icon": "flame"
+        },
+        "HACK": {
+            "foreground": "#2F4F4F",
+            "icon": "tools"
+        },
+        "IDEA": {
+            "foreground": "#FFD700",
+            "icon": "light-bulb"
+        },
+        "OPTIMIZE": {
+            "foreground": "#CD5C5C",
+            "icon": "rocket"
+        },
+        "REFACTOR": {
+            "foreground": "#8FBC8F",
+            "icon": "git-branch"
+        },
+        "TODO": {
+            "foreground": "#006400",
+            "icon": "circle"
+        },
+        "TOTEST": {
+            "foreground": "#ADD8E6",
+            "icon": "beaker"
+        },
+        "XXX": {
+            "foreground": "#2F4F4F",
+            "icon": "x"
+        }
+    },
+    "todo-tree.highlights.defaultHighlight": {
+        "background": "#1d1f23",
+        "fontStyle": "italic",
+        "foreground": "#006400",
+        "gutterIcon": true,
+        "type": "text-and-comment"
+    }
+}

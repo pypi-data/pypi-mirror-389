@@ -1,0 +1,9 @@
+import gfapy
+
+class Headers:
+    @property
+    def header(self) -> gfapy.Line: ...
+    @property
+    def n_input_header_lines(self): ...
+    @property
+    def headers(self): ...

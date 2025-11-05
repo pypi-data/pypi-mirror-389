@@ -1,0 +1,6 @@
+from _typeshed import Incomplete
+
+class Multiline:
+    SINGLE_DEFINITION_TAGS: Incomplete
+    def add(self, tagname, value, datatype=None) -> None: ...
+    def field_to_s(self, fieldname, tag: bool = False): ...

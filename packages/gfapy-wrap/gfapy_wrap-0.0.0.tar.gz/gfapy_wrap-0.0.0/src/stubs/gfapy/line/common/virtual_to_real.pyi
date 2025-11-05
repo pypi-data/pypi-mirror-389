@@ -1,0 +1,3 @@
+class VirtualToReal:
+    @property
+    def virtual(self): ...

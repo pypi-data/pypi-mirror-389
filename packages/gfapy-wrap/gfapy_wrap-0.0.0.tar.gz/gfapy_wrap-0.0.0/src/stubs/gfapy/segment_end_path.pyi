@@ -1,0 +1,6 @@
+from _typeshed import Incomplete
+from collections.abc import Generator
+
+class SegmentEndsPath(list):
+    def reverse(self) -> None: ...
+    def __reversed__(self) -> Generator[Incomplete]: ...
