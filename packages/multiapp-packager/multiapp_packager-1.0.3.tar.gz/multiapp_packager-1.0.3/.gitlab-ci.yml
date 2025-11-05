@@ -1,0 +1,40 @@
+stages:
+  - build
+  - deploy
+
+build-job:
+  stage: build
+  image: astral/uv:python3.12-bookworm-slim
+  script:
+    - uv build
+    - ls -lh dist/
+  artifacts:
+    paths:
+      - "dist/"
+    expire_in: 1 week
+  tags:
+    - generic
+  only:
+    - tags
+    - merge_requests
+
+publish-job:
+  stage: deploy
+  image: astral/uv:python3.12-bookworm-slim
+  dependencies:
+    - build-job
+  script:
+    - mkdir -p $HOME
+    - |
+      cat > $HOME/.pypirc << EOF
+      [pypi]
+        username = __token__
+        password = $PYPI_TOKEN
+      EOF
+    - chmod 600 $HOME/.pypirc
+    - cat $HOME/.pypirc
+    - uvx twine upload dist/*
+  tags:
+    - generic
+  only:
+    - tags

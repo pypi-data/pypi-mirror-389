@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "apps": [
+    {
+      "app_name": "lvgl8_widgets",
+      "icon_path": "build/lvgl8_widgets/app_icon.png",
+      "description": "LVGL8 Widgets 示例应用",
+      "images": [
+        {
+          "bin_path": "build/lvgl8_widgets/app.bin",
+          "flash_addr": "0x100000"
+        }
+      ]
+    },
+    {
+      "app_name": "lvgl8_benchmark",
+      "icon_path": "build/lvgl8_benchmark/app_icon.png",
+      "description": "LVGL8 性能测试应用（多 bin 示例）",
+      "images": [
+        {
+          "bin_path": "build/lvgl8_benchmark/app.bin",
+          "flash_addr": "0x100000"
+        },
+        {
+          "bin_path": "build/lvgl8_benchmark/app",
+          "flash_addr": "0x200000"
+        }
+      ]
+    }
+  ]
+}
