@@ -1,0 +1,116 @@
+# Magnes Signal Generation Utility
+
+Utility to generate signals for algorithm development and verification.
+
+## Quickstart
+
+Install the package using `pip`:
+```bash
+pip install magnes-signal-generation-utility
+```
+
+### Generate Synthetic Signal with Artifacts
+
+```python
+from msgu.mixture import generate_synthetic_wave_with_cardiac_artifacts
+
+# Generate synthetic signal with cardiac artifacts
+data = generate_synthetic_wave_with_cardiac_artifacts(
+    fs=250.0,
+    freqs=[10.0, 30.0],       # Peak frequencies
+    widths=[2.0, 5.0],        # Frequency widths
+    gamma=3.0,                # Disturbance gain
+    sigma=0.2,                # Noise level
+    nbeats=10
+)
+
+# Access the components
+t = data.t                   # Time array
+signal = data.x              # Ground truth signal
+disturbance = data.d         # Cardiac artifacts
+noise = data.n               # Pink noise
+measurement = data.z         # Composite measurement
+```
+
+### Generate White and Pink Noise
+
+```python
+from msgu.noise import generate_white_noise, generate_pink_noise, PINK_NOISE_ALGO
+
+# Generate white noise
+white_noise = generate_white_noise(n=1000)
+
+# Generate pink noise using FFT algorithm
+pink_noise = generate_pink_noise(n=1000, algo=PINK_NOISE_ALGO.FFT)
+```
+
+### Basic Example: Generate ECG Signal
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from msgu.cardio import generate_ecg
+
+# Generate a 5-beat ECG signal at 250 Hz
+fs = 250.0
+t, ecg_signal = generate_ecg(fs, nbeats=5, sigma=0.01)
+
+# Plot the signal
+plt.plot(t, ecg_signal)
+plt.xlabel('Time [s]')
+plt.ylabel('Signal [mV]')
+plt.title('Pseudo-ECG Signal')
+plt.show()
+```
+
+## Submodules
+
+### Cardio
+Pseudo-ECG signals generation utility. Defines a (heart) `Beat` object, which
+can be used as a generator of a pseudo-random, single-beat signal. A utility
+function allows to concatenate `n` beats into a singe time series.
+
+![beat](./doc/img/beats.svg)
+
+### Gauss
+Helper definitions of the Gaussian bell and its derivatives.
+
+### Mixture
+Signal synthesizers: combining various signal generators into composite signals.
+
+#### Pseudo-Random Waves Synth `prsynth`
+Superposing blurred-peak, random-phase sine-waves, with additive disturbances (ECG artifacts) and
+pink noise.
+
+![prsynth](./doc/img/prsynth.jpg)
+
+### Noise
+Noise generation utility.
+
+### Periodic
+(Quasi) periodic signals generation utility.
+
+#### Tidal - Pseudo-random sine waves
+Includes the implementation of blurred-peak, randomly-phased sine-waves generation
+
+![pro](./doc/img/pseudo-random-oscillations.jpg)
+
+### Trajectory
+Trajectory generation utility.
+
+#### S-Curves
+Helper utility for the generation of normed, polynomial (order 3 and 5) S-curves.
+
+## Usage Examples
+Scripts illustrating the intended usage of the `msgu` package are available in `scripts/`.
+To run the script `foo.py` call
+```bash
+uv run scripts/foo.py
+```
+from project root.
+
+## Testing
+Unittests can be run with `uv` and `pytest` from root as
+```bash
+uv run -m pytest [OPTIONS]
+```
