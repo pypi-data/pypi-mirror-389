@@ -1,0 +1,73 @@
+Metadata-Version: 2.4
+Name: priorityx
+Version: 0.1.1
+Summary: Entity prioritization and escalation detection using GLMM statistical models
+Project-URL: Homepage, https://github.com/okkymabruri/priorityx
+Project-URL: Repository, https://github.com/okkymabruri/priorityx
+Project-URL: Issues, https://github.com/okkymabruri/priorityx/issues
+Author-email: Okky Mabruri <okkymbrur@gmail.com>
+License: MIT
+License-File: LICENSE
+Keywords: escalation-detection,glmm,prioritization,risk-analysis,statistical-modeling
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.9
+Requires-Dist: adjusttext>=1.3.0
+Requires-Dist: matplotlib>=3.9.4
+Requires-Dist: pandas>=2.3.3
+Requires-Dist: polars>=1.35.1
+Requires-Dist: pyarrow>=21.0.0
+Requires-Dist: statsmodels>=0.14.5
+Description-Content-Type: text/markdown
+
+# Priorityx: Entity prioritization and escalation detection using GLMM statistical models
+
+## Installation
+
+```bash
+pip install priorityx
+```
+
+## Quick Start
+
+```python
+import polars as pl
+from priorityx.core.glmm import fit_priority_matrix
+from priorityx.viz.matrix import plot_priority_matrix
+
+df = pl.read_csv("data.csv")
+
+results, stats = fit_priority_matrix(
+    df,
+    entity_col="service",
+    timestamp_col="date",
+    temporal_granularity="quarterly"
+)
+
+plot_priority_matrix(results, entity_name="Service", save_plot=True)
+```
+
+## Features
+
+- GLMM-based priority classification (Q1-Q4 quadrants)
+- Transition detection over time
+- Movement tracking
+- Visualization
+
+## Use Cases
+
+IT incidents, software bugs, compliance violations, performance monitoring.
+
+## Documentation
+
+- [Quick Start](docs/quickstart.md)
+- [API Reference](docs/api-reference.md)
+- [Methodology](docs/methodology.md)
