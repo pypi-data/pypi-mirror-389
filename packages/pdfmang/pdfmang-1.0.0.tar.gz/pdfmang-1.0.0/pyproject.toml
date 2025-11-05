@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfmang"
+version = "1.0.0"
+description = "A free and open-source PDF Utility Suite built with Tkinter"
+authors = [{name = "Yatin Annam", email = "ninjayatin@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "PyPDF2",
+    "ttkthemes",
+    "pdf2image",
+    "pdf2docx",
+    "pillow"
+]
+
+[project.scripts]
+pdfutil = "pdfutil.main:main"
