@@ -1,0 +1,114 @@
+# Finesse Benchmark Configuration
+# This file configures the benchmark modes, models, probe settings, etc.
+# For merger_mode: Use sequence-merger with a base embedder.
+# For native_mode: Use a long-context native embedder directly.
+
+mode: "merger_mode" # Options: "merger_mode", "native_mode", or "byok_mode"
+
+# Models Configuration
+models:
+  # Used only in merger_mode
+  merger:
+    # Hugging Face model name or local path for Sequence Merger
+    name: "enzoescipy/sequence-merger-malgeum"
+  # merger_mode: base embedder for probes, native_mode: the main long-context embedder
+  base_embedder:
+    # e.g., multilingual-e5-base for merger, or longformer-base-4096 for native
+    name: "intfloat/multilingual-e5-base"
+    max_context_length: 512 # Automatic check in merger_mode: ensures token_per_sample <= this limit
+    prefix: "passage: "
+  # IMPORTANT: max_context_length Field Explanation (for all embedder types: base, native, byok)
+  #
+  # This optional field specifies the model's official maximum context length in tokens.
+  # It is CRITICAL for fair and accurate benchmarking in native_mode or byok_mode.
+  #
+  # How it works:
+  # - Before evaluation starts (in __init__), the evaluator performs a 'Pre-flight Qualification Check':
+  #   - For merger_mode: Compares probe_config.token_per_sample against base_embedder.max_context_length; raises error if exceeded.
+  #   - For native/byok_mode: Calculates total required tokens per sequence (target_length * token_per_sample + overhead) against max_context_length; skips exceeding samples during run.
+  #   - If max_context_length is None (default), raises ValueError to prevent invalid runs.
+  #
+  # Recommendations:
+  # - ALWAYS set this for ALL embedders: base_embedder (merger_mode), native_embedder (native_mode), byok_embedder (byok_mode).
+  #   - Examples: 512 for multilingual-e5-base (base), 8192 for snowflake-arctic-embed-l (native), 8192 for text-embedding-3-large (byok).
+  # - Check model docs/HF card for exact value (often max_position_embeddings, but verify effective limit).
+  # - Adjust probe_config.token_per_sample or sequence_length.max to stay within limits.
+  #
+  # Example: For intfloat/multilingual-e5-base (base_embedder), official context is 512 tokens.
+  #
+  # Used only in native_mode (if separate)
+  native_embedder:
+    # e.g., "Snowflake/snowflake-arctic-embed-l-v2.0"
+    name: "Snowflake/snowflake-arctic-embed-l-v2.0"
+    max_context_length: 8192  # Automatic skip for sequences exceeding this (e.g., >32 chunks at 256 tokens each)
+    prefix: "" # no prefix for passage model
+  # [Local Python Class Example - Uncomment and edit for custom model classes]
+  # Load a model class directly from a local Python file instead of Hugging Face Hub.
+  # This is useful for custom implementations, research prototypes, or models not published to HF.
+  #
+  # Example: Using a custom AverageModel class from a local file
+  # merger:
+  #   local_path: "final_result/average-build/modeling_average.py"  # Path to the .py file containing the class
+  #   local_class: "AverageModel"  # Name of the class to instantiate
+  #   max_context_length: 512  # CRITICAL: Set the model's official maximum context length
+  #
+  # Requirements for the local class:
+  # - Must inherit from FinesseSynthesizer (for merger) or FinesseEmbedder (for embedder)
+  # - Must have an __init__ method that accepts a config object (AutoConfig or similar)
+  # - The .py file must be importable and contain the specified class
+  #
+  # Note: When using local_path/local_class, the 'name' field is ignored.
+
+  # [BYOK Mode Example - Uncomment and edit for BYOK usage]
+  # For byok_mode: Specify the API provider and model name for litellm
+  # byok_embedder:
+  #   provider: "openai"  # e.g., 'openai', 'cohere', 'google'
+  #   name: "text-embedding-3-large"  # Provider-specific model name
+  #   tokenizer_path: null  # Optional: Hugging Face tokenizer path for accurate token counting
+  #                        # e.g., 'Cohere/cohere-tokenizer-fast' for Cohere models
+  #                        # If null, system will use tiktoken for OpenAI or fallback with warning
+  #
+  # IMPORTANT: API keys MUST be set as environment variables for security.
+  # Do NOT store keys in this YAML file or commit them to version control.
+  # Examples (set in your terminal before running):
+  #
+  # For OpenAI:
+  #   export OPENAI_API_KEY="sk-your-key-here"  # Linux/macOS
+  #   $env:OPENAI_API_KEY="sk-your-key-here"  # Windows PowerShell
+  #
+  # For Cohere:
+  #   export COHERE_API_KEY="your-cohere-key-here"
+  #
+  # For Google:
+  #   export GOOGLE_API_KEY="your-google-key-here"
+  #
+  # Tokenizer Recommendations:
+  # - OpenAI models: Leave tokenizer_path null (uses tiktoken automatically)
+  # - Cohere models: Set tokenizer_path: "Cohere/cohere-tokenizer-fast"
+  # - Google models: Set tokenizer_path: "google-bert/bert-base-uncased" or similar
+  #
+  # litellm will automatically detect and use the appropriate environment variable
+  # based on the 'provider' you specify. This ensures your keys remain secure.
+
+# Dataset Configuration
+dataset:
+  path: "enzoescipy/finesse-benchmark-database"  # HF dataset path
+  split: "train"  # Split to use
+  commit_hash: "5243368ca627d9f29c9fa2985172857e3302bb7c"
+
+# Probe Configuration
+probe_config:
+  sequence_length:
+    min: 5  # Minimum sequence length in tokens
+    max: 16  # Maximum sequence length in tokens
+  samples_per_length: 5  # Evaluations per length
+  token_per_sample : 250 # Number of tokens per chunk
+  group_amount: 50  # Only for the SRS evaluation. Decides how much to collect ordered-series and reversed-series to compare.
+
+# Advanced Settings
+advanced: {}
+  # batch_size: 8
+  # device: "cuda"
+
+# Seed for Reproducibility
+seed: 42  # Default seed for dataset shuffling

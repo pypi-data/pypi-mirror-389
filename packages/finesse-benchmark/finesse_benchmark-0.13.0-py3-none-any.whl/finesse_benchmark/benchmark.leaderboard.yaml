@@ -1,0 +1,120 @@
+# Finesse Benchmark: Official Leaderboard Configuration
+
+# This YAML serves as the official standard configuration for leaderboard submissions.
+# To submit results, copy this file to benchmark.yaml and run the evaluation.
+# It ensures fairness, reproducibility, and alignment with Finesse's core philosophy of evaluating
+# composition (synthesis) without artificial masking.
+
+# Do NOT modify this file for submissions. Use it as-is for standardized scoring.
+
+mode: "merger_mode"  # Options: "merger_mode", "native_mode", or "byok_mode"
+
+# Standard: merger_mode for sequence-merger evaluations. Change only if comparing native/BYOK modes explicitly.
+
+# Models Configuration (Standard for Leaderboard)
+models:
+  # Sequence Merger (core for merger_mode)
+  merger:
+    name: "enzoescipy/sequence-merger-malgeum"  # Official merger model; use your fine-tuned variant if submitting custom
+  # Base Embedder (used in merger_mode and as probe embedder)
+  base_embedder:
+    name: "intfloat/multilingual-e5-base"  # Standard multilingual base for global coverage
+    max_context_length: 512 
+    prefix: "passage: "
+  # IMPORTANT: max_context_length Field Explanation (for all embedder types: base, native, byok)
+  #
+  # This optional field specifies the model's official maximum context length in tokens.
+  # It is CRITICAL for fair and accurate benchmarking in native_mode or byok_mode.
+  #
+  # How it works:
+  # - Before evaluation starts (in __init__), the evaluator performs a 'Pre-flight Qualification Check':
+  #   - For merger_mode: Compares probe_config.token_per_sample against base_embedder.max_context_length; raises error if exceeded.
+  #   - For native/byok_mode: Calculates total required tokens per sequence (target_length * token_per_sample + overhead) against max_context_length; skips exceeding samples during run.
+  #   - If max_context_length is None (default), raises ValueError to prevent invalid runs.
+  #
+  # Recommendations:
+  # - ALWAYS set this for ALL embedders: base_embedder (merger_mode), native_embedder (native_mode), byok_embedder (byok_mode).
+  #   - Examples: 512 for multilingual-e5-base (base), 8192 for snowflake-arctic-embed-l (native), 8192 for text-embedding-3-large (byok).
+  # - Check model docs/HF card for exact value (often max_position_embeddings, but verify effective limit).
+  # - Adjust probe_config.token_per_sample or sequence_length.max to stay within limits.
+  #
+  # Example: For intfloat/multilingual-e5-base (base_embedder), official context is 512 tokens.
+  #
+  # Used only in native_mode (if separate)
+  native_embedder:
+    # e.g., "Snowflake/snowflake-arctic-embed-l-v2.0"
+    name: "Snowflake/snowflake-arctic-embed-l-v2.0"
+    max_context_length: 8192  # Automatic skip for sequences exceeding this (e.g., >32 chunks at 256 tokens each)
+    prefix: "" # no prefix for passage model
+
+  # [Local Python Class Example - Uncomment and edit for custom model classes]
+  # Load a model class directly from a local Python file instead of Hugging Face Hub.
+  # This is useful for custom implementations, research prototypes, or models not published to HF.
+  #
+  # Example: Using a custom AverageModel class from a local file
+  # merger:
+  #   local_path: "final_result/average-build/modeling_average.py"  # Path to the .py file containing the class
+  #   local_class: "AverageModel"  # Name of the class to instantiate
+  #   max_context_length: 512  # CRITICAL: Set the model's official maximum context length
+  #
+  # Requirements for the local class:
+  # - Must inherit from FinesseSynthesizer (for merger) or FinesseEmbedder (for embedder)
+  # - Must have an __init__ method that accepts a config object (AutoConfig or similar)
+  # - The .py file must be importable and contain the specified class
+  #
+  # Note: When using local_path/local_class, the 'name' field is ignored.
+
+  # [BYOK Mode Example - Uncomment and edit for BYOK usage]
+  # For byok_mode: Specify the API provider and model name for litellm
+  # byok_embedder:
+  #   provider: "openai"  # e.g., 'openai', 'cohere', 'google'
+  #   name: "text-embedding-3-large"  # Provider-specific model name
+  #   tokenizer_path: null  # Optional: Hugging Face tokenizer path for accurate token counting
+  #                        # e.g., 'Cohere/cohere-tokenizer-fast' for Cohere models
+  #                        # If null, system will use tiktoken for OpenAI or fallback with warning
+  #
+  # IMPORTANT: API keys MUST be set as environment variables for security.
+  # Do NOT store keys in this YAML file or commit them to version control.
+  # Examples (set in your terminal before running):
+  #
+  # For OpenAI:
+  #   export OPENAI_API_KEY="sk-your-key-here"  # Linux/macOS
+  #   $env:OPENAI_API_KEY="sk-your-key-here"  # Windows PowerShell
+  #
+  # For Cohere:
+  #   export COHERE_API_KEY="your-cohere-key-here"
+  #
+  # For Google:
+  #   export GOOGLE_API_KEY="your-google-key-here"
+  #
+  # Tokenizer Recommendations:
+  # - OpenAI models: Leave tokenizer_path null (uses tiktoken automatically)
+  # - Cohere models: Set tokenizer_path: "Cohere/cohere-tokenizer-fast"
+  # - Google models: Set tokenizer_path: "google-bert/bert-base-uncased" or similar
+  #
+  # litellm will automatically detect and use the appropriate environment variable
+  # based on the 'provider' you specify. This ensures your keys remain secure.
+
+# Dataset Configuration (Fixed for Reproducibility)
+dataset:
+  path: "enzoescipy/finesse-benchmark-database"  # Official dataset
+  split: "train"  # Use train split for consistency
+  commit_hash: "5243368ca627d9f29c9fa2985172857e3302bb7c"
+
+# Probe Configuration (Standard for Leaderboard)
+# Balances short-to-medium sequence evaluation with sufficient samples for statistical significance
+probe_config:
+  sequence_length:
+    min: 4   # Minimum length: Tests basic composition
+    max: 64  # Maximum length: Tests scaling up to moderate long-context
+  samples_per_length: 25  # Samples per length: Ensures reliable averages (25 evals per point)
+  token_per_sample : 500  # Number of tokens per chunk, 512 - 2 (for the maximum capacity but having safer margin)
+  group_amount: 100  # Only for the SRS evaluation. Decides how much to collect ordered-series and reversed-series to compare.
+
+# Advanced Settings (Defaults for Fair Comparison)
+advanced:
+  batch_size: 8   # Efficient batching; adjust based on hardware
+  device: "cuda"   # Use GPU if available; falls back to CPU
+
+# Seed for Reproducibility (Immutable for Leaderboard)
+seed: 42  # Fixed seed: Ensures identical dataset shuffling and randomness across runs
