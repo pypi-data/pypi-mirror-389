@@ -1,0 +1,99 @@
+Metadata-Version: 2.4
+Name: bruggeman
+Version: 0.1.0
+Summary: Repository for the Bruggeman equations from Analytical Solutions of Geohydrological Problems (1999)
+Author-email: Davíd Brakenhoff <d.brakenhoff@artesia-water.nl>
+License-File: LICENSE
+Requires-Python: >=3.12
+Requires-Dist: mpmath
+Requires-Dist: numpy
+Requires-Dist: scipy
+Provides-Extra: ci
+Requires-Dist: mypy; extra == 'ci'
+Requires-Dist: nbconvert; extra == 'ci'
+Requires-Dist: nbformat; extra == 'ci'
+Requires-Dist: pytest; extra == 'ci'
+Requires-Dist: pytest-cov; extra == 'ci'
+Requires-Dist: ruff; extra == 'ci'
+Provides-Extra: dev
+Requires-Dist: ipykernel; extra == 'dev'
+Requires-Dist: ipython; extra == 'dev'
+Requires-Dist: latexify-py; extra == 'dev'
+Requires-Dist: matplotlib; extra == 'dev'
+Requires-Dist: mypy; extra == 'dev'
+Requires-Dist: myst-nb; extra == 'dev'
+Requires-Dist: nbconvert; extra == 'dev'
+Requires-Dist: nbformat; extra == 'dev'
+Requires-Dist: numpydoc; extra == 'dev'
+Requires-Dist: pydata-sphinx-theme; extra == 'dev'
+Requires-Dist: pytest; extra == 'dev'
+Requires-Dist: pytest-cov; extra == 'dev'
+Requires-Dist: ruff; extra == 'dev'
+Requires-Dist: sphinx; extra == 'dev'
+Requires-Dist: sphinx-design; extra == 'dev'
+Requires-Dist: sphinxcontrib-bibtex; extra == 'dev'
+Requires-Dist: ttim; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: ipykernel; extra == 'docs'
+Requires-Dist: ipython; extra == 'docs'
+Requires-Dist: latexify-py; extra == 'docs'
+Requires-Dist: matplotlib; extra == 'docs'
+Requires-Dist: myst-nb; extra == 'docs'
+Requires-Dist: numpydoc; extra == 'docs'
+Requires-Dist: pydata-sphinx-theme; extra == 'docs'
+Requires-Dist: sphinx; extra == 'docs'
+Requires-Dist: sphinx-design; extra == 'docs'
+Requires-Dist: sphinxcontrib-bibtex; extra == 'docs'
+Requires-Dist: ttim; extra == 'docs'
+Provides-Extra: latexify
+Requires-Dist: latexify-py; extra == 'latexify'
+Description-Content-Type: text/markdown
+
+# Bruggeman: Analytical Solutions of Geohydrological Problems
+
+This repository contains implementations of Bruggeman's analytical solutions in Python.
+
+The philosphy behind this repository is to collect implementations of
+analytical solutions so they are readily available for use in projects or for
+benchmarking other computations or models.
+
+Very much a work in progress. Any contributions are welcome.
+
+## Installation
+
+Normal install:
+
+`pip install bruggeman`
+
+Development install:
+
+`pip install -e .`
+
+## Documentation
+
+The documentation is available [here](https://bruggeman.readthedocs.io/en/latest/index.html).
+
+To build the documentation locally:
+
+1. Install the optional documentation dependencies `pip install bruggeman[docs]`
+(or `pip install -e ".[docs]"`).
+2. Navigate to `docs/`
+3. Enter the command `make html`.
+4. The documenation is contained in the `docs/_build` folder. Open `index.html` in
+your browser to view the documentation.
+
+## Contributing
+
+Any contributions are welcome! For the best results please follow the guidelines below:
+
+- The analytical solutions are generally stored in the `bruggeman/*.py` files. Please
+  select the appropriate python file for your solution. E.g. 1D flow solutions should be
+  stored `flow1d.py`. Create a new file if your solution does not fit into the currently
+  available files.
+- Create a notebook showcasing your solution. Put the notebook in `docs/examples/`.
+- Add the notebook under the appropriate section in `docs/examples/index.rst`. Follow
+  the examples in the file to add your notebook. Don't forget to add your notebook to the
+  table of contents as well.
+- Consider decorating your function with latexify by importing
+  `from bruggeman.general import latexify_function`. Follow the examples already present
+  in the python files. This will allow you to render your formulas with LateX in a notebook.
