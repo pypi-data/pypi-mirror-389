@@ -1,0 +1,45 @@
+[build-system]
+requires = [
+    "setuptools>=78",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "system-helpers"
+license = "MIT"
+license-files = ["LICENSE"]
+dynamic = [
+    "version",
+]
+dependencies = [
+    "typeguard",
+]
+authors = [
+  {name = "Arnst Maarten"},
+  {name = "Tomasetti Romin"},
+]
+requires-python = ">= 3.10"
+
+[project.urls]
+Homepage = "https://github.com/uliegecsm/system-helpers"
+Documentation = "https://github.com/uliegecsm/system-helpers"
+
+[project.scripts]
+apt-helpers = "system_helpers.apt.script:main"
+update-alternatives-helpers = "system_helpers.update_alternatives.script:main"
+
+[tool.setuptools]
+packages = [
+    "system_helpers",
+    "system_helpers.apt",
+    "system_helpers.update_alternatives",
+]
+
+[tool.setuptools.package-dir]
+"system_helpers" = "system_helpers/"
+"system_helpers.apt" = "system_helpers/apt"
+"system_helpers.update_alternatives" = "system_helpers/update_alternatives"
+
+[tool.setuptools.dynamic]
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
+version = {attr = "system_helpers.__version__"}
