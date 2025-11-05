@@ -1,0 +1,16 @@
+# Running the gcn model with the largemix dataset on IPU.
+
+defaults:
+  - base_config: large
+  - _self_
+
+constants:
+  name: neurips2023_large_data_gcn
+  wandb:
+    name: ${constants.name}
+    project: neurips2023_large_graphcore
+    entity: multitask-gnn
+
+architecture:
+  gnn:  # Set as null to avoid a post-nn network
+    layer_type: 'pyg:gcn' #pyg:gine #'pyg:gps' # pyg:gated-gcn, pyg:gine,pyg:gps
