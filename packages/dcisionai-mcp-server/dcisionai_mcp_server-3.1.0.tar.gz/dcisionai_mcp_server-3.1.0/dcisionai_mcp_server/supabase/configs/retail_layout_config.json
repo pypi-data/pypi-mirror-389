@@ -1,0 +1,169 @@
+{
+  "id": "retail_layout",
+  "name": "Store Layout Optimization",
+  "domain": "retail",
+  "problem_type": "store_layout",
+  "description": "Optimizes product placement on retail shelves to maximize space efficiency, placement quality, accessibility, and cross-selling opportunities.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Retail Merchandising Expert",
+    "profile": "20+ years optimizing store layouts for major retailers. Expert in visual merchandising, foot traffic analysis, and sales psychology.",
+    "priorities": [
+      "Space efficiency (80-95% utilization)",
+      "High-value products in prime locations",
+      "High-frequency items in high-traffic areas",
+      "Cross-selling through strategic co-location",
+      "Category clustering",
+      "Compliance with refrigeration and security requirements"
+    ],
+    "key_metrics": [
+      "Space utilization percentage",
+      "Revenue per square foot",
+      "Customer accessibility score",
+      "Cross-sell effectiveness"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Combinatorial Optimization Specialist",
+    "profile": "PhD in Operations Research. Specializes in assignment problems, multi-objective optimization, and evolutionary algorithms.",
+    "problem_class": "Multi-objective combinatorial optimization (NP-hard)",
+    "formulation": "Multi-objective fitness function with space efficiency, placement quality, accessibility, and cross-selling components. Hard constraints for space, refrigeration, and security.",
+    "complexity": "O(n! / (n-m)!) for n products and m shelves - requires heuristic approach"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "space_efficiency",
+        "weight": 0.4,
+        "formula": "1.0 - abs(utilization - 0.85) / 0.15",
+        "description": "Rewards 80-95% space utilization, penalizes under/over-utilization",
+        "target_range": [0.80, 0.95]
+      },
+      {
+        "name": "placement_quality",
+        "weight": 0.3,
+        "formula": "sum(product.profit_margin * shelf.visibility_score) / max_possible",
+        "description": "High-margin products in high-visibility locations"
+      },
+      {
+        "name": "accessibility",
+        "weight": 0.15,
+        "formula": "sum(product.sales_rate * shelf.foot_traffic) / max_possible",
+        "description": "High-frequency items in high-traffic areas"
+      },
+      {
+        "name": "cross_sell",
+        "weight": 0.15,
+        "formula": "sum(complementary_pairs_colocated) / total_complementary_pairs",
+        "description": "Complementary products placed together"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "constraint_violation",
+        "weight": 10.0,
+        "description": "Heavy penalty for hard constraint violations"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "space_constraint",
+        "formula": "sum(product.space_required for product in shelf) <= shelf.total_space",
+        "description": "Products must fit on shelf"
+      },
+      {
+        "name": "refrigeration_constraint",
+        "formula": "if product.needs_refrigeration then shelf.zone == 'refrigerated'",
+        "description": "Refrigerated products only in refrigerated zones"
+      },
+      {
+        "name": "security_constraint",
+        "formula": "if product.needs_security then shelf.has_security == true",
+        "description": "High-value items only in secured locations"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "category_clustering",
+        "penalty": 0.1,
+        "formula": "prefer products of same category on adjacent shelves",
+        "description": "Customers expect similar items grouped"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 50,
+    "max_generations": 100,
+    "crossover_rate": 0.7,
+    "mutation_rate": 0.3,
+    "tournament_size": 3,
+    "elite_size": 5,
+    "crossover_config": {
+      "type": "partial_mapped_crossover",
+      "description": "Preserves product-shelf assignments while exploring new combinations"
+    },
+    "mutation_config": {
+      "type": "swap_mutation",
+      "description": "Randomly swaps two product assignments",
+      "mutation_strength": 0.1
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL INSTRUCTIONS:**\n\nYou must generate the EXACT number of products and shelves mentioned in the problem description. Do not generate sample data - generate ALL requested items.\n\n**Problem Description:**\n{problem_description}\n\n**Task:**\nExtract structured data for store layout optimization. Return a JSON object with this EXACT structure:\n\n```json\n{{\n  \"products\": [\n    {{\n      \"id\": \"product_1\",\n      \"name\": \"Product Name\",\n      \"category\": \"category_name\",\n      \"space_required\": 1.0,\n      \"sales_rate\": 10.0,\n      \"profit_margin\": 0.25,\n      \"needs_refrigeration\": false,\n      \"needs_security\": false\n    }}\n  ],\n  \"shelves\": [\n    {{\n      \"id\": \"shelf_1\",\n      \"total_space\": 10.0,\n      \"visibility_score\": 0.8,\n      \"foot_traffic\": 0.9,\n      \"zone\": \"normal\",\n      \"has_security\": false\n    }}\n  ],\n  \"complementary_pairs\": [\n    [\"product_1\", \"product_2\"]\n  ]\n}}\n```\n\n**Rules:**\n1. Generate ALL products and shelves mentioned (not just samples!)\n2. Use realistic sales_rate (units/day): popular items 20+, average 10, slow 5\n3. Use realistic profit_margin: 0.15-0.40\n4. Set needs_refrigeration: true for dairy, frozen, deli items\n5. Set needs_security: true for electronics, jewelry, high-value items\n6. visibility_score: 0.0-1.0 (front/eye-level = 1.0, back/bottom = 0.3)\n7. foot_traffic: 0.0-1.0 (entrance/checkout = 1.0, back corner = 0.3)\n8. zone: 'normal', 'refrigerated', 'secured'\n9. Identify complementary pairs (items bought together)\n\nReturn ONLY the JSON, no explanations.",
+    "required_fields": ["products", "shelves"],
+    "optional_fields": ["complementary_pairs"],
+    "validation_rules": [
+      "products.length > 0",
+      "shelves.length > 0",
+      "each product has required fields",
+      "each shelf has required fields"
+    ],
+    "data_usage_explanation": "Products and shelves are used to build the assignment optimization model. Sales rates, profit margins, and space requirements drive the objective function. Refrigeration and security flags enforce hard constraints."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Space Utilization",
+        "key": "space_utilization",
+        "format": "percentage",
+        "target": "80-95%"
+      },
+      {
+        "name": "Revenue Potential",
+        "key": "expected_revenue",
+        "format": "currency",
+        "description": "Daily revenue based on placement quality"
+      },
+      {
+        "name": "Products Placed",
+        "key": "products_placed",
+        "format": "count"
+      },
+      {
+        "name": "Constraint Compliance",
+        "key": "constraint_satisfaction",
+        "format": "percentage"
+      }
+    ],
+    "visualization_types": ["store_layout_2d", "evolution_timeline", "solution_space_3d"],
+    "narrative_template": "Successfully optimized store layout with {products_placed} products across {shelves_count} shelves. Achieved {space_utilization}% space utilization with {constraint_satisfaction}% constraint compliance. Expected revenue: ${expected_revenue}/day.",
+    "export_formats": ["json", "csv", "planogram"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+

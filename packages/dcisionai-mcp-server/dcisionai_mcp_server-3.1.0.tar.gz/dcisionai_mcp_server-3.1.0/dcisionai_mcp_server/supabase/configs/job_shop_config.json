@@ -1,0 +1,178 @@
+{
+  "id": "job_shop",
+  "name": "Job Shop Scheduling",
+  "domain": "manufacturing",
+  "problem_type": "job_shop_scheduling",
+  "description": "Optimizes manufacturing schedules, machine allocation, and production sequencing to minimize makespan and meet due dates while respecting precedence constraints.",
+  "is_active": true,
+  "version": 1,
+  
+  "domain_expert": {
+    "title": "Manufacturing Operations Expert",
+    "profile": "20+ years in production planning for automotive and electronics manufacturing. Expert in lean manufacturing, bottleneck analysis, and shop floor optimization.",
+    "priorities": [
+      "Minimize makespan (total completion time)",
+      "Meet job due dates",
+      "Maximize machine utilization",
+      "Minimize setup times",
+      "Balance machine workload",
+      "Prioritize urgent orders"
+    ],
+    "key_metrics": [
+      "Makespan (hours)",
+      "Average tardiness (hours)",
+      "Machine utilization (%)",
+      "Jobs completed on-time (%)"
+    ]
+  },
+  
+  "math_expert": {
+    "title": "Scheduling Theory Specialist",
+    "profile": "PhD in Industrial Engineering. Expert in job shop scheduling, critical path analysis, and constraint programming.",
+    "problem_class": "Job Shop Scheduling Problem (JSSP) - NP-hard",
+    "formulation": "Minimize makespan while respecting machine availability, operation precedence, and job-machine assignments. Uses disjunctive graph model with genetic algorithm heuristics.",
+    "complexity": "O((n!)^m) where n = jobs, m = machines - requires meta-heuristic"
+  },
+  
+  "objective_config": {
+    "objective_type": "multi_objective",
+    "components": [
+      {
+        "name": "makespan",
+        "weight": 0.5,
+        "formula": "max(completion_time for all jobs)",
+        "description": "Minimize total time to complete all jobs"
+      },
+      {
+        "name": "tardiness",
+        "weight": 0.3,
+        "formula": "sum(max(0, completion_time[j] - due_date[j]) for all jobs)",
+        "description": "Minimize late job penalties"
+      },
+      {
+        "name": "machine_utilization",
+        "weight": 0.15,
+        "formula": "sum(busy_time) / (num_machines * makespan)",
+        "description": "Maximize machine usage"
+      },
+      {
+        "name": "idle_time",
+        "weight": 0.05,
+        "formula": "1.0 - sum(machine_idle_time) / total_time",
+        "description": "Minimize machine idle time"
+      }
+    ],
+    "penalties": [
+      {
+        "name": "precedence_violation",
+        "weight": 1000.0,
+        "description": "Severe penalty for violating operation precedence"
+      },
+      {
+        "name": "machine_conflict",
+        "weight": 500.0,
+        "description": "Penalty for machine double-booking"
+      }
+    ]
+  },
+  
+  "constraint_config": {
+    "hard_constraints": [
+      {
+        "name": "precedence_constraints",
+        "formula": "operation[i] must complete before operation[i+1] starts",
+        "description": "Operations must follow required sequence"
+      },
+      {
+        "name": "machine_availability",
+        "formula": "only one operation per machine at a time",
+        "description": "No machine conflicts"
+      },
+      {
+        "name": "operation_sequence",
+        "formula": "each operation must use specified machine",
+        "description": "Machine assignments are fixed"
+      }
+    ],
+    "soft_constraints": [
+      {
+        "name": "due_dates",
+        "penalty": 10.0,
+        "formula": "complete job by due_date",
+        "description": "Prefer completing jobs before deadline"
+      },
+      {
+        "name": "priority_jobs",
+        "penalty": 5.0,
+        "formula": "schedule high-priority jobs earlier",
+        "description": "Prioritize urgent orders"
+      }
+    ]
+  },
+  
+  "ga_params": {
+    "population_size": 100,
+    "max_generations": 200,
+    "crossover_rate": 0.8,
+    "mutation_rate": 0.25,
+    "tournament_size": 5,
+    "elite_size": 10,
+    "crossover_config": {
+      "type": "precedence_preserving_crossover",
+      "description": "Maintains operation precedence while recombining schedules"
+    },
+    "mutation_config": {
+      "type": "schedule_mutation",
+      "description": "Swaps operations, adjusts timing while maintaining feasibility",
+      "mutation_strength": 0.2
+    }
+  },
+  
+  "parse_config": {
+    "llm_model": "claude-3-haiku-20240307",
+    "max_tokens": 8000,
+    "prompt_template": "**CRITICAL: Extract metadata ONLY - do NOT generate full job/machine arrays**\n\n**Problem Description:**\n{problem_description}\n\n**Task:**\nExtract METADATA about the job shop problem. Return JSON:\n\n```json\n{{\n  \"job_count\": <number>,\n  \"machine_count\": <number>,\n  \"constraints\": {{\n    \"has_due_dates\": <boolean>,\n    \"has_precedence\": <boolean>,\n    \"setup_times\": <boolean>\n  }},\n  \"objective\": \"minimize_makespan\" | \"minimize_tardiness\" | \"maximize_throughput\"\n}}\n```\n\n**Rules:**\n1. Extract COUNTS: \"50 jobs\" → {{\"job_count\": 50}}\n2. Infer due dates from \"deadline\", \"must complete by\"\n3. Precedence is always true for job shop (operations have sequence)\n4. Setup times from \"changeover\", \"setup required\"\n\nReturn ONLY JSON.",
+    "required_fields": ["job_count", "machine_count"],
+    "optional_fields": ["constraints", "objective"],
+    "validation_rules": [
+      "job_count > 0",
+      "machine_count > 0"
+    ],
+    "data_usage_explanation": "Metadata generates synthetic jobs with realistic operation sequences, processing times, and due dates. Each job gets 2-5 operations across different machines."
+  },
+  
+  "result_config": {
+    "primary_metrics": [
+      {
+        "name": "Makespan",
+        "key": "makespan",
+        "format": "duration",
+        "target": "minimize"
+      },
+      {
+        "name": "Average Tardiness",
+        "key": "avg_tardiness",
+        "format": "duration"
+      },
+      {
+        "name": "Machine Utilization",
+        "key": "machine_utilization",
+        "format": "percentage",
+        "target": ">80%"
+      },
+      {
+        "name": "Jobs On-Time",
+        "key": "ontime_jobs",
+        "format": "percentage",
+        "target": ">95%"
+      }
+    ],
+    "visualization_types": ["gantt_chart", "machine_timeline", "critical_path", "solution_space_3d"],
+    "narrative_template": "Scheduled {job_count} jobs across {machine_count} machines. Makespan: {makespan} hours, Average tardiness: {avg_tardiness} hours. Achieved {machine_utilization}% machine utilization with {ontime_jobs}% jobs completed on-time.",
+    "export_formats": ["json", "csv", "gantt_pdf", "schedule_timeline"]
+  },
+  
+  "created_by": "migration_script",
+  "updated_by": "migration_script"
+}
+
