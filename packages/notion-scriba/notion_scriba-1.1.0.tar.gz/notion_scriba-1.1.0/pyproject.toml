@@ -1,0 +1,89 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "notion-scriba"
+version = "1.1.0"
+description = "AI-powered documentation generator with multi-LLM support and Notion integration"
+authors = [
+    {name = "Davide Baldoni", email = "davide@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "GPL-3.0-or-later"}
+keywords = ["documentation", "ai", "llm", "notion", "openai", "claude", "gemini", "gpl"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+dependencies = [
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "pygments>=2.17.0",
+    "prompt-toolkit>=3.0.0",
+    # Core LLM support (OpenAI + DeepSeek)
+    "openai>=1.0.0",
+    "tiktoken>=0.5.0",
+]
+
+[project.optional-dependencies]
+# Individual provider dependencies
+anthropic = ["anthropic>=0.21.0"]
+google = ["google-generativeai>=0.4.0"]
+
+# Install all providers
+all = [
+    "anthropic>=0.21.0",
+    "google-generativeai>=0.4.0",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+scriba = "notion_scriba.cli:main"
+scriba-setup = "notion_scriba.setup_wizard:run_setup_wizard"
+
+[project.urls]
+Homepage = "https://github.com/dbaldoni/notion-scriba"
+Documentation = "https://github.com/dbaldoni/notion-scriba/blob/main/README.md"
+Repository = "https://github.com/dbaldoni/notion-scriba"
+Issues = "https://github.com/dbaldoni/notion-scriba/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
