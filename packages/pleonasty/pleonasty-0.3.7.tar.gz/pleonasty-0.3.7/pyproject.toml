@@ -1,0 +1,37 @@
+[build-system]
+
+requires = ["setuptools>=61.0"]
+
+build-backend = "setuptools.build_meta"
+
+
+[project]
+
+name = "pleonasty"
+
+version = "0.3.7"
+
+authors = [
+	{ name="Ryan L. Boyd", email="ryan@ryanboyd.io" },
+]
+
+description = "A very simple abstraction for LLMs to get single responses to a given input."
+
+readme = "README.MD"
+
+requires-python = ">=3.10"
+
+dependencies=["vllm>=0.9.1",
+				"bitsandbytes>=0.46.0"]
+
+classifiers = [
+	"Programming Language :: Python :: 3",
+	"License :: OSI Approved :: MIT License",
+	"Operating System :: OS Independent",
+]
+
+[project.urls]
+
+Homepage = "https://github.com/ryanboyd/pleonasty"
+
+Issues = "https://github.com/ryanboyd/pleonasty/issues"
