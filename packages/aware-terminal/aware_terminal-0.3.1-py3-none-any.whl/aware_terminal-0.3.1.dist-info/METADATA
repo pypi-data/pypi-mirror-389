@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: aware-terminal
+Version: 0.3.1
+Summary: AWARE Terminal Manager: Persistent tmux + GNOME workspace automation
+Author: AWARE Team
+License-File: LICENSE
+Requires-Python: >=3.12
+Requires-Dist: click<9.0.0,>=8.0.0
+Requires-Dist: pydantic<3.0.0,>=2.0.0
+Requires-Dist: pyyaml<7.0.0,>=6.0.0
+Provides-Extra: test
+Requires-Dist: pytest-asyncio<0.24.0,>=0.23.7; extra == 'test'
+Requires-Dist: pytest-mock<4.0.0,>=3.12.0; extra == 'test'
+Requires-Dist: pytest<9.0.0,>=8.2.0; extra == 'test'
