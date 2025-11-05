@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=77.0.3", "wheel", "Cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bandlimit"
+version = "1.2.3"
+authors = [
+    { name = "Jonathan Jerke", email = "jonathan@quantumgalaxies.org" },
+]
+description = "Gaussians and plane waves playing well together"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Developers',
+]
+dependencies = ["cython"]
+dynamic = []
+license = "MIT"
+license-files = ["LICENSE.txt"]
+
+
+# All setuptools configuration should be nested here
+[tool.setuptools]
+packages = ["bandlimit"]
+
+[project.urls]
+Homepage = "https://sopy.quantumgalaxies.org"
+Issues = "https://github.com/quantumgalaxies/sopy/issues"
