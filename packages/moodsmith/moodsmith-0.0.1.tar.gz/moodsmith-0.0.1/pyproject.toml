@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "moodsmith"
+description = "A package designed to motivate you while you work, directly in your terminal."
+version = "0.0.1"
+authors = [
+  { name="Samuel Yang", email="sy3638@nyu.edu" },
+  { name="Conor Tiernan", email="ct3551@nyu.edu" },
+  { name="Ganling Zhou", email="gz2184@nyu.edu" },
+  { name="Harrison Coon", email="hoc2006@nyu.edu" },
+  { name="Eason Huang", email="mh6455@nyu.edu" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+keywords = ["python", "package", "productivity", "motivation", "focus", "cli", "terminal"]
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pylint", "build", "twine"]
+
+[project.urls]
+"Homepage" = "https://github.com/orgs/swe-students-fall2025/teams/team_harbor"
+"Repository" = "https://github.com/orgs/swe-students-fall2025/teams/team_harbor.git"
+
+[project.scripts]
+moodsmith = "moodsmith.cli:main"
