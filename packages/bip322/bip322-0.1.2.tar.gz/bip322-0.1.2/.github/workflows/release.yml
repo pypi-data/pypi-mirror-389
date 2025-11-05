@@ -1,0 +1,23 @@
+name: build-and-publish
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  linux-manylinux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: PyO3/maturin-action@v1
+        with:
+          command: publish
+          args: --manylinux 2014 -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --skip-existing
+  macos-arm64:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install maturin
+      - run: maturin publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --skip-existing
