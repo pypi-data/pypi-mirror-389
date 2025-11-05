@@ -1,0 +1,21 @@
+[project]
+name = "puhuo-mcp-server"
+version = "0.1.5"
+description = "普货 MCP 服务器，提供运单号拦截和快递公司编码查询功能"
+readme = "README.md"
+authors = [
+    { name = "wuzhang.wz", email = "wuzhang.wz@alibaba-inc.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=2.10.5",
+    "mcp[cli]>=1.10.1",
+    "requests>=2.31.0",
+]
+
+[project.scripts]
+puhuo-mcp-server = "puhuo_mcp_server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
