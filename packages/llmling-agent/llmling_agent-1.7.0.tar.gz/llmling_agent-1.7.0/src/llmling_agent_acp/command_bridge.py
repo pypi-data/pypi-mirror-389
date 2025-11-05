@@ -1,0 +1,128 @@
+"""Command bridge for converting slashed commands to ACP format."""
+
+from __future__ import annotations
+
+import re
+from typing import TYPE_CHECKING, Any
+
+from acp.schema import AvailableCommand
+from llmling_agent.log import get_logger
+from llmling_agent_acp.commands.acp_commands import ACPCommandContext
+from llmling_agent_acp.commands.mcp_commands import PromptCommand
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from slashed import CommandContext, CommandStore
+
+    from llmling_agent.agent.context import AgentContext
+    from llmling_agent.mcp_server.manager import Prompt
+    from llmling_agent_acp.session import ACPSession
+
+logger = get_logger(__name__)
+SLASH_PATTERN = re.compile(r"^/([\w-]+)(?:\s+(.*))?$")
+ACP_COMMANDS = {"list-sessions", "load-session", "save-session", "delete-session"}
+
+
+class ACPCommandBridge:
+    """Converts slashed commands to ACP AvailableCommand format."""
+
+    def __init__(self, command_store: CommandStore) -> None:
+        """Initialize with existing command store.
+
+        Args:
+            command_store: The slashed CommandStore containing available commands
+        """
+        self.command_store = command_store
+        self._update_callbacks: list[Callable[[], None]] = []
+        self._mcp_prompt_commands: dict[str, PromptCommand] = {}
+
+    def get_acp_commands(self, context: AgentContext[Any]) -> list[AvailableCommand]:
+        """Convert slashed commands to ACP format.
+
+        Args:
+            context: Optional agent context to filter commands
+
+        Returns:
+            List of ACP AvailableCommand objects
+        """
+        commands = [
+            AvailableCommand.create(
+                name=cmd.name,
+                description=cmd.description,
+                input_hint=cmd.usage,
+            )
+            for cmd in self.command_store.list_commands()
+        ]
+        commands.extend([
+            cmd.to_available_command() for cmd in self._mcp_prompt_commands.values()
+        ])
+        return commands
+
+    async def execute_slash_command(self, command_text: str, session: ACPSession) -> None:
+        """Execute slash command and send results immediately as ACP notifications.
+
+        Args:
+            command_text: Full command text (including slash)
+            session: ACP session context
+        """
+        if match := SLASH_PATTERN.match(command_text.strip()):
+            command_name = match.group(1)
+            args = match.group(2) or ""
+            command_name, args = command_name, args.strip()
+        else:
+            logger.warning("Invalid slash command", command=command_text)
+            return
+
+        # Check if it's an MCP prompt command first
+        if command_name in self._mcp_prompt_commands:
+            mcp_cmd = self._mcp_prompt_commands[command_name]
+            await mcp_cmd.execute(args, session)
+            return
+        if command_name in ACP_COMMANDS:
+            # Use ACP context for ACP commands
+
+            acp_ctx = ACPCommandContext(session)
+            cmd_ctx: CommandContext = self.command_store.create_context(
+                data=acp_ctx,
+                output_writer=session.notifications.send_agent_text,
+            )
+        else:
+            # Use regular agent context for other commands
+            cmd_ctx = self.command_store.create_context(
+                data=session.agent.context,
+                output_writer=session.notifications.send_agent_text,
+            )
+
+        command_str = f"{command_name} {args}".strip()
+        try:
+            await self.command_store.execute_command(command_str, cmd_ctx)
+        except Exception as e:
+            logger.exception("Command execution failed")
+            await session.notifications.send_agent_text(f"❌ Command error: {e}")
+
+    def register_update_callback(self, callback: Callable[[], None]) -> None:
+        """Register callback for command updates.
+
+        Args:
+            callback: Function to call when commands are updated
+        """
+        self._update_callbacks.append(callback)
+
+    def add_mcp_prompt_commands(self, prompts: list[Prompt]) -> None:
+        """Add prompts as slash commands.
+
+        Args:
+            prompts: List of Prompt instances from ToolManager
+        """
+        self._mcp_prompt_commands = {p.name: PromptCommand(p) for p in prompts}
+        self._notify_command_update()  # Notify about command updates
+
+    def _notify_command_update(self) -> None:
+        """Notify all registered callbacks about command updates."""
+        for callback in self._update_callbacks:
+            try:
+                callback()
+            except Exception:
+                logger.exception("Command update callback failed")
