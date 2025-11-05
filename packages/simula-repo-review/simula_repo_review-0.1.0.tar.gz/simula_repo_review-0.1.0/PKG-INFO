@@ -1,0 +1,49 @@
+Metadata-Version: 2.4
+Name: simula-repo-review
+Version: 0.1.0
+Summary: Add your description here
+Author-email: Henrik Finsberg <henriknf@simula.no>
+Requires-Python: >=3.12.9
+Requires-Dist: repo-review[cli]>=0.12.3
+Requires-Dist: sp-repo-review[cli]>=2025.10.20
+Provides-Extra: test
+Requires-Dist: pytest>=8.4.2; extra == 'test'
+Description-Content-Type: text/markdown
+
+# Simula Repo Review
+
+Tool to review repositories for compliance with Simula's repository policies.
+See https://simulink.simula.no/policy/56 for more information.
+
+## Installation
+
+You can install the package via pip:
+
+```bash
+uv pip install
+```
+
+## Run checks
+
+**Run only the Simula checks:**
+```bash
+uv run repo-review gh:ComputationalPhysiology/cardiac-geometries@main --select "SI"
+```
+
+**Run all checks:**
+```bash
+uv run repo-review gh:ComputationalPhysiology/cardiac-geometries@main
+```
+
+**Run simula and python checks:**
+
+```bash
+uv run repo-review gh:ComputationalPhysiology/cardiac-geometries@main --select "SI,PY,PP"
+```
+
+## Learn more
+
+You can read more about the Simula repository policies at https://simulink.simula.no/policy/56. To learn more about repo-review, visit https://repo-review.readthedocs.io/en/latest/.
+
+## License
+MIT
