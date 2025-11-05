@@ -1,0 +1,1552 @@
+Metadata-Version: 2.4
+Name: pydocextractor
+Version: 0.1.2
+Summary: A Python library for converting documents (PDF, DOCX, XLSX) to Markdown with multiple precision levels
+Project-URL: Homepage, https://github.com/aminitech/pyDocExtractor
+Project-URL: Documentation, https://github.com/aminitech/pyDocExtractor#readme
+Project-URL: Repository, https://github.com/aminitech/pyDocExtractor
+Project-URL: Issues, https://github.com/aminitech/pyDocExtractor/issues
+Author-email: Leonardo Araujo <leo@amini.ai>
+License: MIT License
+License-File: LICENSE
+Keywords: conversion,document,extractor,markdown,pdf
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.11
+Requires-Dist: jinja2>=3.1
+Requires-Dist: typing-extensions>=4.12
+Requires-Dist: xlrd>=2.0.2
+Provides-Extra: all
+Requires-Dist: click>=8.0.0; extra == 'all'
+Requires-Dist: docling>=2.57.0; extra == 'all'
+Requires-Dist: httpx>=0.27.0; extra == 'all'
+Requires-Dist: openpyxl>=3.1; extra == 'all'
+Requires-Dist: pandas>=2.2; extra == 'all'
+Requires-Dist: pdfplumber>=0.7.0; extra == 'all'
+Requires-Dist: pillow>=10.0.0; extra == 'all'
+Requires-Dist: pymupdf4llm>=0.0.5; extra == 'all'
+Requires-Dist: pymupdf>=1.23.0; extra == 'all'
+Requires-Dist: python-docx>=1.1; extra == 'all'
+Requires-Dist: python-dotenv>=1.0.0; extra == 'all'
+Requires-Dist: rich>=13.0.0; extra == 'all'
+Requires-Dist: typer>=0.12.5; extra == 'all'
+Provides-Extra: cli
+Requires-Dist: click>=8.0.0; extra == 'cli'
+Requires-Dist: rich>=13.0.0; extra == 'cli'
+Requires-Dist: typer>=0.12.5; extra == 'cli'
+Provides-Extra: dev
+Requires-Dist: import-linter>=2.1; extra == 'dev'
+Requires-Dist: mypy>=1.8.0; extra == 'dev'
+Requires-Dist: pytest-asyncio>=0.23.0; extra == 'dev'
+Requires-Dist: pytest-bdd>=7.0.0; extra == 'dev'
+Requires-Dist: pytest-benchmark>=4.0.0; extra == 'dev'
+Requires-Dist: pytest-cov>=4.0.0; extra == 'dev'
+Requires-Dist: pytest>=8.0.0; extra == 'dev'
+Requires-Dist: ruff>=0.14.0; extra == 'dev'
+Requires-Dist: types-jinja2>=2.11.0; extra == 'dev'
+Provides-Extra: doc
+Requires-Dist: docling>=2.57.0; extra == 'doc'
+Provides-Extra: docx
+Requires-Dist: python-docx>=1.1; extra == 'docx'
+Provides-Extra: llm
+Requires-Dist: httpx>=0.27.0; extra == 'llm'
+Requires-Dist: pillow>=10.0.0; extra == 'llm'
+Requires-Dist: python-dotenv>=1.0.0; extra == 'llm'
+Provides-Extra: pdf
+Requires-Dist: pdfplumber>=0.7.0; extra == 'pdf'
+Requires-Dist: pymupdf4llm>=0.0.5; extra == 'pdf'
+Requires-Dist: pymupdf>=1.23.0; extra == 'pdf'
+Provides-Extra: xlsx
+Requires-Dist: openpyxl>=3.1; extra == 'xlsx'
+Requires-Dist: pandas>=2.2; extra == 'xlsx'
+Description-Content-Type: text/markdown
+
+# pyDocExtractor
+
+**A Python library for converting documents (PDF, DOCX, XLSX) to Markdown with multiple precision levels.**
+
+Built with **Hexagonal Architecture** for maximum testability, flexibility, and maintainability.
+
+[![CI](https://github.com/AminiTech/pyDocExtractor/actions/workflows/ci.yml/badge.svg)](https://github.com/AminiTech/pyDocExtractor/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen.svg)](https://github.com/AminiTech/pyDocExtractor)
+[![Tests](https://img.shields.io/badge/tests-260%2B%20passing-brightgreen.svg)](https://github.com/AminiTech/pyDocExtractor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
+## Features
+
+- **4 Precision Levels** - Choose between speed and quality
+- **LLM Image Description** - Automatic AI-powered image descriptions using OpenAI-compatible APIs
+- **Hexagonal Architecture** - Clean separation of concerns with Protocol-based ports
+- **Automatic Selection** - Smart converter selection based on file characteristics
+- **Quality Scoring** - 0-1.0 quality scores for converted content
+- **Fallback Chain** - Automatic fallback if preferred converter fails
+- **Multi-Format Support** - PDF, DOCX, XLSX, XLS
+- **CLI & Python API** - Use as command-line tool or library
+- **Dependency Injection** - Easy testing and customization
+- **Extras Model** - Install only what you need
+
+## Installation
+
+### Basic Installation
+
+Note: Make sure to use CodeArtifact since the package is not available on PyPi.
+
+```bash
+pip install pydocextractor
+```
+
+Note: If you encounter NumPy compatibility issues, try installing in a clean virtual environment using `uv venv` for better dependency management.
+
+### With Specific Extractors
+
+Note: DOCX support actually requires docling `[doc]` extra, not `[docx]`
+
+```bash
+# PDF support only
+pip install pydocextractor[pdf]
+
+# DOCX support
+pip install pydocextractor[docx]
+
+# Excel support
+pip install pydocextractor[xlsx]
+
+# CLI tools
+pip install pydocextractor[cli]
+
+# LLM support for image descriptions
+pip install pydocextractor[llm]
+
+# Everything
+pip install pydocextractor[all]
+```
+
+### Development Setup
+
+For contributors and developers who want to modify the library:
+
+**Prerequisites:** Install [just](https://github.com/casey/just) command runner:
+```bash
+# macOS
+brew install just
+
+# Linux
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
+# Windows
+scoop install just
+# or: choco install just
+```
+
+**Setup:**
+```bash
+# Clone repository
+git clone https://github.com/AminiTech/pyDocExtractor.git
+cd pyDocExtractor
+
+# Bootstrap development environment (installs all dependencies)
+just bootstrap
+
+# Run tests
+just test
+
+# Run quality checks
+just check
+
+# See all available commands
+just --list
+```
+
+Note: All `just` commands tested and working. Architecture validation with `just guard`. Quality checks with `just check`. Comprehensive testing shows 18/18 test categories passed (100% success rate).
+
+## Quick Start
+
+### CLI Usage
+
+```bash
+# Convert a document
+pydocextractor convert document.pdf
+
+# Specify precision level (1-4)
+pydocextractor convert document.pdf --level 2
+
+# Custom output file
+pydocextractor convert document.pdf -o output.md
+
+# Show quality score
+pydocextractor convert document.pdf --show-score
+
+# Batch convert directory with pattern matching (includes timing info)
+pydocextractor batch input_dir/ output_dir/
+
+# Batch convert with custom pattern
+pydocextractor batch input_dir/ output_dir/ --pattern "*.pdf"
+
+# Batch convert DOCX files with highest quality
+pydocextractor batch input_dir/ output_dir/ --pattern "*.docx" --level 4
+
+# Check converter status
+pydocextractor status
+
+# Document info
+pydocextractor info document.pdf
+
+# Note: Image descriptions require LLM configuration (see LLM Image Description section)
+```
+
+### Python API (Hexagonal)
+
+```python
+from pathlib import Path
+from pydocextractor.domain.models import Document, PrecisionLevel
+from pydocextractor.factory import create_converter_service
+
+# Create service (uses dependency injection)
+service = create_converter_service()
+
+# Load document
+file_path = Path("document.pdf")
+doc = Document(
+    bytes=file_path.read_bytes(),
+    mime="application/pdf",
+    size_bytes=file_path.stat().st_size,
+    precision=PrecisionLevel.BALANCED,
+    filename=file_path.name,
+)
+
+# Convert to Markdown
+result = service.convert_to_markdown(doc)
+
+# Access results
+print(result.text)              # Markdown text
+print(result.quality_score)     # Quality score (0.0-1.0)
+print(result.metadata)          # Additional metadata
+```
+
+### Using from Another Python Program
+
+If you're using pyDocExtractor as a library in your Python application:
+
+```python
+from pathlib import Path
+from pydocextractor import (
+    Document,
+    PrecisionLevel,
+    create_converter_service,
+    get_available_extractors,
+)
+
+# Create service using factory (recommended)
+# Automatically loads LLM config from config.env or .env if present
+service = create_converter_service()
+
+# Load your document
+file_path = Path("your_document.pdf")
+doc = Document(
+    bytes=file_path.read_bytes(),
+    mime="application/pdf",
+    size_bytes=file_path.stat().st_size,
+    precision=PrecisionLevel.BALANCED,
+    filename=file_path.name,
+)
+
+# Convert to Markdown
+# If LLM is configured, images will be automatically described
+result = service.convert_to_markdown(doc)
+
+# Access results
+markdown_text = result.text
+quality = result.quality_score
+extractor_used = result.metadata.get("extractor")
+
+# Check if images were described
+has_image_descriptions = "Image Description" in markdown_text
+
+# For CSV/Excel files, use tabular template
+excel_doc = Document(
+    bytes=Path("data.xlsx").read_bytes(),
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    size_bytes=Path("data.xlsx").stat().st_size,
+    precision=PrecisionLevel.HIGHEST_QUALITY,
+    filename="data.xlsx",
+)
+result = service.convert_to_markdown(excel_doc, template_name="tabular")
+```
+
+### Custom Configuration (Advanced)
+
+For advanced users who need custom service configuration:
+
+```python
+from pydocextractor.app.service import ConverterService
+from pydocextractor.infra.policy.heuristics import DefaultPolicy
+from pydocextractor.infra.templates.engines import Jinja2TemplateEngine
+from pydocextractor.infra.scoring.default_scorer import DefaultQualityScorer
+from pathlib import Path
+
+# Create components manually
+policy = DefaultPolicy()  # Auto-discovers all available extractors
+template_engine = Jinja2TemplateEngine()
+quality_scorer = DefaultQualityScorer()
+
+# Assemble service with custom components
+service = ConverterService(
+    policy=policy,
+    template_engine=template_engine,
+    quality_scorer=quality_scorer,
+)
+
+# Use with custom template directory
+custom_templates = Path("my_custom_templates/")
+service_with_custom_templates = create_converter_service(template_dir=custom_templates)
+
+# Use custom service
+result = service.convert_to_markdown(doc, template_name="simple")
+```
+
+## Precision Levels
+
+| Level | Name              | Speed          | Quality | Use Case                    | Table Statistics |
+|-------|-------------------|----------------|---------|----------------------------|------------------|
+| 1     | FASTEST           | ⚡ 0.1s - 4.2s  | Basic   | Large files, quick preview | ❌ No            |
+| 2     | BALANCED (default)| ⚙️ 0.5s - 35.7s | Good    | General purpose            | ✅ Yes           |
+| 3     | TABLE_OPTIMIZED   | 🐌 1.2s - 120s  | High    | Complex tables             | ✅ Yes           |
+| 4     | HIGHEST_QUALITY   | 🐢 45s - 3600s  | Maximum | Small files, archival      | ✅ Yes           |
+
+Note: Performance expectations are realistic. Large files (>20MB) automatically use Level 1 for speed. Small files (<2MB) automatically use Level 4 for quality.
+
+**Important Notes:**
+- **Level 1 (FASTEST)** prioritizes speed and does not detect tables or generate statistics. Use Level 2+ if you need table analysis.
+- **Level 2-4** automatically detect tables and generate comprehensive statistics including min/max/mean/std for numerical data and frequency distributions for categorical data.
+
+**Automatic Selection:**
+- Small files (<2MB) → Level 4 (Docling)
+- Large files (>20MB) → Level 1 (ChunkedParallel)
+- Files with tables → Level 3 (PDFPlumber)
+- Default → Level 2 (PyMuPDF4LLM)
+
+## Template System
+
+pyDocExtractor uses **Jinja2 templates** to control how extracted content is formatted into Markdown. This gives you complete control over the output structure and presentation.
+
+### Built-in Templates
+
+| Template | Purpose | Best For |
+|----------|---------|----------|
+| **simple** | Minimal formatting, just content | Quick conversions, plain text |
+| **default** | Enhanced formatting with metadata | PDF/DOCX documents, structured output |
+| **tabular** | Specialized for data with statistics | CSV/Excel files, spreadsheets |
+
+### Using Templates
+
+**In Code:**
+```python
+from pydocextractor import create_converter_service
+
+service = create_converter_service()
+
+# Use specific template
+result = service.convert_to_markdown(doc, template_name="simple")
+
+# Use tabular template for CSV/Excel
+result = service.convert_to_markdown(doc, template_name="tabular")
+
+# List available templates
+templates = service.list_available_templates()
+```
+
+Note: Template names include `.j2` extension (standard Jinja2 convention). Non-existent templates cause extraction failure (prevents silent errors).
+
+**In CLI:**
+```bash
+# Use specific template
+pydocextractor convert document.pdf --template simple
+
+# Templates auto-selected for CSV/Excel
+pydocextractor convert data.xlsx  # Uses tabular template automatically
+```
+
+### Creating Custom Templates
+
+Create a Jinja2 template file in `src/pydocextractor/infra/templates/templates/`:
+
+```jinja2
+{#- my_custom.j2 -#}
+# {{ metadata.filename }}
+
+{% for block in blocks %}
+{{ block.content }}
+
+{% endfor %}
+
+---
+*Quality: {{ quality_score }}*
+```
+
+**Available Context Variables:**
+- `blocks` - List of content blocks (text, tables, images)
+- `metadata` - Document metadata (filename, extractor, stats)
+- `quality_score` - Quality score (0.0-1.0)
+- `has_tables` - Boolean indicating tables present
+- `has_images` - Boolean indicating images present
+- `page_count` - Number of pages (if applicable)
+
+### Custom Template Directory
+
+```python
+from pathlib import Path
+from pydocextractor import create_converter_service
+
+# Use templates from custom directory
+custom_dir = Path("my_templates/")
+service = create_converter_service(template_dir=custom_dir)
+
+result = service.convert_to_markdown(doc, template_name="my_custom")
+```
+
+**For detailed information**, see **[docs/TEMPLATES.md](docs/TEMPLATES.md)** for:
+- Complete template context reference
+- Advanced Jinja2 techniques
+- Template filters and macros
+- Best practices and examples
+
+## CSV and Excel Support
+
+pyDocExtractor includes specialized extractors for tabular data with rich statistical analysis:
+
+Note: PSV/TSV files are not supported by default. Only CSV files with comma delimiters are supported. For PSV/TSV, consider converting to CSV first.
+
+### Features
+
+- **Multi-sheet Excel support** - Process XLSX/XLS files with multiple sheets
+- **Auto-delimiter detection** - Handles CSV automatically (TSV/PSV not supported)
+- **Statistical summaries** - Min/max/mean for numeric columns, mode for categorical
+- **Type inference** - Automatic detection of numerical vs categorical columns
+- **Tabular template** - Dedicated Markdown template with formatted tables
+
+### Usage
+
+```python
+from pathlib import Path
+from pydocextractor import Document, PrecisionLevel, create_converter_service
+
+service = create_converter_service()
+
+# Excel file
+excel_doc = Document(
+    bytes=Path("Sales_2025.xlsx").read_bytes(),
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    size_bytes=Path("Sales_2025.xlsx").stat().st_size,
+    precision=PrecisionLevel.HIGHEST_QUALITY,
+    filename="Sales_2025.xlsx",
+)
+result = service.convert_to_markdown(excel_doc, template_name="tabular")
+
+# CSV file
+csv_doc = Document(
+    bytes=Path("customers.csv").read_bytes(),
+    mime="text/csv",
+    size_bytes=Path("customers.csv").stat().st_size,
+    precision=PrecisionLevel.BALANCED,
+    filename="customers.csv",
+)
+result = service.convert_to_markdown(csv_doc, template_name="tabular")
+```
+
+### CLI Usage
+
+The CLI automatically selects the tabular template for CSV/Excel files:
+
+```bash
+# Excel - auto-selects tabular template
+pydocextractor convert Sales_2025.xlsx
+
+# CSV - auto-selects tabular template
+pydocextractor convert customers.csv
+
+# Force specific template
+pydocextractor convert data.xlsx --template simple
+```
+
+### Output Example
+
+The tabular template generates structured Markdown with:
+- YAML frontmatter with file metadata
+- Per-sheet summary tables
+- Column statistics (min/max/mean/mode)
+- Data type classification
+- Quality score
+
+## LLM Image Description
+
+pyDocExtractor can automatically describe images in documents using OpenAI-compatible multimodal LLMs. This feature provides context-aware descriptions by analyzing images alongside the surrounding text.
+
+### Features
+
+- **Context-Aware Descriptions** - LLM receives the previous 100 lines of text as context
+- **Multi-Format Support** - Works with images in PDF and DOCX files
+- **Automatic Image Resizing** - Images resized to 1024x1024 with aspect ratio preservation
+- **Cost Control** - Configurable limit on images per document (default: 5)
+- **Graceful Degradation** - System works normally if LLM is not configured
+- **Multi-Level Support** - Works with all extractors (Docling, PyMuPDF4LLM, PDFPlumber)
+
+Note: LLM features work with real API calls (tested with ChatGPT). Image descriptions require documents with actual images. Cost control features limit images per document (default: 5).
+
+### Image Positioning Behavior
+
+**Important:** Different precision levels handle image positioning differently in the markdown output:
+
+| Level | Extractor | Image Positioning | Impact on RAG |
+|-------|-----------|------------------|---------------|
+| **4 (HIGHEST_QUALITY)** | Docling | ✅ **Inline** - Images appear exactly where they occur in the document | **Recommended** - LLM descriptions stay contextually linked to referring text |
+| **3 (TABLE_OPTIMIZED)** | PDFPlumber | ❌ **End of Page** - All images from a page appear at the page end | Descriptions may lose context with referring text |
+| **2 (BALANCED)** | PyMuPDF4LLM | ❌ **End of Page** - All images from a page appear at the page end | Descriptions may lose context with referring text |
+
+**Example Output Difference:**
+
+**Level 4 (Inline positioning):**
+```markdown
+Map number 1
+[LLM description of map 1 appears here]
+
+Map number 2
+[LLM description of map 2 appears here]
+```
+
+**Level 2/3 (End of page positioning):**
+```markdown
+Map number 1
+Map number 2
+Map number 3
+
+[LLM description of map 1]
+[LLM description of map 2]
+[LLM description of map 3]
+```
+
+**Recommendation:** For RAG systems and applications where preserving the spatial relationship between text and images is important, use **Level 4 (HIGHEST_QUALITY)** with the Docling extractor.
+
+**Why this happens:** PyMuPDF4LLM and PDFPlumber extract images separately from text without position information, while Docling's markdown output includes image markers at correct inline positions.
+
+### Installation
+
+Install the LLM extra to enable image description:
+
+```bash
+pip install pydocextractor[llm]
+```
+
+This installs:
+- `httpx` - Synchronous HTTP client for API calls
+- `python-dotenv` - Environment configuration
+- `pillow` - Image processing and resizing
+
+### Configuration
+
+Create a `config.env` file in your project directory:
+
+```bash
+# Enable LLM image description
+LLM_ENABLED=true
+
+# OpenAI API (or compatible endpoint)
+LLM_API_URL=https://api.openai.com/v1/chat/completions
+LLM_API_KEY=your-api-key-here
+
+# Model configuration
+LLM_MODEL_NAME=gpt-4o-mini
+
+# Optional settings
+LLM_MAX_IMAGES=5           # Max images per document (0=disable, -1=unlimited, N=limit)
+LLM_CONTEXT_LINES=100      # Lines of context to provide
+LLM_IMAGE_SIZE=1024        # Image resize dimension (1024x1024)
+LLM_TIMEOUT=30             # Request timeout in seconds
+LLM_MAX_RETRIES=3          # Retry attempts on failure
+```
+
+**Important:** Add `config.env` to your `.gitignore` to avoid committing API keys:
+
+```bash
+echo "config.env" >> .gitignore
+```
+
+#### Custom Prompt Configuration
+
+For better control over image descriptions, you can create a `system_prompt.ini` file to customize the LLM prompt. This is especially useful for complex, structured prompts:
+
+**Create `system_prompt.ini`:**
+```ini
+[llm]
+prompt = Please describe the image in detail, which could be (map, tables, handwritten, or images)
+    1. If is handwritten text, get the text as it is.
+    2. If is a map interpret it, and if given use the map legend.
+    3. If is a table identify all numerical and categorical columns, calculate for each numerical
+    column (min, max, mean, sum), get for each categorical, unique values, mode and distribution.
+    Also output a sample of 10 elements of the table.
+    4. If is image describe with a concise (2-3 sentences).
+```
+
+**Priority order for prompt loading:**
+1. `system_prompt.ini` file (if exists) - **Recommended** for longer, structured prompts
+2. `LLM_PROMPT` environment variable in `config.env` - For backward compatibility
+3. Default fallback prompt - If neither is set
+
+**Benefits of using `system_prompt.ini`:**
+- Better organization for complex prompts
+- Easier to edit and version control multi-line prompts
+- Separate prompt configuration from API credentials
+- No need to escape special characters
+
+**Note:** Add `system_prompt.ini` to `.gitignore` if it contains sensitive information. See `system_prompt.ini.example` for more examples and documentation.
+
+### Usage in Python
+
+When using pyDocExtractor as a library, the LLM configuration is automatically loaded from `config.env` (or `.env`) in the current directory:
+
+```python
+from pathlib import Path
+from pydocextractor import Document, PrecisionLevel, create_converter_service
+
+# Service automatically loads LLM config from config.env
+service = create_converter_service()
+
+# Convert document with images
+doc_path = Path("document_with_images.pdf")
+doc = Document(
+    bytes=doc_path.read_bytes(),
+    mime="application/pdf",
+    size_bytes=doc_path.stat().st_size,
+    precision=PrecisionLevel.BALANCED,
+    filename=doc_path.name,
+)
+
+# Images will be automatically described if LLM is configured
+result = service.convert_to_markdown(doc)
+
+# Check for image descriptions in output
+if "Image Description" in result.text:
+    print("Images were described by LLM")
+```
+
+### Manual Configuration
+
+You can also provide LLM configuration programmatically:
+
+```python
+from pydocextractor import create_converter_service
+from pydocextractor.domain.config import LLMConfig
+
+# Create LLM configuration
+llm_config = LLMConfig(
+    api_url="https://api.openai.com/v1/chat/completions",
+    api_key="your-api-key",
+    model_name="gpt-4o-mini",
+    enabled=True,
+    max_images_per_document=5,
+    context_lines=100,
+    image_size=1024,
+    timeout_seconds=30,
+    max_retries=3,
+    prompt_template="Describe this image in detail...",  # Optional custom prompt
+)
+
+# Create service with LLM config (auto_load_llm=False to skip env loading)
+service = create_converter_service(
+    llm_config=llm_config,
+    auto_load_llm=False,
+)
+
+# Use service normally - images will be described
+result = service.convert_to_markdown(doc)
+```
+
+### Disabling LLM
+
+To disable LLM features:
+
+**Option 1:** Set `LLM_ENABLED=false` in config.env
+**Option 2:** Remove config.env entirely
+**Option 3:** Don't install the `[llm]` extra
+
+The system will work normally without LLM, just without image descriptions.
+
+### OpenAI-Compatible APIs
+
+The LLM feature works with any OpenAI-compatible API endpoint:
+
+**OpenAI:**
+```bash
+LLM_API_URL=https://api.openai.com/v1/chat/completions
+LLM_MODEL_NAME=gpt-4o-mini  # or gpt-4o, gpt-4-vision-preview
+```
+
+**Azure OpenAI:**
+```bash
+LLM_API_URL=https://your-resource.openai.azure.com/openai/deployments/your-deployment/chat/completions?api-version=2024-02-15-preview
+LLM_MODEL_NAME=gpt-4o
+```
+
+**Local/Self-Hosted (e.g., Ollama, LM Studio):**
+```bash
+LLM_API_URL=http://localhost:11434/v1/chat/completions
+LLM_MODEL_NAME=llava:13b
+```
+
+### Output Example
+
+When LLM is enabled, images in documents are automatically described:
+
+```markdown
+## Document Content
+
+Some text content here...
+
+<!-- image -->
+
+**Image Description**: The image shows a architectural diagram depicting
+a three-tier system architecture with a web server layer, application
+server layer, and database layer. The diagram illustrates the flow of
+requests through load balancers and connection to backend services.
+
+More text content following the image...
+```
+
+### Cost Considerations
+
+- **Max Images Limit**: Set `LLM_MAX_IMAGES` to control costs:
+  - `0`: Disable LLM features entirely
+  - `-1`: Unlimited - process all images (use with caution on large documents)
+  - `N` (positive number): Limit to N images per document (default: 5)
+- **Image Resizing**: Images automatically resized to 1024x1024 to reduce token usage
+- **Retry Logic**: Failed API calls retry up to 3 times with exponential backoff
+- **Fallback**: If LLM call fails, document processing continues without description
+
+### Technical Details
+
+**How it works:**
+
+1. Extractors detect images in documents (PDF/DOCX)
+2. Raw image data is extracted and stored in Block objects
+3. Images are resized to 1024x1024 (white padding, aspect ratio preserved)
+4. Image + previous 100 lines of text sent to LLM
+5. LLM generates contextual description
+6. Description inserted into markdown output
+
+**Extractor Support:**
+
+All three PDF extractors support image extraction when LLM is enabled:
+
+- **Docling (Level 4)**: Extracts images from PDF and DOCX files
+- **PyMuPDF4LLM (Level 2)**: Extracts images from PDF files
+- **PDFPlumber (Level 3)**: Extracts images from PDF files
+
+## Architecture
+
+pyDocExtractor follows **Hexagonal Architecture** (Ports and Adapters pattern) for clean separation of concerns:
+
+```mermaid
+graph TB
+    subgraph Infrastructure["🔌 Infrastructure Layer (Adapters)"]
+        subgraph Extractors["PDF Extractors"]
+            E1[ChunkedParallelExtractor<br/>Level 1: FASTEST<br/>📄 PDF - Parallel Processing]
+            E2[PyMuPDF4LLMExtractor<br/>Level 2: BALANCED<br/>📄 PDF - LLM Optimized]
+            E3[PDFPlumberExtractor<br/>Level 3: TABLE_OPTIMIZED<br/>📄 PDF - Table Extraction]
+            E4[DoclingExtractor<br/>Level 4: HIGHEST_QUALITY<br/>📄 PDF/DOCX/Excel]
+        end
+
+        subgraph TabularExtractors["Tabular Data Extractors"]
+            E5[PandasCSVExtractor<br/>Level 4: HIGHEST_QUALITY<br/>📊 CSV with Statistics]
+            E6[PandasExcelExtractor<br/>Level 4: HIGHEST_QUALITY<br/>📊 Excel Multi-Sheet]
+        end
+
+        subgraph Policy["Selection Policy"]
+            P1[DefaultPolicy<br/>📋 Smart Selection Logic<br/>Auto-discovers extractors<br/>Builds fallback chains]
+        end
+
+        subgraph Templates["Template Rendering"]
+            T1[Jinja2TemplateEngine<br/>📝 Markdown Generation<br/>Custom filters & templates]
+        end
+
+        subgraph Scoring["Quality Scoring"]
+            S1[DefaultQualityScorer<br/>⭐ 0.0-1.0 Quality Score<br/>Content/Structure/Format]
+        end
+    end
+
+    subgraph Application["⚙️ Application Layer (Orchestration)"]
+        CS[ConverterService<br/>🎯 Coordinates Workflow<br/>Fallback chains<br/>Quality scoring]
+    end
+
+    subgraph Domain["🎯 Domain Layer (Pure Business Logic)"]
+        subgraph Models["Immutable Models"]
+            M1[Document<br/>Input file + metadata]
+            M2[NormalizedDoc<br/>Vendor-agnostic format]
+            M3[Block<br/>Content units]
+            M4[Markdown<br/>Final output]
+        end
+
+        subgraph Ports["Ports - Protocols"]
+            PR1[Extractor Protocol<br/>extract/supports/is_available]
+            PR2[Policy Protocol<br/>choose_extractors]
+            PR3[TemplateEngine Protocol<br/>render/list_templates]
+            PR4[QualityScorer Protocol<br/>calculate_score]
+        end
+
+        subgraph Rules["Pure Functions"]
+            R1[quality_score<br/>Quality calculation]
+            R2[calculate_document_hash<br/>Deduplication]
+            R3[normalize_blocks<br/>Block processing]
+        end
+    end
+
+    %% Protocol Implementation Relationships
+    E1 -.implements.-> PR1
+    E2 -.implements.-> PR1
+    E3 -.implements.-> PR1
+    E4 -.implements.-> PR1
+    E5 -.implements.-> PR1
+    E6 -.implements.-> PR1
+    P1 -.implements.-> PR2
+    T1 -.implements.-> PR3
+    S1 -.implements.-> PR4
+
+    %% Service Dependencies (only uses Protocols)
+    CS -->|uses| PR2
+    CS -->|uses| PR1
+    CS -->|uses| PR3
+    CS -->|uses| PR4
+
+    %% Domain Dependencies
+    PR1 -->|depends on| M1
+    PR1 -->|depends on| M2
+    PR2 -->|depends on| M1
+    CS -->|creates| M4
+
+    %% Styling
+    classDef infrastructure fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef application fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef domain fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+
+    class E1,E2,E3,E4,E5,E6,P1,T1,S1 infrastructure
+    class CS application
+    class M1,M2,M3,M4,PR1,PR2,PR3,PR4,R1,R2,R3 domain
+```
+
+### Why Hexagonal Architecture?
+
+**Clean Separation:**
+- **Domain Layer**: Business rules (Document, Block models) with zero dependencies
+- **Application Layer**: Orchestrates conversion workflow using ports
+- **Infrastructure Layer**: Concrete implementations (PDF extractors, templates)
+
+**Key Benefits:**
+
+1. **Testability**
+   - Domain & app layers testable without real extractors
+   - 260+ tests with 87% coverage
+   - BDD scenarios for behavior validation
+
+2. **Flexibility**
+   - Swap extractors: Use Docling instead of PyMuPDF4LLM
+   - Change templates: Different Markdown formats
+   - Replace scoring: Custom quality algorithms
+
+3. **Maintainability**
+   - Boundaries enforced by import-linter
+   - Strict mypy type checking
+   - Clear dependency flow
+
+4. **Extensibility**
+   - Add new extractors by implementing `Extractor` Protocol
+   - No changes needed to domain or application layers
+   - Example: PandasCSV added without touching core logic
+
+### Architecture Layers in Detail
+
+#### 🎯 Domain Layer (`src/pydocextractor/domain/`)
+
+The innermost layer containing pure business logic with **zero external dependencies**.
+
+**Components:**
+
+**1. Models (`models.py`)** - Immutable dataclasses representing core business entities:
+- `Document`: Input file representation (bytes, MIME type, precision level)
+- `Block`: Single unit of extracted content (text, table, image, etc.)
+- `NormalizedDoc`: Vendor-agnostic intermediate format containing blocks
+- `Markdown`: Final output with quality score and metadata
+- `ExtractionResult`: Result of an extraction attempt (success/failure)
+- `TemplateContext`: Template rendering context
+- `PrecisionLevel`: Enum (1=FASTEST, 2=BALANCED, 3=TABLE_OPTIMIZED, 4=HIGHEST_QUALITY)
+- `BlockType`: Enum (TEXT, TABLE, IMAGE, HEADER, LIST, CODE, METADATA)
+
+**2. Ports (`ports.py`)** - Protocol definitions (interfaces):
+- `Extractor`: Extract content from documents
+- `Policy`: Choose which extractor to use
+- `TemplateEngine`: Render markdown from normalized docs
+- `QualityScorer`: Calculate quality scores
+- `DocumentValidator`: Validate documents
+- `TableProfiler`: Analyze tabular data
+- `Cache`: Caching operations
+
+**3. Rules (`rules.py`)** - Pure functions for business logic:
+- `quality_score()`: Calculate 0.0-1.0 quality score
+- `calculate_document_hash()`: Generate content hashes for deduplication
+- `hint_has_tables()`: Detect if document likely contains tables
+- `normalize_blocks()`: Clean and deduplicate blocks
+- `merge_text_blocks()`: Merge consecutive text blocks
+- `validate_precision_level()`: Validate precision levels
+- `estimate_processing_time()`: Estimate conversion duration
+
+**4. Errors (`errors.py`)** - Domain exception hierarchy:
+- `DomainError`: Base exception
+- `ConversionFailed`: All extractors failed
+- `RecoverableError`: Extractor failed, try fallback
+- `UnsupportedFormat`: No extractor available
+- `ValidationError`: Invalid document
+- `ExtractionError`: Extraction process error
+- `TemplateError`: Template rendering error
+
+**Architecture Rule:** Domain layer must NOT import from `app` or `infra` layers. This is enforced by `import-linter`.
+
+#### ⚙️ Application Layer (`src/pydocextractor/app/`)
+
+Orchestrates the conversion workflow using domain ports.
+
+**ConverterService (`service.py`):**
+
+The main orchestration service that coordinates the entire conversion process.
+
+**Dependencies (injected via constructor):**
+- `policy: Policy` - Chooses which extractor to use
+- `template_engine: TemplateEngine` - Renders markdown
+- `quality_scorer: QualityScorer | None` - Calculates quality score
+- `table_profilers: Sequence[TableProfiler]` - Analyzes tabular data
+
+**Key Methods:**
+- `convert_to_markdown(doc, template_name, allow_fallback)`: Main conversion entry point
+- `convert_with_specific_extractor(doc, extractor_name, template_name)`: Force specific extractor
+- `list_available_templates()`: List available markdown templates
+- `get_supported_formats()`: List supported MIME types
+
+**Conversion Workflow:**
+1. Validate document
+2. Ask policy to choose extractors (ordered by preference)
+3. Try extractors in order until one succeeds
+4. Apply table profilers if configured
+5. Render markdown using template engine
+6. Calculate quality score
+7. Return `Markdown` result
+
+**Architecture Rule:** Application layer depends ONLY on domain layer (models + ports). Never imports concrete infrastructure classes.
+
+#### 🔌 Infrastructure Layer (`src/pydocextractor/infra/`)
+
+Concrete implementations of domain ports.
+
+**1. Extractors (`infra/extractors/`)** - 6 implementations of `Extractor` Protocol:
+
+| Extractor | Level | Library | MIME Types | Specialization |
+|-----------|-------|---------|------------|----------------|
+| `ChunkedParallelExtractor` | 1 (FASTEST) | PyMuPDF | `application/pdf` | Parallel page processing for speed |
+| `PyMuPDF4LLMExtractor` | 2 (BALANCED) | pymupdf4llm | `application/pdf` | LLM-optimized extraction (default) |
+| `PDFPlumberExtractor` | 3 (TABLE_OPTIMIZED) | pdfplumber | `application/pdf` | Superior table extraction |
+| `DoclingExtractor` | 4 (HIGHEST_QUALITY) | Docling | `application/pdf`, DOCX, Excel | Comprehensive layout analysis |
+| `PandasCSVExtractor` | 4 (HIGHEST_QUALITY) | pandas | `text/csv` | CSV with column statistics |
+| `PandasExcelExtractor` | 4 (HIGHEST_QUALITY) | pandas | Excel (XLS/XLSX) | Multi-sheet with rich metadata |
+
+All extractors implement:
+- `extract(data: bytes, precision: PrecisionLevel) -> ExtractionResult`
+- `supports(mime: str) -> bool`
+- `is_available() -> bool` (checks if dependencies installed)
+- Properties: `name`, `precision_level`
+
+**2. Policy (`infra/policy/heuristics.py`)** - `DefaultPolicy`:
+
+Smart extractor selection logic:
+
+**Selection Strategy:**
+- **CSV files** → `PandasCSVExtractor`
+- **Excel files** → `PandasExcelExtractor`
+- **DOCX files** → `DoclingExtractor`
+- **PDF files** (by characteristics):
+  - Size > 20MB → `ChunkedParallelExtractor` (Level 1)
+  - Size < 2MB → `DoclingExtractor` (Level 4)
+  - Has tables → `PDFPlumberExtractor` (Level 3)
+  - Default → `PyMuPDF4LLMExtractor` (Level 2)
+
+**Fallback Chain:** If preferred extractor fails, tries: Level 2 → Level 1 → Level 3 → Level 4
+
+**3. Templates (`infra/templates/engines.py`)** - `Jinja2TemplateEngine`:
+
+Markdown rendering using Jinja2:
+- Default templates in `infra/templates/templates/`
+- Built-in templates: `simple.j2`, `tabular.j2`
+- Custom filters: `word_count`, `char_count`
+- Supports custom template directories
+
+**4. Scoring (`infra/scoring/default_scorer.py`)** - `DefaultQualityScorer`:
+
+Calculates 0.0-1.0 quality score based on:
+- **Content Length (25%)**: Document has substantial text
+- **Structure (30%)**: Presence of headers and tables
+- **Text Quality (25%)**: Average block length and word count
+- **Formatting (20%)**: Line structure and markdown formatting
+
+**5. Factory (`factory.py`)** - Dependency Injection:
+
+Creates fully configured services:
+```python
+def create_converter_service(template_dir=None) -> ConverterService:
+    # Auto-discovers all available extractors
+    policy = DefaultPolicy()
+    template_engine = Jinja2TemplateEngine(template_dir)
+    quality_scorer = DefaultQualityScorer()
+
+    return ConverterService(
+        policy=policy,
+        template_engine=template_engine,
+        quality_scorer=quality_scorer,
+    )
+```
+
+Helper functions:
+- `get_available_extractors()`: Lists all installed extractors
+- `get_extractor_by_level(level)`: Gets specific extractor by precision level
+
+**Graceful Degradation:** If optional dependencies missing, extractors are excluded but library still works with available ones.
+
+### Conversion Flow
+
+The following diagram shows how a document flows through the system:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Service as ConverterService
+    participant Policy as DefaultPolicy
+    participant Extractor as Selected Extractor
+    participant Template as Jinja2TemplateEngine
+    participant Scorer as QualityScorer
+
+    User->>Service: convert_to_markdown(doc)
+    Service->>Policy: choose_extractors(doc)
+    Policy-->>Service: [extractor_list]
+
+    loop For each extractor (with fallback)
+        Service->>Extractor: extract(data, precision)
+        alt Extraction Success
+            Extractor-->>Service: ExtractionResult(success=True)
+            Note over Service: Break loop
+        else Extraction Failed
+            Extractor-->>Service: ExtractionResult(success=False)
+            Note over Service: Try next extractor
+        end
+    end
+
+    Service->>Template: render(blocks, metadata)
+    Template-->>Service: Markdown text
+
+    Service->>Scorer: calculate_quality(markdown)
+    Scorer-->>Service: quality_score (0.0-1.0)
+
+    Service-->>User: Markdown(text, score, metadata)
+```
+
+### Dependency Injection Flow
+
+This diagram shows how components are created and wired together:
+
+```mermaid
+graph TB
+    subgraph Factory["🏭 Factory (Composition Root)"]
+        F[create_converter_service]
+    end
+
+    subgraph Creation["Component Creation"]
+        F -->|1. Create| P[DefaultPolicy]
+        F -->|2. Create| TE[Jinja2TemplateEngine]
+        F -->|3. Create| QS[DefaultQualityScorer]
+        F -->|4. Inject & Assemble| CS[ConverterService]
+
+        P -->|discovers| E1[ChunkedParallelExtractor]
+        P -->|discovers| E2[PyMuPDF4LLMExtractor]
+        P -->|discovers| E3[PDFPlumberExtractor]
+        P -->|discovers| E4[DoclingExtractor]
+        P -->|discovers| E5[PandasCSVExtractor]
+        P -->|discovers| E6[PandasExcelExtractor]
+    end
+
+    subgraph Runtime["Runtime (Protocol-based)"]
+        CS -->|uses Protocol| PP[Policy Protocol]
+        CS -->|uses Protocol| EP[Extractor Protocol]
+        CS -->|uses Protocol| TEP[TemplateEngine Protocol]
+        CS -->|uses Protocol| QSP[QualityScorer Protocol]
+
+        PP -.implemented by.-> P
+        EP -.implemented by.-> E1
+        EP -.implemented by.-> E2
+        EP -.implemented by.-> E3
+        EP -.implemented by.-> E4
+        EP -.implemented by.-> E5
+        EP -.implemented by.-> E6
+        TEP -.implemented by.-> TE
+        QSP -.implemented by.-> QS
+    end
+
+    subgraph UserCode["User Code"]
+        U[Your Application]
+        U -->|calls| F
+        F -->|returns| CS2[Fully Configured<br/>ConverterService]
+        CS2 -->|ready to use| U
+    end
+
+    classDef factory fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef creation fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef runtime fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef user fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+
+    class F factory
+    class P,TE,QS,CS,E1,E2,E3,E4,E5,E6 creation
+    class CS,PP,EP,TEP,QSP runtime
+    class U,CS2 user
+```
+
+**Key Principles:**
+
+1. **Factory Pattern**: `create_converter_service()` is the composition root
+2. **Protocol-Based**: Service depends on protocols, not concrete types
+3. **Auto-Discovery**: Policy automatically finds all available extractors
+4. **Graceful Degradation**: Missing dependencies = extractor excluded
+5. **Testability**: Easy to inject mocks/fakes for testing
+
+### Practical Architecture Example
+
+```python
+# Domain Layer - Pure business logic
+from pydocextractor.domain.models import Document, PrecisionLevel
+from pydocextractor.domain.ports import Extractor  # Protocol
+
+# Infrastructure Layer - Concrete implementations
+from pydocextractor.infra.extractors.pymupdf4llm_adapter import PyMuPDF4LLMExtractor
+from pydocextractor.infra.policy.heuristics import DefaultPolicy
+
+# Application Layer - Orchestration
+from pydocextractor.app.service import ConverterService
+
+# Dependency Injection in action
+extractor: Extractor = PyMuPDF4LLMExtractor()  # Depends on Protocol
+policy = DefaultPolicy()  # Chooses which extractor
+service = ConverterService(policy=policy, ...)
+
+# Usage - clean and simple
+doc = Document(bytes=..., mime="application/pdf", ...)
+result = service.convert_to_markdown(doc)
+```
+
+### Architecture Validation
+
+The architecture is continuously validated:
+
+```bash
+just guard      # Enforces layer boundaries with import-linter
+just typecheck  # Validates Protocol compliance with mypy --strict
+just test       # Ensures all layers work together
+just check      # Run all quality checks (format, lint, types, guard)
+```
+
+**Learn More:** See the detailed Architecture section below for:
+- Layer responsibilities and rules
+- Protocol definitions
+- Component relationships
+- Dependency injection patterns
+
+## Development Workflow
+
+### Installation Commands
+
+```bash
+# Development setup
+just bootstrap        # Install all dev dependencies
+just install          # Install package in editable mode with all extras
+just install-dev      # Install package (minimal, no optional deps)
+just install-prod     # Install for production (non-editable)
+```
+
+### Code Quality
+
+```bash
+just fmt              # Format code with ruff
+just lint             # Lint code with ruff
+just fix              # Auto-fix linting issues
+just typecheck        # Type check with mypy
+just guard            # Verify architectural boundaries
+just check            # Run all quality checks (fmt, lint, types, guard)
+```
+
+### Testing
+
+```bash
+just test             # Run all tests
+just test-unit        # Domain + app tests (fast)
+just test-adapters    # Infrastructure tests
+just test-contract    # Protocol compliance tests
+just test-bdd         # BDD tests
+just test-integration # Integration tests
+just test-cov         # With coverage report
+just coverage-check   # Verify 70% coverage threshold
+```
+
+### Utilities
+
+```bash
+just build            # Build package distribution
+just clean            # Remove build artifacts and cache
+just layers           # Show architecture layers
+just stats            # Project statistics
+```
+
+### Workflows
+
+```bash
+just ci               # Full CI pipeline locally
+just pre-commit       # Pre-commit checks (fmt + check + test)
+```
+
+## Testing
+
+Comprehensive test suite following hexagonal architecture:
+
+### Test Structure
+
+```
+tests/
+├── unit/              # Pure unit tests (no infrastructure)
+│   ├── domain/       # Domain layer tests
+│   └── app/          # Application layer tests (mocked)
+├── adapters/         # Infrastructure adapter tests
+├── contract/         # Protocol compliance tests
+├── integration/      # End-to-end tests
+└── bdd/              # BDD tests with pytest-bdd
+    ├── features/     # Gherkin scenarios
+    └── steps/        # Step definitions
+```
+
+### Running Tests
+
+```bash
+# All tests
+just test
+
+# By category
+just test-unit           # Unit tests only
+just test-adapters       # Adapter tests
+just test-bdd            # BDD tests
+just test-integration    # Integration tests
+
+# With coverage
+just test-cov            # Generate coverage report
+just test-unit-coverage  # Unit tests with coverage
+
+# Check coverage threshold (70%)
+just coverage-check
+```
+
+### BDD Tests
+
+Behavior-Driven Development tests using Gherkin:
+
+```gherkin
+Scenario: Convert a text-based PDF to Markdown
+  Given I have a PDF file "Company_Handbook.pdf"
+  When I submit the file for extraction
+  Then the service produces a Markdown document
+  And a content ID is generated and returned
+```
+
+See [tests/bdd/README.md](tests/bdd/README.md) for BDD documentation.
+
+## Extending the Library
+
+### Adding a Custom Extractor
+
+Implement the `Extractor` Protocol to add support for new file formats:
+
+```python
+from pydocextractor.domain.ports import ExtractionResult
+from pydocextractor.domain.models import (
+    PrecisionLevel,
+    NormalizedDoc,
+    Block,
+    BlockType,
+)
+
+class MyCustomExtractor:
+    """Custom extractor implementing Extractor Protocol."""
+
+    @property
+    def name(self) -> str:
+        return "MyCustomExtractor"
+
+    @property
+    def precision_level(self) -> PrecisionLevel:
+        return PrecisionLevel.HIGHEST_QUALITY
+
+    def is_available(self) -> bool:
+        # Check if required dependencies are installed
+        try:
+            import my_custom_library
+            return True
+        except ImportError:
+            return False
+
+    def supports(self, mime: str) -> bool:
+        return mime == "application/custom"
+
+    def extract(self, data: bytes, precision: PrecisionLevel) -> ExtractionResult:
+        import time
+        start = time.time()
+
+        try:
+            # Your extraction logic here
+            extracted_text = self._extract_content(data)
+
+            blocks = (
+                Block(type=BlockType.TEXT, content=extracted_text),
+            )
+            ndoc = NormalizedDoc(blocks=blocks, source_mime="application/custom")
+
+            return ExtractionResult(
+                success=True,
+                normalized_doc=ndoc,  # Note: 'normalized_doc', not 'ndoc'
+                extractor_name=self.name,
+                processing_time_seconds=time.time() - start,
+            )
+        except Exception as e:
+            return ExtractionResult(
+                success=False,
+                normalized_doc=None,
+                error=str(e),
+                extractor_name=self.name,
+                processing_time_seconds=time.time() - start,
+            )
+
+    def _extract_content(self, data: bytes) -> str:
+        # Implement your extraction logic
+        return "Extracted text from custom format"
+
+# Using custom extractor (not directly injectable into DefaultPolicy)
+# You would need to create a custom policy or use the extractor directly:
+from pydocextractor.domain.models import Document
+
+extractor = MyCustomExtractor()
+if extractor.is_available() and extractor.supports("application/custom"):
+    doc = Document(
+        bytes=b"...",
+        mime="application/custom",
+        size_bytes=100,
+        precision=PrecisionLevel.HIGHEST_QUALITY,
+    )
+    result = extractor.extract(doc.bytes, doc.precision)
+```
+
+**Note:** The current `DefaultPolicy` hardcodes extractors. To use custom extractors in the service, you would need to create a custom policy implementation.
+
+### Custom Template
+
+Create a Jinja2 template in `templates/`:
+
+```jinja2
+{# my_template.j2 #}
+# {{ metadata.filename }}
+
+{% for block in blocks %}
+{{ block.content }}
+
+{% endfor %}
+
+---
+Quality: {{ quality_score }}
+Extractor: {{ metadata.extractor }}
+```
+
+Use it:
+
+```python
+result = service.convert_to_markdown(doc, template_name="my_template")
+```
+
+## Project Structure
+
+```
+pyDocExtractor/
+├── src/pydocextractor/
+│   ├── domain/              # Pure domain layer
+│   │   ├── models.py        # Immutable dataclasses
+│   │   ├── ports.py         # Protocol definitions
+│   │   ├── rules.py         # Pure functions
+│   │   └── errors.py        # Domain exceptions
+│   ├── app/                 # Application layer
+│   │   └── service.py       # ConverterService
+│   ├── infra/               # Infrastructure layer
+│   │   ├── extractors/      # 4 extractor adapters
+│   │   ├── policy/          # Selection logic
+│   │   ├── templates/       # Jinja2 templates
+│   │   └── scoring/         # Quality scoring
+│   ├── factory.py           # Dependency injection
+│   └── cli.py               # CLI interface
+├── tests/                   # Hexagonal test suite
+├── test_documents/          # Real test documents
+└── pyproject.toml           # Project configuration
+```
+
+## Configuration
+
+### pyproject.toml
+
+- **Strict mypy**: Enforced on domain layer
+- **Ruff linting**: Per-layer rules
+- **Import linter**: Enforces architectural boundaries
+- **Extras model**: Optional dependencies
+
+### Architectural Boundaries
+
+Enforced via `import-linter`:
+
+```ini
+[importlinter:contract:domain-independence]
+# Domain MUST NOT import from app or infra
+type = forbidden
+source_modules = pydocextractor.domain
+forbidden_modules = pydocextractor.infra, pydocextractor.app
+```
+
+Verify with:
+```bash
+just guard
+```
+
+## Performance
+
+Benchmarks on typical documents:
+
+| Document Size | Level 1 | Level 2 | Level 3 | Level 4 |
+|--------------|---------|---------|---------|---------|
+| 200 KB       | 0.1s    | 0.5s    | 1.2s    | 45s     |
+| 1.2 MB       | 0.3s    | 2.1s    | 5.2s    | 180s    |
+| 3.2 MB       | 1.8s    | 8.4s    | 25.1s   | 900s    |
+| 13 MB        | 4.2s    | 35.7s   | 120s    | 3600s   |
+
+## Quality Scoring
+
+Documents are scored 0.0-1.0 based on:
+
+- **Content Length** (25%): Substantial extracted text
+- **Structure** (30%): Headings and paragraphs
+- **Text Quality** (25%): Average block length
+- **Formatting** (20%): Lists and tables
+
+```python
+result = service.convert_to_markdown(doc)
+if result.quality_score > 0.8:
+    print("High quality conversion")
+```
+
+## Contributing
+
+We welcome contributions! Whether you're fixing bugs, adding new features, or improving documentation, your help is appreciated.
+
+### Quick Start for Contributors
+
+```bash
+# Clone and setup
+git clone https://github.com/AminiTech/pyDocExtractor.git
+cd pyDocExtractor
+just bootstrap
+
+# Make your changes, then verify
+just fmt           # Format code
+just check         # Run quality checks
+just test          # Run tests
+just guard         # Verify architecture
+```
+
+### Common Contribution Scenarios
+
+#### Adding Support for a New Document Type
+
+1. Create a new extractor in `src/pydocextractor/infra/extractors/`
+2. Implement the `Extractor` Protocol (see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md#how-to-add-support-for-a-new-document-type))
+3. Update the selection policy in `src/pydocextractor/infra/policy/heuristics.py`
+4. Add tests and sample documents
+
+#### Creating a Custom Template
+
+1. Add a Jinja2 template to `src/pydocextractor/infra/templates/templates/`
+2. Use available context variables: `blocks`, `metadata`, `quality_score`
+3. Test with various document types
+
+#### Modifying Quality Scoring
+
+1. Create a new scorer in `src/pydocextractor/infra/scoring/`
+2. Implement the `QualityScorer` Protocol
+3. Inject via `ConverterService` constructor
+
+### Architecture Guidelines
+
+pyDocExtractor follows **Hexagonal Architecture**:
+
+- **Domain Layer** (`src/pydocextractor/domain/`) - Pure business logic, no external dependencies
+- **Application Layer** (`src/pydocextractor/app/`) - Orchestrates workflows using domain ports
+- **Infrastructure Layer** (`src/pydocextractor/infra/`) - Concrete implementations (extractors, templates, etc.)
+
+**Rule:** Domain layer must NOT import from `app` or `infra` layers (enforced by `import-linter`).
+
+### For Detailed Information
+
+See **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** for comprehensive guides on:
+
+- Project structure and what each folder does
+- Step-by-step guide to add new document type support
+- How to create custom templates and quality scorers
+- Testing guidelines and best practices
+- Code quality standards
+- Pull request process
+
+### Questions?
+
+- **Issues**: [GitHub Issues](https://github.com/AminiTech/pyDocExtractor/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/AminiTech/pyDocExtractor/discussions)
+
+## Documentation
+
+- **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[docs/CONTRIBUTING_GUIDE.md](docs/CONTRIBUTING_GUIDE.md)** - Detailed contribution guide with architecture reference
+- **[docs/TEMPLATES.md](docs/TEMPLATES.md)** - Template system guide with Jinja2 examples
+- **[tests/bdd/README.md](tests/bdd/README.md)** - BDD testing guide
+- See the Architecture section above for hexagonal architecture details
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Credits
+
+Extracted from the [Amini Ingestion KGraph](https://github.com/AminiTech/amini-ingestion-kgraph) project.
+
+Built with:
+- [PyMuPDF](https://github.com/pymupdf/PyMuPDF) - Fast PDF processing
+- [pymupdf4llm](https://github.com/pymupdf/pymupdf4llm) - LLM-optimized extraction
+- [pdfplumber](https://github.com/jsvine/pdfplumber) - Table extraction
+- [Docling](https://github.com/DS4SD/docling) - Highest quality conversion
+- [pytest-bdd](https://github.com/pytest-dev/pytest-bdd) - BDD testing
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/AminiTech/pyDocExtractor/issues)
+- **Documentation**: [GitHub Wiki](https://github.com/AminiTech/pyDocExtractor/wiki)
+- **Discussions**: [GitHub Discussions](https://github.com/AminiTech/pyDocExtractor/discussions)
