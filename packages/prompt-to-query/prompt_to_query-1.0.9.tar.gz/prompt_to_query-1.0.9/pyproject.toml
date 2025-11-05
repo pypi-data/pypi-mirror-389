@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompt-to-query"
+version = "1.0.9"
+description = "High-performance SDK to convert natural language prompts to MongoDB queries using AI (OpenAI GPT or Anthropic Claude)"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Dimar Borda", email = "dimarborda@gmail.com"}
+]
+keywords = [
+    "mongodb", "query", "natural-language", "nlp", "ai", "llm",
+    "openai", "gpt", "gpt-4", "anthropic", "claude",
+    "database", "text-to-query", "prompt-engineering", "sdk"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/dimarb/prompt-to-query"
+Documentation = "https://github.com/dimarb/prompt-to-query#readme"
+Repository = "https://github.com/dimarb/prompt-to-query"
+"Bug Tracker" = "https://github.com/dimarb/prompt-to-query/issues"
+
+[tool.setuptools]
+packages = ["prompt_to_query"]
+zip-safe = false
+
+[tool.setuptools.package-data]
+prompt_to_query = ["lib/*.so", "lib/*.dylib", "lib/*.dll"]

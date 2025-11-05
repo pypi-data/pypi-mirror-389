@@ -1,0 +1,22 @@
+# MANIFEST.in
+# Controls which files are included in the source distribution
+
+# Include documentation
+include README.md
+include PUBLISHING.md
+include STRUCTURE.md
+include QUICK_START.md
+
+# Include package data
+recursive-include prompt_to_query/lib *.so *.dylib *.dll
+
+# Include scripts
+include scripts/*.py
+include scripts/*.sh
+
+# Exclude unnecessary files
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.swp
+global-exclude *.swo
