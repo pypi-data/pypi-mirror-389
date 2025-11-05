@@ -1,0 +1,5 @@
+[console_scripts]
+simula-repo-review = simula_repo_review.cli:main
+
+[repo_review.checks]
+simula = simula_repo_review.checks:repo_review_checks
