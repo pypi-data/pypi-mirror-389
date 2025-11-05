@@ -1,0 +1,269 @@
+Metadata-Version: 2.4
+Name: howto-cli-ai
+Version: 0.1.0
+Summary: AI-powered CLI assistant for shell command generation
+Author-email: How-to CLI <dev@howto-cli.com>
+License-Expression: MIT
+Keywords: cli,shell,ai,assistant,command-generation
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: typer>=0.9.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: google-generativeai>=0.3.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: groq>=0.4.0
+Provides-Extra: dev
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: types-requests; extra == "dev"
+Dynamic: license-file
+
+# How-to CLI
+
+An AI-powered command-line interface assistant that instantly translates natural language requests into precise, executable shell commands.
+
+## Features
+
+- 🧠 **Natural Language Processing**: Convert plain English descriptions into accurate shell commands
+- 🔒 **Safety First**: All generated commands require explicit confirmation before execution
+- 🔄 **Multi-Provider Support**: Works with Google Gemini, OpenAI, and Groq APIs
+- 💾 **Persistent Configuration**: Settings saved to `$HOME/.howto-cli-ai/config.json`
+- 🌍 **Cross-Platform**: Generates compatible commands for Linux, macOS, and Windows
+- 🎯 **Smart Context Detection**: Automatically detects operating system and shell environment
+
+## Installation
+
+```bash
+pip install howto-cli-ai
+```
+
+## Quick Start
+
+1. **Setup Your Provider**:
+   ```bash
+   how setup
+   ```
+   The interactive setup wizard will guide you through:
+   - Selecting your preferred AI provider
+   - Configuring API keys securely
+   - Testing connectivity
+   - Setting your default provider
+
+2. **Generate Commands** (no quotes needed):
+   ```bash
+   how to list all files in current directory
+   how to find all Python files larger than 1MB
+   how to shutdown after 30 min
+   how to create backup of home directory
+   ```
+
+## Configuration
+
+The `how setup` command provides an enhanced interactive wizard for:
+- **Provider Selection**: Choose from Google Gemini, OpenAI, or Groq with descriptions
+- **API Key Management**: Securely configure API keys in persistent config file
+- **Provider Switching**: Change your default provider at any time
+- **Connection Testing**: Verify API connectivity before using
+
+### Persistent Configuration
+
+Configuration is automatically saved to `$HOME/.howto-cli-ai/config.json`:
+- **API Keys**: Securely stored in JSON format with fallback to environment variables
+- **Default Provider**: Your chosen provider is remembered across sessions  
+- **Multiple Providers**: Configure all three providers and switch between them easily
+- **Backward Compatible**: Existing environment variable workflows continue to work
+
+```bash
+# Location of config file
+$HOME/.howto-cli-ai/config.json
+
+# Example config structure
+{
+  "default_provider": "openai",
+  "api_keys": {
+    "openai": "sk-your-api-key"
+  }
+}
+```
+
+## Safety
+
+- ✅ **Mandatory Confirmation**: Every generated command requires explicit approval
+- ⚠️ **Destructive Operation Detection**: Potentially harmful commands are flagged with warnings
+- 🔐 **Secure Key Storage**: API keys stored in user home directory with proper permissions
+- 🔄 **Smart Fallbacks**: Graceful error handling and retry mechanisms
+
+## Supported Providers
+
+### 🟠 Google Gemini
+- **Models**: `gemini-2.5-pro` (advanced), `gemini-2.5-flash` (default)
+- **Features**: Fast response times, strong reasoning capabilities
+
+### 🟢 OpenAI  
+- **Models**: `gpt-4`, `gpt-4-turbo`, `gpt-3.5-turbo`
+- **Features**: Highly capable general-purpose AI, excellent code generation
+
+### 🔴 Groq
+- **Models**: `llama-3.3-70b-versatile`, `llama-3.1-70b-versatile`, `mixtral-8x7b-32768`
+- **Features**: Ultra-fast inference, cost-effective option
+
+## Examples
+
+```bash
+# Basic file operations (no quotes needed)
+how to list all JPEG files in current directory
+
+# Complex operations with multiple steps
+how to find files larger than 100MB and move them to archive
+
+# System administration
+how to check disk usage and show top 10 largest files
+
+# Time-based operations
+how to shutdown after 30 min
+how to remind me to take a break in 15 minutes
+
+# Development tasks
+how to start a Python HTTP server on port 8000
+how to kill all processes running on port 3000
+```
+
+## Advanced Usage
+
+```bash
+# Switch providers without losing API keys
+how setup  # Re-run setup and choose different provider
+
+# Check current configuration
+cat $HOME/.howto-cli-ai/config.json
+
+# Use environment variables (alternative to config file)
+export OPENAI_API_KEY="sk-your-key"
+export HOW_DEFAULT_PROVIDER="openai"
+how to list docker containers
+
+# Temporary provider override
+GROQ_API_KEY="gsk-your-key" how to optimize system performance
+```
+
+## Configuration File
+
+The configuration file is automatically created and managed:
+
+```bash
+# View your current configuration
+cat ~/.howto-cli/config.json
+
+# Manual configuration (optional)
+{
+  "default_provider": "gemini",
+  "providers": {
+    "gemini": {
+      "api_key_env_var": "GEMINI_API_KEY",
+      "default_model": "gemini-2.5-flash",
+      "available_models": ["gemini-2.5-pro", "gemini-2.5-flash"]
+    }
+  },
+  "api_keys": {
+    "gemini": "your-gemini-api-key"
+  }
+}
+```
+
+## Troubleshooting
+
+### Provider Not Working
+
+```bash
+# Test connectivity
+how setup  # Re-run to test your selected provider
+
+# Check API key
+echo $GEMINI_API_KEY  # Verify your environment variable
+
+# Check config
+cat ~/.howto-cli-ai/config.json  # Verify persistent configuration
+```
+
+### Common Issues
+
+- **"No API keys configured"**: Run `how setup` to configure your provider
+- **"Provider failed"**: Check your API key and network connection
+- **"Config file corrupted"**: Delete `~/.howto-cli-ai/config.json` and re-run setup
+
+## Development
+
+### Setup Development Environment
+
+```bash
+# Clone and install
+git clone https://github.com/yourusername/howto-cli.git
+cd howto-cli
+# For local development (cloning from source)
+pip install -e ".[dev]"
+
+# For regular installation from PyPI
+pip install howto-cli-ai
+```
+
+### Development Commands
+
+```bash
+# Run tests with coverage
+pytest --cov=howto_cli
+
+# Code formatting
+black howto_cli/
+ruff format howto_cli/
+
+# Linting and type checking
+ruff check howto_cli/
+mypy howto_cli/
+
+# Run CLI locally
+python -m howto_cli.cli setup
+python -m howto_cli.cli to "list all files"
+```
+
+### Project Structure
+
+```
+src/howto_cli/
+├── cli.py              # Main CLI interface with commands
+├── core/
+│   ├── config.py       # Configuration management
+│   └── command_generator.py  # Command generation logic
+├── ai/
+│   ├── gateway.py      # AI provider abstraction
+│   └── providers.py    # Specific provider implementations
+└── models/
+    └── command.py      # Pydantic models for commands
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and ensure tests pass
+4. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built with [Typer](https://typer.tiangolo.com/) for the CLI interface
+- Uses [Pydantic](https://pydantic-docs.helpmanual.io/) for data validation
+- Powered by leading AI providers: Google, OpenAI, and Groq
