@@ -1,0 +1,97 @@
+Metadata-Version: 2.4
+Name: pyarchiveit
+Version: 0.4.1
+Summary: A Python library to interact with the Archive-It's API
+Author: Ken Lui
+Author-email: Ken Lui <116421546+kenlhlui@users.noreply.github.com>
+License-Expression: GPL-3.0-or-later
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: mike>=2.1.3 ; extra == 'docs'
+Requires-Dist: mkdocs>=1.6.1 ; extra == 'docs'
+Requires-Dist: mkdocs-material>=9.6.23 ; extra == 'docs'
+Requires-Dist: mkdocstrings[python]>=0.30.1 ; extra == 'docs'
+Requires-Dist: ipykernel>=7.1.0 ; extra == 'ipynb'
+Requires-Python: >=3.12
+Project-URL: Changelog, https://github.com/kenlhlui/pyarchiveit/releases
+Project-URL: Documentation, https://kenlhlui.github.io/pyarchiveit/
+Project-URL: Homepage, https://kenlhlui.github.io/pyarchiveit/
+Project-URL: Repository, https://github.com/kenlhlui/pyarchiveit
+Provides-Extra: docs
+Provides-Extra: ipynb
+Description-Content-Type: text/markdown
+
+$\color{Red}\Huge{\textsf{🚨THIS LIBRARY IS UNDER ACTIVE DEVELOPMENT. USE AT YOUR OWN RISK.🚨}}$
+
+
+# 📦 Pyarchiveit
+
+Pyarchiveit is a Python library designed to interact with the Internet Archive's Archive-it API. It provides a simple interface to manage the seeds and collections within Archive-it accounts.
+
+## ✨ Features
+- Create and update seeds with metadata validation
+- Retrieve seed lists with their metadata for single or multiple collections
+
+## 📥 Installation
+You can install the library using pip:
+```bash
+pip install pyarchiveit
+```
+Or use [`uv`](https://github.com/astral-sh/uv) if you have it installed:
+```bash
+uv add pyarchiveit
+```
+
+## 💡 Quick Start
+
+See the [Getting Started guide](https://kenlhlui.github.io/pyarchiveit/getting-started/) for detailed installation and initialization instructions.
+
+### Create a new seed with metadata
+
+```python
+metadata = [
+    {"value": "Example Metadata 1"},
+    {"value": "Example Metadata 2"}
+]
+new_seed = archive_it_client.create_seed(
+    collection_id=123456,
+    url='http://example.com',
+    crawl_definition_id=789012,
+    other_params=None,
+    metadata=metadata
+)
+```
+
+### Update an existing seed's metadata
+
+```python
+updated_metadata = [
+    {"value": "Updated Metadata 1"},
+    {"value": "Updated Metadata 2"}
+]
+updated_seed = archive_it_client.update_seed_metadata(
+    seed_id=123456,
+    metadata=updated_metadata
+)
+```
+
+### Retrieve seed lists
+```python
+# Get seed list of a collection
+seeds = archive_it_client.get_seeds(collection_ids=123456)
+
+# Or get seeds from multiple collections
+seeds = archive_it_client.get_seeds(collection_ids=[123456, 789012])
+```
+
+## 📚 Documentation
+
+Visit the [documentation site](https://kenlhlui.github.io/pyarchiveit/) for complete guides and API reference.
+
+## ⚫ Support
+For questions or support, please open an issue on the [GitHub repository](https://github.com/kenlhlui/pyarchiveit/issues).
+
+## 🖊️ Author
+[Ken Lui](https://github.com/kenlhlui) - Data Curation Specialist at [Map & Data Library, University of Toronto](https://mdl.library.utoronto.ca/)
+
+## 📄 License
+This project is licensed under the GNU GPLv3 - see the [LICENSE](LICENSE) file for details.
