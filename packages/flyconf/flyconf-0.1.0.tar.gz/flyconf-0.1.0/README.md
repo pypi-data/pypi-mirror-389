@@ -1,0 +1,115 @@
+# FlyConf Parser
+
+FlyConf Parser 是一个用于解析fc配置文件格式的Python库。fc配置文件是一种具有特定语法的配置格式，支持复杂的数据结构、变量引用和环境感知配置。
+
+## 特性
+
+- 词法分析器，支持识别fc配置文件中的各种标记
+- 语法分析器，构建配置块的抽象语法树
+- 数据模型，用于表示解析后的配置结构
+- 字符串处理（原生多行字符串和单行字符串）
+- 变量引用系统（支持外部变量、环境变量和配置内引用）
+- 列表解析（简单列表和嵌套列表）
+- 导入导出功能（支持JSON格式）
+- 环境感知配置合并
+
+## 安装
+
+```bash
+pip install flyconf
+```
+
+## 使用方法
+
+### 基本用法
+
+```python
+from flyconf.parser import FCConfigParser
+
+# 解析fc配置文件
+config = FCConfigParser.parse_file("config.fc")
+
+# 访问配置块
+block = config.get_block("server")
+print(block.data)
+
+# 导出为JSON
+import json
+json_data = config.to_json()
+```
+
+### fc配置文件语法
+
+fc配置文件具有以下语法结构：
+
+```
+@block_name(meta_key>meta_value) data_key>data_value
+```
+
+示例：
+```fc
+@mysql_default(type>conf.db)
+dbtype>mysql
+host>localhost
+port>3306
+database>oax
+user>root
+password>1234
+
+@remember_me(type>conf.txt)
+username>admin
+password>1234
+
+@test_list
+users>[user1,user2,user3]
+```
+
+### 字符串
+
+使用 `^...^` 表示单行字符串，使用 `^^^...^^^` 表示多行字符串：
+
+```fc
+@get_users(type>conf.sql)
+dbtype>mysql
+sql>^
+SELECT id, username, email FROM users
+^
+```
+
+### 列表
+
+使用 `[...]` 表示列表：
+
+```fc
+@test_list
+users>[user1,user2,user3]
+```
+
+### 变量引用
+
+使用 `$(variable_name)` 表示变量引用：
+
+```fc
+@server
+path>$(config.path)
+```
+
+## API
+
+### FCConfigParser
+
+- `FCConfigParser.parse_text(text)` - 从文本解析配置
+- `FCConfigParser.parse_file(file_path)` - 从文件解析配置
+
+### FCConfig
+
+- `config.get_block(name)` - 获取指定名称的块
+- `config.add_block(block)` - 添加块
+- `config.to_dict()` - 转换为字典
+- `config.to_json()` - 转换为JSON字符串
+
+### FCBlock
+
+- `block.name` - 块名称
+- `block.meta` - 元数据字典
+- `block.data` - 数据字典
