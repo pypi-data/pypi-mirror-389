@@ -1,0 +1,181 @@
+# ioumatch
+
+**ioumatch** is a lightweight Python library for evaluating instance segmentation masks.  
+It automatically computes the **IoU matrix**, performs a **one-to-one matching** between predicted and ground-truth objects (greedy or Hungarian), and outputs **True Positives (TP)**, **False Positives (FP)**, **False Negatives (FN)**, and the **F1-score**.
+
+It seamlessly handles:
+- **Binary masks** (0/1 or 0/255), automatically converted into instance labels,
+- **Already-labeled masks** (each object has its own integer ID),
+- **Image files** (PNG, TIFF, etc.) or **NumPy arrays** directly.
+
+---
+
+## Installation
+
+```bash
+pip install ioumatch
+```
+
+---
+
+## Core Features
+
+| Function | Description |
+|-----------|-------------|
+| `evaluate_image(pred, gt)` | Evaluate a single image (NumPy arrays) |
+| `evaluate_paths(pred_path, gt_path)` | Evaluate two mask image files |
+| `evaluate_pairs(pred_glob, gt_glob)` | Evaluate a batch of image pairs using glob patterns |
+| `to_instance_labels(mask)` | Convert a binary mask into connected-component labels |
+| `iou_matrix_from_labels(pred, gt)` | Compute the IoU matrix between prediction and GT |
+| `match_greedy` / `match_hungarian` | One-to-one object matching algorithms |
+
+---
+
+## Quick Example
+
+```python
+import numpy as np
+import ioumatch
+
+# --- Example with NumPy arrays ---
+pred = np.array([
+    [0, 1, 1],
+    [0, 0, 1],
+    [0, 0, 0]
+], dtype=np.uint8)
+
+gt = np.array([
+    [0, 1, 1],
+    [0, 0, 0],
+    [0, 0, 2]
+], dtype=np.uint8)
+
+res = ioumatch.evaluate_image(pred, gt, threshold=0.5)
+print(res)
+#  {'tp': 1, 'fp': 1, 'fn': 1, 'f1': 0.5, 'iou_matrix': array(...)}
+
+# --- Example with files ---
+res = ioumatch.evaluate_paths("pred_masks/img_01.png",
+                              "gt_masks/img_01.png",
+                              threshold=0.3)
+print(res["f1"])
+
+# --- Evaluate multiple pairs ---
+agg, per_image = ioumatch.evaluate_pairs("pred_masks/*.png", "gt_masks/*.png", threshold=0.5)
+print("Global F1:", agg["f1"])
+```
+
+---
+
+## Key Parameters
+
+| Parameter | Type | Default | Description |
+|------------|------|----------|--------------|
+| `threshold` | float | `0.5` | Minimum IoU to consider a valid match |
+| `method` | str | `"greedy"` | `"greedy"` = simple matching, `"hungarian"` = optimal if SciPy is installed |
+| `inclusive` | bool | `False` | If `True`, accepts IoU values equal to the threshold |
+| `normalize` | bool | `True` | If `True`, automatically converts binary masks to instance-labeled masks |
+
+---
+
+## How It Works
+
+1. **Input normalization**  
+   Binary masks (0/1 or 0/255) are converted to instance-labeled masks using connected components.
+
+2. **IoU matrix computation**  
+   An IoU value is computed for each pair `(predicted_object, ground_truth_object)`.
+
+3. **One-to-one matching**  
+   - **Greedy mode:** iteratively picks the highest IoU and removes the corresponding row and column.  
+   - **Hungarian mode:** uses optimal global assignment (via `scipy.optimize.linear_sum_assignment`).
+
+4. **Metric computation**  
+   - **TP** – matched pairs  
+   - **FP** – predictions with no corresponding GT  
+   - **FN** – GT objects not detected  
+   - **F1** – harmonic mean:  
+     ```
+     F1 = 2 * TP / (2 * TP + FP + FN)
+     ```
+
+---
+
+## Example Visualization
+
+```python
+import matplotlib.pyplot as plt
+from ioumatch import iou_matrix_from_labels, to_instance_labels
+
+pred = to_instance_labels(pred)
+gt = to_instance_labels(gt)
+M = iou_matrix_from_labels(pred, gt)
+
+plt.imshow(M, cmap='hot', interpolation='nearest')
+plt.title("IoU Matrix: Predictions vs Ground Truth")
+plt.xlabel("Ground Truth objects")
+plt.ylabel("Predicted objects")
+plt.colorbar()
+plt.show()
+```
+
+---
+
+## API Summary
+
+| Module | Content |
+|---------|----------|
+| `ioumatch.iou` | Builds IoU matrices between labeled masks |
+| `ioumatch.matching` | Matching algorithms (greedy and Hungarian) |
+| `ioumatch.metrics` | Computes TP, FP, FN, F1, and handles image/batch evaluation |
+| `ioumatch.utils` | Image I/O and binary→label conversions |
+
+---
+
+## Dependencies
+
+**Required**
+- `numpy`
+
+**Recommended**
+- `opencv-python` – for connected components in binary masks
+- `matplotlib` – for IoU matrix visualization
+- `scipy` – for the Hungarian optimal matching
+
+---
+
+---
+
+##  Example Output
+
+When evaluating one image pair:
+
+```
+TP = 2
+FP = 1
+FN = 1
+F1 = 0.6667
+```
+
+And the IoU matrix might look like this:
+
+```
+[[0.9, 0.0],
+ [0.2, 0.7]]
+```
+
+Where:
+- Row = predicted objects  
+- Column = ground truth objects  
+
+---
+
+## License
+
+MIT License © 2025  
+You’re free to use, modify, and distribute **ioumatch**.  
+If you use it in research or a public project, a short mention is appreciated.
+
+
+
+> *ioumatch - a simple, clean way to evaluate segmentation models without writing another 200-line script.*
