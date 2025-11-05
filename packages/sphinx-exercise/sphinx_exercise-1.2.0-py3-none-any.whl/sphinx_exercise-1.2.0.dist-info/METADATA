@@ -1,0 +1,142 @@
+Metadata-Version: 2.4
+Name: sphinx-exercise
+Version: 1.2.0
+Summary: A Sphinx extension for producing exercises and solutions.
+Project-URL: Homepage, https://github.com/executablebooks/sphinx-exercise
+Project-URL: Source, https://github.com/executablebooks/sphinx-exercise
+Project-URL: Tracker, https://github.com/executablebooks/sphinx-exercise/issues
+Author-email: QuantEcon <admin@quantecon.org>
+License: MIT License
+        
+        Copyright (c) 2020 ExecutableBookProject
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+License-File: LICENSE
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Plugins
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Sphinx :: Extension
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Documentation
+Classifier: Topic :: Documentation :: Sphinx
+Classifier: Topic :: Software Development :: Documentation
+Classifier: Topic :: Text Processing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.10
+Requires-Dist: sphinx-book-theme
+Requires-Dist: sphinx>=6.1
+Provides-Extra: all
+Requires-Dist: beautifulsoup4; extra == 'all'
+Requires-Dist: black; extra == 'all'
+Requires-Dist: coverage; extra == 'all'
+Requires-Dist: defusedxml; extra == 'all'
+Requires-Dist: flake8<3.8.0,>=3.7.0; extra == 'all'
+Requires-Dist: matplotlib>=3.8; extra == 'all'
+Requires-Dist: myst-nb>=1.1.0; extra == 'all'
+Requires-Dist: pre-commit; extra == 'all'
+Requires-Dist: pytest-cov; extra == 'all'
+Requires-Dist: pytest-regressions; extra == 'all'
+Requires-Dist: pytest>=8.0; extra == 'all'
+Requires-Dist: sphinx-book-theme; extra == 'all'
+Requires-Dist: sphinx-togglebutton; extra == 'all'
+Requires-Dist: sphinx<9,>=6.1; extra == 'all'
+Requires-Dist: texsoup; extra == 'all'
+Provides-Extra: code-style
+Requires-Dist: black; extra == 'code-style'
+Requires-Dist: flake8<3.8.0,>=3.7.0; extra == 'code-style'
+Requires-Dist: pre-commit; extra == 'code-style'
+Provides-Extra: rtd
+Requires-Dist: myst-nb>=1.1.0; extra == 'rtd'
+Requires-Dist: sphinx-book-theme; extra == 'rtd'
+Requires-Dist: sphinx-togglebutton; extra == 'rtd'
+Requires-Dist: sphinx<9,>=6.1; extra == 'rtd'
+Provides-Extra: testing
+Requires-Dist: beautifulsoup4; extra == 'testing'
+Requires-Dist: coverage; extra == 'testing'
+Requires-Dist: defusedxml; extra == 'testing'
+Requires-Dist: matplotlib>=3.8; extra == 'testing'
+Requires-Dist: myst-nb>=1.1.0; extra == 'testing'
+Requires-Dist: pytest-cov; extra == 'testing'
+Requires-Dist: pytest-regressions; extra == 'testing'
+Requires-Dist: pytest>=8.0; extra == 'testing'
+Requires-Dist: sphinx<9,>=6.1; extra == 'testing'
+Requires-Dist: texsoup; extra == 'testing'
+Description-Content-Type: text/markdown
+
+# sphinx-exercise
+
+[![Documentation Status][rtd-badge]][rtd-link]
+[![Github-CI][github-ci]][github-link]
+[![Coverage Status][codecov-badge]][codecov-link]
+
+**An exercise extension for Sphinx**.
+
+This package contains a [Sphinx](http://www.sphinx-doc.org/en/master/) extension
+for producing exercise and solution directives.
+
+## Features
+
+- **Automatic numbering** for exercises and solutions
+- **Cross-referencing** support with `ref` and `numref` roles
+- **Internationalization** support for 27 languages including Chinese, Japanese, Korean, Arabic, Hindi, and more
+- **HTML and PDF** output support
+- **Gated directive** syntax for including executable code and complex content
+- **Customizable styling** with class options and hidden directive support
+
+## Get started
+
+To get started with `sphinx-exercise`, first install it through `pip`:
+
+```
+pip install sphinx-exercise
+```
+
+then, add `sphinx_exercise` to your sphinx `extensions` in the `conf.py`
+
+```python
+...
+extensions = ["sphinx_exercise"]
+...
+```
+
+
+## Documentation
+
+See the [Sphinx Exercise documentation](https://ebp-sphinx-exercise.readthedocs.io/en/latest/) for more information.
+
+
+## Contributing
+
+We welcome all contributions! See the [EBP Contributing Guide](https://executablebooks.org/en/latest/contributing.html) for general details, and below for guidance specific to sphinx-exercise.
+
+
+[rtd-badge]: https://readthedocs.org/projects/ebp-sphinx-exercise/badge/?version=latest
+[rtd-link]: https://ebp-sphinx-exercise.readthedocs.io/en/latest/?badge=latest
+[github-ci]: https://github.com/executablebooks/sphinx-exercise/actions/workflows/ci.yml/badge.svg
+[github-link]: https://github.com/executablebooks/sphinx-exercise/actions/workflows/ci.yml
+[codecov-badge]: https://codecov.io/gh/executablebooks/sphinx-exercise/branch/main/graph/badge.svg
+[codecov-link]: https://codecov.io/gh/executablebooks/sphinx-exercise
