@@ -1,0 +1,58 @@
+Metadata-Version: 2.4
+Name: watchmen-metricflow
+Version: 18.0.1
+Summary: 
+License-Expression: MIT
+Author: luke0623
+Author-email: luke0623@outlook.com
+Requires-Python: >=3.12,<3.13
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.12
+Provides-Extra: adls
+Provides-Extra: boto3
+Provides-Extra: collector
+Provides-Extra: es-ext-writer
+Provides-Extra: kafka
+Provides-Extra: mongodb
+Provides-Extra: mssql
+Provides-Extra: mysql
+Provides-Extra: oracle
+Provides-Extra: oss
+Provides-Extra: postgresql
+Provides-Extra: prometheus
+Provides-Extra: rabbit
+Provides-Extra: s3
+Provides-Extra: sso
+Provides-Extra: standard-ext-writer
+Provides-Extra: trino
+Requires-Dist: apscheduler (>=3.11.0,<4.0.0)
+Requires-Dist: bcrypt (>=4.2.0,<5.0.0)
+Requires-Dist: cacheout (>=0.16.0,<0.17.0)
+Requires-Dist: dask (>=2025.7.0,<2026.0.0)
+Requires-Dist: dbt-metricflow (>=0.8.2,<0.9.0)
+Requires-Dist: dbt-postgres (>=1.8.0,<2.0.0)
+Requires-Dist: distributed (>=2025.7.0,<2026.0.0)
+Requires-Dist: fastapi (>=0.116.1,<0.117.0)
+Requires-Dist: fastapi-mcp (>=0.4.0,<0.5.0)
+Requires-Dist: numpy (>=2.3.4,<3.0.0)
+Requires-Dist: passlib (>=1.7.4,<2.0.0)
+Requires-Dist: pycryptodome (>=2.3.4,<4.0.0)
+Requires-Dist: pydantic-settings (>=2.10.1,<3.0.0)
+Requires-Dist: pymysql (>=1.1.2,<2.0.0)
+Requires-Dist: python-jose (>=3.5.0,<4.0.0)
+Requires-Dist: python-json-logger (>=3.3.0,<4.0.0)
+Requires-Dist: python-multipart (>=0.0.9,<0.0.10)
+Requires-Dist: sqlalchemy (>=2.0.43,<3.0.0)
+Requires-Dist: uvicorn (>=0.35.0,<0.36.0)
+Requires-Dist: uvloop (>=0.21.0,<0.22.0)
+Requires-Dist: watchmen-data-surface (==18.0.1)
+Requires-Dist: watchmen-indicator-surface (==18.0.1)
+Requires-Dist: watchmen-inquiry-surface (==18.0.1)
+Requires-Dist: watchmen-lineage (==18.0.1)
+Requires-Dist: watchmen-meta (==18.0.1)
+Requires-Dist: watchmen-model (==18.0.1)
+Requires-Dist: watchmen-rest (==18.0.1)
+Requires-Dist: watchmen-storage-mssql (==18.0.1) ; extra == "mssql"
+Requires-Dist: watchmen-storage-mysql (==18.0.1) ; extra == "mysql"
+Requires-Dist: watchmen-storage-oracle (==18.0.1) ; extra == "oracle"
+Requires-Dist: watchmen-storage-postgresql (==18.0.1) ; extra == "postgresql"
