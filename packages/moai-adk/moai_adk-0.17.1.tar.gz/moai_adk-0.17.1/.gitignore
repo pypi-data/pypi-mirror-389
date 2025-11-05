@@ -1,0 +1,76 @@
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Cache
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+node_modules/
+*.tsbuildinfo
+.tscache/
+
+# Backups
+.moai-backups/
+*.backup
+*.bak
+
+# Test coverage
+.coverage
+.coverage.*
+coverage.json
+htmlcov/
+.pytest_cache/
+
+# Documentation builds
+site/
+docs/_build/
+
+# Documentation (Nextra)
+docs/node_modules/
+docs/.next/
+docs/.npm-cache/
+docs/.turbo/
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+.claudeignore
+
+# Project Plans (internal tracking, not versioned)
+CURSOR_INTEGRATION_PLAN.md
+
+# Local .claude infrastructure (package template is source of truth)
+# Users should never modify these files directly - sync from package template
+
+# Developer local settings and configurations
+.claude/settings.local.json
+CLAUDE.md.local
+
+# Runtime session and memory files (auto-generated per user/session)
+# These files are created during package initialization and updated at runtime
