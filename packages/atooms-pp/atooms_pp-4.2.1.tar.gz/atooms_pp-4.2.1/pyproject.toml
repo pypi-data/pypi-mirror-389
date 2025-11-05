@@ -1,0 +1,51 @@
+[project]
+name = "atooms-pp"
+description = "Post-processing tools for particle simulations"
+readme = "README.md"
+version = "4.2.1"
+authors = [
+    {name = "Daniele Coslovich", email = "daniele.coslovich@umontpellier.fr"}
+]
+requires-python = ">=3.7"
+license = {text = "GPLv3"}
+dependencies = [
+    "atooms>=3.27.0",
+    "argh",
+    "tqdm",
+    "f2py_jit"
+]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+]
+
+
+[project.urls]
+repository = "https://framagit.org/atooms/postprocessing"
+homepage = "https://framagit.org/atooms/postprocessing"
+documentation = "https://atooms.frama.io/postprocessing"
+changelog = "https://framagit.org/atooms/postprocessing/-/blob/master/CHANGELOG.md"
+
+# [project.scripts]
+# pp = "atooms.postprocessing.cli:main"
+
+# Deprecated but still working.
+# It seems the only way to be backward compatible with scripts ending in .py
+[tool.setuptools]
+script-files = ["bin/pp.py"]
+include-package-data = true
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["atooms.postprocessing"]
