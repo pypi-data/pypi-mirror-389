@@ -1,0 +1,8 @@
+[mycroft.plugin.stt]
+ovos-stt-plugin-server = ovos_stt_plugin_server:OVOSHTTPServerSTT
+
+[mycroft.plugin.stt.config]
+ovos-stt-plugin-server.config = ovos_stt_plugin_server:OVOSHTTPServerSTTConfig
+
+[neon.plugin.audio]
+ovos-audio-lang-server-plugin = ovos_stt_plugin_server:OVOSServerLangClassifier

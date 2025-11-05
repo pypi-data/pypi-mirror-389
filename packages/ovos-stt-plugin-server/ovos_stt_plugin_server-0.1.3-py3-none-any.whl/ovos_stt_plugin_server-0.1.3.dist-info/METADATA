@@ -1,0 +1,82 @@
+Metadata-Version: 2.4
+Name: ovos_stt_plugin_server
+Version: 0.1.3
+Summary: ovos stt server plugin for mycroft
+Home-page: https://github.com/OpenVoiceOS/ovos-stt-server-plugin
+Author: JarbasAi
+Author-email: jarbasai@mailfence.com
+License: Apache-2.0
+Keywords: mycroft OpenVoiceOS OVOS plugin stt
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ovos-plugin-manager<3.0.0,>=1.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+## Description
+
+OpenVoiceOS companion plugin for [OpenVoiceOS STT Server](https://github.com/OpenVoiceOS/ovos-stt-http-server)
+
+## Install
+
+```bash
+pip install ovos-stt-plugin-server
+```
+
+## Configuration
+
+```json
+  "stt": {
+    "module": "ovos-stt-plugin-server",
+    "ovos-stt-plugin-server": {
+      "urls": ["https://0.0.0.0:8080/stt"],
+      "verify_ssl": true
+    },
+ }
+```
+
+for audio language detection
+
+```json
+  "listener": {
+    "audio_transformers": {
+        "ovos-audio-lang-server-plugin": {
+          "urls": ["https://0.0.0.0:8080/lang_detect"],
+          "verify_ssl": true
+        }
+    }
+  }
+```
+
+### Security warning
+
+Please note that while you can set `verify_ssl` to `false` to disable SSL
+verification, this is not recommended and should only be used for testing
+purposes. Consider using a private CA or certificates signed using
+[Let's Encrypt](https://letsencrypt.org/) instead.
+
+## Public servers
+
+public server status page can be found at https://github.com/OpenVoiceOS/status
+
+the default public servers run [Whisper](https://github.com/OpenVoiceOS/ovos-stt-plugin-fasterwhisper)
+
+While there are associated risks with public servers, we value your trust in our products, learn more in Jarbas blog post [The Trust Factor in Public Servers](https://jarbasal.github.io/blog/2023/10/14/the-trust-factor-in-public-servers.html)
+
