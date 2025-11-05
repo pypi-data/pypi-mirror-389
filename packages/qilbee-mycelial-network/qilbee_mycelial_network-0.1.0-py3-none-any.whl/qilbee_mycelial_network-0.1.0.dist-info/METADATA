@@ -1,0 +1,165 @@
+Metadata-Version: 2.4
+Name: qilbee-mycelial-network
+Version: 0.1.0
+Summary: Enterprise SaaS SDK for Qilbee Mycelial Network - Adaptive AI Agent Communication
+Home-page: https://github.com/qilbee/mycelial-network
+Author: AICUBE TECHNOLOGY LLC
+Author-email: AICUBE TECHNOLOGY LLC <contact@aicube.ca>, Bruno Ramos <bramos@aicube.ca>
+Maintainer-email: AICUBE TECHNOLOGY LLC <contact@aicube.ca>
+License-Expression: MIT
+Project-URL: Homepage, http://www.qilbee.io
+Project-URL: Documentation, http://www.qilbee.io/docs
+Project-URL: Repository, https://github.com/qilbee/mycelial-network
+Project-URL: Issues, https://github.com/qilbee/mycelial-network/issues
+Project-URL: Changelog, https://github.com/qilbee/mycelial-network/releases
+Project-URL: Source Code, https://github.com/qilbee/mycelial-network
+Keywords: ai,agents,mycelial,network,distributed,ml,machine-learning,artificial-intelligence,multi-agent,communication,embeddings,vector-search,reinforcement-learning,saas,enterprise
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Operating System :: OS Independent
+Classifier: Framework :: AsyncIO
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: httpx>=0.25.0
+Requires-Dist: pydantic>=2.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Provides-Extra: grpc
+Requires-Dist: grpcio>=1.50.0; extra == "grpc"
+Requires-Dist: grpcio-tools>=1.50.0; extra == "grpc"
+Provides-Extra: quic
+Requires-Dist: aioquic>=0.9.0; extra == "quic"
+Provides-Extra: telemetry
+Requires-Dist: opentelemetry-api>=1.20.0; extra == "telemetry"
+Requires-Dist: opentelemetry-sdk>=1.20.0; extra == "telemetry"
+Requires-Dist: opentelemetry-instrumentation-httpx>=0.41b0; extra == "telemetry"
+Provides-Extra: all
+Requires-Dist: grpcio>=1.50.0; extra == "all"
+Requires-Dist: grpcio-tools>=1.50.0; extra == "all"
+Requires-Dist: aioquic>=0.9.0; extra == "all"
+Requires-Dist: opentelemetry-api>=1.20.0; extra == "all"
+Requires-Dist: opentelemetry-sdk>=1.20.0; extra == "all"
+Requires-Dist: opentelemetry-instrumentation-httpx>=0.41b0; extra == "all"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# Qilbee Mycelial Network (QMN) - Python SDK
+
+Enterprise SaaS SDK for building adaptive AI agent communication networks inspired by biological mycelia.
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+pip install qilbee-mycelial-network
+```
+
+### Basic Usage
+
+```python
+import asyncio
+from qilbee_mycelial_network import MycelialClient, Nutrient, Outcome, Sensitivity
+
+async def main():
+    # Initialize client (reads QMN_API_KEY from environment)
+    async with MycelialClient.create_from_env() as client:
+
+        # Broadcast nutrient to network
+        await client.broadcast(
+            Nutrient.seed(
+                summary="Need PostgreSQL performance optimization advice",
+                embedding=[...],  # Your 1536-dim embedding vector
+                snippets=["EXPLAIN ANALYZE output..."],
+                tool_hints=["db.analyze", "query.optimize"],
+                sensitivity=Sensitivity.INTERNAL,
+                ttl_sec=180,
+                max_hops=3
+            )
+        )
+
+        # Collect enriched contexts from network
+        contexts = await client.collect(
+            demand_embedding=[...],  # Your query embedding
+            window_ms=300,
+            top_k=5,
+            diversify=True  # Apply MMR diversity
+        )
+
+        # Use collected context...
+        for content in contexts.contents:
+            print(f"Agent: {content['agent_id']}")
+            print(f"Response: {content['data']}")
+
+        # Record outcome for reinforcement learning
+        await client.record_outcome(
+            trace_id=contexts.trace_id,
+            outcome=Outcome.with_score(0.92)  # 0.0 to 1.0
+        )
+
+asyncio.run(main())
+```
+
+## 📋 Features
+
+- **Zero Infrastructure**: Just `pip install` + API key, everything else is managed
+- **Adaptive Routing**: Automatic learning and optimization based on outcomes
+- **Enterprise Security**: SOC 2, ISO 27001 compliant with DLP/RBAC
+- **Multi-Region**: Automatic regional routing and disaster recovery
+- **Vector Memory**: Distributed hyphal memory with semantic search
+- **Full Observability**: Built-in telemetry and tracing
+
+## 🔧 Configuration
+
+Set your API key:
+
+```bash
+export QMN_API_KEY=qmn_your_api_key_here
+```
+
+Optional environment variables:
+
+```bash
+export QMN_API_BASE_URL=https://api.qilbee.network  # Custom API endpoint
+export QMN_PREFERRED_REGION=us-east-1               # Preferred region
+export QMN_TRANSPORT=grpc                           # grpc or quic
+export QMN_DEBUG=true                               # Enable debug mode
+```
+
+## 📚 Documentation
+
+- [Full Documentation](https://docs.qilbee.network)
+- [API Reference](https://docs.qilbee.network/api)
+- [Examples](https://github.com/qilbee/mycelial-network/tree/main/examples)
+
+## 🔐 Security
+
+All data is encrypted in transit (TLS 1.3) and at rest (AES-256-GCM). See our [Security Policy](https://docs.qilbee.network/security) for details.
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+## 🤝 Support
+
+- [GitHub Issues](https://github.com/qilbee/mycelial-network/issues)
+- [Documentation](https://docs.qilbee.network)
+- [Email Support](mailto:support@qilbee.network)
