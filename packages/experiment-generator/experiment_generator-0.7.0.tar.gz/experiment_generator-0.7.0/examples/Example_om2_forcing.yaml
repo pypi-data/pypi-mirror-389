@@ -1,0 +1,139 @@
+# Experiment Configuration File
+# This file sets up parameters for both the control and perturbation experiments.
+# Adjust the settings below as needed for your environment and model.
+
+model_type: access-om2  # available models can be checked via `payu list`
+repository_url: git@github.com:ACCESS-NRI/access-om2-configs.git
+start_point: "6b315e4" # Control commit hash for new branches
+test_path: prototype-0.2.0-om2-forcing # All control and perturbation experiment repositories will be created here; can be relative, absolute or ~ (user-defined)
+repository_directory: MC_25km_jra_ryf # Local directory name for the central repository (user-defined)
+
+control_branch_name: ctrl
+
+Control_Experiment:
+# No changes to apply for the control branch
+
+Perturbation_Experiment:
+    # This section contains parameter blocks that define perturbations for fields in `atmosphere/forcing.json`.
+    # This is similar to the `submodels` section in `Example_esm1.6_submodules.yaml`.
+    #
+    # ─────────────────────────────────────────────────────────────────────────────
+    # General notes
+    # ─────────────────────────────────────────────────────────────────────────────
+    # * Each block must declare its branches:
+    #       branches:
+    #         - perturb_1
+    #         - perturb_2
+    # NOTE: branch names must be unique across all blocks!
+    #
+    # * Under each field (e.g. `uas`), the key `perturbations` is a **list of dicts**.
+    #   - Inside a dict, each key (type, dimension, value, calendar, comment) is a
+    #     sequence, where elements correspond to branches in order:
+    #         element 0 -> branch 1
+    #         element 1 -> branch 2
+    #
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Broadcasting
+    # ─────────────────────────────────────────────────────────────────────────────
+    # * If you only provide a single element in a sequence, it is broadcast to all branches.
+    #
+    # Example:
+    #   value:
+    #     - INPUT/uas_Tropical_Pacific_Perturbation.nc
+    #
+    # -> Both branches use the same input file for this perturbation.
+    #
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Filtering / Removing entries
+    # ─────────────────────────────────────────────────────────────────────────────
+    # * Use `REMOVE` to skip a branch within a perturbation row.
+    #   - If a branch has `REMOVE` for its `type`, the entire perturbation is removed for that branch.
+    #   - If a branch has `REMOVE` for *all* fields in a dict, that perturbation is omitted entirely for that branch.
+    #
+    # Example:
+    #   type:
+    #     - offset      # perturb_1 applies offset
+    #     - REMOVE      # perturb_2 skips this perturbation
+    #
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Nested list style for complex values
+    # ─────────────────────────────────────────────────────────────────────────────
+    # * Some keys (e.g. `dimension`, `value`) may need multiple items per branch.
+    #   Use block-style nested lists for clarity.
+    #
+    # Examples:
+    #
+    # 1. Broadcasting a single nested list to all branches:
+    #     dimension:
+    #       - - "temporal"
+    #         - "spatial"
+    #
+    #    -> Both branches use ["temporal", "spatial"].
+    #
+    # 2. Per-branch dimensions:
+    #     dimension:
+    #       - - "temporal"
+    #         - "spatial"   # branch 1 uses ["temporal", "spatial"]
+    #       - "temporal"    # branch 2 uses only "temporal"
+    #
+    # 3. Skipping a branch entirely:
+    #     dimension:
+    #       - - "temporal"
+    #         - "spatial"
+    #       - REMOVE
+    #
+    # ─────────────────────────────────────────────────────────────────────────────
+    # Complete example
+    # ─────────────────────────────────────────────────────────────────────────────
+    #
+    # In the example below:
+    #   * Row 1 applies a shared scaling perturbation (broadcast fields).
+    #   * Row 2 applies an offset only to branch 1 (branch 2 uses REMOVE).
+    #   * Row 3 defines a complex “separable” perturbation for branch 1 only.
+
+  Parameter_block1:
+    branches:
+      - perturb_1
+      - perturb_2
+    atmosphere/forcing.json:
+      uas:
+        perturbations:
+          - - type: # row 1
+                - scaling
+                - offset
+              dimension:
+                - spatial
+              value:
+                - INPUT/uas_Tropical_Pacific_Perturbation.nc
+              calendar:
+                - forcing
+              comment:
+                - Time-independent increase in tropical Pacific zonal winds
+            - type: # row 2
+                - offset
+                - REMOVE
+              dimension:
+                - constant
+              value:
+                - 5
+              calendar:
+                - forcing
+              comment:
+                - "1"
+            - type: # row 3
+                - separable
+                - REMOVE
+              dimension:
+                - - "temporal"
+                  - "spatial"
+                - ~
+              value:
+                - - "test_data/temporal.RYF.rsds.1990_1991.nc"
+                  - "test_data/spatial.RYF.rsds.1990_1991.nc"
+                - ~
+              calendar:
+                - forcing
+                - ~
+              comment:
+                - ""
+                - ~
