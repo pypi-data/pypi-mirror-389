@@ -1,0 +1,47 @@
+:root {
+  font-family: system-ui, sans-serif;
+  --pico-line-height: 1.5;
+}
+.merkury-chunks {
+  min-width: 0;
+}
+.merkury-code-block {
+  margin-bottom: 2em;
+}
+.merkury-foot {
+  text-align: center;
+  padding-top: 0 !important;
+}
+.merkury-head {
+  padding-top: 4em;
+}
+#dark-light-mode {
+  margin: 0;
+}
+{% if toc %}
+@media (min-width:992px) {
+  .merkury-container {
+    width: 80%;
+  }
+  .merkury-toc {
+    position: sticky;
+    align-self: start;
+    top: 0;
+    max-height: calc(100vh - 5em);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main {
+    display: grid;
+    align-items: start;
+    grid-template-columns: 20% auto;
+    column-gap: 1em;
+  }
+}
+{% else %}
+@media (min-width:992px) {
+  .merkury-container {
+    width: 67%;
+  }
+}
+{% endif %}
