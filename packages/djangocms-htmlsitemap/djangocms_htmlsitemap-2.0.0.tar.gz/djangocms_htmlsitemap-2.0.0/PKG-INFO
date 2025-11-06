@@ -1,0 +1,67 @@
+Metadata-Version: 2.4
+Name: djangocms-htmlsitemap
+Version: 2.0.0
+Summary: A Django CMS plugin for building HTML sitemaps showing organized lists of CMS pages.
+License: BSD-3-Clause
+License-File: LICENSE
+Author: Kapt dev team
+Author-email: dev@kapt.mobi
+Requires-Python: >=3.9,<4
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Dist: Django (>=3)
+Requires-Dist: django-cms (>=3.8)
+Project-URL: Repository, https://gitlab.com/kapt/open-source/djangocms-htmlsitemap
+Description-Content-Type: text/markdown
+
+# djangocms-htmlsitemap
+
+[![Latest Version](http://img.shields.io/pypi/v/djangocms-htmlsitemap.svg?style=flat-square)](https://pypi.python.org/pypi/djangocms-htmlsitemap/)
+[![License](http://img.shields.io/pypi/l/djangocms-htmlsitemap.svg?style=flat-square)](https://pypi.python.org/pypi/djangocms-htmlsitemap/)
+
+
+*A Django CMS plugin for building HTML sitemaps showing organized lists of CMS pages.*
+
+## Requirements
+
+Python 3.8.1+, Django 2.2+, Django-CMS 4.1+.
+
+Starting from v2.0, the plugin only supports django CMS 4.1 and above.
+For django CMS 3.x, use version 1.x.x.
+
+## Installation
+
+Just run:
+```sh
+pip install djangocms-htmlsitemap
+```
+
+Once installed you just need to add `djangocms_htmlsitemap` to `INSTALLED_APPS` in your project's settings module:
+```py
+INSTALLED_APPS = (
+    # other apps
+    'djangocms_htmlsitemap',
+)
+```
+
+Then install the models:
+```py
+python manage.py migrate djangocms_htmlsitemap
+```
+
+*Congrats! You’re in.*
+
+## Authors
+
+Kapt <dev@kapt.mobi> and [contributors](https://github.com/kapt-labs/djangocms-htmlsitemap/contributors)
+
+## License
+
+BSD. See `LICENSE` for more details.
+
