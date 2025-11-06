@@ -1,0 +1,21 @@
+# Pruebas de paquete
+https://packaging.python.org/guides/using-testpypi/
+
+# Subir nueva versión de prueba
+cd A:\Tesis\AERzip
+py -m build
+twine upload --repository testpypi dist/*
+rmdir A:\Tesis\AERzip\dist
+
+# Instalar versión de prueba más reciente
+pip install --index-url https://test.pypi.org/simple/ AERzip --upgrade
+
+# Versión final
+py -m build
+twine upload dist/*
+pip install AERzip
+
+https://packaging.python.org/tutorials/packaging-projects/
+
+# Para cambiar la versión del paquete
+pyproject.toml, src/AERzip/__init__.py, conf.py
