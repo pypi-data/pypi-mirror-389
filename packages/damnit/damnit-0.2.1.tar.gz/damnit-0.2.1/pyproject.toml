@@ -1,0 +1,100 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "damnit"
+authors = [
+    {name = "Thomas Kluyver", email = "thomas.kluyver@xfel.eu"},
+    {name = "Luca Gelisio", email = "luca.gelisio@xfel.eu"},
+]
+description = "The Data And Metadata iNspection Interactive Thing"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+classifiers = ["License :: OSI Approved :: BSD License"]
+dynamic = ["version"]
+readme = "README.md"
+dependencies = [
+    "h5netcdf>=1.4.1",
+    "h5py",
+    "numpy",
+    "orjson",  # used in plotly for faster json serialization
+    "pandas >=2.1.0",
+    "plotly",
+    "xarray"
+]
+
+[project.optional-dependencies]
+backend = [
+    "EXtra-data",
+    "EXtra-proposal",
+    "ipython",
+    "kafka-python-ng",
+    "kaleido",  # used in plotly to convert figures to images
+    "matplotlib",
+    "numpy",
+    "pyyaml",
+    "requests",
+    "supervisor",
+    "termcolor"
+]
+gui = [
+    "adeqt",
+    "fonticon-fontawesome6",
+    "mplcursors",
+    "mpl-pan-zoom",
+    "natsort",
+    "openpyxl",  # for spreadsheet export
+    "PyQt5",
+    "PyQtWebEngine",
+    "pyflakes",  # for checking context file in editor
+    "QScintilla==2.13",
+    "scikit-learn",
+    "superqt",
+    "tabulate",  # used in pandas to make markdown tables (for Zulip)
+]
+test = [
+    "pillow",
+    "pytest",
+    "pytest-qt",
+    "pytest-cov",
+    "pytest-xvfb",
+    "pytest-timeout",
+    "pytest-venv",
+    "testpath",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "pymdown-extensions"
+]
+
+[project.urls]
+Home = "https://github.com/European-XFEL/DAMNIT"
+
+[project.scripts]
+amore-proto = "damnit.cli:main"
+damnit = "damnit.cli:main"
+
+[tool.pytest.ini_options]
+timeout = 120
+norecursedirs = "tests/helpers"
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+damnit = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = { features = ["backend", "gui"], solve-group = "default" }
+docs = { features = ["docs"], solve-group = "default" }
+test = { features = ["test", "backend", "gui"], solve-group = "default" }
+
+[tool.pixi.tasks]
+
+[tool.pixi.feature.test.tasks]
+test = "python -m pytest -v --cov=damnit --cov-report=xml"
