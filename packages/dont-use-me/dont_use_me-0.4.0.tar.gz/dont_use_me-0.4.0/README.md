@@ -1,0 +1,1 @@
+This package is uploaded just to learn how to upload packages on PyPI.
