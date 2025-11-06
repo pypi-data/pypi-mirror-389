@@ -1,0 +1,19 @@
+[project]
+name = "sympy-pipes"
+version = "0.1.0"
+description = "A collection of Pipe definitions for working with sympy."
+readme = "README.md"
+authors = [{ name = "Max Weiner", email = "max.weiner@posteo.de" }]
+requires-python = ">=3.10"
+dependencies = ["docstring-inheritance>=2.2.2", "pipe~=2.0", "sympy~=1.14"]
+
+[build-system]
+requires = ["uv_build>=0.8.19,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[dependency-groups]
+dev = ["ipython>=8.37.0", "pytest>=8.4.2"]
