@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[bumpver]
+current_version = "1.4.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+
+
+[bumpver.file_patterns]
+"pyproject.toml" = [
+    'version = "{version}"',
+]
+
+[project]
+name = "emojiguessr"
+version = "1.4.0"
+description = "A tiny emoji guessing game"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Team Saffron"}
+]
+license = { text = "GNU GENERAL PUBLIC LICENSE" }
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/swe-students-fall2025/3-python-package-team_saffron"
+Issues = "https://github.com/swe-students-fall2025/3-python-package-team_saffron/issues"
+
+[project.scripts]
+emojiguessr = "emojiguessr.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
