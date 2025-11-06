@@ -1,0 +1,10 @@
+recursive-exclude __pycache__
+global-exclude *.pyc
+prune env
+prune robin_api.egg-info
+prune robin_api/__pycache__
+prune robin_api_2.egg-info
+exclude robin_api/config_secret.py
+include README.md
+# Exclude LICENSE from package to avoid license-file metadata field
+exclude LICENSE

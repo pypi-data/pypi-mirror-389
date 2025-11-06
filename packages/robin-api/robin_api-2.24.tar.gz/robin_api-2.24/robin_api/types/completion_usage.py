@@ -1,0 +1,17 @@
+# File generated from our OpenAPI spec by Stainless.
+
+from .._models import BaseModel
+from typing import Optional
+
+__all__ = ["CompletionUsage"]
+
+
+class CompletionUsage(BaseModel):
+    completion_tokens: Optional[int] = None
+    """Number of tokens in the generated completion."""
+
+    prompt_tokens: Optional[int] = None
+    """Number of tokens in the prompt."""
+
+    total_tokens: Optional[int] = None
+    """Total number of tokens used in the request (prompt + completion)."""
