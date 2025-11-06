@@ -1,0 +1,9 @@
+[console_scripts]
+fairo = validators.cli:main
+fairo-accessible = validators.accessible_link_checker:main
+fairo-data-sharing = validators.data_sharing_validator:main
+fairo-fair-meta = validators.fair_metadata_validator:main
+fairo-fdaaa = validators.fdaaa_timeliness_validator:main
+fairo-harms = validators.consort_harms_validator:main
+fairo-linkage = validators.linkage_validator:main
+fairo-outcomes = validators.outcome_switching_validator:main
