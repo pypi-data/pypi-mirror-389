@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "snacktime"
+version = "0.5.0"
+description = "CLI that gives a random snack, a simple salad recipe, a random vegetable, or a sweet treat."
+authors = [
+    {name="Ezra Shapiro", email="ems9856@nyu.edu"},
+    {name="Athena Luo", email="athenaluoxy@gmail.com"},
+    {name="Jasir Nawar", email="jn2691@nyu.edu"},
+    {name="Hanqi Gui", email="hg2542@nyu.edu"},
+    {name="Kaiyuan Wu", email="wkyklmf@gmail.com"}
+]
+
+maintainers = [
+    {name="Ezra Shapiro", email="ems9856@nyu.edu"},
+    {name="Athena Luo", email="athenaluoxy@gmail.com"},
+    {name="Jasir Nawar", email="jn2691@nyu.edu"},
+    {name="Hanqi Gui", email="hg2542@nyu.edu"},
+    {name="Kaiyuan Wu", email="wkyklmf@gmail.com"}
+]
+
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.scripts]
+snacktime = "snacktime.__main__:main"
+
+[project.optional-dependencies]
+dev = ['pytest']
+
+[project.urls]
+"Homepage" = "https://github.com/swe-students-fall2025/3-python-package-team_solace"
+"Repository" = "https://github.com/swe-students-fall2025/3-python-package-team_solace.git"
+"Bug Tracker" = "https://github.com/swe-students-fall2025/3-python-package-team_solace/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["snacktime*"]
