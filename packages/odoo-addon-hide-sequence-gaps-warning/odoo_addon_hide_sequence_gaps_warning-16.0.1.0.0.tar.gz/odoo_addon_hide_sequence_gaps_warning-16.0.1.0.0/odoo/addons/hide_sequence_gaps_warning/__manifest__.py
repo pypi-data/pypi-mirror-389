@@ -1,0 +1,15 @@
+{
+    "name": "Hide Sequence Gaps Warning",
+    "version": "16.0.1.0.0",
+    "summary": "Hides sequence gap warnings in accounting.",
+    "author": "Coopdevs Treball SCCL, Som Connexió SCCL",
+    "website": "https://coopdevs.org",
+    "license": "AGPL-3",
+    "category": "Accounting",
+    "depends": ["account"],
+    "data": ["views/account_journal_dashboard_view.xml"],
+    "demo": [],
+    "external_dependencies": {},
+    "application": False,
+    "installable": True,
+}
