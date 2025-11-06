@@ -1,0 +1,34 @@
+[project]
+name = "now-playing-gui"
+version = "0.2.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyside6>=6.10.0",
+    "winrt-windows-foundation>=3.2.1",
+    "winrt-windows-foundation-collections>=3.2.1",
+    "winrt-windows-media>=3.2.1",
+    "winrt-windows-media-control>=3.2.1",
+    "winrt-windows-storage-streams>=3.2.1",
+    "winrt-windows-system>=3.2.1",
+]
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["./"]
+include = ["np"]
+
+[dependency-groups]
+dev = [
+    "pillow>=12.0.0",
+    "pyinstaller>=6.16.0",
+]
+
+[project.scripts]
+np = "np.main:main"
+
+[project.urls]
+repository = "https://github.com/raffleberry/now-playing"

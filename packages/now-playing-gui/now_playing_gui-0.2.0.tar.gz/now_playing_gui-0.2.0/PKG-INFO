@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: now-playing-gui
+Version: 0.2.0
+Project-URL: repository, https://github.com/raffleberry/now-playing
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: pyside6>=6.10.0
+Requires-Dist: winrt-windows-foundation>=3.2.1
+Requires-Dist: winrt-windows-foundation-collections>=3.2.1
+Requires-Dist: winrt-windows-media>=3.2.1
+Requires-Dist: winrt-windows-media-control>=3.2.1
+Requires-Dist: winrt-windows-storage-streams>=3.2.1
+Requires-Dist: winrt-windows-system>=3.2.1
+
+# 🎵 Now Playing
+
+A lightweight tray application that displays media information from all applications broadcasting on **GlobalSystemMediaTransport**.  
+It also provides **basic media controls** such as **Play, Pause, Next, and Previous**.
+
+---
+
+## ✨ Features
+
+- 🎧 Displays real-time media info from apps broadcasting via GlobalSystemMediaTransport
+- 🖼️ Shows thumbnail, title, and artist name
+- ▶️ Basic playback controls:
+  - Play / Pause  
+  - Next track  
+  - Previous track
+- 🧭 Cross-app control support (where the media source allows it)
+
+---
+## 🎥 Screenshot(s)
+> Screenshots may be outdated
+
+![0.2.0](docs/ss-0.2.0.png)
+---
+
+## 📦 Installation
+
+```bash
+uv tool install git+https://github.com/raffleberry/now-playing
+```
+or 
+Download it from [releases](https://github.com/raffleberry/now-playing/releases).
