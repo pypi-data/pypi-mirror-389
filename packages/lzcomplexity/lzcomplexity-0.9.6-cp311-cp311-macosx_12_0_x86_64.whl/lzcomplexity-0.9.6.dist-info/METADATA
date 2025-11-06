@@ -1,0 +1,156 @@
+Metadata-Version: 2.4
+Name: lzcomplexity
+Version: 0.9.6
+Summary: LempelZiv-76 complexity engine. Suited for complexity analysis of time series.
+Author: Efren Aragon
+Author-email: Efren Aragon <efrenaragon96@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2024 Efren Aragon Perez
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: C++
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: author
+Dynamic: license-file
+Dynamic: requires-python
+
+<div align="center" style="width: 100%;">
+  <img src="./Pleros_AI.webp" alt="drawing" align="center" height="200"/>
+
+  <h2 align="center">
+    lzcomplexity: the LempelZiv analysis library
+  </h2>
+
+[![MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE) 
+[![python](https://img.shields.io/badge/Python-3.9-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org) 
+![C++](https://img.shields.io/badge/C++-17-00599C.svg?style=flat&logo=c%2B%2B&logoColor=white)
+</div>
+
+# lzcomplexity
+
+lzcomplexity is a C++ library that provides a suite of entropy measures for time series data, based on the Lempel-Ziv 76 (LZ76) factorization algorithm.
+
+## Prerequisites
+
+- CMake version >= 3.5
+- C++20 compatible compiler:
+  - apple-clang >= 14
+  - clang >= 17
+  - GNU >= 9.4
+
+## Prepare the Local Workspace
+
+The project uses the submodules oneTBB for parallel works and pybind11 for building the Python binding of the library.
+
+1. Initialize the submodules:
+
+```bash
+git submodule init
+```
+2. Clone the submodules into your local directory:
+
+```bash
+git submodule update --recursive
+```
+
+3. Apply the oneTBB patch:
+
+```bash
+patch external/tbb/CMakeLists.txt patches/tbb.patch 
+```
+
+## Build and install locally
+---
+
+1. Create a build directory and navigate to it:
+
+```bash
+mkdir build && cd build
+```
+
+2. Configure the build process using CMake:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release ..
+```
+
+3. Build and install the library:
+
+```bash
+make install
+lzcomplexity
+```
+
+## CMake Options
+---
+
+- `BUILTIN_TBB` (**OFF** by default): use local oneTBB project instead of system one.
+- `LZ_SHARE` (**ON** by default): build shared library.
+- `LZ_ONLY_LIBS` (**OFF** by default): build only the libraries (lzcore, lzapp and lzdist).
+- `LZ_ONLY_CORE` (**OFF** by default): build only the core library.
+- `LZ_APP` (**ON** by default): build the lzcomplexity standalone application.
+- `LZ_DISTANCE` (**ON** by default): build the lzdistance standalone application.
+- `BUILD_PYTHON` (**OFF** by default): enable python binding.
+- `ASAN` (**OFF** by default): configure the build with sanitizer for debug the application (only for clang).
+- `ENABLE_ADDRESS_SANITIZER` (**OFF** by default): activate the sanitizer address option for detect memory error.
+- `ENABLE_MEMORY_SANITIZER` (**OFF** by default): activate the sanitizer memory option for detect uninitialized memory reads.
+- `ENABLE_UNDEFINED_SANITIZER` (**OFF** by default): activate the sanitizer undefined option for detect undefined behavior.
+
+## Example Usage
+
+### C++ Example
+
+```cpp
+#include <lz/lempelziv.h>
+
+int main() {
+    lz::sequence seq = "some data sequence";
+    int result = lz::lz76Factorization(seq);
+    double entropy = lz::lz76EntropyDensity(seq);
+    std::cout << "LZ76 Complexity: " << result << std::endl;
+    std::cout << "Entropy density: " << entropy << std::endl;
+    return 0;
+}
+```
+
+### Python Example
+
+```python
+import lzcomplexity as lz
+
+seq = "some data sequence"
+result = lz.lz76(seq)
+print("LZ76 Complexity:", result.complexity)
+print("Entropy density:", result.entropy)
+```
+
+# License
+---
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
