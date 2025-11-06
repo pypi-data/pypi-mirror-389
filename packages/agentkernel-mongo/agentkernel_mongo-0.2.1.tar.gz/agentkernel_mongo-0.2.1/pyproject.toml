@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentkernel-mongo"
+version = "0.2.1"
+description = "MongoDB Session Store extension for Agent Kernel"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Dintih Kumudika", email = "dinithwalpitagama@gmail.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "agentkernel",
+    "pymongo>=4.0.0",
+]
+
+[project.entry-points."agentkernel.sessions"]
+# "key" = "package.module:function_name" # The 'key' ("mongo") must match the 'type' in your config.yaml
+mongo = "agentkernel_mongo:get_session_store_factory"
+
+[project.entry-points."agentkernel.configs"]
+# The 'key' ("mongo") must match the 'type'
+mongo = "agentkernel_mongo:get_config_model"
