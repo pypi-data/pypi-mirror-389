@@ -1,0 +1,60 @@
+[project]
+name = "prism-py"
+version = "0.0.13"
+description = "Automatic API generator that creates a REST API mirror of a database"
+requires-python = ">=3.10"
+readme = "README.md"
+keywords = ["api", "rest", "database", "orm", "codegen"]
+license = {text = "MIT"}
+authors = [
+    {name = "Yrrrrrf", email = "fer.rezac@outlook.com"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Database",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Topic :: Software Development :: Code Generators",
+    "Typing :: Typed",
+]
+dependencies = [
+    "fastapi>=0.121.0",
+    "sqlalchemy>=2.0.44",
+    "psycopg2-binary>=2.9.11",
+    "pydantic>=2.12.4",
+    "rich>=14.2.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Yrrrrrf/prism-py"
+Download = "https://github.com/Yrrrrrf/prism-py/releases"
+# todo: Add these later
+# Homepage = "https://..."
+# Documentation = "https://..."
+# Funding = "https://..."
+
+[project.scripts]
+prism = "prism:main"
+
+[tool.uv.build-backend]
+module-name = "prism"
+module-root = "src"
+
+[build-system]
+requires = ["uv_build>=0.8.19,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "uvicorn>=0.38.0",
+    "httpx>=0.28.1",
+]
+# * Add some optional dependency groups later
+# docs = ["sphinx"]
+# coverage = ["coverage[toml]"]
+# test = ["pytest>7", {include-group = "coverage"}]
