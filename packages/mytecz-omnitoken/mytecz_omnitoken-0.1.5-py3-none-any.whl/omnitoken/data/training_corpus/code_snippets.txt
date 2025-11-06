@@ -1,0 +1,19 @@
+def fibonacci(n):
+    a, b = 0, 1
+    seq = []
+    for _ in range(n):
+        seq.append(a)
+        a, b = b, a + b
+    return seq
+
+class Tokenizer:
+    def __init__(self, vocab_size=1000):
+        self.vocab_size = vocab_size
+
+# JavaScript Example
+function sum(arr) {
+  return arr.reduce((a, b) => a + b, 0);
+}
+
+# JSON-like structure
+config = {"model": {"layers": 12, "hidden": 768}, "tokenizer": "hybrid"}
