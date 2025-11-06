@@ -1,0 +1,269 @@
+Metadata-Version: 2.4
+Name: asfeslib
+Version: 0.1.0
+Summary: Asfes hackathon core library
+Author-email: Александр <proshka20081010@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2025 Alexandr
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn>=0.30.0
+Requires-Dist: colorlog>=6.10.1
+Requires-Dist: pydantic>=2.12.4
+Requires-Dist: motor>=3.7.1
+Requires-Dist: psycopg[binary]>=3.2.12
+Requires-Dist: aiomysql>=0.3.2
+Requires-Dist: aiohttp>=3.13.2
+Requires-Dist: aiosmtplib>=3.0.1
+Requires-Dist: aiofiles>=23.2.1
+Requires-Dist: email-validator>=2.1.0
+Dynamic: license-file
+
+# 🧠 ASFESLIB — универсальная библиотека для хакатонов и серверов ASFES
+
+**ASFESLIB** — это лёгкая, асинхронная Python-библиотека, созданная специально для инфраструктуры и проектов ASFES (домен `asfes.ru`).  
+Она объединяет всё, что нужно для быстрой разработки серверов, API, интеграций и внутренних сервисов.
+
+---
+
+## 🚀 Возможности
+
+| Модуль | Назначение |
+|--------|-------------|
+| `asfeslib.core.logger` | Красивый цветной логгер с поддержкой вывода в файл |
+| `asfeslib.core.utils` | Утилиты: токены, хэши, timestamp, генерация случайных строк |
+| `asfeslib.databases` | Асинхронные коннекторы для MongoDB, PostgreSQL и MariaDB/MySQL |
+| `asfeslib.net.http` | Асинхронный HTTP-клиент с retry, логами и JSON-ответами |
+| `asfeslib.net.mail` | Асинхронная отправка писем через SMTP (`mail.asfes.ru`) |
+
+---
+
+## 🧩 Установка
+
+### Локально (для тестов)
+```bash
+git clone https://github.com/alxprgs/asfeslib.git
+cd asfeslib
+pip install -e .
+```
+
+### Для продакшн-проектов
+(после публикации на PyPI)
+```bash
+pip install asfeslib
+```
+
+---
+
+## 🧠 Использование по модулям
+
+### 🪵 Логгер
+```python
+from asfeslib.core.logger import Logger
+
+log = Logger(name="demo", log_to_file=True)
+log.info("ASFESLIB успешно запущен!")
+log.error("Ошибка примера")
+```
+
+Вывод в консоль:
+```
+[2025-11-06 22:10:43] [INFO] ASFESLIB успешно запущен!
+[2025-11-06 22:10:44] [ERROR] Ошибка примера
+```
+
+---
+
+### ⚙️ Утилиты (`asfeslib.core.utils`)
+```python
+from asfeslib.core import utils
+
+print(utils.now_str())           # 2025-11-06 22:11:10
+print(utils.gen_token())         # cfa8179be9d04a11d47dfe3c73418929
+print(utils.hash_text("hello"))  # 2cf24dba5fb0a30e26e83b2ac5b9e29e...
+print(utils.random_string(6))    # g5H9xL
+```
+
+---
+
+### 🗄️ Подключение к базам данных
+
+#### MongoDB
+```python
+from asfeslib.databases.MongoDB import MongoConnectScheme, connect_mongo
+
+cfg = MongoConnectScheme(host="localhost", db_name="hackathon_db")
+client, db, ok = await connect_mongo(cfg)
+if ok:
+    print(await db.list_collection_names())
+```
+
+#### PostgreSQL
+```python
+from asfeslib.databases.PostgreSQL import PostgresConnectScheme, connect_postgres
+
+cfg = PostgresConnectScheme(username="hackathon_user", password="1234")
+conn, ok = await connect_postgres(cfg)
+```
+
+#### MariaDB/MySQL
+```python
+from asfeslib.databases.MySQL import MariaConnectScheme, connect_mariadb
+
+cfg = MariaConnectScheme(username="root", password="1234")
+conn, ok = await connect_mariadb(cfg)
+```
+
+#### Универсальный коннектор
+```python
+from asfeslib.databases import connect_database
+from asfeslib.databases.MongoDB import MongoConnectScheme
+
+cfg = MongoConnectScheme(db_name="test")
+client, db, ok = await connect_database("mongo", cfg)
+```
+
+---
+
+### 🌐 HTTP-запросы
+```python
+from asfeslib.net.http import HTTPClient
+import asyncio
+
+async def main():
+    async with HTTPClient(base_url="https://jsonplaceholder.typicode.com") as http:
+        users = await http.get("/users")
+        print(f"Получено пользователей: {len(users)}")
+
+asyncio.run(main())
+```
+
+✔️ Поддерживает:
+- `GET`, `POST`, `PUT`, `PATCH`, `DELETE`
+- JSON / текст / бинарные ответы
+- Retry и таймауты  
+- Цветное логирование запросов
+
+---
+
+### 📧 Отправка писем
+
+ASFESLIB поддерживает асинхронную отправку почты через SMTP (например, `mail.asfes.ru`).
+
+```python
+from asfeslib.net.mail import MailConfig, MailMessage, send_mail
+import asyncio
+
+async def main():
+    cfg = MailConfig(
+        host="mail.asfes.ru",
+        port=587,
+        username="noreply@asfes.ru",
+        password="секретный_пароль",
+        from_name="ASFES Notifications"
+    )
+
+    msg = MailMessage(
+        to=["alex@asfes.ru"],
+        subject="ASFES Hackathon Test",
+        body="<b>ASFESLIB</b> успешно отправил письмо!",
+        html=True
+    )
+
+    await send_mail(cfg, msg)
+
+asyncio.run(main())
+```
+
+✔️ Работает с любым SMTP  
+✔️ Асинхронный (`aiosmtplib`)  
+✔️ HTML и plain-text письма  
+✔️ Поддержка STARTTLS
+
+---
+
+## 📂 Структура проекта
+```
+asfeslib/
+├── core/
+│   ├── logger.py
+│   └── utils.py
+├── databases/
+│   ├── MongoDB.py
+│   ├── MySQL.py
+│   ├── PostgreSQL.py
+│   └── __init__.py
+├── net/
+│   ├── http.py
+│   └── mail.py
+└── __init__.py
+```
+
+---
+
+## 🛠️ Использование в FastAPI
+
+Пример быстрой интеграции:
+```python
+from fastapi import FastAPI
+from asfeslib.core.logger import Logger
+from asfeslib.databases import connect_database
+from asfeslib.databases.MongoDB import MongoConnectScheme
+
+log = Logger("fastapi")
+app = FastAPI()
+
+@app.on_event("startup")
+async def on_startup():
+    cfg = MongoConnectScheme(host="localhost", db_name="hackathon_db")
+    app.state.db_client, app.state.db, ok = await connect_database("mongo", cfg)
+    if ok:
+        log.info("✅ База данных ASFES подключена")
+
+@app.get("/")
+async def index():
+    return {"status": "ASFESLIB работает!"}
+```
+
+---
+
+## 📜 Лицензия
+
+Проект распространяется под лицензией **MIT**.  
+Создан с ❤️ для команды ASFES и хакатонов 2025 года.
+
+---
+
+## 🌐 Контакты
+
+- 📧 **asfes.ru** — основной домен проекта  
+- 💬 Автор: [Александр](mailto:proshka20081010@gmail.com)  
+- 🧠 GitHub: [github.com/alxprgs](https://github.com/alxprgs)
+
+---
+
+🛠️ Разработано при участии ChatGPT (модель GPT‑5, 2025)
+Совместная работа с Александром специально для ASFES Hackathon.
+И да, я знаю про эту подпись, мне было лень писать этот файл.
