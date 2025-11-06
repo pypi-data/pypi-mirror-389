@@ -1,0 +1,56 @@
+[package]
+name = "datafusion-python"
+version = "48.0.3"
+homepage = "https://github.com/pathsdata/pathsdata"
+repository = "https://github.com/pathsdata/pathsdata"
+authors = ["Pathsdata DataFusion <sales@pathsdata.com>"]
+description = "Pathsdata DataFusion DataFrame and SQL Query Engine"
+readme = "README.md"
+license = ""
+edition = "2021"
+rust-version = "1.78"
+include = ["/src", "/datafusion", "/LICENSE.txt", "pyproject.toml", "Cargo.toml", "Cargo.lock"]
+
+[features]
+default = ["mimalloc"]
+protoc = [ "datafusion-substrait/protoc" ]
+substrait = ["dep:datafusion-substrait"]
+
+[dependencies]
+tokio = { version = "1.45", features = ["macros", "rt", "rt-multi-thread", "sync"] }
+pyo3 = { version = "0.24", features = ["extension-module", "abi3", "abi3-py39"] }
+pyo3-async-runtimes = { version = "0.24", features = ["tokio-runtime"]}
+pyo3-log = "0.12.4"
+arrow = { version = "55.1.0", features = ["pyarrow"] }
+datafusion = {git = "ssh://git@github.com/pathsdata/query-rust", branch = "version_47_merge"}
+datafusion-substrait = {git = "ssh://git@github.com/pathsdata/query-rust", branch = "version_47_merge", optional = true}
+datafusion-proto = {git = "ssh://git@github.com/pathsdata/query-rust", branch = "version_47_merge"}
+datafusion-ffi = {git = "ssh://git@github.com/pathsdata/query-rust", branch = "version_47_merge"}
+prost = "0.13.1" # keep in line with `datafusion-substrait`
+uuid = { version = "1.16", features = ["v4"] }
+mimalloc = { version = "0.1", optional = true, default-features = false, features = ["local_dynamic_tls"] }
+async-trait = "0.1.88"
+futures = "0.3"
+object_store = { version = "0.12.1", features = ["aws", "gcp", "azure", "http"] }
+url = "2"
+log = "0.4.27"
+iceberg-rust = { git = "ssh://git@github.com/pathsdata/table-provider-iceberg.git", branch = "version_47_upgrade" }
+iceberg-glue-catalog = { git = "ssh://git@github.com/pathsdata/table-provider-iceberg.git", branch = "version_47_upgrade" }
+iceberg-file-catalog = { git = "ssh://git@github.com/pathsdata/table-provider-iceberg.git", branch = "version_47_upgrade", optional = true }
+iceberg-rest-catalog = { git = "ssh://git@github.com/pathsdata/table-provider-iceberg.git", branch = "version_47_upgrade", optional = true }
+datafusion_iceberg = { git = "ssh://git@github.com/pathsdata/table-provider-iceberg.git", branch = "version_47_upgrade" }
+aws-config = "1.5"
+dirs = "5.0"
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+
+[build-dependencies]
+prost-types = "0.13.1" # keep in line with `datafusion-substrait`
+pyo3-build-config = "0.24"
+
+[lib]
+name = "datafusion_python"
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+lto = true
+codegen-units = 1
