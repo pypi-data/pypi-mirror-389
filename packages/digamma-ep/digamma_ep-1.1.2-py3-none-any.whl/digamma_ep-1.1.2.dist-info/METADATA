@@ -1,0 +1,186 @@
+Metadata-Version: 2.4
+Name: digamma-ep
+Version: 1.1.2
+Summary: Symbolic audit framework with CZVS, curvature, and compliance logic
+Home-page: https://github.com/Cerene-Salt/Digamma-Prime-Framework
+Author: Cerene Salt
+Author-email: Cesar <your@email.com>
+Project-URL: Homepage, https://github.com/Cerene-Salt/Digamma-Prime-Framework
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: sympy
+Requires-Dist: matplotlib
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
+#Digamma Prime (`digamma-ep`)
+
+Sistema simbólico para auditoria de modelos com métricas de divergência estrutural, temporal e algébrica.  
+Symbolic audit framework for comparing models, tracking divergence, and teaching algebraic structure.
+
+---
+
+##  Installation
+
+## 📦 Installation
+
+```bash
+# Install from PyPI
+pip install digamma-ep
+
+# Install from source
+git clone https://github.com/Cerene-Salt/Digamma-Prime-Framework.git
+cd digamma-ep
+pip install -e .
+
+---
+
+## 🔧 GitHub Patch Instructions
+
+### 1. Edit `README.md`
+
+Open the file and:
+- Replace all `digamma_prime` references with `digamma-ep`
+- Confirm the install block matches the one above
+
+### 2. Stage and commit
+
+```bash
+git add README.md
+git commit -m "Update install instructions to use pip install digamma-ep"
+git push origin main
+
+
+#A Quickstart
+from epe_maria.metrics import phi, delta_phi, phi_star
+
+f = lambda x: x**2 + 2*x + 1
+g = lambda x: x**2 + x + 1
+
+print(phi(f, g))        # Structural divergence
+print(delta_phi(f, g))  # Rate divergence
+print(phi_star(f, g))   # Fusion metric
+
+
+#Documentation
+Operator fichas: docs/operators.md
+
+Symbolic manifesto: docs/epe_maria_manifesto.md
+
+#Examples in:
+python examples/symbolic_mollification_demo.py
+python examples/kernel_divergence_trace.py
+
+#Features
+Symbolic comparison of models
+
+CLI-ready modules for drift detection
+
+Visualizations for φ and Δφ
+
+Curriculum-ready structure
+
+PyPI + GitHub CI/CD integration
+
+Vision
+Digamma Prime aims to become a universal symbolic standard for model auditing, drift detection, and interpretability — rooted in the algebraic legacy of Epe Piancé Maria II.
+
+🤝 Contributing
+We welcome contributions in tutorials, metrics, automation, and visualizations. See docs/roadmap.md and docs/style_guide.md to get started.
+
+Tests:;
+pytest test_benchmark.py
+pytest test_monitor.py
+
+bout
+Created by Cerene Rúbio License: MIT Namespace: epe_maria/ — honoring the symbolic grammar of Epe Piancé Maria II
+
+Release History
+v0.2.0 – Symbolic Expansion
+Added operator fichas and visual demos
+
+Published examples/ and docs/ to PyPI
+
+Preserved epe_maria/ namespace
+
+Synced GitHub and PyPI
+
+v0.1.7 – Initial PyPI Release
+Core symbolic audit engine
+
+Modules: benchmark, metrics, monitor, visuals
+
+Python 3.11+ compatible
+
+## 🧠 Conditional Zero-Variance State (CZVS)
+
+Digamma Prime now supports symbolic analysis of CZVS — a rare, optimal system state defined by:
+Ω_CZVS = Optimization(Var(ΔS)) = -b₀²
+
+This equation is not always true — it represents a **Conditional State Equation (CSE)** that holds only when:
+
+- `b₀ = 0` (constant term of g(x) is grounded)
+- `Var(ΔS) = 0` (perfect structural consistency under weighting W)
+
+Use `Ω_CZVS(f, g, W)` to compute the optimized variance of divergence, and `𝓜_CZVS(f, g, W)` to measure how close the system is to CZVS feasibility.
+
+For full logic, see [`docs/module7.md`](docs/module7.md).
+
+
+
+
+git clone https://github.com/Cerene-Salt/Digamma-Prime-Framework.git
+cd digamma-ep
+pip install -e .
+
+from epe_maria import phi, Ω_CZVS, 𝓜_CZVS
+
+def f(x): return x**2
+def g(x): return x**2 + 0.01
+W = np.eye(21)
+
+score = 𝓜_CZVS(f, g, W)
+print("Compliance Score:", score)
+
+Testing
+cd tests
+python test_czvs.py
+python test_czvs_extended.py
+
+Thresholds
+Symbolic compliance zones based on 𝓜_CZVS:
+
+Zone	Threshold	Interpretation
+✅ Robust	𝓜_CZVS < 0.2	Fully compliant
+⚠️ Drifting	0.2 ≤ 𝓜_CZVS < 0.5	Transitional zone
+❌ Non-compliant	𝓜_CZVS ≥ 0.5	Symbolic instability
+
+Modules
+core: kernel logic and symbolic scaffolding
+
+metrics: divergence and fusion operators
+
+monitor: drift, curvature, and alert logic
+
+benchmark: audit traces and symbolic tests
+
+temporal: time-based variation
+
+visuals: plotting utilities
+
+utils: padding, projection, and helpers
+
+
+---
+
+## ✅ GitHub Patch Instructions
+
+1. Save the above as `README.md` in your repo root
+2. Stage and commit all changes:
+
+```bash
+git add epe_maria/__init__.py tests/test_czvs.py tests/test_czvs_extended.py README.md
+git commit -m "v1.1.0: CZVS module, compliance metric, extended tests, PyPI-ready README"
+git push origin main
