@@ -1,0 +1,60 @@
+[project]
+name = "xitkit"
+version = "2.1.0"
+description = "A powerful command-line task management tool that parses and manages tasks from .xit and .md files using the x-it! format"
+authors = [
+    {name = "Christian",email = "202550520+hoechstleistungshaartrockner@users.noreply.github.com"}
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+readme = "README.md"
+requires-python = ">=3.14,<4.0.0"
+keywords = ["task", "management", "cli", "todo", "xit", "productivity"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Scheduling",
+    "Topic :: Utilities",
+    "Environment :: Console",
+]
+dependencies = [
+    "rich>=13.0.0",
+    "click>=8.0.0",
+    "textual (>=6.3.0,<7.0.0)",
+    "questionary (>=2.1.1,<3.0.0)",
+]
+
+[project.urls]
+Homepage = "https://github.com/hoechstleistungshaartrockner/xitkit"
+Repository = "https://github.com/hoechstleistungshaartrockner/xitkit.git"
+"Bug Tracker" = "https://github.com/hoechstleistungshaartrockner/xitkit/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-xdist>=3.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+]
+
+# add __main__ as script entry point
+[project.scripts]
+xitkit = "xitkit.__main__:xitkit"
+xit = "xitkit.__main__:xitkit"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
