@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "study-pet"
+version = "0.1.0"
+description = "A Python package to gamify your study sessions by raising a virtual ball python"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Catherine Yu", email = "catherine@example.com"},
+    {name = "Leo Fu", email = "leo@example.com"},
+    {name = "JunHao Chen", email = "junhao@example.com"},
+    {name = "Majo Salgado", email = "majo@example.com"},
+    {name = "Zeba Shafi", email = "zeba@example.com"},
+]
+keywords = ["study", "productivity", "gamification", "pet", "cli", "ball-python"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education",
+]
+
+[project.urls]
+Homepage = "https://github.com/swe-students-fall2025/3-python-package-team_cascade"
+Repository = "https://github.com/swe-students-fall2025/3-python-package-team_cascade"
+Issues = "https://github.com/swe-students-fall2025/3-python-package-team_cascade/issues"
+
+[project.scripts]
+study-pet = "study_pet.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["study_pet*"]
+exclude = ["tests*"]
+
+[tool.setuptools]
+license-files = ["LICENSE"]
