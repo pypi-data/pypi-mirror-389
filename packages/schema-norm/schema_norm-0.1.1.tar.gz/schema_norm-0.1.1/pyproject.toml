@@ -1,0 +1,54 @@
+[project]
+name = "schema-norm"
+version = "0.1.1"
+description = "Package for converting AWS Transcribe JSON data into Deepgram JSON data"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Derek Zhang", email = "derek.zhang@propio.com" }
+]
+maintainers = [
+    { name = "Propio AI Engineering", email = "ai-engineering@propio.com" }
+]
+keywords = []
+classifiers = []
+dependencies = ["pydantic>=2.12.3"]
+
+[project.urls]
+"Homepage" = "https://gitlab.com/propio-ls/ai-engineering/speech/schema-normalization"
+"Repository" = "https://gitlab.com/propio-ls/ai-engineering/speech/schema-normalization"
+"Bug Tracker" = "https://gitlab.com/propio-ls/ai-engineering/speech/schema-normalization/-/issues"
+"Documentation" = "https://gitlab.com/propio-ls/ai-engineering/speech/schema-normalization/-/blob/main/README.md"
+
+[dependency-groups]
+dev = []
+test = []
+docs = []
+build = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/schema_normalization/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/pyproject.toml"
+]
+exclude = [
+    "/.git",
+    "/dist",
+    "/.pytest_cache",
+    "/**/__pycache__",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/schema_normalization"]
