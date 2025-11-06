@@ -1,0 +1,217 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+#
+
+[project]
+name = "delb"
+version = "0.6-rc0"
+description = "A library that provides an ergonomic model for XML encoded text documents (e.g. with TEI-XML)."
+authors = [
+    { name = "Frank Sachsenheim", email = "delb-project@posteo.net" }
+]
+license = "AGPL-3.0-or-later"
+readme = "README.rst"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Text Processing :: Markup :: XML",
+]
+keywords = ["xml", "markup", "tei", "text processing", "xhtml"]
+dependencies = [
+    "cssselect",
+    # DROPWITH Python3.10
+    "typing-extensions; python_version < '3.11'"
+]
+
+[project.entry-points.delb]
+web-loader = "_delb.plugins.web_loader"
+
+[project.optional-dependencies]
+lxml-parser = ["lxml"]
+web-loader = ["httpx[http2]"]
+
+[project.urls]
+Changelog = "https://delb.readthedocs.io/latest/changes.html"
+Documentation = "https://delb.readthedocs.io/"
+Issues = "https://github.com/delb-xml/delb-py/issues"
+Repository = "https://github.com/delb-xml/delb-py"
+
+#
+
+[tool.cff-from-621]
+order = ["title", "abstract", "version", "date-released"]
+
+[tool.cff-from-621.static]
+message = "🔥🌍🔥"
+
+#
+
+[tool.coverage.run]
+source = ["_delb", "delb"]
+omit = [
+    "_delb/typing.py",
+    "delb/exceptions.py",
+    "delb/names.py",
+    "delb/nodes.py",
+    "delb/parser.py",
+    "delb/typing.py",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "if TYPE_CHECKING:",
+    "pass",
+    "raise InvalidCodePath",
+    "raise NotImplementedError",
+]
+fail_under = 99.5
+
+#
+
+[tool.flake8]
+extend-ignore = [
+    "E203", # https://github.com/PyCQA/pycodestyle/issues/373#issuecomment-398695123
+]
+extend-select = ["TC", "TC1"]
+
+ban-relative-imports = "true"
+
+max-annotations-complexity = 4
+max-complexity = 10
+max-line-length = 88
+
+pytest-parametrize-values-type = "tuple"
+pytest-parametrize-values-row-type = "tuple"
+
+rst-directives = "testcode,testoutput"
+rst-roles = "attr,class,doc,exc,func,meth,obj,ref,term"
+
+#
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "benchmarks",
+    "_delb",
+    "delb",
+    "docs",
+    "tests",
+    ".editorconfig",
+    "CHANGES.rst",
+    "CITATION.cff",
+    "delb_logo.svg",
+    "Justfile",
+    "LICENSE.txt",
+    "pyproject.toml",
+    "README.rst",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["_delb", "delb"]
+
+[tool.hatch.envs.default]
+features = ["lxml-parser", "web-loader"]
+
+[tool.hatch.envs.benchmarks]
+dependencies = [
+    "pytest-benchmark",
+]
+[tool.hatch.envs.benchmarks.scripts]
+run = """
+    python -m pytest \
+        --benchmark-autosave --benchmark-group-by=func,param:file \
+        --benchmark-timer=time.process_time benchmarks
+"""
+
+[tool.hatch.envs.docs]
+dependencies = [
+    "autodocsumm",
+    "enum_tools",
+    "furo",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-toolbox"  # required by enum_tools
+]
+[tool.hatch.envs.docs.scripts]
+build-html = "make -C docs html"
+clean = "make -C docs clean"
+doctest = "make -C docs doctest"
+linkcheck = "make -C docs linkcheck"
+serve = "sphinx-autobuild --open-browser --delay 2 --watch _delb --watch delb docs docs/build/html/"
+
+[tool.hatch.envs.linting]
+dependencies = [
+    "flake8-absolute-import",
+    "flake8-annotations-complexity",
+    "flake8-black",
+    "flake8-comprehensions",
+    "flake8-eradicate",
+    "flake8-pep585",
+    "flake8-pep604",
+    "flake8-pyprojecttoml",
+    "flake8-pytest-style",
+    "flake8-use-fstring",
+    # FIXME? this needs an update (uses pkg_resources), but isn't pressing
+    # "flake8-use-pathlib",
+    "flake8-rst-docstrings",
+    "flake8-simplify",
+    "flake8-sphinx-links",
+    "flake8-tidy-imports",
+    "flake8-type-checking",
+    "pep8-naming"
+]
+detached = true
+[tool.hatch.envs.linting.scripts]
+check = "flake8 benchmarks _delb delb tests"
+
+[tool.hatch.envs.mypy]
+dependencies = [
+    "lxml-stubs",
+    "mypy"
+]
+skipinstall = true
+[tool.hatch.envs.mypy.scripts]
+check = "mypy --check-untyped-defs _delb delb"
+
+[tool.hatch.envs.unit-tests]
+dependencies = [
+    "pytest-cov",
+    "pytest-httpx",
+    "pytest-xdist[psutil]",
+]
+[tool.hatch.envs.unit-tests.scripts]
+check = """
+    python -m pytest \
+        --cov-report term-missing:skip-covered \
+        --cov=_delb --cov=delb \
+        -n logical \
+        tests
+"""
+
+[tool.hatch.envs.test-wheel]
+template = "unit-tests"
+skip-install = true
+extra-dependencies = [
+    "delb @ {root:uri}/{env:WHEEL_PATH}",
+]
+[tool.hatch.envs.test-wheel.scripts]
+check = "python -m pytest tests"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    "ignore:No encoding known for parsing an XML stream:UserWarning",
+    "ignore:The use of the `load_reference_resources` option:UserWarning",
+]
