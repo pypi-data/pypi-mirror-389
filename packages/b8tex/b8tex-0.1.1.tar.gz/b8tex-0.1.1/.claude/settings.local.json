@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest:*)",
+      "Bash(pytest:*)",
+      "Bash(find:*)",
+      "Read(//tmp/claude-code-statusline/**)",
+      "Read(//private/tmp/claude-code-statusline/skel/**)",
+      "Read(//private/tmp/claude-code-statusline/.github/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
