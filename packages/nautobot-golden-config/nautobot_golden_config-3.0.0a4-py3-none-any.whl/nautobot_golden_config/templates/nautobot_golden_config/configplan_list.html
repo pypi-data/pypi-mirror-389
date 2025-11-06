@@ -1,0 +1,56 @@
+{% extends "generic/object_list.html" %}
+{% load static %}
+
+
+{% block buttons %}
+    <a class="btn btn-primary" href="{% url 'plugins:nautobot_golden_config:configplan_list' %}?status=Completed" id="completed-button">
+        <span aria-hidden="true" class="mdi mdi-link"></span> Completed Plans
+    </a>
+{% endblock buttons %}
+
+{% block bulk_buttons %}
+
+<!-- Deploy Button -->
+    {% if perms.extras.run_job %}
+        {% include "nautobot_golden_config/job_result_modal.html" with modal_title="Deploy Config Plans" %}
+        <button class="btn btn-primary btn-sm" data-bs-target="#modalPopup" data-bs-toggle="modal" id="startJob" type="button">
+            <span aria-hidden="true" class="mdi mdi-upload-multiple"></span> Deploy Selected
+        </button>
+    {% endif %}
+
+{% endblock bulk_buttons %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script src="{% static 'toggle_fields.js' %}"></script>
+    <script src="{% static 'run_job.js' %}"></script>
+    <script>
+        var nautobot_csrf_token = "{{ csrf_token }}";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var startJobButton = document.getElementById("startJob");
+            startJobButton.addEventListener("click", function(event) {
+                var userConfirmed = confirm("Warning! This will deploy configurations to the devices you have selected, are you sure you want to deploy?");
+                if (!userConfirmed) {
+            // If user clicked "Cancel", stop the modal from showing
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+        });
+
+        function formatJobData(data) {
+            var arrayFields = ["pk"]
+            var form_data = formDataToDictionary(data, arrayFields);
+            return {
+                "commit": true,
+                "data": {
+                    "config_plan": form_data.pk,
+                    "debug": false
+                },
+            };
+        }
+        document.getElementById("startJob").onclick = function() {startJob("Deploy Config Plans", formatJobData($("form").serializeArray()))};
+
+    </script>
+{% endblock javascript %}
