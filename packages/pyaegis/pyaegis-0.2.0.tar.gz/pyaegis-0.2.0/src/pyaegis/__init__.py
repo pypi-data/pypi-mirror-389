@@ -1,0 +1,52 @@
+"""
+Python bindings for libaegis - high-performance AEGIS authenticated encryption.
+
+This module provides Pythonic interfaces to the AEGIS family of authenticated
+encryption algorithms (AEGIS-128L, AEGIS-256, and their multi-lane variants).
+
+Basic usage:
+    >>> from pyaegis import Aegis128L
+    >>> cipher = Aegis128L()
+    >>> key = cipher.random_key()
+    >>> nonce = cipher.random_nonce()
+    >>> plaintext = b"Hello, World!"
+    >>> ciphertext = cipher.encrypt(key, nonce, plaintext)
+    >>> decrypted = cipher.decrypt(key, nonce, ciphertext)
+    >>> assert decrypted == plaintext
+"""
+
+from .aegis import (
+    Aegis128L,
+    Aegis128X2,
+    Aegis128X4,
+    Aegis256,
+    Aegis256X2,
+    Aegis256X4,
+    AegisMac128L,
+    AegisMac128X2,
+    AegisMac128X4,
+    AegisMac256,
+    AegisMac256X2,
+    AegisMac256X4,
+    AegisError,
+    DecryptionError,
+)
+
+__version__ = "0.1.1"
+
+__all__ = [
+    "Aegis128L",
+    "Aegis128X2",
+    "Aegis128X4",
+    "Aegis256",
+    "Aegis256X2",
+    "Aegis256X4",
+    "AegisMac128L",
+    "AegisMac128X2",
+    "AegisMac128X4",
+    "AegisMac256",
+    "AegisMac256X2",
+    "AegisMac256X4",
+    "AegisError",
+    "DecryptionError",
+]
