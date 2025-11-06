@@ -1,0 +1,35 @@
+Metadata-Version: 2.4
+Name: segmlab
+Version: 0.1.2
+Summary: A lightweight SAM-based image segmentation labeling library
+Home-page: https://github.com/yourusername/seglab
+Author: Divine Gupta, Kartikeya Mishra, Chaitnya Sharma
+Author-email: divine@example.com
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: ultralytics>=8.2.0
+Requires-Dist: torch>=2.0.0
+Requires-Dist: opencv-python
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# SegLab ðŸ§ 
+
+A simple Python library for performing segmentation labeling using **Segment Anything Model (SAM)** from Ultralytics.
+
+---
+
+## ðŸš€ Installation
+
+```bash
+git clone https://github.com/yourusername/SegLab.git
+cd SegLab
+pip install .
