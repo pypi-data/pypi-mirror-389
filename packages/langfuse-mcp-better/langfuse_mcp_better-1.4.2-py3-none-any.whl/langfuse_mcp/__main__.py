@@ -1,0 +1,3661 @@
+"""MCP integration for Langfuse SDK.
+
+This module provides the Langfuse MCP (Machine Context Protocol) integration, allowing
+agents to query trace data, observations, and exceptions from Langfuse.
+"""
+
+import argparse
+import asyncio
+import inspect
+import json
+import logging
+import os
+import random
+import sys
+import time
+from collections import Counter
+from collections.abc import AsyncIterator, Callable
+from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
+from functools import lru_cache
+from importlib.metadata import PackageNotFoundError, version
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+from typing import Annotated, Any, Literal, cast
+
+from cachetools import LRUCache
+import httpx
+
+if sys.version_info >= (3, 14):
+    raise SystemExit(
+        "langfuse-mcp currently requires Python 3.13 or earlier. "
+        "Please rerun with `uvx --python 3.13 langfuse-mcp` or pin a supported interpreter."
+    )
+
+from langfuse import Langfuse
+from mcp.server.fastmcp import Context, FastMCP
+from pydantic import AfterValidator, BaseModel, Field
+
+try:
+    __version__ = version("langfuse-mcp")
+except PackageNotFoundError:
+    # Package is not installed (development mode)
+    __version__ = "0.1.1.dev0"
+
+# Set up logging with rotation
+LOG_FILE = Path(os.getenv("LANGFUSE_MCP_LOG_FILE", "/tmp/langfuse_mcp.log")).expanduser()
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+file_handler = RotatingFileHandler(
+    LOG_FILE,
+    maxBytes=10 * 1024 * 1024,  # 10 MB
+    backupCount=5,  # Keep 5 backup files
+    encoding="utf-8",
+)
+
+formatter = logging.Formatter(LOG_FORMAT, LOG_DATE_FORMAT)
+file_handler.setFormatter(formatter)
+
+
+def configure_logging(log_level: str, log_to_console: bool) -> logging.Logger:
+    """Configure application logging based on CLI flags."""
+    level = logging.getLevelName(log_level.upper()) if isinstance(log_level, str) else logging.INFO
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(level)
+
+    for handler in list(root_logger.handlers):
+        root_logger.removeHandler(handler)
+
+    file_handler.setLevel(level)
+    root_logger.addHandler(file_handler)
+
+    if log_to_console:
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        console_handler.setLevel(level)
+        root_logger.addHandler(console_handler)
+
+    return logging.getLogger("langfuse_mcp")
+
+
+logger = logging.getLogger("langfuse_mcp")
+
+# Constants
+HOUR = 60  # minutes
+DAY = 24 * HOUR
+MAX_FIELD_LENGTH = 500  # Maximum string length for field values
+MAX_RESPONSE_SIZE = 20000  # Maximum size of response object in characters
+TRUNCATE_SUFFIX = "..."  # Suffix to add to truncated fields
+
+# Common field names that often contain large values
+LARGE_FIELDS = [
+    "input",
+    "output",
+    "content",
+    "prompt",
+    "completion",
+    "system_prompt",
+    "user_prompt",
+    "message",
+    "exception.stacktrace",
+    "exception.message",
+    "stacktrace",
+    # OTEL specific fields
+    "llm.prompts",
+    "llm.prompt",
+    "llm.prompts.system",
+    "llm.prompts.user",
+    "llm.prompt.system",
+    "llm.prompt.user",
+    # Langfuse-specific fields
+    "langfusePrompt",
+    "prompt.content",
+    "prompt.messages",
+    "prompt.system",
+    "metadata.langfusePrompt",
+    "metadata.system_prompt",
+    "metadata.prompt",
+    # Additional attribute paths
+    "attributes.llm.prompts",
+    "attributes.llm.prompt",
+    "attributes.system_prompt",
+    "attributes.prompt",
+    "attributes.input",
+    "attributes.output",
+]
+
+LOWER_LARGE_FIELDS = {field.lower() for field in LARGE_FIELDS}
+
+# Fields that are considered essential and should be preserved even in minimal representation
+ESSENTIAL_FIELDS = [
+    "id",
+    "trace_id",
+    "observation_id",
+    "parent_observation_id",
+    "name",
+    "type",
+    "timestamp",
+    "start_time",
+    "end_time",
+    "level",
+    "status_message",
+    "user_id",
+    "session_id",
+]
+
+
+# Literal enum for output modes
+class OutputMode(str, Enum):
+    """Enum for output modes controlling response format."""
+
+    COMPACT = "compact"
+    FULL_JSON_STRING = "full_json_string"
+    FULL_JSON_FILE = "full_json_file"
+
+
+OUTPUT_MODE_LITERAL = Literal["compact", "full_json_string", "full_json_file"]
+
+# Define a custom Dict type for our standardized response format
+ResponseDict = dict[str, Any]
+
+
+@dataclass
+class TimeoutConfig:
+    """HTTP timeout configuration for Langfuse API requests.
+    
+    This class manages timeout settings for different phases of HTTP requests:
+    - connect_timeout: Time to establish a connection
+    - request_timeout: Overall request timeout (deprecated, use read_timeout)
+    - read_timeout: Time to read response data
+    """
+    
+    connect_timeout: float = 10.0  # Connection timeout in seconds
+    request_timeout: float = 30.0  # Request timeout in seconds (for backward compatibility)
+    read_timeout: float = 30.0     # Read timeout in seconds
+    
+    def __post_init__(self):
+        """Validate timeout values after initialization."""
+        if self.connect_timeout <= 0:
+            logger.warning(f"Invalid connect_timeout {self.connect_timeout}, using default 10.0s")
+            self.connect_timeout = 10.0
+        if self.read_timeout <= 0:
+            logger.warning(f"Invalid read_timeout {self.read_timeout}, using default 30.0s")
+            self.read_timeout = 30.0
+        if self.request_timeout <= 0:
+            logger.warning(f"Invalid request_timeout {self.request_timeout}, using default 30.0s")
+            self.request_timeout = 30.0
+        
+        # Warn if timeouts are unreasonably large
+        if self.connect_timeout > 60:
+            logger.warning(f"connect_timeout {self.connect_timeout}s is very large, consider reducing it")
+        if self.read_timeout > 300:
+            logger.warning(f"read_timeout {self.read_timeout}s is very large, consider reducing it")
+    
+    def to_httpx_timeout(self) -> httpx.Timeout:
+        """Convert to httpx.Timeout object.
+        
+        Returns:
+            httpx.Timeout object with configured timeout values
+        """
+        return httpx.Timeout(
+            connect=self.connect_timeout,
+            read=self.read_timeout,
+            write=self.request_timeout,
+            pool=5.0  # Pool timeout for acquiring a connection from the pool
+        )
+    
+    @classmethod
+    def from_args(cls, args: argparse.Namespace) -> "TimeoutConfig":
+        """Create TimeoutConfig from command line arguments.
+        
+        Args:
+            args: Parsed command line arguments
+            
+        Returns:
+            TimeoutConfig instance with values from args or defaults
+        """
+        return cls(
+            connect_timeout=getattr(args, "connect_timeout", 10.0),
+            request_timeout=getattr(args, "request_timeout", 30.0),
+            read_timeout=getattr(args, "read_timeout", 30.0),
+        )
+
+
+class ErrorType(str, Enum):
+    """Error type enumeration for classifying HTTP and network errors."""
+    
+    TIMEOUT = "timeout"
+    CONNECTION = "connection"
+    RATE_LIMIT = "rate_limit"
+    AUTH = "auth"
+    SERVER_ERROR = "server_error"
+    CLIENT_ERROR = "client_error"
+    UNKNOWN = "unknown"
+
+
+class ErrorClassifier:
+    """Classifier for HTTP and network errors to determine retry strategy."""
+    
+    @staticmethod
+    def classify(error: Exception) -> ErrorType:
+        """Classify an exception into an error type.
+        
+        Args:
+            error: The exception to classify
+            
+        Returns:
+            ErrorType enum value indicating the error category
+        """
+        # Check for timeout errors
+        if isinstance(error, (httpx.ReadTimeout, httpx.WriteTimeout, httpx.ConnectTimeout)):
+            return ErrorType.TIMEOUT
+        
+        # Check for connection errors
+        if isinstance(error, (httpx.ConnectError, httpx.NetworkError)):
+            return ErrorType.CONNECTION
+        
+        # Check for HTTP status errors
+        if isinstance(error, httpx.HTTPStatusError):
+            status_code = error.response.status_code
+            if status_code == 429:
+                return ErrorType.RATE_LIMIT
+            elif status_code in (401, 403):
+                return ErrorType.AUTH
+            elif 500 <= status_code < 600:
+                return ErrorType.SERVER_ERROR
+            elif 400 <= status_code < 500:
+                return ErrorType.CLIENT_ERROR
+        
+        return ErrorType.UNKNOWN
+    
+    @staticmethod
+    def should_retry(error_type: ErrorType) -> bool:
+        """Determine if an error type should be retried.
+        
+        Args:
+            error_type: The classified error type
+            
+        Returns:
+            True if the error should be retried, False otherwise
+        """
+        # Retry temporary errors that might succeed on retry
+        return error_type in (
+            ErrorType.TIMEOUT,
+            ErrorType.CONNECTION,
+            ErrorType.RATE_LIMIT,
+            ErrorType.SERVER_ERROR,
+        )
+    
+    @staticmethod
+    def get_retry_after(error: Exception) -> float | None:
+        """Extract Retry-After header value from HTTP error.
+        
+        Args:
+            error: The exception to extract retry delay from
+            
+        Returns:
+            Retry delay in seconds, or None if not available
+        """
+        if isinstance(error, httpx.HTTPStatusError):
+            retry_after = error.response.headers.get("Retry-After")
+            if retry_after:
+                try:
+                    # Try to parse as seconds
+                    return float(retry_after)
+                except ValueError:
+                    # Could be HTTP-date format, not handling for now
+                    logger.debug(f"Could not parse Retry-After header: {retry_after}")
+        return None
+
+
+@dataclass
+class RetryConfig:
+    """Configuration for retry behavior."""
+    
+    max_retries: int = 3
+    initial_delay: float = 1.0
+    max_delay: float = 10.0
+    exponential_base: float = 2.0
+    jitter: bool = True  # Add random jitter to avoid thundering herd
+
+
+class RetryManager:
+    """Manager for retry logic with exponential backoff."""
+    
+    def __init__(self, config: RetryConfig):
+        """Initialize retry manager with configuration.
+        
+        Args:
+            config: Retry configuration
+        """
+        self.config = config
+    
+    def calculate_delay(self, attempt: int) -> float:
+        """Calculate retry delay with exponential backoff and optional jitter.
+        
+        Args:
+            attempt: Current retry attempt number (0-indexed)
+            
+        Returns:
+            Delay in seconds before next retry
+        """
+        # Calculate exponential backoff
+        delay = min(
+            self.config.initial_delay * (self.config.exponential_base ** attempt),
+            self.config.max_delay
+        )
+        
+        # Add jitter to avoid thundering herd
+        if self.config.jitter:
+            # Add ±25% random jitter
+            jitter_range = delay * 0.25
+            delay += random.uniform(-jitter_range, jitter_range)
+        
+        return max(0, delay)
+    
+    def execute_with_retry(
+        self,
+        func: Callable,
+        *args,
+        error_context: str = "",
+        **kwargs
+    ) -> Any:
+        """Execute function with retry logic (synchronous version).
+        
+        Args:
+            func: Function to execute
+            *args: Positional arguments for func
+            error_context: Context string for error logging
+            **kwargs: Keyword arguments for func
+            
+        Returns:
+            Result from successful function execution
+            
+        Raises:
+            Exception: The last exception if all retries fail
+        """
+        last_error = None
+        
+        for attempt in range(self.config.max_retries + 1):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                last_error = e
+                error_type = ErrorClassifier.classify(e)
+                
+                # Don't retry non-retryable errors
+                if not ErrorClassifier.should_retry(error_type):
+                    logger.error(
+                        f"{error_context} - Non-retryable error: {error_type.value} - {str(e)}"
+                    )
+                    raise
+                
+                # Max retries reached
+                if attempt >= self.config.max_retries:
+                    logger.error(
+                        f"{error_context} - Max retries ({self.config.max_retries}) exceeded. "
+                        f"Last error: {error_type.value} - {str(e)}"
+                    )
+                    raise
+                
+                # Calculate delay
+                if error_type == ErrorType.RATE_LIMIT:
+                    delay = ErrorClassifier.get_retry_after(e) or self.calculate_delay(attempt)
+                else:
+                    delay = self.calculate_delay(attempt)
+                
+                logger.warning(
+                    f"{error_context} - Attempt {attempt + 1}/{self.config.max_retries} failed "
+                    f"with {error_type.value}. Retrying in {delay:.2f}s..."
+                )
+                
+                time.sleep(delay)
+        
+        # Should not reach here, but for type safety
+        raise last_error
+    
+    async def execute_with_retry_async(
+        self,
+        func: Callable,
+        *args,
+        error_context: str = "",
+        **kwargs
+    ) -> Any:
+        """Execute function with retry logic (asynchronous version).
+        
+        Args:
+            func: Async function to execute
+            *args: Positional arguments for func
+            error_context: Context string for error logging
+            **kwargs: Keyword arguments for func
+            
+        Returns:
+            Result from successful function execution
+            
+        Raises:
+            Exception: The last exception if all retries fail
+        """
+        last_error = None
+        
+        for attempt in range(self.config.max_retries + 1):
+            try:
+                if asyncio.iscoroutinefunction(func):
+                    return await func(*args, **kwargs)
+                else:
+                    return func(*args, **kwargs)
+            except Exception as e:
+                last_error = e
+                error_type = ErrorClassifier.classify(e)
+                
+                # Don't retry non-retryable errors
+                if not ErrorClassifier.should_retry(error_type):
+                    logger.error(
+                        f"{error_context} - Non-retryable error: {error_type.value} - {str(e)}"
+                    )
+                    raise
+                
+                # Max retries reached
+                if attempt >= self.config.max_retries:
+                    logger.error(
+                        f"{error_context} - Max retries ({self.config.max_retries}) exceeded. "
+                        f"Last error: {error_type.value} - {str(e)}"
+                    )
+                    raise
+                
+                # Calculate delay
+                if error_type == ErrorType.RATE_LIMIT:
+                    delay = ErrorClassifier.get_retry_after(e) or self.calculate_delay(attempt)
+                else:
+                    delay = self.calculate_delay(attempt)
+                
+                logger.warning(
+                    f"{error_context} - Attempt {attempt + 1}/{self.config.max_retries} failed "
+                    f"with {error_type.value}. Retrying in {delay:.2f}s..."
+                )
+                
+                await asyncio.sleep(delay)
+        
+        # Should not reach here, but for type safety
+        raise last_error
+
+
+@dataclass
+class PartialResultMetadata:
+    """Metadata for partial results when some requests fail."""
+    
+    is_partial: bool
+    total_pages_attempted: int
+    successful_pages: int
+    failed_at_page: int | None
+    error_message: str | None
+    items_collected: int
+
+
+class PartialResultHandler:
+    """Handler for collecting partial results when some requests fail."""
+    
+    def __init__(self, allow_partial: bool = True):
+        """Initialize partial result handler.
+        
+        Args:
+            allow_partial: If True, return partial results on failure. If False, raise exception.
+        """
+        self.allow_partial = allow_partial
+        self.collected_items: list[Any] = []
+        self.pages_attempted = 0
+        self.successful_pages = 0
+        self.last_error: Exception | None = None
+    
+    def add_page_result(self, items: list[Any]) -> None:
+        """Add a successful page of results.
+        
+        Args:
+            items: List of items from the successful page
+        """
+        self.collected_items.extend(items)
+        self.pages_attempted += 1
+        self.successful_pages += 1
+    
+    def record_failure(self, error: Exception) -> None:
+        """Record a failed page attempt.
+        
+        Args:
+            error: The exception that caused the failure
+        """
+        self.pages_attempted += 1
+        self.last_error = error
+    
+    def should_continue(self) -> bool:
+        """Determine if processing should continue after a failure.
+        
+        Returns:
+            True if should continue (partial results allowed), False otherwise
+        """
+        if not self.allow_partial:
+            return self.last_error is None
+        return True
+    
+    def get_result(self) -> tuple[list[Any], PartialResultMetadata]:
+        """Get collected results and metadata.
+        
+        Returns:
+            Tuple of (collected items, metadata about the collection)
+            
+        Raises:
+            Exception: If allow_partial is False and there was an error
+        """
+        metadata = PartialResultMetadata(
+            is_partial=self.last_error is not None,
+            total_pages_attempted=self.pages_attempted,
+            successful_pages=self.successful_pages,
+            failed_at_page=self.pages_attempted if self.last_error else None,
+            error_message=str(self.last_error) if self.last_error else None,
+            items_collected=len(self.collected_items),
+        )
+        
+        # If partial results not allowed and there was an error, raise it
+        if not self.allow_partial and self.last_error:
+            raise self.last_error
+        
+        # Log warning if returning partial results
+        if metadata.is_partial:
+            logger.warning(
+                f"Returning partial results: {metadata.items_collected} items from "
+                f"{metadata.successful_pages}/{metadata.total_pages_attempted} pages. "
+                f"Error: {metadata.error_message}"
+            )
+        
+        return self.collected_items, metadata
+
+
+@dataclass
+class RequestMetrics:
+    """Metrics for tracking request performance."""
+    
+    total_requests: int = 0
+    successful_requests: int = 0
+    failed_requests: int = 0
+    total_duration: float = 0.0
+    avg_response_time: float = 0.0
+    
+    def update(self, duration: float, success: bool) -> None:
+        """Update metrics with a new request result.
+        
+        Args:
+            duration: Request duration in seconds
+            success: Whether the request succeeded
+        """
+        self.total_requests += 1
+        if success:
+            self.successful_requests += 1
+        else:
+            self.failed_requests += 1
+        self.total_duration += duration
+        self.avg_response_time = self.total_duration / self.total_requests
+
+
+class RequestTracker:
+    """Tracker for monitoring request progress and performance."""
+    
+    def __init__(self):
+        """Initialize request tracker."""
+        self.metrics = RequestMetrics()
+        self.start_time: float | None = None
+    
+    @contextmanager
+    def track_request(self):
+        """Context manager to track a single request.
+        
+        Yields:
+            None
+            
+        Example:
+            with tracker.track_request():
+                # Make API call
+                pass
+        """
+        start = time.time()
+        success = False
+        try:
+            yield
+            success = True
+        finally:
+            duration = time.time() - start
+            self.metrics.update(duration, success)
+    
+    def log_progress(self, current_page: int, total_items: int) -> None:
+        """Log progress information.
+        
+        Args:
+            current_page: Current page number
+            total_items: Total items collected so far
+        """
+        if current_page % 10 == 0:
+            logger.info(
+                f"Progress: Page {current_page}, Items: {total_items}, "
+                f"Avg response time: {self.metrics.avg_response_time:.2f}s, "
+                f"Success rate: {self.metrics.successful_requests}/{self.metrics.total_requests}"
+            )
+
+
+def _ensure_output_mode(mode: OUTPUT_MODE_LITERAL | OutputMode | str | OutputMode) -> OutputMode:
+    """Normalize user-provided output mode values."""
+    if isinstance(mode, OutputMode):
+        return mode
+
+    try:
+        return OutputMode(str(mode))
+    except (ValueError, TypeError):
+        logger.warning(f"Unknown output mode '{mode}', defaulting to compact")
+        return OutputMode.COMPACT
+
+
+def _load_env_file(env_path: Path | None = None) -> None:
+    """Load environment variables from a `.env` file if present."""
+    if env_path is None:
+        env_path = Path(__file__).resolve().parent.parent / ".env"
+
+    if not env_path.exists() or not env_path.is_file():
+        return
+
+    try:
+        with env_path.open("r", encoding="utf-8") as env_file:
+            for line in env_file:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                if "=" not in stripped:
+                    continue
+                key, value = stripped.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                if key and key not in os.environ:
+                    os.environ[key] = value
+    except OSError as exc:
+        logger.warning(f"Unable to load environment file {env_path}: {exc}")
+
+
+def _read_env_defaults() -> dict[str, Any]:
+    """Read environment defaults used by the CLI."""
+    return {
+        "public_key": os.getenv("LANGFUSE_PUBLIC_KEY"),
+        "secret_key": os.getenv("LANGFUSE_SECRET_KEY"),
+        "host": os.getenv("LANGFUSE_HOST") or "https://cloud.langfuse.com",
+        "log_level": os.getenv("LANGFUSE_LOG_LEVEL", "INFO"),
+        "log_to_console": os.getenv("LANGFUSE_LOG_TO_CONSOLE", "").lower() in {"1", "true", "yes"},
+    }
+
+
+def _build_arg_parser(env_defaults: dict[str, Any]) -> argparse.ArgumentParser:
+    """Construct the CLI argument parser using provided defaults."""
+    parser = argparse.ArgumentParser(description="Langfuse MCP Server")
+    parser.add_argument(
+        "--public-key",
+        type=str,
+        default=env_defaults["public_key"],
+        required=env_defaults["public_key"] is None,
+        help="Langfuse public key",
+    )
+    parser.add_argument(
+        "--secret-key",
+        type=str,
+        default=env_defaults["secret_key"],
+        required=env_defaults["secret_key"] is None,
+        help="Langfuse secret key",
+    )
+    parser.add_argument("--host", type=str, default=env_defaults["host"], help="Langfuse host URL")
+    parser.add_argument("--cache-size", type=int, default=100, help="Size of LRU caches used for caching data")
+    parser.add_argument(
+        "--dump-dir",
+        type=str,
+        default="/tmp/langfuse_mcp_dumps",
+        help=(
+            "Directory to save full JSON dumps when 'output_mode' is 'full_json_file'. The directory will be created if it doesn't exist."
+        ),
+    )
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        default=env_defaults["log_level"],
+        choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+        help="Logging level (defaults to INFO).",
+    )
+    parser.add_argument(
+        "--log-to-console",
+        action="store_true",
+        default=env_defaults["log_to_console"],
+        help="Also emit logs to stdout in addition to the rotating file handler.",
+    )
+    parser.add_argument(
+        "--request-timeout",
+        type=float,
+        default=30.0,
+        help="HTTP request timeout in seconds (default: 30). Increase if experiencing timeout errors.",
+    )
+    parser.add_argument(
+        "--connect-timeout",
+        type=float,
+        default=10.0,
+        help="HTTP connection timeout in seconds (default: 10). Time to establish a connection.",
+    )
+    parser.add_argument(
+        "--read-timeout",
+        type=float,
+        default=30.0,
+        help="HTTP read timeout in seconds (default: 30). Time to read response data.",
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=3,
+        help="Maximum number of retry attempts for failed requests (default: 3).",
+    )
+    parser.add_argument(
+        "--retry-initial-delay",
+        type=float,
+        default=1.0,
+        help="Initial delay in seconds before first retry (default: 1.0).",
+    )
+    parser.add_argument(
+        "--retry-max-delay",
+        type=float,
+        default=10.0,
+        help="Maximum delay in seconds between retries (default: 10.0).",
+    )
+    parser.add_argument(
+        "--no-log-to-console",
+        action="store_false",
+        dest="log_to_console",
+        help=argparse.SUPPRESS,
+    )
+
+    return parser
+
+
+def _sdk_object_to_python(obj: Any) -> Any:
+    """Convert Langfuse SDK models (pydantic/dataclasses) into plain Python types."""
+    if obj is None:
+        return None
+
+    if isinstance(obj, (str, int, float, bool)):
+        return obj
+
+    if isinstance(obj, datetime):
+        # Preserve timezone info when available
+        return obj.isoformat()
+
+    if isinstance(obj, (list, tuple, set)):
+        return [_sdk_object_to_python(item) for item in obj]
+
+    if isinstance(obj, dict):
+        return {key: _sdk_object_to_python(value) for key, value in obj.items()}
+
+    if hasattr(obj, "model_dump"):
+        return _sdk_object_to_python(obj.model_dump())
+
+    if hasattr(obj, "dict"):
+        return _sdk_object_to_python(obj.dict())
+
+    if hasattr(obj, "__dict__"):
+        data = {key: value for key, value in vars(obj).items() if not key.startswith("_")}
+        return _sdk_object_to_python(data)
+
+    return obj
+
+
+def _extract_items_from_response(response: Any) -> tuple[list[Any], dict[str, Any]]:
+    """Normalize Langfuse SDK list responses into items and pagination metadata."""
+    if response is None:
+        return [], {}
+
+    if isinstance(response, dict):
+        items = response.get("items") or response.get("data") or []
+        pagination = response.get("meta") or {}
+        return list(items), pagination
+
+    if hasattr(response, "items"):
+        items = getattr(response, "items")
+        pagination = {
+            "next_page": getattr(response, "next_page", None),
+            "total": getattr(response, "total", None),
+        }
+        return list(items), pagination
+
+    if hasattr(response, "data"):
+        return list(response.data), {}
+
+    if isinstance(response, list):
+        return response, {}
+
+    return [response], {}
+
+
+def _metadata_matches(item: Any, metadata_filter: dict[str, Any]) -> bool:
+    """Determine whether the provided item matches the requested metadata filter."""
+    item_dict = _sdk_object_to_python(item)
+    metadata = item_dict.get("metadata") or {}
+    return all(metadata.get(key) == value for key, value in metadata_filter.items())
+
+
+def _list_traces(
+    langfuse_client: Any,
+    *,
+    limit: int,
+    page: int,
+    include_observations: bool,
+    tags: list[str] | None,
+    from_timestamp: datetime,
+    name: str | None,
+    user_id: str | None,
+    session_id: str | None,
+    metadata: dict[str, Any] | None,
+) -> tuple[list[Any], dict[str, Any]]:
+    """Fetch traces via the Langfuse SDK handling both v2 and v3 signatures."""
+    if not hasattr(langfuse_client, "api") or not hasattr(langfuse_client.api, "trace"):
+        raise RuntimeError("Unsupported Langfuse client: no trace listing method available")
+
+    list_kwargs: dict[str, Any] = {
+        "limit": limit or None,
+        "page": page or None,
+        "user_id": user_id,
+        "name": name,
+        "session_id": session_id,
+        "from_timestamp": from_timestamp,
+        "tags": tags,
+    }
+
+    # Include observation payloads via the fields selector when requested.
+    if include_observations and metadata:
+        list_kwargs["fields"] = "core,io,observations"
+    elif include_observations:
+        list_kwargs["fields"] = "core,observations"
+    elif metadata:
+        list_kwargs["fields"] = "core,io"
+
+    list_kwargs = {k: v for k, v in list_kwargs.items() if v is not None}
+
+    response = langfuse_client.api.trace.list(**list_kwargs)
+    items, pagination = _extract_items_from_response(response)
+
+    if metadata:
+        items = [item for item in items if _metadata_matches(item, metadata)]
+        pagination = {**pagination, "total": len(items)}
+
+    return items, pagination
+
+
+def _list_observations(
+    langfuse_client: Any,
+    *,
+    limit: int,
+    page: int,
+    from_start_time: datetime,
+    to_start_time: datetime | None,
+    obs_type: str | None,
+    name: str | None,
+    user_id: str | None,
+    trace_id: str | None,
+    parent_observation_id: str | None,
+    metadata: dict[str, Any] | None,
+) -> tuple[list[Any], dict[str, Any]]:
+    """Fetch observations via the Langfuse SDK handling v2/v3 differences."""
+    if not hasattr(langfuse_client, "api") or not hasattr(langfuse_client.api, "observations"):
+        raise RuntimeError("Unsupported Langfuse client: no observation listing method available")
+
+    list_kwargs: dict[str, Any] = {
+        "limit": limit or None,
+        "page": page or None,
+        "name": name,
+        "user_id": user_id,
+        "type": obs_type,
+        "trace_id": trace_id,
+        "parent_observation_id": parent_observation_id,
+        "from_start_time": from_start_time,
+        "to_start_time": to_start_time,
+    }
+    list_kwargs = {k: v for k, v in list_kwargs.items() if v is not None}
+
+    response = langfuse_client.api.observations.get_many(**list_kwargs)
+    items, pagination = _extract_items_from_response(response)
+
+    if metadata:
+        items = [item for item in items if _metadata_matches(item, metadata)]
+        pagination = {**pagination, "total": len(items)}
+
+    return items, pagination
+
+
+def _list_observations_with_retry(
+    retry_manager: RetryManager,
+    tracker: RequestTracker,
+    langfuse_client: Any,
+    *,
+    limit: int,
+    page: int,
+    from_start_time: datetime,
+    to_start_time: datetime | None,
+    obs_type: str | None,
+    name: str | None = None,
+    user_id: str | None = None,
+    trace_id: str | None = None,
+    parent_observation_id: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> tuple[list[Any], dict[str, Any]]:
+    """Fetch observations with retry logic and request tracking.
+    
+    This wrapper adds retry logic and performance tracking to _list_observations.
+    
+    Args:
+        retry_manager: RetryManager instance for handling retries
+        tracker: RequestTracker instance for monitoring performance
+        langfuse_client: Langfuse client instance
+        ... (same as _list_observations)
+        
+    Returns:
+        Tuple of (items, pagination metadata)
+        
+    Raises:
+        Exception: If all retries fail
+    """
+    error_context = f"Fetching observations page {page}"
+    
+    def fetch_with_tracking():
+        with tracker.track_request():
+            return _list_observations(
+                langfuse_client,
+                limit=limit,
+                page=page,
+                from_start_time=from_start_time,
+                to_start_time=to_start_time,
+                obs_type=obs_type,
+                name=name,
+                user_id=user_id,
+                trace_id=trace_id,
+                parent_observation_id=parent_observation_id,
+                metadata=metadata,
+            )
+    
+    return retry_manager.execute_with_retry(
+        fetch_with_tracking,
+        error_context=error_context,
+    )
+
+
+def _get_observation(langfuse_client: Any, observation_id: str) -> Any:
+    """Fetch a single observation using either the v3 or v2 SDK surface."""
+    if hasattr(langfuse_client, "api") and hasattr(langfuse_client.api, "observations"):
+        return langfuse_client.api.observations.get(observation_id=observation_id)
+
+    if hasattr(langfuse_client, "fetch_observation"):
+        response = langfuse_client.fetch_observation(observation_id)
+        return getattr(response, "data", response)
+
+    raise RuntimeError("Unsupported Langfuse client: no observation getter available")
+
+
+def _get_trace(langfuse_client: Any, trace_id: str, include_observations: bool) -> Any:
+    """Fetch a single trace handling SDK version differences.
+
+    Note: Some Langfuse SDK versions do not support a `fields` selector on `get()`. We avoid
+    passing `fields` here and rely on embedding observations separately when requested.
+    """
+    if not hasattr(langfuse_client, "api") or not hasattr(langfuse_client.api, "trace"):
+        raise RuntimeError("Unsupported Langfuse client: no trace getter available")
+
+    return langfuse_client.api.trace.get(trace_id=trace_id)
+
+
+def _list_sessions(
+    langfuse_client: Any,
+    *,
+    limit: int,
+    page: int,
+    from_timestamp: datetime,
+) -> tuple[list[Any], dict[str, Any]]:
+    """Fetch sessions via the Langfuse SDK handling v2/v3 differences."""
+    if not hasattr(langfuse_client, "api") or not hasattr(langfuse_client.api, "sessions"):
+        raise RuntimeError("Unsupported Langfuse client: no session listing method available")
+
+    list_kwargs: dict[str, Any] = {
+        "limit": limit or None,
+        "page": page or None,
+        "from_timestamp": from_timestamp,
+    }
+    list_kwargs = {k: v for k, v in list_kwargs.items() if v is not None}
+
+    response = langfuse_client.api.sessions.list(**list_kwargs)
+    return _extract_items_from_response(response)
+
+
+def truncate_large_strings(
+    obj: Any,
+    max_length: int = MAX_FIELD_LENGTH,
+    max_response_size: int = MAX_RESPONSE_SIZE,
+    path: str = "",
+    current_size: int = 0,
+    truncation_level: int = 0,
+) -> tuple[Any, int]:
+    """Recursively process an object and truncate large string values with intelligent list handling.
+
+    Args:
+        obj: The object to process (dict, list, string, etc.)
+        max_length: Maximum length for string values
+        max_response_size: Maximum total response size in characters
+        path: Current path in the object (for nested objects)
+        current_size: Current size of the processed object
+        truncation_level: Level of truncation to apply (0=normal, 1=aggressive, 2=minimal)
+
+    Returns:
+        Tuple of (processed object, size of processed object)
+    """
+    # Calculate adjusted max_length based on truncation level
+    adjusted_max_length = max_length
+    if truncation_level == 1:
+        # More aggressive truncation for level 1
+        adjusted_max_length = max(50, max_length // 2)
+    elif truncation_level == 2:
+        # Minimal representation for level 2 (extreme truncation)
+        adjusted_max_length = max(20, max_length // 5)
+
+    # Base case: if we've already exceeded max response size by a lot, return minimal representation
+    if current_size > max_response_size * 1.5:
+        return "[TRUNCATED]", len("[TRUNCATED]")
+
+    # Handle different types
+    if isinstance(obj, dict):
+        result = {}
+        result_size = 2  # Count braces
+
+        # First pass: always process essential fields first
+        for key in list(obj.keys()):
+            if key in ESSENTIAL_FIELDS:
+                processed_value, value_size = truncate_large_strings(
+                    obj[key],
+                    adjusted_max_length,
+                    max_response_size,
+                    f"{path}.{key}" if path else key,
+                    current_size + result_size,
+                    truncation_level,
+                )
+                result[key] = processed_value
+                result_size += len(str(key)) + 2 + value_size  # key + colon + value size
+
+        # Second pass: process known large fields next
+        if truncation_level < 2:  # Skip detailed content at highest truncation level
+            for key in list(obj.keys()):
+                lower_key = key.lower()
+                if lower_key in LOWER_LARGE_FIELDS or any(field in lower_key for field in LOWER_LARGE_FIELDS):
+                    if key not in result:  # Skip if already processed
+                        value = obj[key]
+                        if isinstance(value, str) and len(value) > adjusted_max_length:
+                            # For stacktraces, keep first and last few lines
+                            if "stack" in key.lower() and "\n" in value:
+                                lines = value.split("\n")
+                                if len(lines) > 6:
+                                    # Keep first 3 and last 3 lines for context
+                                    truncated_stack = "\n".join(lines[:3] + ["..."] + lines[-3:])
+                                    result[key] = truncated_stack
+                                    logger.debug(f"Truncated stack in {path}.{key} from {len(lines)} lines to 7 lines")
+                                    result_size += len(str(key)) + 2 + len(truncated_stack)
+                                else:
+                                    result[key] = value
+                                    result_size += len(str(key)) + 2 + len(value)
+                            else:
+                                # For other large text fields, regular truncation
+                                result[key] = value[:adjusted_max_length] + TRUNCATE_SUFFIX
+                                logger.debug(f"Truncated field {path}.{key} from {len(value)} to {adjusted_max_length} chars")
+                                result_size += len(str(key)) + 2 + adjusted_max_length + len(TRUNCATE_SUFFIX)
+                        else:
+                            processed_value, value_size = truncate_large_strings(
+                                value,
+                                adjusted_max_length,
+                                max_response_size,
+                                f"{path}.{key}" if path else key,
+                                current_size + result_size,
+                                truncation_level,
+                            )
+                            result[key] = processed_value
+                            result_size += len(str(key)) + 2 + value_size
+
+        # Final pass: process remaining fields if we have size budget remaining
+        remaining_fields = [k for k in obj if k not in result]
+
+        # Skip non-essential fields at highest truncation level
+        if truncation_level >= 2 and len(remaining_fields) > 0:
+            result["_note"] = f"{len(remaining_fields)} non-essential fields omitted"
+            result_size += len("_note") + 2 + len(result["_note"])
+        else:
+            for key in remaining_fields:
+                # Skip if we're approaching max size and apply more aggressive truncation
+                if current_size + result_size > max_response_size * 0.9:
+                    # Instead of breaking, increase truncation level for remaining fields
+                    next_truncation_level = min(2, truncation_level + 1)
+                    if next_truncation_level > truncation_level:
+                        result["_truncation_note"] = "Response truncated due to size constraints"
+                        result_size += len("_truncation_note") + 2 + len(result["_truncation_note"])
+
+                processed_value, value_size = truncate_large_strings(
+                    obj[key],
+                    adjusted_max_length,
+                    max_response_size,
+                    f"{path}.{key}" if path else key,
+                    current_size + result_size,
+                    min(2, truncation_level + (1 if current_size + result_size > max_response_size * 0.7 else 0)),
+                )
+                result[key] = processed_value
+                result_size += len(str(key)) + 2 + value_size
+
+        return result, result_size
+
+    elif isinstance(obj, list):
+        result = []
+        result_size = 2  # Count brackets
+
+        # Special handling for empty lists
+        if not obj:
+            return [], 2
+
+        # Estimate average item size to plan truncation strategy
+        # We'll sample the first item or use a default
+        sample_size = 0
+        if obj:
+            sample_item, sample_size = truncate_large_strings(
+                obj[0], adjusted_max_length, max_response_size, f"{path}[0]", current_size + result_size, truncation_level
+            )
+
+        estimated_total_size = sample_size * len(obj)
+
+        # Determine the appropriate truncation strategy based on estimated size
+        target_truncation_level = truncation_level
+        if estimated_total_size > max_response_size * 0.8:
+            # If the list would be too large, increase truncation level
+            target_truncation_level = min(2, truncation_level + 1)
+
+        # If even at max truncation we'd exceed size, we need to limit the number of items
+        will_need_item_limit = False
+        if target_truncation_level == 2 and estimated_total_size > max_response_size:
+            will_need_item_limit = True
+            max_items = max(5, int(max_response_size * 0.8 / (sample_size or 100)))
+        else:
+            max_items = len(obj)
+
+        # Process items with appropriate truncation level
+        for i, item in enumerate(obj):
+            if will_need_item_limit and i >= max_items:
+                result.append({"_note": f"List truncated, {len(obj) - i} of {len(obj)} items omitted due to size constraints"})
+                result_size += 2 + len(result[-1]["_note"])
+                break
+
+            item_truncation_level = target_truncation_level
+            # Apply even more aggressive truncation as we approach the limit
+            if current_size + result_size > max_response_size * 0.8:
+                item_truncation_level = 2
+
+            processed_item, item_size = truncate_large_strings(
+                item, adjusted_max_length, max_response_size, f"{path}[{i}]", current_size + result_size, item_truncation_level
+            )
+            result.append(processed_item)
+            result_size += item_size
+            if i < len(obj) - 1:
+                result_size += 1  # Count comma
+
+        return result, result_size
+
+    elif isinstance(obj, str):
+        # String truncation strategy based on truncation level
+        if len(obj) <= adjusted_max_length:
+            return obj, len(obj)
+
+        # Special handling for stacktraces at normal truncation level
+        if truncation_level == 0 and ("stacktrace" in path.lower() or "stack" in path.lower()) and "\n" in obj:
+            lines = obj.split("\n")
+            if len(lines) > 6:
+                # Keep first 3 and last 3 lines for context at normal level
+                truncated = "\n".join(lines[:3] + ["..."] + lines[-3:])
+                return truncated, len(truncated)
+
+        # Regular string truncation with adjusted max length
+        if len(obj) > adjusted_max_length:
+            truncated = obj[:adjusted_max_length] + TRUNCATE_SUFFIX
+            return truncated, len(truncated)
+
+        return obj, len(obj)
+
+    else:
+        # For other types (int, float, bool, None), return as is
+        return obj, len(str(obj))
+
+
+def process_compact_data(data: Any) -> Any:
+    """Process response data to truncate large values while preserving list item counts.
+
+    Args:
+        data: The response data to process
+
+    Returns:
+        Processed data with large values truncated
+    """
+    processed_data, size = truncate_large_strings(data, truncation_level=0)
+    logger.debug(f"Processed response data: processed size {size} chars")
+    return processed_data
+
+
+def serialize_full_json_string(data: Any) -> str:
+    """Serialize data to a full JSON string without truncation.
+
+    Args:
+        data: The full data to serialize
+
+    Returns:
+        JSON string representation of the data
+    """
+    try:
+        # Use default=str to handle datetime and other non-serializable objects
+        # Use ensure_ascii=False to keep Chinese and other Unicode characters readable
+        return json.dumps(data, default=str, ensure_ascii=False)
+    except Exception as e:
+        logger.error(f"Error serializing to full JSON string: {str(e)}")
+        return json.dumps({"error": f"Failed to serialize response: {str(e)}"}, ensure_ascii=False)
+
+
+def save_full_data_to_file(data: Any, base_filename_prefix: str, state: "MCPState") -> dict[str, Any]:
+    """Save full data to a JSON file in the configured dump directory.
+
+    Args:
+        data: The full data to save
+        base_filename_prefix: Prefix for the filename (e.g., "trace_123")
+        state: MCPState with dump_dir configuration
+
+    Returns:
+        Dictionary with status information about the file save operation
+    """
+    if not state.dump_dir:
+        logger.warning("Cannot save full data: dump_dir not configured")
+        return {"status": "error", "message": "Dump directory not configured. Use --dump-dir CLI argument.", "file_path": None}
+
+    # Sanitize the filename prefix
+    safe_prefix = "".join(c for c in base_filename_prefix if c.isalnum() or c in "_-.")
+    if not safe_prefix:
+        safe_prefix = "langfuse_data"
+
+    # Generate a unique filename with timestamp
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%f")
+    filename = f"{safe_prefix}_{timestamp}.json"
+    filepath = os.path.join(state.dump_dir, filename)
+
+    try:
+        # Ensure the directory exists (extra safety check)
+        os.makedirs(state.dump_dir, exist_ok=True)
+
+        # Serialize the data with pretty-printing for better readability
+        # Use ensure_ascii=False to keep Chinese and other Unicode characters readable
+        json_str = json.dumps(data, default=str, indent=2, ensure_ascii=False)
+
+        # Write to file
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(json_str)
+
+        logger.info(f"Full data saved to {filepath}")
+        return {"status": "success", "message": "Full data saved successfully.", "file_path": filepath}
+    except Exception as e:
+        logger.error(f"Error saving full data to file: {str(e)}")
+        return {"status": "error", "message": f"Failed to save full data: {str(e)}", "file_path": None}
+
+
+def process_data_with_mode(
+    data: Any,
+    output_mode: OUTPUT_MODE_LITERAL | OutputMode,
+    base_filename_prefix: str,
+    state: "MCPState",
+) -> tuple[Any, dict[str, Any] | None]:
+    """Process data according to the specified output mode.
+
+    Args:
+        data: The raw data to process
+        output_mode: The output mode to use
+        base_filename_prefix: Prefix for filename when using full_json_file mode
+        state: MCPState with configuration
+
+    Returns:
+        Tuple of (processed data, optional metadata additions)
+    """
+    mode = _ensure_output_mode(output_mode)
+
+    if mode == OutputMode.COMPACT:
+        return process_compact_data(data), None
+
+    if mode == OutputMode.FULL_JSON_STRING:
+        return serialize_full_json_string(data), None
+
+    if mode == OutputMode.FULL_JSON_FILE:
+        # Process a compact version of the data
+        compact_data = process_compact_data(data)
+
+        # Save the full data to a file
+        save_info = save_full_data_to_file(data, base_filename_prefix, state)
+
+        file_meta = {
+            "file_path": save_info.get("file_path"),
+            "file_info": save_info,
+        }
+        if save_info.get("status") == "success" and save_info.get("file_path"):
+            file_meta["message"] = "Full response saved to file."
+
+        return compact_data, file_meta
+
+    # Fallback
+    logger.warning(f"Unknown output mode: {output_mode}, defaulting to compact mode")
+    return process_compact_data(data), None
+
+
+@dataclass
+class MCPState:
+    """State object passed from lifespan context to tools.
+
+    Contains the Langfuse client instance and various caches used to optimize
+    performance when querying and filtering observations and exceptions.
+    """
+
+    langfuse_client: Langfuse
+    # LRU caches for efficient exception lookup
+    observation_cache: LRUCache = field(
+        default_factory=lambda: LRUCache(maxsize=100), metadata={"description": "Cache for observations to reduce API calls"}
+    )
+    file_to_observations_map: LRUCache = field(
+        default_factory=lambda: LRUCache(maxsize=100), metadata={"description": "Mapping of file paths to observation IDs"}
+    )
+    exception_type_map: LRUCache = field(
+        default_factory=lambda: LRUCache(maxsize=100), metadata={"description": "Mapping of exception types to observation IDs"}
+    )
+    exceptions_by_filepath: LRUCache = field(
+        default_factory=lambda: LRUCache(maxsize=100), metadata={"description": "Mapping of file paths to exception details"}
+    )
+    dump_dir: str = field(
+        default=None, metadata={"description": "Directory to save full JSON dumps when 'output_mode' is 'full_json_file'"}
+    )
+    timeout_config: TimeoutConfig = field(
+        default_factory=TimeoutConfig, metadata={"description": "HTTP timeout configuration for API requests"}
+    )
+    retry_manager: "RetryManager" = field(
+        default_factory=lambda: RetryManager(RetryConfig()), metadata={"description": "Retry manager for handling failed requests"}
+    )
+
+
+class ExceptionCount(BaseModel):
+    """Model for exception counts grouped by category.
+
+    Represents the count of exceptions grouped by file path, function name, or exception type.
+    Used by the find_exceptions endpoint to return aggregated exception data.
+    """
+
+    group: str = Field(description="The grouping key (file path, function name, or exception type)")
+    count: int = Field(description="Number of exceptions in this group")
+
+
+def validate_age(age: int) -> int:
+    """Validate that age is positive and ≤ 7 days.
+
+    Args:
+        age: Age in minutes to validate
+
+    Returns:
+        The validated age if it passes validation
+
+    Raises:
+        ValueError: If age is not positive or exceeds 7 days (10080 minutes)
+    """
+    if age <= 0:
+        raise ValueError("Age must be positive")
+    if age > 7 * DAY:
+        raise ValueError("Age cannot be more than 7 days (10080 minutes)")
+    logger.debug(f"Age validated: {age} minutes")
+    return age
+
+
+def validate_age_unlimited(age: int) -> int:
+    """Validate that age is positive (no upper limit).
+
+    Args:
+        age: Age in minutes to validate
+
+    Returns:
+        The validated age if it passes validation
+
+    Raises:
+        ValueError: If age is not positive
+    """
+    if age <= 0:
+        raise ValueError("Age must be positive")
+    logger.debug(f"Age validated (unlimited): {age} minutes")
+    return age
+
+
+ValidatedAge = Annotated[int, AfterValidator(validate_age)]
+"""Type for validated age values (positive integer up to 7 days/10080 minutes)"""
+
+ValidatedAgeUnlimited = Annotated[int, AfterValidator(validate_age_unlimited)]
+"""Type for validated age values (positive integer, no upper limit)"""
+
+
+def clear_caches(state: MCPState) -> None:
+    """Clear all in-memory caches."""
+    state.observation_cache.clear()
+    state.file_to_observations_map.clear()
+    state.exception_type_map.clear()
+    state.exceptions_by_filepath.clear()
+
+    # Also clear the LRU cache
+    _get_cached_observation.cache_clear()
+
+    logger.debug("All caches cleared")
+
+
+@lru_cache(maxsize=1000)
+def _get_cached_observation(langfuse_client: Langfuse, observation_id: str) -> Any:
+    """Cache observation details to avoid duplicate API calls."""
+    try:
+        observation = _get_observation(langfuse_client, observation_id)
+        return _sdk_object_to_python(observation)
+    except Exception as e:
+        logger.warning(f"Error fetching observation {observation_id}: {str(e)}")
+        return None
+
+
+async def _efficient_fetch_observations(
+    state: MCPState, from_timestamp: datetime, to_timestamp: datetime, filepath: str = None
+) -> dict[str, Any]:
+    """Efficiently fetch observations with exception filtering.
+
+    Args:
+        state: MCP state with Langfuse client and caches
+        from_timestamp: Start time
+        to_timestamp: End time
+        filepath: Optional filter by filepath
+
+    Returns:
+        Dictionary of observation_id -> observation
+    """
+    langfuse_client = state.langfuse_client
+
+    # Use a cache key that includes the time range
+    cache_key = f"{from_timestamp.isoformat()}-{to_timestamp.isoformat()}"
+
+    # Check if we've already processed this time range
+    if hasattr(state, "observation_cache") and cache_key in state.observation_cache:
+        logger.info("Using cached observations")
+        return state.observation_cache[cache_key]
+
+    # Fetch observations from Langfuse
+    observation_items, _ = _list_observations(
+        langfuse_client,
+        limit=500,
+        page=1,
+        from_start_time=from_timestamp,
+        to_start_time=to_timestamp,
+        obs_type="SPAN",
+        name=None,
+        user_id=None,
+        trace_id=None,
+        parent_observation_id=None,
+        metadata=None,
+    )
+
+    # Process observations and build indices
+    observations: dict[str, Any] = {}
+    for obs in observation_items:
+        events = []
+        if hasattr(obs, "events"):
+            events = getattr(obs, "events") or []
+        elif isinstance(obs, dict):
+            events = obs.get("events", [])
+
+        if not events:
+            continue
+
+        for event in events:
+            attributes = getattr(event, "attributes", None)
+            if attributes is None and isinstance(event, dict):
+                attributes = event.get("attributes")
+            if not attributes or not attributes.get("exception.type"):
+                continue
+
+            # Store observation
+            obs_id = getattr(obs, "id", None) or obs.get("id") if isinstance(obs, dict) else None
+            if not obs_id:
+                continue
+            observations[obs_id] = _sdk_object_to_python(obs)
+
+            # Update file index if we have filepath info
+            metadata_block = getattr(obs, "metadata", None)
+            if metadata_block is None and isinstance(obs, dict):
+                metadata_block = obs.get("metadata")
+            if metadata_block:
+                file = metadata_block.get("code.filepath")
+                if file:
+                    if file not in state.file_to_observations_map:
+                        state.file_to_observations_map[file] = set()
+                    state.file_to_observations_map[file].add(obs_id)
+
+            # Update exception type index
+            exc_type = attributes["exception.type"]
+            if exc_type not in state.exception_type_map:
+                state.exception_type_map[exc_type] = set()
+            state.exception_type_map[exc_type].add(obs_id)
+
+    # Cache the processed observations
+    state.observation_cache[cache_key] = observations
+
+    return observations
+
+
+async def _embed_observations_in_traces(state: MCPState, traces: list[Any]) -> None:
+    """Fetch and embed full observation objects into traces.
+
+    This replaces the observation IDs list with a list of the actual observation objects.
+
+    Args:
+        state: MCP state with Langfuse client
+        traces: List of trace objects to process
+    """
+    if not traces:
+        return
+
+    # Process each trace
+    for trace in traces:
+        if not isinstance(trace, dict) or "observations" not in trace:
+            continue
+
+        observation_refs = trace["observations"]
+        if not isinstance(observation_refs, list):
+            continue
+
+        # Skip if there are no observations
+        if not observation_refs:
+            continue
+
+        # If we already have hydrated observation objects, normalize them and continue
+        first_ref = observation_refs[0]
+        if not isinstance(first_ref, str):
+            trace["observations"] = [_sdk_object_to_python(obs) for obs in observation_refs]
+            continue
+
+        # Fetch each observation when only IDs are provided
+        full_observations = []
+        for obs_id in observation_refs:
+            try:
+                obs = _get_observation(state.langfuse_client, obs_id)
+                obs_data = _sdk_object_to_python(obs)
+                full_observations.append(obs_data)
+                logger.debug(f"Fetched observation {obs_id} for trace {trace.get('id', 'unknown')}")
+            except Exception as e:
+                logger.warning(f"Error fetching observation {obs_id}: {str(e)}")
+                full_observations.append({"id": obs_id, "fetch_error": str(e)})
+
+        trace["observations"] = full_observations
+        logger.debug(f"Embedded {len(full_observations)} observations in trace {trace.get('id', 'unknown')}")
+
+
+async def fetch_traces(
+    ctx: Context,
+    age: ValidatedAge = Field(..., description="Minutes ago to start looking (e.g., 1440 for 24 hours)"),
+    name: str | None = Field(None, description="Name of the trace to filter by"),
+    user_id: str | None = Field(None, description="User ID to filter traces by"),
+    session_id: str | None = Field(None, description="Session ID to filter traces by"),
+    metadata: dict[str, Any] | None = Field(None, description="Metadata fields to filter by"),
+    page: int = Field(1, description="Page number for pagination (starts at 1)"),
+    limit: int = Field(50, description="Maximum number of traces to return per page"),
+    tags: str | None = Field(None, description="Tag or comma-separated list of tags to filter traces by"),
+    include_observations: bool = Field(
+        False,
+        description=(
+            "If True, fetch and include the full observation objects instead of just IDs. "
+            "Use this when you need access to system prompts, model parameters, or other details stored "
+            "within observations. Significantly increases response time but provides complete data. "
+            "Pairs well with output_mode='full_json_file' for complete dumps."
+        ),
+    ),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Find traces based on filters.
+
+    Uses the Langfuse API to search for traces that match the provided filters.
+    All filter parameters are optional - if not provided, no filtering is applied
+    for that field.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        age: Minutes ago to start looking (e.g., 1440 for 24 hours)
+        name: Name of the trace to filter by (optional)
+        user_id: User ID to filter traces by (optional)
+        session_id: Session ID to filter traces by (optional)
+        metadata: Metadata fields to filter by (optional)
+        page: Page number for pagination (starts at 1)
+        limit: Maximum number of traces to return per page
+        tags: Tag or comma-separated list of tags to filter traces by
+        include_observations: If True, fetch and include the full observation objects instead of just IDs.
+            Use this when you need access to system prompts, model parameters, or other details stored
+            within observations. Significantly increases response time but provides complete data.
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        One of the following based on output_mode:
+        - For 'compact' and 'full_json_file': A response dictionary with the structure:
+          {
+              "data": List of trace objects,
+              "metadata": {
+                  "item_count": Number of traces,
+                  "file_path": Path to saved file (only for full_json_file mode),
+                  "file_info": File save details (only for full_json_file mode)
+              }
+          }
+        - For 'full_json_string': A string containing the full JSON response
+
+    Usage Tips:
+        - For quick browsing: use include_observations=False with output_mode="compact"
+        - For full data but viewable in responses: use include_observations=True with output_mode="compact"
+        - For complete data dumps: use include_observations=True with output_mode="full_json_file"
+    """
+    age = validate_age(age)
+
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate timestamps from age
+    from_timestamp = datetime.now(UTC) - timedelta(minutes=age)
+
+    try:
+        # Process tags if it's a comma-separated string
+        tags_list = None
+        if tags:
+            if "," in tags:
+                tags_list = [tag.strip() for tag in tags.split(",") if tag.strip()]
+            else:
+                tags_list = [tags]
+
+        # Use the resource-style API when available (Langfuse v3) with fallback to v2 helpers
+        trace_items, pagination = _list_traces(
+            state.langfuse_client,
+            limit=limit,
+            page=page,
+            include_observations=include_observations,
+            tags=tags_list,
+            from_timestamp=from_timestamp,
+            name=name,
+            user_id=user_id,
+            session_id=session_id,
+            metadata=metadata,
+        )
+
+        # Convert response to a serializable format
+        raw_traces = [_sdk_object_to_python(trace) for trace in trace_items]
+
+        # If include_observations is True, fetch and embed the full observation objects
+        if include_observations and raw_traces:
+            logger.info(f"Fetching full observation details for {sum(len(t.get('observations', [])) for t in raw_traces)} observations")
+            await _embed_observations_in_traces(state, raw_traces)
+
+        # Process based on output mode
+        mode = _ensure_output_mode(output_mode)
+        base_filename_prefix = "traces"
+        processed_data, file_meta = process_data_with_mode(raw_traces, mode, base_filename_prefix, state)
+
+        logger.info(f"Found {len(raw_traces)} traces, returning with output_mode={mode}, include_observations={include_observations}")
+
+        # Return data in the standard response format
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_data
+
+        metadata_block = {
+            "item_count": len(raw_traces),
+            "file_path": None,
+            "file_info": None,
+        }
+        if pagination.get("next_page") is not None:
+            metadata_block["next_page"] = pagination["next_page"]
+        if pagination.get("total") is not None:
+            metadata_block["total"] = pagination["total"]
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_data, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error in fetch_traces: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def fetch_trace(
+    ctx: Context,
+    trace_id: str = Field(..., description="The ID of the trace to fetch (unique identifier string)"),
+    include_observations: bool = Field(
+        False,
+        description=(
+            "If True, fetch and include the full observation objects instead of just IDs. "
+            "Use this when you need access to system prompts, model parameters, or other details stored "
+            "within observations. Significantly increases response time but provides complete data. "
+            "Pairs well with output_mode='full_json_file' for complete dumps."
+        ),
+    ),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get a single trace by ID with full details.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        trace_id: The ID of the trace to fetch (unique identifier string)
+        include_observations: If True, fetch and include the full observation objects instead of just IDs.
+            Use this when you need access to system prompts, model parameters, or other details stored
+            within observations. Significantly increases response time but provides complete data.
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        One of the following based on output_mode:
+        - For 'compact' and 'full_json_file': A response dictionary with the structure:
+          {
+              "data": Single trace object,
+              "metadata": {
+                  "file_path": Path to saved file (only for full_json_file mode),
+                  "file_info": File save details (only for full_json_file mode)
+              }
+          }
+        - For 'full_json_string': A string containing the full JSON response
+
+    Usage Tips:
+        - For quick browsing: use include_observations=False with output_mode="compact"
+        - For full data but viewable in responses: use include_observations=True with output_mode="compact"
+        - For complete data dumps: use include_observations=True with output_mode="full_json_file"
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    try:
+        # Use the resource-style API when available
+        trace = _get_trace(state.langfuse_client, trace_id, include_observations)
+
+        # Convert response to a serializable format
+        raw_trace = _sdk_object_to_python(trace)
+
+        if not isinstance(raw_trace, dict):
+            logger.debug("Trace response normalized into dictionary structure")
+            raw_trace = _sdk_object_to_python({"trace": raw_trace})
+
+        # If include_observations is True and the API did not hydrate them, fetch and embed
+        if include_observations and raw_trace:
+            embedded = raw_trace.get("observations", []) if isinstance(raw_trace, dict) else []
+            if embedded and isinstance(embedded[0], str):
+                logger.info(f"Fetching full observation details for {len(embedded)} observations")
+                await _embed_observations_in_traces(state, [raw_trace])
+
+        # Process based on output mode
+        mode = _ensure_output_mode(output_mode)
+        base_filename_prefix = f"trace_{trace_id}"
+        processed_data, file_meta = process_data_with_mode(raw_trace, mode, base_filename_prefix, state)
+
+        logger.info(f"Retrieved trace {trace_id}, returning with output_mode={mode}, include_observations={include_observations}")
+
+        # Return data in the standard response format
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_data
+
+        metadata_block = {
+            "file_path": None,
+            "file_info": None,
+        }
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_data, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error fetching trace {trace_id}: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def fetch_observations(
+    ctx: Context,
+    type: Literal["SPAN", "GENERATION", "EVENT"] | None = Field(
+        None, description="The observation type to filter by ('SPAN', 'GENERATION', or 'EVENT')"
+    ),
+    age: ValidatedAge = Field(..., description="Minutes ago to start looking (e.g., 1440 for 24 hours)"),
+    name: str | None = Field(None, description="Optional name filter (string pattern to match)"),
+    user_id: str | None = Field(None, description="Optional user ID filter (exact match)"),
+    trace_id: str | None = Field(None, description="Optional trace ID filter (exact match)"),
+    parent_observation_id: str | None = Field(None, description="Optional parent observation ID filter (exact match)"),
+    page: int = Field(1, description="Page number for pagination (starts at 1)"),
+    limit: int = Field(50, description="Maximum number of observations to return per page"),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get observations filtered by type and other criteria.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        type: The observation type to filter by (SPAN, GENERATION, or EVENT)
+        age: Minutes ago to start looking (e.g., 1440 for 24 hours)
+        name: Optional name filter (string pattern to match)
+        user_id: Optional user ID filter (exact match)
+        trace_id: Optional trace ID filter (exact match)
+        parent_observation_id: Optional parent observation ID filter (exact match)
+        page: Page number for pagination (starts at 1)
+        limit: Maximum number of observations to return per page
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: List of summarized observation objects
+        - full_json_string: String containing the full JSON response
+        - full_json_file: List of summarized observation objects with file save info
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate timestamps from age
+    from_start_time = datetime.now(UTC) - timedelta(minutes=age)
+    metadata = None  # Metadata filtering not currently exposed for this tool
+
+    try:
+        observation_items, pagination = _list_observations(
+            state.langfuse_client,
+            limit=limit,
+            page=page,
+            from_start_time=from_start_time,
+            to_start_time=None,
+            obs_type=type,
+            name=name,
+            user_id=user_id,
+            trace_id=trace_id,
+            parent_observation_id=parent_observation_id,
+            metadata=metadata,
+        )
+
+        # Convert response to a serializable format
+        raw_observations = [_sdk_object_to_python(obs) for obs in observation_items]
+
+        # Process based on output mode
+        mode = _ensure_output_mode(output_mode)
+        base_filename_prefix = f"observations_{type or 'all'}"
+        processed_data, file_meta = process_data_with_mode(raw_observations, mode, base_filename_prefix, state)
+
+        logger.info(f"Found {len(raw_observations)} observations, returning with output_mode={mode}")
+
+        # Return data in the standard response format
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_data
+
+        metadata_block = {
+            "item_count": len(raw_observations),
+            "file_path": None,
+            "file_info": None,
+        }
+        if pagination.get("next_page") is not None:
+            metadata_block["next_page"] = pagination["next_page"]
+        if pagination.get("total") is not None:
+            metadata_block["total"] = pagination["total"]
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_data, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error fetching observations: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def fetch_observation(
+    ctx: Context,
+    observation_id: str = Field(..., description="The ID of the observation to fetch (unique identifier string)"),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get a single observation by ID.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        observation_id: The ID of the observation to fetch (unique identifier string)
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: Summarized observation object
+        - full_json_string: String containing the full JSON response
+        - full_json_file: Summarized observation object with file save info
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    try:
+        # Use the resource-style API when available
+        observation = _get_observation(state.langfuse_client, observation_id)
+
+        # Convert response to a serializable format
+        raw_observation = _sdk_object_to_python(observation)
+
+        # Process based on output mode
+        base_filename_prefix = f"observation_{observation_id}"
+        mode = _ensure_output_mode(output_mode)
+        processed_data, file_meta = process_data_with_mode(raw_observation, mode, base_filename_prefix, state)
+
+        logger.info(f"Retrieved observation {observation_id}, returning with output_mode={mode}")
+
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_data
+
+        metadata_block = {"file_path": None, "file_info": None}
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_data, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error fetching observation {observation_id}: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def fetch_sessions(
+    ctx: Context,
+    age: ValidatedAge = Field(..., description="Minutes ago to start looking (e.g., 1440 for 24 hours)"),
+    page: int = Field(1, description="Page number for pagination (starts at 1)"),
+    limit: int = Field(50, description="Maximum number of sessions to return per page"),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get a list of sessions in the current project.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        age: Minutes ago to start looking (e.g., 1440 for 24 hours)
+        page: Page number for pagination (starts at 1)
+        limit: Maximum number of sessions to return per page
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: List of summarized session objects
+        - full_json_string: String containing the full JSON response
+        - full_json_file: List of summarized session objects with file save info
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate timestamps from age
+    from_timestamp = datetime.now(UTC) - timedelta(minutes=age)
+
+    try:
+        session_items, pagination = _list_sessions(
+            state.langfuse_client,
+            limit=limit,
+            page=page,
+            from_timestamp=from_timestamp,
+        )
+
+        # Convert response to a serializable format
+        raw_sessions = [_sdk_object_to_python(session) for session in session_items]
+
+        # Process based on output mode
+        base_filename_prefix = "sessions"
+        mode = _ensure_output_mode(output_mode)
+        sessions_payload, file_meta = process_data_with_mode(raw_sessions, mode, base_filename_prefix, state)
+
+        logger.info(f"Found {len(raw_sessions)} sessions, returning with output_mode={mode}")
+
+        if mode == OutputMode.FULL_JSON_STRING:
+            return sessions_payload
+
+        metadata_block = {"item_count": len(raw_sessions), "file_path": None, "file_info": None}
+        if pagination.get("next_page") is not None:
+            metadata_block["next_page"] = pagination["next_page"]
+        if pagination.get("total") is not None:
+            metadata_block["total"] = pagination["total"]
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": sessions_payload, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error fetching sessions: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def get_session_details(
+    ctx: Context,
+    session_id: str = Field(..., description="The ID of the session to retrieve (unique identifier string)"),
+    include_observations: bool = Field(
+        False,
+        description=(
+            "If True, fetch and include the full observation objects instead of just IDs. "
+            "Use this when you need access to system prompts, model parameters, or other details stored "
+            "within observations. Significantly increases response time but provides complete data. "
+            "Pairs well with output_mode='full_json_file' for complete dumps."
+        ),
+    ),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get detailed information about a specific session.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        session_id: The ID of the session to retrieve (unique identifier string)
+        include_observations: If True, fetch and include the full observation objects instead of just IDs.
+            Use this when you need access to system prompts, model parameters, or other details stored
+            within observations. Significantly increases response time but provides complete data.
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: Summarized session details object
+        - full_json_string: String containing the full JSON response
+        - full_json_file: Summarized session details object with file save info
+
+    Usage Tips:
+        - For quick browsing: use include_observations=False with output_mode="compact"
+        - For full data but viewable in responses: use include_observations=True with output_mode="compact"
+        - For complete data dumps: use include_observations=True with output_mode="full_json_file"
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    try:
+        # Fetch traces with this session ID
+        trace_items, pagination = _list_traces(
+            state.langfuse_client,
+            limit=50,
+            page=1,
+            include_observations=include_observations,
+            tags=None,
+            from_timestamp=datetime.fromtimestamp(0, tz=UTC),
+            name=None,
+            user_id=None,
+            session_id=session_id,
+            metadata=None,
+        )
+
+        # If no traces were found, return an empty dict
+        mode = _ensure_output_mode(output_mode)
+
+        if not trace_items:
+            logger.info(f"No session found with ID: {session_id}")
+            empty_session = {"id": session_id, "traces": [], "trace_count": 0, "found": False}
+            processed_session, file_meta = process_data_with_mode(empty_session, mode, f"session_{session_id}", state)
+            if mode == OutputMode.FULL_JSON_STRING:
+                return processed_session
+
+            metadata_block = {"item_count": 0, "file_path": None, "file_info": None}
+            if file_meta:
+                metadata_block.update(file_meta)
+            return {"data": processed_session, "metadata": metadata_block}
+
+        # Convert traces to a serializable format
+        raw_traces = [_sdk_object_to_python(trace) for trace in trace_items]
+
+        # If include_observations is True, fetch and embed the full observation objects
+        if include_observations and raw_traces:
+            total_observations = sum(len(t.get("observations", [])) for t in raw_traces)
+            if total_observations > 0:
+                logger.info(f"Fetching full observation details for {total_observations} observations across {len(raw_traces)} traces")
+                await _embed_observations_in_traces(state, raw_traces)
+
+        # Create a session object with all traces that have this session ID
+        session = {
+            "id": session_id,
+            "traces": raw_traces,
+            "trace_count": len(raw_traces),
+            "first_timestamp": raw_traces[0].get("timestamp") if raw_traces else None,
+            "last_timestamp": raw_traces[-1].get("timestamp") if raw_traces else None,
+            "user_id": raw_traces[0].get("user_id") if raw_traces else None,
+            "found": True,
+        }
+
+        # Process the final session object based on output mode
+        result, file_meta = process_data_with_mode(session, mode, f"session_{session_id}", state)
+
+        logger.info(
+            f"Found session {session_id} with {len(raw_traces)} traces, returning with output_mode={mode}, "
+            f"include_observations={include_observations}"
+        )
+        if mode == OutputMode.FULL_JSON_STRING:
+            return result
+
+        metadata_block = {"item_count": 1, "file_path": None, "file_info": None}
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": result, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error getting session {session_id}: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def get_user_sessions(
+    ctx: Context,
+    user_id: str = Field(..., description="The ID of the user to retrieve sessions for"),
+    age: ValidatedAge = Field(..., description="Minutes ago to start looking (e.g., 1440 for 24 hours)"),
+    include_observations: bool = Field(
+        False,
+        description=(
+            "If True, fetch and include the full observation objects instead of just IDs. "
+            "Use this when you need access to system prompts, model parameters, or other details stored "
+            "within observations. Significantly increases response time but provides complete data. "
+            "Pairs well with output_mode='full_json_file' for complete dumps."
+        ),
+    ),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get sessions for a user within a time range.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        user_id: The ID of the user to retrieve sessions for (unique identifier string)
+        age: Minutes ago to start looking (e.g., 1440 for 24 hours)
+        include_observations: If True, fetch and include the full observation objects instead of just IDs.
+            Use this when you need access to system prompts, model parameters, or other details stored
+            within observations. Significantly increases response time but provides complete data.
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: List of summarized session objects
+        - full_json_string: String containing the full JSON response
+        - full_json_file: List of summarized session objects with file save info
+
+    Usage Tips:
+        - For quick browsing: use include_observations=False with output_mode="compact"
+        - For full data but viewable in responses: use include_observations=True with output_mode="compact"
+        - For complete data dumps: use include_observations=True with output_mode="full_json_file"
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate timestamp from age
+    from_timestamp = datetime.now(UTC) - timedelta(minutes=age)
+
+    try:
+        mode = _ensure_output_mode(output_mode)
+
+        # Fetch traces for this user
+        trace_items, pagination = _list_traces(
+            state.langfuse_client,
+            limit=100,
+            page=1,
+            include_observations=include_observations,
+            tags=None,
+            from_timestamp=from_timestamp,
+            name=None,
+            user_id=user_id,
+            session_id=None,
+            metadata=None,
+        )
+
+        # Convert traces to a serializable format
+        raw_traces = [_sdk_object_to_python(trace) for trace in trace_items]
+
+        # If include_observations is True, fetch and embed the full observation objects
+        if include_observations and raw_traces:
+            total_observations = sum(len(t.get("observations", [])) for t in raw_traces)
+            if total_observations > 0:
+                logger.info(f"Fetching full observation details for {total_observations} observations across {len(raw_traces)} traces")
+                await _embed_observations_in_traces(state, raw_traces)
+
+        # Group traces by session_id
+        sessions_dict: dict[str, dict[str, Any]] = {}
+        for trace in raw_traces:
+            session_id = trace.get("session_id")
+            if not session_id:
+                continue
+
+            if session_id not in sessions_dict:
+                sessions_dict[session_id] = {
+                    "id": session_id,
+                    "traces": [],
+                    "first_timestamp": None,
+                    "last_timestamp": None,
+                    "user_id": user_id,
+                }
+
+            # Add trace to this session
+            sessions_dict[session_id]["traces"].append(trace)
+
+            # Update timestamps
+            trace_timestamp = trace.get("timestamp")
+            if trace_timestamp:
+                if not sessions_dict[session_id]["first_timestamp"] or trace_timestamp < sessions_dict[session_id]["first_timestamp"]:
+                    sessions_dict[session_id]["first_timestamp"] = trace_timestamp
+                if not sessions_dict[session_id]["last_timestamp"] or trace_timestamp > sessions_dict[session_id]["last_timestamp"]:
+                    sessions_dict[session_id]["last_timestamp"] = trace_timestamp
+
+        # Convert to list and add trace counts
+        sessions = list(sessions_dict.values())
+        for session in sessions:
+            session["trace_count"] = len(session["traces"])
+
+        # Sort sessions by most recent last_timestamp
+        sessions.sort(key=lambda x: x["last_timestamp"] if x["last_timestamp"] else "", reverse=True)
+
+        processed_sessions, file_meta = process_data_with_mode(sessions, mode, f"user_{user_id}_sessions", state)
+
+        logger.info(
+            f"Found {len(sessions)} sessions for user {user_id}, returning with output_mode={mode}, "
+            f"include_observations={include_observations}"
+        )
+
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_sessions
+
+        metadata_block = {
+            "item_count": len(sessions),
+            "file_path": None,
+            "file_info": None,
+        }
+        if pagination.get("next_page") is not None:
+            metadata_block["next_page"] = pagination["next_page"]
+        if pagination.get("total") is not None:
+            metadata_block["total"] = pagination["total"]
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_sessions, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error getting sessions for user {user_id}: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def find_exceptions(
+    ctx: Context,
+    age: ValidatedAge = Field(
+        ..., description="Number of minutes to look back (positive integer, max 7 days/10080 minutes)", gt=0, le=7 * DAY
+    ),
+    group_by: Literal["file", "function", "type"] = Field(
+        "file",
+        description=(
+            "How to group exceptions - 'file' groups by filename, 'function' groups by function name, or 'type' groups by exception type"
+        ),
+    ),
+) -> ResponseDict:
+    """Get exception counts grouped by file path, function, or type.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        age: Number of minutes to look back (positive integer, max 7 days/10080 minutes)
+        group_by: How to group exceptions - "file" groups by filename, "function" groups by function name,
+                  or "type" groups by exception type
+
+    Returns:
+        List of exception counts grouped by the specified category (file, function, or type)
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate from_timestamp based on age
+    from_timestamp = datetime.now(UTC) - timedelta(minutes=age)
+    to_timestamp = datetime.now(UTC)
+
+    try:
+        # Fetch all SPAN observations since they may contain exceptions
+        observation_items, _ = _list_observations(
+            state.langfuse_client,
+            limit=100,
+            page=1,
+            from_start_time=from_timestamp,
+            to_start_time=to_timestamp,
+            obs_type="SPAN",
+            name=None,
+            user_id=None,
+            trace_id=None,
+            parent_observation_id=None,
+            metadata=None,
+        )
+
+        # Process observations to find and group exceptions
+        exception_groups = Counter()
+
+        for observation in (_sdk_object_to_python(obs) for obs in observation_items):
+            events = observation.get("events", []) if isinstance(observation, dict) else []
+            if not events:
+                continue
+
+            for event in events:
+                event_dict = event if isinstance(event, dict) else _sdk_object_to_python(event)
+
+                # Check if this is an exception event
+                if not event_dict.get("attributes", {}).get("exception.type"):
+                    continue
+
+                # Get the grouping key based on group_by parameter
+                if group_by == "file":
+                    meta = observation.get("metadata", {}) if isinstance(observation, dict) else {}
+                    group_key = meta.get("code.filepath", "unknown_file")
+                elif group_by == "function":
+                    meta = observation.get("metadata", {}) if isinstance(observation, dict) else {}
+                    group_key = meta.get("code.function", "unknown_function")
+                elif group_by == "type":
+                    group_key = event_dict.get("attributes", {}).get("exception.type", "unknown_exception")
+                else:
+                    group_key = "unknown"
+
+                # Increment the counter for this group
+                exception_groups[group_key] += 1
+
+        # Convert counter to list of ExceptionCount objects
+        results = [ExceptionCount(group=group, count=count) for group, count in exception_groups.most_common(50)]
+
+        data = [item.model_dump() for item in results]
+        metadata_block = {"item_count": len(data)}
+
+        logger.info(f"Found {len(data)} exception groups")
+        return {"data": data, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error finding exceptions: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def find_exceptions_in_file(
+    ctx: Context,
+    filepath: str = Field(..., description="Path to the file to search for exceptions (full path including extension)"),
+    age: ValidatedAge = Field(
+        ..., description="Number of minutes to look back (positive integer, max 7 days/10080 minutes)", gt=0, le=7 * DAY
+    ),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get detailed exception info for a specific file.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        filepath: Path to the file to search for exceptions (full path including extension)
+        age: Number of minutes to look back (positive integer, max 7 days/10080 minutes)
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: List of summarized exception details
+        - full_json_string: String containing the full JSON response
+        - full_json_file: List of summarized exception details with file save info
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate from_timestamp based on age
+    from_timestamp = datetime.now(UTC) - timedelta(minutes=age)
+    to_timestamp = datetime.now(UTC)
+
+    try:
+        # Fetch all SPAN observations since they may contain exceptions
+        observation_items, _ = _list_observations(
+            state.langfuse_client,
+            limit=100,
+            page=1,
+            from_start_time=from_timestamp,
+            to_start_time=to_timestamp,
+            obs_type="SPAN",
+            name=None,
+            user_id=None,
+            trace_id=None,
+            parent_observation_id=None,
+            metadata=None,
+        )
+
+        # Process observations to find exceptions in the specified file
+        exceptions = []
+
+        for observation in (_sdk_object_to_python(obs) for obs in observation_items):
+            metadata = observation.get("metadata", {}) if isinstance(observation, dict) else {}
+            if metadata.get("code.filepath") != filepath:
+                continue
+
+            events = observation.get("events", []) if isinstance(observation, dict) else []
+            if not events:
+                continue
+
+            for event in events:
+                event_dict = event if isinstance(event, dict) else _sdk_object_to_python(event)
+
+                # Check if this is an exception event
+                if not event_dict.get("attributes", {}).get("exception.type"):
+                    continue
+
+                exception_info = {
+                    "observation_id": observation.get("id", "unknown") if isinstance(observation, dict) else "unknown",
+                    "trace_id": observation.get("trace_id", "unknown") if isinstance(observation, dict) else "unknown",
+                    "timestamp": observation.get("start_time", "unknown") if isinstance(observation, dict) else "unknown",
+                    "exception_type": event_dict.get("attributes", {}).get("exception.type", "unknown"),
+                    "exception_message": event_dict.get("attributes", {}).get("exception.message", ""),
+                    "exception_stacktrace": event_dict.get("attributes", {}).get("exception.stacktrace", ""),
+                    "function": metadata.get("code.function", "unknown"),
+                    "line_number": metadata.get("code.lineno", "unknown"),
+                }
+
+                exceptions.append(exception_info)
+
+        # Sort exceptions by timestamp (newest first)
+        exceptions.sort(key=lambda x: x["timestamp"] if isinstance(x["timestamp"], str) else "", reverse=True)
+
+        # Only take the top 10 exceptions
+        top_exceptions = exceptions[:10]
+
+        mode = _ensure_output_mode(output_mode)
+        base_filename_prefix = f"exceptions_{os.path.basename(filepath)}"
+        processed_exceptions, file_meta = process_data_with_mode(top_exceptions, mode, base_filename_prefix, state)
+
+        logger.info(f"Found {len(exceptions)} exceptions in file {filepath}, returning with output_mode={mode}")
+
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_exceptions
+
+        metadata_block = {
+            "file_path": filepath,
+            "item_count": len(top_exceptions),
+            "file_info": None,
+        }
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_exceptions, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error finding exceptions in file {filepath}: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def get_exception_details(
+    ctx: Context,
+    trace_id: str = Field(..., description="The ID of the trace to analyze for exceptions (unique identifier string)"),
+    span_id: str | None = Field(None, description="Optional span ID to filter by specific span (unique identifier string)"),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns a summarized JSON object optimized for direct agent consumption. "
+            "'full_json_string': Returns the complete, raw JSON data serialized as a string. "
+            "'full_json_file': Returns a summarized JSON object AND saves the complete data to a file."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Get detailed exception info for a trace/span.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        trace_id: The ID of the trace to analyze for exceptions (unique identifier string)
+        span_id: Optional span ID to filter by specific span (unique identifier string)
+        output_mode: Controls the output format and detail level
+
+    Returns:
+        Based on output_mode:
+        - compact: List of summarized exception details
+        - full_json_string: String containing the full JSON response
+        - full_json_file: List of summarized exception details with file save info
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    try:
+        # First get the trace details
+        trace = _get_trace(state.langfuse_client, trace_id, include_observations=False)
+        trace_data = _sdk_object_to_python(trace)
+        mode = _ensure_output_mode(output_mode)
+        if not trace_data:
+            logger.warning(f"Trace not found: {trace_id}")
+            empty_payload, file_meta = process_data_with_mode([], mode, f"exceptions_trace_{trace_id}", state)
+            if mode == OutputMode.FULL_JSON_STRING:
+                return empty_payload
+            metadata_block = {"item_count": 0, "file_path": None, "file_info": None}
+            if file_meta:
+                metadata_block.update(file_meta)
+            return {"data": empty_payload, "metadata": metadata_block}
+
+        # Get all observations for this trace
+        observation_items, _ = _list_observations(
+            state.langfuse_client,
+            limit=100,
+            page=1,
+            from_start_time=datetime.fromtimestamp(0, tz=UTC),
+            to_start_time=None,
+            obs_type=None,
+            name=None,
+            user_id=None,
+            trace_id=trace_id,
+            parent_observation_id=None,
+            metadata=None,
+        )
+
+        if not observation_items:
+            logger.warning(f"No observations found for trace: {trace_id}")
+            empty_payload, file_meta = process_data_with_mode([], mode, f"exceptions_trace_{trace_id}", state)
+            if mode == OutputMode.FULL_JSON_STRING:
+                return empty_payload
+            metadata_block = {"item_count": 0, "file_path": None, "file_info": None}
+            if file_meta:
+                metadata_block.update(file_meta)
+            return {"data": empty_payload, "metadata": metadata_block}
+
+        # Filter observations if span_id is provided
+        normalized_observations = [_sdk_object_to_python(obs) for obs in observation_items]
+        if span_id:
+            filtered_observations = [obs for obs in normalized_observations if obs.get("id") == span_id]
+        else:
+            filtered_observations = normalized_observations
+
+        # Process observations to find exceptions
+        exceptions = []
+
+        for observation in filtered_observations:
+            events = observation.get("events", []) if isinstance(observation, dict) else []
+            if not events:
+                continue
+
+            for event in events:
+                event_dict = event if isinstance(event, dict) else _sdk_object_to_python(event)
+
+                # Check if this is an exception event
+                if not event_dict.get("attributes", {}).get("exception.type"):
+                    continue
+
+                metadata = observation.get("metadata", {}) if isinstance(observation, dict) else {}
+
+                # Extract exception details
+                exception_info = {
+                    "observation_id": observation.get("id", "unknown"),
+                    "observation_name": observation.get("name", "unknown"),
+                    "observation_type": observation.get("type", "unknown"),
+                    "timestamp": observation.get("start_time", "unknown"),
+                    "exception_type": event_dict.get("attributes", {}).get("exception.type", "unknown"),
+                    "exception_message": event_dict.get("attributes", {}).get("exception.message", ""),
+                    "exception_stacktrace": event_dict.get("attributes", {}).get("exception.stacktrace", ""),
+                    "filepath": metadata.get("code.filepath", "unknown"),
+                    "function": metadata.get("code.function", "unknown"),
+                    "line_number": metadata.get("code.lineno", "unknown"),
+                    "event_id": event_dict.get("id", "unknown"),
+                    "event_name": event_dict.get("name", "unknown"),
+                }
+
+                exceptions.append(exception_info)
+
+        # Sort exceptions by timestamp (newest first)
+        exceptions.sort(key=lambda x: x["timestamp"] if isinstance(x["timestamp"], str) else "", reverse=True)
+
+        base_filename_prefix = f"exceptions_trace_{trace_id}"
+        if span_id:
+            base_filename_prefix += f"_span_{span_id}"
+        processed_exceptions, file_meta = process_data_with_mode(exceptions, mode, base_filename_prefix, state)
+
+        logger.info(f"Found {len(exceptions)} exceptions in trace {trace_id}, returning with output_mode={mode}")
+
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_exceptions
+
+        metadata_block = {
+            "item_count": len(exceptions),
+            "file_path": None,
+            "file_info": None,
+        }
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_exceptions, "metadata": metadata_block}
+    except Exception as e:
+        logger.error(f"Error getting exception details for trace {trace_id}: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def get_error_count(
+    ctx: Context,
+    age: ValidatedAge = Field(
+        ..., description="Number of minutes to look back (positive integer, max 7 days/10080 minutes)", gt=0, le=7 * DAY
+    ),
+) -> ResponseDict:
+    """Get number of traces with exceptions in last N minutes.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        age: Number of minutes to look back (positive integer, max 7 days/10080 minutes)
+
+    Returns:
+        Dictionary with error statistics including trace count, observation count, and exception count
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    age = validate_age(age)
+
+    # Calculate from_timestamp based on age
+    from_timestamp = datetime.now(UTC) - timedelta(minutes=age)
+    to_timestamp = datetime.now(UTC)
+
+    try:
+        # Fetch all SPAN observations since they may contain exceptions
+        observation_items, _ = _list_observations(
+            state.langfuse_client,
+            limit=100,
+            page=1,
+            from_start_time=from_timestamp,
+            to_start_time=to_timestamp,
+            obs_type="SPAN",
+            name=None,
+            user_id=None,
+            trace_id=None,
+            parent_observation_id=None,
+            metadata=None,
+        )
+
+        # Count traces and observations with exceptions
+        trace_ids_with_exceptions = set()
+        observations_with_exceptions = 0
+        total_exceptions = 0
+
+        for observation in (_sdk_object_to_python(obs) for obs in observation_items):
+            events = observation.get("events", []) if isinstance(observation, dict) else []
+            if not events:
+                continue
+
+            exception_count = sum(1 for event in events if _sdk_object_to_python(event).get("attributes", {}).get("exception.type"))
+            if exception_count == 0:
+                continue
+
+            observations_with_exceptions += 1
+            total_exceptions += exception_count
+
+            trace_id = observation.get("trace_id") if isinstance(observation, dict) else None
+            if trace_id:
+                trace_ids_with_exceptions.add(trace_id)
+
+        result = {
+            "age_minutes": age,
+            "from_timestamp": from_timestamp.isoformat(),
+            "to_timestamp": to_timestamp.isoformat(),
+            "trace_count": len(trace_ids_with_exceptions),
+            "observation_count": observations_with_exceptions,
+            "exception_count": total_exceptions,
+        }
+
+        logger.info(
+            f"Found {total_exceptions} exceptions in {observations_with_exceptions} observations across "
+            f"{len(trace_ids_with_exceptions)} traces"
+        )
+        return {"data": result, "metadata": {"file_path": None, "file_info": None}}
+    except Exception as e:
+        logger.error(f"Error getting error count for the last {age} minutes: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+async def fetch_llm_training_data(
+    ctx: Context,
+    age: ValidatedAgeUnlimited = Field(
+        ..., description="Minutes ago to start looking (e.g., 1440 for 24 hours, 43200 for 30 days). No time limit."
+    ),
+    langgraph_node: str | None = Field(
+        None, description="LangGraph node name to filter by (e.g., 'llm_call', 'agent_node'). Matches metadata.langgraph_node"
+    ),
+    agent_name: str | None = Field(
+        None,
+        description="Agent name to filter by (e.g., 'supervisor', 'worker'). Matches metadata.agent_name",
+    ),
+    ls_model_name: str | None = Field(
+        None,
+        description=(
+            "LangSmith model name to filter by. Supports partial matching (case-insensitive). "
+            "E.g., 'Qwen3_235B' will match 'Qwen3_235B_A22B_Instruct_2507_ShenZhen'. "
+            "Matches metadata.ls_model_name"
+        ),
+    ),
+    limit: int = Field(
+        1000,
+        description="Maximum number of training samples to return. Can be any size - pagination is handled automatically. Default: 1000",
+    ),
+    output_format: Literal["openai", "anthropic", "generic", "dpo"] = Field(
+        "generic",
+        description=(
+            "Output format for training data:\n"
+            "- 'openai': OpenAI fine-tuning format with messages array\n"
+            "- 'anthropic': Anthropic format with separate system/user/assistant\n"
+            "- 'generic': Generic format with prompt/completion pairs\n"
+            "- 'dpo': Direct Preference Optimization format with chosen/rejected pairs"
+        ),
+    ),
+    include_metadata: bool = Field(
+        False,
+        description=(
+            "Include additional metadata like model parameters, token usage, timestamps, and node information. "
+            "Default: False (pure training data). Set to True only if you need metadata for analysis, "
+            "debugging, or cost tracking. Metadata is NOT used during model training."
+        ),
+    ),
+    output_mode: OUTPUT_MODE_LITERAL = Field(
+        OutputMode.COMPACT,
+        description=(
+            "Controls the output format and action. "
+            "'compact' (default): Returns training-ready data. "
+            "'full_json_string': Returns complete data as JSON string. "
+            "'full_json_file': Saves complete data to file and returns summary."
+        ),
+    ),
+    allow_partial_results: bool = Field(
+        True,
+        description=(
+            "Allow returning partial results if some requests fail. "
+            "Default: True. Set to False to raise exception on any failure."
+        ),
+    ),
+    incremental_save: bool = Field(
+        True,
+        description=(
+            "Save data incrementally as it's fetched to avoid data loss on timeout/crash. "
+            "Default: True. Data is appended to a temporary file and consolidated at the end. "
+            "Set to False to only save at the end (faster but riskier)."
+        ),
+    ),
+) -> ResponseDict | str:
+    """Extract LLM training data from LangGraph nodes for fine-tuning and reinforcement learning.
+
+    This tool is specifically designed for extracting training data from LangGraph applications.
+    It filters observations by langgraph_node, agent_name, and ls_model_name metadata fields.
+    At least one filter parameter (langgraph_node, agent_name, or ls_model_name) must be provided.
+
+    **Automatic Pagination & Time Segmentation**: This tool handles both LangFuse API limits 
+    and time range limitations internally:
+    - Pagination: Automatically paginates through API to collect all requested data
+    - Time Segmentation: For queries > 7 days, automatically splits into 7-day segments
+    - You can request any number of samples (e.g., 1000, 10000) and any time range (e.g., 30 days, 60 days)
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        age: Minutes ago to start looking (e.g., 1440 for 24 hours, 43200 for 30 days). No time limit.
+        langgraph_node: LangGraph node name to filter by (exact match, matches metadata.langgraph_node)
+        agent_name: Agent name to filter by (exact match, matches metadata.agent_name)
+        ls_model_name: LangSmith model name to filter by (partial match, case-insensitive)
+        limit: Maximum number of training samples to return (default: 1000, can be any size)
+        output_format: Output format ('openai', 'anthropic', 'generic', 'dpo')
+        include_metadata: Include metadata (default: False). Only set True for analysis, NOT for training
+        output_mode: Controls output format and detail level
+
+    Returns:
+        Training data in the specified format, suitable for fine-tuning or RL training.
+        Metadata includes pages_fetched, time_segments_processed, and total_raw_observations for transparency.
+        
+        Structure varies by output_format:
+        - 'openai': [{"messages": [{"role": "system", "content": "..."}, ...], "metadata": {...}}, ...]
+        - 'anthropic': [{"system": "...", "messages": [...], "metadata": {...}}, ...]
+        - 'generic': [{"prompt": "...", "completion": "...", "metadata": {...}}, ...]
+        - 'dpo': [{"prompt": "...", "chosen": "...", "rejected": "...", "metadata": {...}}, ...]
+
+    Usage Examples:
+        # Extract 1000 LLM calls from a specific langgraph node (last 24 hours)
+        fetch_llm_training_data(age=1440, langgraph_node="agent_llm", limit=1000, output_format="openai")
+
+        # Extract 5000 samples from a specific agent (last 30 days - auto-segmented)
+        fetch_llm_training_data(age=43200, agent_name="supervisor", limit=5000, output_format="generic")
+
+        # Extract samples for a specific model using partial name (last 60 days - auto-segmented)
+        # "Qwen3_235B" matches "Qwen3_235B_A22B_Instruct_2507", "Qwen3_235B_A22B_Instruct_2507_ShenZhen", etc.
+        fetch_llm_training_data(age=86400, ls_model_name="Qwen3_235B", limit=10000, output_format="openai")
+        
+        # Combine filters: agent + model (partial match, last 14 days)
+        fetch_llm_training_data(age=20160, agent_name="supervisor", ls_model_name="Qwen3_235B", limit=1000)
+    """
+    state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    # Validate that at least one filter parameter is provided
+    if not any([langgraph_node, agent_name, ls_model_name]):
+        raise ValueError(
+            "At least one filter parameter must be provided: langgraph_node, agent_name, or ls_model_name"
+        )
+
+    # Split time range into segments if needed (LangFuse API works best with <= 7 day windows)
+    MAX_TIME_WINDOW = 7 * 24 * 60  # 7 days in minutes
+    now = datetime.now(UTC)
+    end_time = now
+    start_time = now - timedelta(minutes=age)
+
+    # Calculate time segments (working backwards from now)
+    time_segments = []
+    current_end = end_time
+    while current_end > start_time:
+        current_start = max(current_end - timedelta(minutes=MAX_TIME_WINDOW), start_time)
+        time_segments.append((current_start, current_end))
+        current_end = current_start
+
+    logger.info(
+        f"Starting to fetch training data with limit={limit}, age={age} minutes ({age/1440:.1f} days), "
+        f"filters: langgraph_node={langgraph_node}, agent_name={agent_name}, ls_model_name={ls_model_name}, "
+        f"time_segments={len(time_segments)}"
+    )
+
+    # LangFuse API has a maximum limit of 100 per request
+    API_BATCH_SIZE = 100
+    
+    # Initialize partial result handler and request tracker
+    partial_handler = PartialResultHandler(allow_partial=allow_partial_results)
+    tracker = RequestTracker()
+    
+    # Setup incremental save file if enabled
+    incremental_file_path = None
+    if incremental_save and state.dump_dir:
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        safe_filters = []
+        if langgraph_node:
+            safe_filters.append(f"node_{langgraph_node}")
+        if agent_name:
+            safe_filters.append(f"agent_{agent_name}")
+        if ls_model_name:
+            safe_filters.append(f"model_{ls_model_name.replace('/', '_')}")
+        filter_str = "_".join(safe_filters) if safe_filters else "training_data"
+        incremental_file_path = os.path.join(
+            state.dump_dir,
+            f"{filter_str}_{output_format}_incremental_{timestamp}.jsonl"
+        )
+        logger.info(f"Incremental save enabled: {incremental_file_path}")
+    
+    try:
+        all_filtered_observations = []
+        total_raw_observations = 0
+        total_pages_fetched = 0
+
+        # Process each time segment
+        for segment_idx, (segment_start, segment_end) in enumerate(time_segments):
+            # Check for cancellation at the start of each segment
+            await asyncio.sleep(0)  # Yield control to allow cancellation
+            
+            if len(all_filtered_observations) >= limit:
+                logger.info(f"Reached limit of {limit} samples, stopping at segment {segment_idx + 1}/{len(time_segments)}")
+                break
+
+            logger.info(
+                f"Processing time segment {segment_idx + 1}/{len(time_segments)}: "
+                f"{segment_start.isoformat()} to {segment_end.isoformat()}"
+            )
+
+            # Paginate through this time segment
+            current_page = 1
+            segment_pages = 0
+            while len(all_filtered_observations) < limit:
+                # Check for cancellation at the start of each page
+                await asyncio.sleep(0)  # Yield control to allow cancellation
+                
+                try:
+                    # Fetch a batch of observations with retry logic
+                    observation_items, pagination = _list_observations_with_retry(
+                        state.retry_manager,
+                        tracker,
+                        state.langfuse_client,
+                        limit=API_BATCH_SIZE,  # Always use max batch size for efficiency
+                        page=current_page,
+                        from_start_time=segment_start,
+                        to_start_time=segment_end,
+                        obs_type="GENERATION",  # Only LLM generations
+                        name=None,
+                        user_id=None,
+                        trace_id=None,
+                        parent_observation_id=None,
+                        metadata=None,
+                    )
+                except Exception as e:
+                    # Record failure and decide whether to continue
+                    partial_handler.record_failure(e)
+                    logger.error(
+                        f"Failed to fetch page {current_page} in segment {segment_idx + 1}: {str(e)}"
+                    )
+                    
+                    if not partial_handler.should_continue():
+                        # Re-raise if partial results not allowed
+                        raise
+                    
+                    # Break out of pagination loop for this segment
+                    break
+
+                if not observation_items:
+                    logger.info(f"No more observations in segment {segment_idx + 1}, page {current_page}")
+                    break
+
+                # Convert to Python objects
+                raw_observations = [_sdk_object_to_python(obs) for obs in observation_items]
+                total_raw_observations += len(raw_observations)
+
+                # Filter by langgraph_node, agent_name, and ls_model_name
+                batch_filtered = []
+                for obs in raw_observations:
+                    metadata = obs.get("metadata", {})
+
+                    # Filter by langgraph_node (exact match)
+                    if langgraph_node is not None:
+                        obs_langgraph_node = metadata.get("langgraph_node")
+                        if obs_langgraph_node != langgraph_node:
+                            continue
+
+                    # Filter by agent_name (exact match)
+                    if agent_name is not None:
+                        obs_agent_name = metadata.get("agent_name")
+                        if obs_agent_name != agent_name:
+                            continue
+
+                    # Filter by ls_model_name (partial match, case-insensitive)
+                    # This allows matching "Qwen3_235B" to "Qwen3_235B_A22B_Instruct_2507_ShenZhen"
+                    if ls_model_name is not None:
+                        obs_ls_model_name = metadata.get("ls_model_name")
+                        if not obs_ls_model_name or ls_model_name.lower() not in obs_ls_model_name.lower():
+                            continue
+
+                    batch_filtered.append(obs)
+                
+                # Incremental save: format and save batch immediately
+                if incremental_save and incremental_file_path and batch_filtered:
+                    try:
+                        with open(incremental_file_path, "a", encoding="utf-8") as f:
+                            for obs in batch_filtered:
+                                formatted_sample = _format_training_sample(obs, output_format, include_metadata)
+                                if formatted_sample:
+                                    f.write(json.dumps(formatted_sample, ensure_ascii=False) + "\n")
+                        logger.debug(f"Incrementally saved {len(batch_filtered)} samples to {incremental_file_path}")
+                    except Exception as save_error:
+                        logger.warning(f"Failed to incrementally save batch: {save_error}")
+                
+                all_filtered_observations.extend(batch_filtered)
+                segment_pages += 1
+                total_pages_fetched += 1
+                
+                # Record successful page
+                partial_handler.add_page_result(batch_filtered)
+                
+                # Log progress
+                logger.info(
+                    f"Segment {segment_idx + 1}/{len(time_segments)}, Page {current_page}: "
+                    f"fetched {len(raw_observations)} observations, filtered to {len(batch_filtered)}, "
+                    f"total filtered: {len(all_filtered_observations)}"
+                )
+                
+                # Log progress every 10 pages
+                tracker.log_progress(total_pages_fetched, len(all_filtered_observations))
+
+                # If we've collected enough, stop
+                if len(all_filtered_observations) >= limit:
+                    logger.info(f"Reached requested limit of {limit} samples")
+                    break
+                
+                # Check if we got fewer observations than requested
+                # This is more reliable than trusting pagination.next_page when using time ranges
+                if len(raw_observations) < API_BATCH_SIZE:
+                    logger.info(
+                        f"Reached end of segment {segment_idx + 1} "
+                        f"(got {len(raw_observations)} < {API_BATCH_SIZE} observations)"
+                    )
+                    break
+                
+                # Continue to next page
+                current_page += 1
+
+            logger.info(
+                f"Completed segment {segment_idx + 1}/{len(time_segments)}: "
+                f"fetched {segment_pages} pages, total filtered: {len(all_filtered_observations)}"
+            )
+
+        # Get partial result metadata
+        _, partial_metadata = partial_handler.get_result()
+        
+        # Trim to exact limit if we got more
+        filtered_observations = all_filtered_observations[:limit]
+
+        logger.info(
+            f"Filtered {len(filtered_observations)} observations from {total_raw_observations} total "
+            f"across {total_pages_fetched} pages and {len(time_segments)} time segments "
+            f"(langgraph_node={langgraph_node}, agent_name={agent_name}, ls_model_name={ls_model_name})"
+        )
+        
+        # Log partial result warning if applicable
+        if partial_metadata.is_partial:
+            logger.warning(
+                f"Returning partial results due to errors. "
+                f"Successfully fetched {partial_metadata.successful_pages}/{partial_metadata.total_pages_attempted} pages. "
+                f"Last error: {partial_metadata.error_message}"
+            )
+
+        # Format observations into training data
+        training_data = []
+        for obs in filtered_observations:
+            formatted_sample = _format_training_sample(obs, output_format, include_metadata)
+            if formatted_sample:  # Skip if formatting failed
+                training_data.append(formatted_sample)
+
+        logger.info(f"Formatted {len(training_data)} training samples in '{output_format}' format")
+
+        # Process based on output mode
+        mode = _ensure_output_mode(output_mode)
+        base_filename_prefix = f"training_data_{output_format}"
+        if langgraph_node:
+            base_filename_prefix += f"_node_{langgraph_node}"
+        if agent_name:
+            base_filename_prefix += f"_agent_{agent_name}"
+        if ls_model_name:
+            base_filename_prefix += f"_model_{ls_model_name.replace('/', '_')}"
+
+        processed_data, file_meta = process_data_with_mode(training_data, mode, base_filename_prefix, state)
+
+        logger.info(f"Extracted {len(training_data)} training samples, returning with output_mode={mode}")
+
+        # Return data in the standard response format
+        if mode == OutputMode.FULL_JSON_STRING:
+            return processed_data
+
+        metadata_block = {
+            "item_count": len(training_data),
+            "output_format": output_format,
+            "filters": {
+                "langgraph_node": langgraph_node,
+                "agent_name": agent_name,
+                "ls_model_name": ls_model_name,
+            },
+            "time_range_days": round(age / 1440, 1),
+            "time_segments_processed": len(time_segments),
+            "pages_fetched": total_pages_fetched,
+            "total_raw_observations": total_raw_observations,
+            "avg_response_time": round(tracker.metrics.avg_response_time, 2),
+            "success_rate": f"{tracker.metrics.successful_requests}/{tracker.metrics.total_requests}",
+            "partial_results": partial_metadata.is_partial,
+            "file_path": None,
+            "file_info": None,
+        }
+        
+        # Add incremental save file info if used
+        if incremental_save and incremental_file_path and os.path.exists(incremental_file_path):
+            file_size = os.path.getsize(incremental_file_path)
+            metadata_block["incremental_save_file"] = {
+                "path": incremental_file_path,
+                "size_bytes": file_size,
+                "size_mb": round(file_size / (1024 * 1024), 2),
+                "format": "jsonl",
+                "note": "Data saved incrementally during fetch to prevent data loss"
+            }
+            logger.info(f"Incremental save completed: {incremental_file_path} ({metadata_block['incremental_save_file']['size_mb']} MB)")
+        
+        # Add partial result details if applicable
+        if partial_metadata.is_partial:
+            metadata_block["partial_result_info"] = {
+                "successful_pages": partial_metadata.successful_pages,
+                "total_pages_attempted": partial_metadata.total_pages_attempted,
+                "failed_at_page": partial_metadata.failed_at_page,
+                "error_message": partial_metadata.error_message,
+            }
+        
+        if file_meta:
+            metadata_block.update(file_meta)
+
+        return {"data": processed_data, "metadata": metadata_block}
+    except asyncio.CancelledError:
+        # Handle cancellation gracefully
+        logger.warning(
+            f"Task cancelled by user. Collected {len(all_filtered_observations)} samples before cancellation."
+        )
+        
+        # If incremental save is enabled, data is already saved
+        if incremental_save and incremental_file_path and os.path.exists(incremental_file_path):
+            logger.info(
+                f"Partial data saved to incremental file: {incremental_file_path} "
+                f"({len(all_filtered_observations)} samples)"
+            )
+        
+        # Re-raise to properly cancel the task
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching LLM training data: {str(e)}")
+        logger.exception(e)
+        raise
+
+
+def _format_training_sample(observation: dict[str, Any], output_format: str, include_metadata: bool) -> dict[str, Any] | None:
+    """Format a single observation into a training sample.
+
+    Args:
+        observation: The observation object to format
+        output_format: Target format ('openai', 'anthropic', 'generic', 'dpo')
+        include_metadata: Whether to include metadata
+
+    Returns:
+        Formatted training sample, or None if formatting failed
+    """
+    try:
+        # Extract input and output
+        obs_input = observation.get("input")
+        obs_output = observation.get("output")
+
+        if not obs_input or not obs_output:
+            logger.debug(f"Skipping observation {observation.get('id')} - missing input or output")
+            return None
+
+        # Build metadata if requested
+        metadata = {}
+        if include_metadata:
+            obs_metadata = observation.get("metadata", {})
+            metadata = {
+                "observation_id": observation.get("id"),
+                "trace_id": observation.get("trace_id"),
+                "timestamp": observation.get("start_time"),
+                "model": observation.get("model"),
+                "model_parameters": observation.get("model_parameters"),
+                "usage": observation.get("usage"),
+                "langgraph_node": obs_metadata.get("langgraph_node"),
+                "agent_name": obs_metadata.get("agent_name"),
+                "ls_model_name": obs_metadata.get("ls_model_name"),
+            }
+
+        # Format based on output_format
+        if output_format == "openai":
+            return _format_openai(obs_input, obs_output, metadata, include_metadata)
+        elif output_format == "anthropic":
+            return _format_anthropic(obs_input, obs_output, metadata, include_metadata)
+        elif output_format == "dpo":
+            return _format_dpo(obs_input, obs_output, metadata, include_metadata)
+        else:  # generic
+            return _format_generic(obs_input, obs_output, metadata, include_metadata)
+
+    except Exception as e:
+        logger.warning(f"Error formatting observation {observation.get('id')}: {str(e)}")
+        return None
+
+
+def _format_openai(obs_input: Any, obs_output: Any, metadata: dict, include_metadata: bool) -> dict[str, Any]:
+    """Format as OpenAI fine-tuning format."""
+    messages = []
+
+    # Parse input - could be string, dict, or list of messages
+    if isinstance(obs_input, str):
+        messages.append({"role": "user", "content": obs_input})
+    elif isinstance(obs_input, dict):
+        # Check if it's already in message format
+        if "messages" in obs_input:
+            messages = obs_input["messages"]
+        elif "prompt" in obs_input:
+            messages.append({"role": "user", "content": obs_input["prompt"]})
+        else:
+            # Convert dict to string representation
+            messages.append({"role": "user", "content": json.dumps(obs_input, ensure_ascii=False)})
+    elif isinstance(obs_input, list):
+        # Assume it's already a messages list
+        messages = obs_input
+    else:
+        messages.append({"role": "user", "content": str(obs_input)})
+
+    # Parse output - typically the assistant's response
+    if isinstance(obs_output, str):
+        messages.append({"role": "assistant", "content": obs_output})
+    elif isinstance(obs_output, dict):
+        if "content" in obs_output:
+            messages.append({"role": "assistant", "content": obs_output["content"]})
+        else:
+            messages.append({"role": "assistant", "content": json.dumps(obs_output, ensure_ascii=False)})
+    else:
+        messages.append({"role": "assistant", "content": str(obs_output)})
+
+    result = {"messages": messages}
+    if include_metadata:
+        result["metadata"] = metadata
+
+    return result
+
+
+def _format_anthropic(obs_input: Any, obs_output: Any, metadata: dict, include_metadata: bool) -> dict[str, Any]:
+    """Format as Anthropic format with separate system/user/assistant."""
+    system = None
+    messages = []
+
+    # Parse input
+    if isinstance(obs_input, str):
+        messages.append({"role": "user", "content": obs_input})
+    elif isinstance(obs_input, dict):
+        if "messages" in obs_input:
+            input_messages = obs_input["messages"]
+            for msg in input_messages:
+                if msg.get("role") == "system":
+                    system = msg.get("content")
+                else:
+                    messages.append(msg)
+        elif "system" in obs_input and "prompt" in obs_input:
+            system = obs_input["system"]
+            messages.append({"role": "user", "content": obs_input["prompt"]})
+        elif "prompt" in obs_input:
+            messages.append({"role": "user", "content": obs_input["prompt"]})
+        else:
+            messages.append({"role": "user", "content": json.dumps(obs_input, ensure_ascii=False)})
+    elif isinstance(obs_input, list):
+        for msg in obs_input:
+            if isinstance(msg, dict) and msg.get("role") == "system":
+                system = msg.get("content")
+            else:
+                messages.append(msg)
+    else:
+        messages.append({"role": "user", "content": str(obs_input)})
+
+    # Parse output
+    if isinstance(obs_output, str):
+        messages.append({"role": "assistant", "content": obs_output})
+    elif isinstance(obs_output, dict):
+        if "content" in obs_output:
+            messages.append({"role": "assistant", "content": obs_output["content"]})
+        else:
+            messages.append({"role": "assistant", "content": json.dumps(obs_output, ensure_ascii=False)})
+    else:
+        messages.append({"role": "assistant", "content": str(obs_output)})
+
+    result = {"messages": messages}
+    if system:
+        result["system"] = system
+    if include_metadata:
+        result["metadata"] = metadata
+
+    return result
+
+
+def _format_generic(obs_input: Any, obs_output: Any, metadata: dict, include_metadata: bool) -> dict[str, Any]:
+    """Format as generic prompt/completion pairs."""
+    # Convert input to prompt string
+    if isinstance(obs_input, str):
+        prompt = obs_input
+    elif isinstance(obs_input, dict):
+        if "prompt" in obs_input:
+            prompt = obs_input["prompt"]
+        elif "messages" in obs_input:
+            # Convert messages to a single prompt string
+            prompt = "\n\n".join([f"{msg.get('role', 'user')}: {msg.get('content', '')}" for msg in obs_input["messages"]])
+        else:
+            prompt = json.dumps(obs_input, ensure_ascii=False)
+    elif isinstance(obs_input, list):
+        # Convert message list to string
+        prompt = "\n\n".join([f"{msg.get('role', 'user')}: {msg.get('content', '')}" for msg in obs_input])
+    else:
+        prompt = str(obs_input)
+
+    # Convert output to completion string
+    if isinstance(obs_output, str):
+        completion = obs_output
+    elif isinstance(obs_output, dict):
+        if "content" in obs_output:
+            completion = obs_output["content"]
+        else:
+            completion = json.dumps(obs_output, ensure_ascii=False)
+    else:
+        completion = str(obs_output)
+
+    result = {"prompt": prompt, "completion": completion}
+    if include_metadata:
+        result["metadata"] = metadata
+
+    return result
+
+
+def _format_dpo(obs_input: Any, obs_output: Any, metadata: dict, include_metadata: bool) -> dict[str, Any]:
+    """Format as DPO (Direct Preference Optimization) format.
+
+    Note: This format requires paired chosen/rejected responses. Since we only have
+    one response per observation, we mark the actual response as 'chosen' and leave
+    'rejected' as null. Users should post-process to add rejected samples.
+    """
+    # Convert input to prompt string
+    if isinstance(obs_input, str):
+        prompt = obs_input
+    elif isinstance(obs_input, dict):
+        if "prompt" in obs_input:
+            prompt = obs_input["prompt"]
+        elif "messages" in obs_input:
+            prompt = "\n\n".join([f"{msg.get('role', 'user')}: {msg.get('content', '')}" for msg in obs_input["messages"]])
+        else:
+            prompt = json.dumps(obs_input, ensure_ascii=False)
+    else:
+        prompt = str(obs_input)
+
+    # Convert output to chosen response
+    if isinstance(obs_output, str):
+        chosen = obs_output
+    elif isinstance(obs_output, dict):
+        if "content" in obs_output:
+            chosen = obs_output["content"]
+        else:
+            chosen = json.dumps(obs_output, ensure_ascii=False)
+    else:
+        chosen = str(obs_output)
+
+    result = {
+        "prompt": prompt,
+        "chosen": chosen,
+        "rejected": None,  # Placeholder - users should add rejected samples
+    }
+
+    if include_metadata:
+        result["metadata"] = metadata
+        # Add a note about rejected samples
+        result["metadata"]["_note"] = "rejected field is null - add negative samples for DPO training"
+
+    return result
+
+
+async def get_data_schema(ctx: Context, dummy: str = "") -> str:
+    """Get schema of trace, span and event objects.
+
+    Args:
+        ctx: Context object containing lifespan context with Langfuse client
+        dummy: Unused parameter for API compatibility (can be left empty)
+
+    Returns:
+        String containing the detailed schema definitions for traces, spans, events,
+        and other core Langfuse data structures
+    """
+    # Remove the unused state variable assignment
+    # state = cast(MCPState, ctx.request_context.lifespan_context)
+
+    # Use the dataclasses and models from Langfuse to generate a schema
+    schema = """
+# Langfuse Data Schema
+
+## Trace Schema
+A trace represents a complete request-response flow.
+
+```
+{
+  "id": "string",             // Unique identifier
+  "name": "string",           // Name of the trace
+  "user_id": "string",        // Optional user identifier
+  "session_id": "string",     // Optional session identifier
+  "timestamp": "datetime",    // When the trace was created
+  "metadata": "object",       // Optional JSON metadata
+  "tags": ["string"],         // Optional array of tag strings
+  "release": "string",        // Optional release version
+  "version": "string",        // Optional user-specified version
+  "observations": [           // Array of observation objects
+    {
+      // Observation fields (see below)
+    }
+  ]
+}
+```
+
+## Observation Schema
+An observation can be a span, generation, or event within a trace.
+
+```
+{
+  "id": "string",                 // Unique identifier
+  "trace_id": "string",           // Parent trace id
+  "parent_observation_id": "string", // Optional parent observation id
+  "name": "string",               // Name of the observation
+  "start_time": "datetime",       // When the observation started
+  "end_time": "datetime",         // When the observation ended (for spans/generations)
+  "type": "string",               // Type: SPAN, GENERATION, EVENT
+  "level": "string",              // Log level: DEBUG, DEFAULT, WARNING, ERROR
+  "status_message": "string",     // Optional status message
+  "metadata": "object",           // Optional JSON metadata
+  "input": "any",                 // Optional input data
+  "output": "any",                // Optional output data
+  "version": "string",            // Optional version
+  
+  // Generation-specific fields
+  "model": "string",              // LLM model name (for generations)
+  "model_parameters": "object",   // Model parameters (for generations)
+  "usage": "object",              // Token usage (for generations)
+  
+  "events": [                     // Array of event objects
+    {
+      // Event fields (see below)
+    }
+  ]
+}
+```
+
+## Event Schema
+Events are contained within observations for tracking specific state changes.
+
+```
+{
+  "id": "string",                 // Unique identifier
+  "name": "string",               // Name of the event
+  "start_time": "datetime",       // When the event occurred
+  "attributes": {                 // Event attributes
+    "exception.type": "string",       // Type of exception (for error events)
+    "exception.message": "string",    // Exception message (for error events)
+    "exception.stacktrace": "string", // Exception stack trace (for error events)
+    // ... other attributes
+  }
+}
+```
+
+## Score Schema
+Scores are evaluations attached to traces or observations.
+
+```
+{
+  "id": "string",             // Unique identifier
+  "name": "string",           // Score name 
+  "value": "number or string", // Score value (numeric or categorical)
+  "data_type": "string",      // NUMERIC, BOOLEAN, or CATEGORICAL
+  "trace_id": "string",       // Associated trace
+  "observation_id": "string", // Optional associated observation
+  "timestamp": "datetime",    // When the score was created
+  "comment": "string"         // Optional comment
+}
+```
+"""
+
+    return schema
+
+
+def app_factory(
+    public_key: str,
+    secret_key: str,
+    host: str,
+    cache_size: int = 100,
+    dump_dir: str = None,
+    timeout_config: TimeoutConfig = None,
+    retry_manager: RetryManager = None,
+) -> FastMCP:
+    """Create a FastMCP server with Langfuse tools.
+
+    Args:
+        public_key: Langfuse public key
+        secret_key: Langfuse secret key
+        host: Langfuse API host URL
+        cache_size: Size of LRU caches used for caching data
+        dump_dir: Directory to save full JSON dumps when 'output_mode' is 'full_json_file'.
+            The directory will be created if it doesn't exist.
+        timeout_config: HTTP timeout configuration for API requests
+        retry_manager: Retry manager for handling failed requests
+
+    Returns:
+        FastMCP server instance
+    """
+    # Use default timeout config if not provided
+    if timeout_config is None:
+        timeout_config = TimeoutConfig()
+    
+    # Use default retry manager if not provided
+    if retry_manager is None:
+        retry_manager = RetryManager(RetryConfig())
+
+    @asynccontextmanager
+    async def lifespan(server: FastMCP) -> AsyncIterator[MCPState]:
+        """Initialize and cleanup MCP server state.
+
+        Args:
+            server: MCP server instance
+
+        Returns:
+            AsyncIterator yielding MCPState
+        """
+        # Initialize state
+        init_params = inspect.signature(Langfuse.__init__).parameters
+        langfuse_kwargs = {
+            "public_key": public_key,
+            "secret_key": secret_key,
+            "host": host,
+            "debug": False,  # Disable debug mode since we're only querying
+            "flush_at": 0,  # Disable automatic flushing since we're not sending data
+            "flush_interval": None,  # Disable flush interval for pull-only usage
+        }
+
+        if "tracing_enabled" in init_params:
+            langfuse_kwargs["tracing_enabled"] = False  # type: ignore[assignment]
+
+        state = MCPState(
+            langfuse_client=Langfuse(**langfuse_kwargs),
+            observation_cache=LRUCache(maxsize=cache_size),
+            file_to_observations_map=LRUCache(maxsize=cache_size),
+            exception_type_map=LRUCache(maxsize=cache_size),
+            exceptions_by_filepath=LRUCache(maxsize=cache_size),
+            dump_dir=dump_dir,
+            timeout_config=timeout_config,
+            retry_manager=retry_manager,
+        )
+
+        try:
+            yield state
+        finally:
+            # Cleanup
+            logger.info("Cleaning up Langfuse client")
+            state.langfuse_client.flush()
+            state.langfuse_client.shutdown()
+
+    # Create the MCP server with lifespan context manager
+    mcp = FastMCP("Langfuse MCP Server", lifespan=lifespan)
+
+    # Register tools that match the Langfuse SDK signatures
+    mcp.tool()(fetch_traces)
+    mcp.tool()(fetch_trace)
+    mcp.tool()(fetch_observations)
+    mcp.tool()(fetch_observation)
+    mcp.tool()(fetch_sessions)
+    mcp.tool()(get_session_details)
+    mcp.tool()(get_user_sessions)
+    mcp.tool()(find_exceptions)
+    mcp.tool()(find_exceptions_in_file)
+    mcp.tool()(get_exception_details)
+    mcp.tool()(get_error_count)
+    mcp.tool()(get_data_schema)
+    mcp.tool()(fetch_llm_training_data)
+
+    return mcp
+
+
+def main():
+    """Entry point for the langfuse_mcp package."""
+    _load_env_file()
+    env_defaults = _read_env_defaults()
+    parser = _build_arg_parser(env_defaults)
+    args = parser.parse_args()
+
+    global logger
+    logger = configure_logging(args.log_level, args.log_to_console)
+    logger.info("=" * 80)
+    logger.info(f"Starting Langfuse MCP v{__version__}")
+    logger.info(f"Python executable: {sys.executable}")
+    logger.info("=" * 80)
+    logger.info(
+        "Environment defaults loaded: %s",
+        {k: ("***" if "key" in k else v) for k, v in env_defaults.items()},
+    )
+
+    # Create dump directory if it doesn't exist
+    if args.dump_dir:
+        try:
+            os.makedirs(args.dump_dir, exist_ok=True)
+            logger.info(f"Dump directory configured: {args.dump_dir}")
+        except (PermissionError, OSError) as e:
+            logger.error(f"Failed to create dump directory {args.dump_dir}: {e}")
+            args.dump_dir = None
+
+    # Create timeout configuration
+    timeout_config = TimeoutConfig.from_args(args)
+    logger.info(
+        f"Timeout configuration: connect={timeout_config.connect_timeout}s, "
+        f"read={timeout_config.read_timeout}s, request={timeout_config.request_timeout}s"
+    )
+
+    # Create retry configuration
+    retry_config = RetryConfig(
+        max_retries=getattr(args, "max_retries", 3),
+        initial_delay=getattr(args, "retry_initial_delay", 1.0),
+        max_delay=getattr(args, "retry_max_delay", 10.0),
+    )
+    retry_manager = RetryManager(retry_config)
+    logger.info(
+        f"Retry configuration: max_retries={retry_config.max_retries}, "
+        f"initial_delay={retry_config.initial_delay}s, max_delay={retry_config.max_delay}s"
+    )
+
+    logger.info(f"Starting MCP - host:{args.host} cache:{args.cache_size} keys:{args.public_key[:4]}.../{args.secret_key[:4]}...")
+    app = app_factory(
+        public_key=args.public_key,
+        secret_key=args.secret_key,
+        host=args.host,
+        cache_size=args.cache_size,
+        dump_dir=args.dump_dir,
+        timeout_config=timeout_config,
+        retry_manager=retry_manager,
+    )
+
+    app.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()
