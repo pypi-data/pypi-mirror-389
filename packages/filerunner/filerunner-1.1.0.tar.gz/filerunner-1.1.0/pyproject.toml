@@ -1,0 +1,44 @@
+[project]
+name = "filerunner"
+version = "1.1.0"
+description = "Quickly process files."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "rich>=14.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "build>=1.3.0",
+    "pytest>=8.4.2",
+    "python-semantic-release>=10.4.1",
+    "ruff>=0.14.3",
+]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff.lint]
+extend-select = ["E", "W", "F", "C90", "B", "I"]
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+commit_parser = "conventional"
+branch = "main"
+changelog_file = "CHANGELOG.md"
+tag_format = "{version}"
+commit_author = "semantic-release <semantic-release>"
+commit_message = "Version {version}, automatic version bump"
+
+[tool.semantic_release.remote]
+type = "github"
+
+[tool.semantic_release.branches.main]
+match = "(main|master)"
+prerelease_token = "rc"
+prerelease = false
