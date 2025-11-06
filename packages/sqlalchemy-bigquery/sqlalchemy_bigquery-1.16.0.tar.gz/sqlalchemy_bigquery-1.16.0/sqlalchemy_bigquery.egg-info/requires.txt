@@ -1,0 +1,43 @@
+google-api-core!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.0,<3.0.0,>=1.31.5
+google-auth<3.0.0,>=1.25.0
+google-cloud-bigquery<4.0.0,>=3.3.6
+packaging
+sqlalchemy<3.0.0,>=1.4.16
+
+[alembic]
+alembic
+
+[all]
+pytz
+google-cloud-bigquery-storage<3.0.0,>=2.0.0
+shapely
+alembic
+pyarrow>=5.0.0
+GeoAlchemy2
+packaging
+grpcio<2.0.0,>=1.47.0
+
+[all:python_version == "3.11"]
+grpcio<2.0.0,>=1.49.1
+
+[all:python_version >= "3.14"]
+grpcio<2.0.0,>=1.75.1
+
+[bqstorage]
+google-cloud-bigquery-storage<3.0.0,>=2.0.0
+grpcio<2.0.0,>=1.47.0
+pyarrow>=5.0.0
+
+[bqstorage:python_version == "3.11"]
+grpcio<2.0.0,>=1.49.1
+
+[bqstorage:python_version >= "3.14"]
+grpcio<2.0.0,>=1.75.1
+
+[geography]
+GeoAlchemy2
+shapely
+
+[tests]
+packaging
+pytz
