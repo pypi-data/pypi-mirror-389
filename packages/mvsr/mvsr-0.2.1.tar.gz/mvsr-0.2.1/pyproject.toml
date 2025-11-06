@@ -1,0 +1,58 @@
+[project]
+name = "mvsr"
+description = "Library for Fast Segmented Regression"
+version = "0.2.1"
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = ["numpy>=1.21"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Typing :: Typed",
+]
+[project.urls]
+Repository = "https://github.com/Loesgar/mvsr"
+Documentation = "https://loesgar.github.io/mvsr/stable/lang/python/"
+
+[project.optional-dependencies]
+matplotlib = ["matplotlib>=3.5"]
+
+[dependency-groups]
+dev = ["hatchling", "auditwheel", "toml", "ruff", "pytest", "pytest-cov", "nox", "matplotlib"]
+
+[build-system]
+requires = ["hatchling", "auditwheel", "toml"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+packages = ["mvsr"]
+[tool.hatch.build.targets.sdist.force-include]
+"../../mvsr/CMakeLists.txt" = "libmvsr/CMakeLists.txt"
+"../../mvsr/inc" = "libmvsr/inc"
+"../../mvsr/src" = "libmvsr/src"
+[tool.hatch.build.targets.wheel]
+artifacts = ["*/lib/*.so", "*/lib/*.dylib", "*/lib/*.dll"]
+[tool.hatch.build.targets.wheel.hooks.custom]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pyright]
+typeCheckingMode = "strict"
+exclude = ["**/.*", "**/__pycache__", "examples"]
+reportMissingParameterType = "warning"
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportPrivateUsage = false
+reportMissingTypeStubs = false
+
+[tool.coverage.report]
+exclude_also = ["InternalError"]
+
+[tool.pytest.ini_options]
+addopts = "--cov mvsr --cov-fail-under 99"
