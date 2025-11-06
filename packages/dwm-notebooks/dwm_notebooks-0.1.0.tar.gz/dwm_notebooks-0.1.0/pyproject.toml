@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dwm-notebooks"
+version = "0.1.0"
+description = "A small package that bundles six ML notebooks and provides a CLI to extract them to a user folder."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [ { name = "(you)", email = "you@example.com" } ]
+dependencies = ["importlib-resources; python_version < \"3.9\""]
+
+[project.scripts]
+# CLI entry point installed as `dwm-install`
+dwm-install = "dwm_notebooks.installer:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dwm_notebooks*"]
+
+[tool.setuptools.package-data]
+"dwm_notebooks" = ["*.ipynb"]
