@@ -1,0 +1,38 @@
+import os
+
+from setuptools import setup, find_packages
+
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, "README.rst")) as f:
+    README = f.read()
+
+with open(os.path.join(here, "requirements.txt")) as f:
+    requires = f.read()
+
+with open(os.path.join(here, "CURRENT_VERSION")) as f:
+    current_version = f.read().splitlines()[0].strip()
+
+
+setup(
+    name="caerp_sign_pdf",
+    version=current_version,
+    description="caerp_sign_pdf",
+    long_description=README,
+    long_description_content_type="text/x-rst",
+    license="GPLv3",
+    classifiers=[
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Programming Language :: Python",
+        "Framework :: Pyramid",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    ],
+    author="Kilya",
+    author_email="contact@kilya.net",
+    url="https://framagit.org/caerp/caerp_sign_pdf",
+    keywords="web wsgi bfg pylons pyramid caerp",
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=requires,
+)
