@@ -1,0 +1,42 @@
+{
+  "name": "digital-twin",
+  "version": "3.8.0",
+  "description": "Digital Life Manager - Auto-discovers tools from OpenAPI schemas, manages DT-to-DT conversations with private Drive storage, supports multiple DT identities/roles",
+  "author": "Aurica Team",
+  "routes": [
+    {
+      "path": "/api/chat",
+      "file": "be/api/chat.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/conversations",
+      "file": "be/api/conversations.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/identities",
+      "file": "be/api/identities.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/health",
+      "file": "be/api/health.py",
+      "method": "GET"
+    }
+  ],
+  "public_routes": [
+    "/api/health/*",
+    "/api/chat/*"
+  ],
+  "requires": [
+    "authentication",
+    "drive"
+  ],
+  "dt_config": {
+    "type": "digital_life_manager",
+    "execution_node": true,
+    "conversation_storage": "drive",
+    "multi_identity": true
+  }
+}
