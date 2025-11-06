@@ -1,0 +1,32 @@
+# Etherscan api
+
+Etherscan v2 api client
+
+## Install
+```bash
+pip install etherscan-api-v2
+```
+
+
+## Usage
+
+```python
+from etherscan_api import EtherScanApi, get_etherscan_api
+from pprint import pprint
+
+# view all supported chains and chain_id
+pprint(EtherScanApi.chain_list())
+
+# get api client
+etherscan = EtherScanApi(chain_id=1)
+etherscan = get_etherscan_api('eth', network='mainnet')
+
+account = '0x3f217aF5b4d5Dc6467598937119E500ab758623a'
+usdt = '0x58c885900f2df7a1fb1cc1ec35dea9a1c786cac0'
+
+# get token balance 
+balance = etherscan.get_token_balance(account, usdt)
+
+# query contract
+balance = etherscan.query_contract(usdt, 'balanceOf', account)
+```
