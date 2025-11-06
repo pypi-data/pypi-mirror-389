@@ -1,0 +1,43 @@
+[project]
+name = "qsopop"
+version = "0.0b1"
+authors = [
+  { name="Jan-Torge Schindler", email="jan-torge.schindler@uni-hamburg.de" },
+    {name="Timo Kist", email="kist@strw.leidenuniv.nl"}
+]
+description = "A quasar population modeling framework "
+readme = "README.md"
+
+requires-python = ">=3.11"
+
+dependencies = [
+    "astropy>=6.1.6",
+    "matplotlib>=3.9.2",
+    "jupyterlab>=4.3.0",
+    "numpy>=2.0.2",
+    "pandas>=2.2.3",
+    "scipy>=1.14.1",
+    "tqdm>=4.67.0",
+    "corner>=2.2.3",
+    "emcee>=3.1.6"
+]
+
+
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta"
+]
+license = "BSD-3-Clause"
+license-files = ["LICEN[CS]E*"]
+keywords = ["quasars", "astrophysics", "population", "luminosity function", "modeling",
+"black hole mass function"]
+
+[project.urls]
+Repository = "https://github.com/cosmic-dawn-group/qsopop"
+Issues = "https://github.com/cosmic-dawn-group/qsopop/issues"
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
