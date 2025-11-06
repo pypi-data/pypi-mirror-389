@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include parrots *.py
+recursive-include parrots/data *
+# indextts 目录下的所有文件都打包
+recursive-include parrots/indextts *
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .ipynb_checkpoints
+global-exclude *.so
+global-exclude *.dylib
