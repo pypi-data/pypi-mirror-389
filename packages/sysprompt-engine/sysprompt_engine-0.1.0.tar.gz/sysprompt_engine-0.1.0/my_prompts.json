@@ -1,0 +1,49 @@
+{
+  "prompts": [
+    {
+      "id": "b7d711ee-1991-4d9b-ac43-c282be786fdd",
+      "name": "summarizer",
+      "content": "Summarize the following text in 3 bullet points.",
+      "description": "",
+      "metadata": {},
+      "tags": [
+        "summarization"
+      ],
+      "created_at": "2025-11-04T10:21:57.639769",
+      "updated_at": "2025-11-04T10:21:57.639769"
+    },
+    {
+      "id": "ae45470f-34d9-47a5-adc2-70e7bfa11227",
+      "name": "translator",
+      "content": "Translate the following text to French.",
+      "description": "",
+      "metadata": {},
+      "tags": [
+        "translation"
+      ],
+      "created_at": "2025-11-04T10:21:57.639793",
+      "updated_at": "2025-11-04T10:21:57.639793"
+    }
+  ],
+  "templates": [
+    {
+      "id": "0310224b-7ab7-4f45-b464-03d1ba9d1483",
+      "name": "task_generator",
+      "template": "Generate {{count}} {{difficulty}} coding tasks about {{topic}}.",
+      "description": "",
+      "variables": [
+        "count",
+        "difficulty",
+        "topic"
+      ],
+      "default_values": {},
+      "metadata": {},
+      "tags": [
+        "coding",
+        "education"
+      ],
+      "created_at": "2025-11-04T10:21:57.639824",
+      "updated_at": "2025-11-04T10:21:57.639824"
+    }
+  ]
+}

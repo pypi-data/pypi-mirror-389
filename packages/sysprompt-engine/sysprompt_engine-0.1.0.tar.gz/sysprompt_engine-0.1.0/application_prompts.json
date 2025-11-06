@@ -1,0 +1,31 @@
+{
+  "prompts": [],
+  "templates": [
+    {
+      "id": "8a0a8ce5-f851-434f-b3e9-9db7acbb7b7f",
+      "name": "chatbot_personality",
+      "template": "You are {{name}}, a {{personality}} chatbot.\n\nYour role: {{role}}\n\nKey traits:\n{{traits}}\n\nWhen responding:\n- Use a {{tone}} tone\n- {{instruction_1}}\n- {{instruction_2}}\n\nNow, respond to the user.",
+      "description": "",
+      "variables": [
+        "name",
+        "personality",
+        "role",
+        "traits",
+        "tone",
+        "instruction_1",
+        "instruction_2"
+      ],
+      "default_values": {
+        "tone": "friendly",
+        "instruction_1": "Be helpful"
+      },
+      "metadata": {},
+      "tags": [
+        "chatbot",
+        "personality"
+      ],
+      "created_at": "2025-11-04T10:21:57.651468",
+      "updated_at": "2025-11-04T10:21:57.651468"
+    }
+  ]
+}
