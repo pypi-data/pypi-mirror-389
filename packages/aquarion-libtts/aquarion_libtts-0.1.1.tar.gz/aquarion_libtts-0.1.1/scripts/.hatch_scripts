@@ -1,0 +1,168 @@
+#!/usr/bin/env nu
+# SPDX-FileCopyrightText: 2025-present Krys Lawrence <aquarion.5.krystopher@spamgourmet.org>
+# SPDX-License-Identifier: AGPL-3.0-only
+
+# Part of the aquarion-libtts library of the Aquarion AI project.
+# Copyright (C) 2025-present Krys Lawrence <aquarion.5.krystopher@spamgourmet.org>
+#
+# This program is free software: you can redistribute it and/or modify it under the
+# terms of the GNU Affero General Public License as published by the Free Software
+# Foundation, version 3.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License along with
+# this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+# Command run by Hatch scripts inside their respective venvs. DO NOT RUN DIRECTLY.
+def main []: nothing -> string {
+    help main
+}
+
+## Acceptance tests
+
+let radish_common_args = ["-b", "tests/acceptance/steps/", "tests/acceptance/features/"]
+let radish_default_args = ["--tags", "not wip", "-f", "dots", "--shuffle"]
+let radish_ci_args = ["--tags", "not wip and not gpu", "-f", "dots", "--shuffle"]
+let coverage_args = ["--rcfile=radish_coverage.toml"]
+
+# Internal command. DO NOT RUN DIRECTLY.
+def --wrapped "main accept" [...rest: string]: nothing -> string {
+    if ($rest | length) > 0 {
+        radish ...$radish_common_args ...$rest
+
+    } else {
+        radish ...$radish_common_args ...$radish_default_args
+    }
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def --wrapped "main accept cover" [--ci, ...rest: string]: nothing -> string  {
+    mut radish_args = $radish_default_args
+    if $ci {
+       $radish_args = $radish_ci_args
+       $env.CUDA_VISIBLE_DEVICES = ""
+    }
+    (
+        coverage run ...$coverage_args ...(which radish).path
+        ...$radish_common_args ...$radish_args ...$rest
+    )
+    coverage report -m ...$coverage_args
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def --wrapped "main accept wip" [...rest: string]: nothing -> string {
+    radish ...$radish_common_args --wip --tags wip --write-ids ...$rest
+}
+
+
+### Babel Language Tooling
+
+let babel_src_code_path = "src/aquarion/libs/libtts"
+let babel_src_locale_base = $"($babel_src_code_path)/locale"
+let babel_test_code_path = "tests/unit/api"
+let babel_test_locale_base = $"($babel_test_code_path)/locale"
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel extract src" []: nothing -> string {
+    let domain = (hatch project metadata name)
+    babel_extract $babel_src_code_path $"($babel_src_locale_base)/($domain).pot"
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel extract tests" []: nothing -> string {
+    babel_extract $babel_test_code_path $"($babel_test_locale_base)/test.pot"
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel init src" [locale: string]: nothing -> string {
+    let domain = (hatch project metadata name)
+    (
+        babel_init $"($babel_src_locale_base)/($domain).pot"
+        $babel_src_locale_base $domain $locale
+    )
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel init tests" [locale: string]: nothing -> string {
+    babel_init $"($babel_test_locale_base)/test.pot" $babel_test_locale_base test $locale
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel update src" [--headers (-h)]: nothing -> string {
+    let domain = (hatch project metadata name)
+    (
+        babel_update $headers $"($babel_src_locale_base)/($domain).pot"
+        $babel_src_locale_base $domain
+    )
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel update tests" [--headers (-h)]: nothing -> string {
+    (
+        babel_update $headers $"($babel_test_locale_base)/test.pot"
+        $babel_test_locale_base test
+    )
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel compile src" []: nothing -> string {
+    let domain = (hatch project metadata name)
+    babel_compile $domain $babel_src_locale_base
+}
+
+# Internal command. DO NOT RUN DIRECTLY.
+def "main babel compile tests" []: nothing -> string {
+    babel_compile test $babel_test_locale_base
+}
+
+
+### Internal internal commands :)
+
+def babel_extract [input_dir: string, output_file: string]: nothing -> string {
+    let project = (hatch project metadata name)
+    let version = (hatch version)
+    let author_name = (hatch project metadata authors | from json | get 0.name)
+    let author_email = (hatch project metadata authors | from json | get 0.email)
+    let header = $"# SPDX-FileCopyrightText: 2025-present ($author_name) <($author_email)>
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# Translations template for PROJECT.
+# Copyright \(C) 2025-present ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#"
+    (
+        pybabel extract --no-wrap -o $output_file --project $project --version $version
+        --header-comment $header --copyright-holder $"($author_name) <($author_email)>"
+        --msgid-bugs-address $author_email -c "Translator:" --ignore-dirs ".*"
+        $input_dir
+    )
+}
+
+def babel_init [
+    input_file: string,
+    output_dir: string,
+    domain: string,
+    locale: string
+]: nothing -> string {
+    pybabel init --no-wrap -i $input_file -d $output_dir -D $domain -l $locale
+}
+
+def babel_update [
+    headers: bool,
+    input_file: string,
+    output_dir: string,
+    domain: string
+]: nothing -> string {
+    mut extra = ""
+    if $headers { $extra = "--update-header-comment" }
+    pybabel update --no-wrap -i $input_file -d $output_dir -D $domain --previous $extra
+}
+
+def babel_compile [domain: string, locale_dir: string]: nothing -> string {
+    pybabel compile -D $domain -d $locale_dir --statistics
+}
