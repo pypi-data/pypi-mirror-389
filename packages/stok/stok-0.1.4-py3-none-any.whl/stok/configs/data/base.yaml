@@ -1,0 +1,9 @@
+batch_size: 8
+max_len: 1280
+num_workers: 4
+pin_memory: true
+
+
+# file paths for datasets
+train: null   # path to training CSV/Parquet (pid, protein_sequence, indices)
+eval: null    # path to validation CSV/Parquet
