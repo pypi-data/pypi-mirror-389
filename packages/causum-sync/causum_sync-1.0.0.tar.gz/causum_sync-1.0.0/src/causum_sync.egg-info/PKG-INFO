@@ -1,0 +1,219 @@
+Metadata-Version: 2.4
+Name: causum-sync
+Version: 1.0.0
+Summary: Local connector runner that verifies, migrates, and loads data to your analytics database.
+Home-page: https://gitlab.com/causum/causum-sync
+Author: Causum™ Analytics
+Author-email: info@causum.ai
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: psycopg2-binary>=2.9.0
+Requires-Dist: colorama>=0.4.6
+Requires-Dist: tqdm<5.0,>=4.66
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# causum-sync
+
+**causum-sync** is a lightweight local client that lets users securely run data connector synchronizations **entirely on their own machines** — without ever sharing database credentials externally.
+
+It executes open-source [Airbyte](https://airbyte.com) connectors under the hood via Docker, verifies all source and destination connections, and loads the resulting data into your unified analytics database (Postgres).
+
+---
+
+## 🚀 Key Features
+
+- 🧩 **Automatic source verification** – checks all source connections before migration  
+- 🗄️ **Destination verification** – validates your Postgres connection before loading  
+- 🐳 **Docker-based execution** – runs Airbyte connectors locally using Docker SDK  
+- 🔄 **Full migration pipeline** – extracts, verifies, and loads automatically  
+- 🧠 **Multi-connector support** – runs all configs in one bundle (up to 19+)  
+- 🎨 **Colorized CLI with emojis** – clear cross-platform terminal output  
+- 🧾 **Verbose mode** – detailed Docker and psycopg2 logs for debugging  
+- 🛡️ **Offline and private** – credentials never leave the user’s environment  
+
+---
+
+## 📦 Installation
+
+Requires:
+- Python **3.8+**
+- Docker running locally
+- Network access to your source databases
+- Network access to the specified destination database
+
+Install from source:
+```bash
+git clone https://github.com/yourorg/causum-sync.git
+cd causum-sync
+pip install -e .
+````
+
+---
+
+## ⚙️ How It Works
+
+The **frontend** generates a ZIP bundle containing all connection configurations:
+
+```
+causum_configs_2025-11-04.zip
+├── config/
+│   ├── postgres.json
+│   ├── mysql.json
+│   ├── mongo.json
+│   └── ...
+└── destination_config.json
+```
+
+* `config/*.json` – source database connector configurations
+* `destination_config.json` – your specified Postgres destination
+
+The library:
+
+1. Extracts and validates the bundle.
+2. Runs Airbyte Docker connectors for each source.
+3. Streams their output into your Postgres destination.
+
+---
+
+## 🧑‍💻 Usage
+
+### Run with a bundle path
+
+```bash
+causum-sync --bundle ~/Downloads/causum_configs_2025-11-04.zip
+```
+
+### Auto-import the latest bundle from Downloads
+
+```bash
+causum-sync --auto-import
+```
+
+### Enable verbose debug output
+
+```bash
+causum-sync --bundle ~/Downloads/causum_configs_2025-11-04.zip --verbose
+```
+
+---
+
+## 🧠 Workflow Summary
+
+1️⃣ **Extract bundle**
+📦 Detects and unpacks `causum_configs_*.zip`
+
+2️⃣ **Verify connections**
+🧩 Runs connection checks for every source and destination
+
+3️⃣ **Migrate data**
+🔄 Sequentially extracts from each source and loads into Postgres
+
+4️⃣ **Report results**
+✅ Green = success
+❌ Red = failure
+⚠️ Warns if configs require correction
+
+---
+
+## 🔧 Example Output
+
+```
+📦 Imported bundle from ~/Downloads/causum_configs_2025-11-04.zip
+🧩 Verifying source connections...
+✅ postgres
+✅ mysql
+❌ mongo (Authentication failed)
+✅ snowflake
+🧩 Verifying destination connection...
+✅ destination
+
+⚠️  Connection issues: mongo
+Fix configs and retry.
+```
+
+If all succeed:
+
+```
+🔄 All connections verified, starting migration...
+⚙️  Migrating postgres → unified_mimic.public ...
+✅ postgres complete
+✅ All sources migrated successfully!
+```
+
+---
+
+## 🐳 Connectors Supported
+
+Out of the box, `causum-sync` supports these Airbyte sources:
+
+| Connector   | Image               |
+| ----------- | ------------------- |
+| Postgres    | `source-postgres`   |
+| MySQL       | `source-mysql`      |
+| MongoDB     | `source-mongodb-v2` |
+| Snowflake   | `source-snowflake`  |
+| ClickHouse  | `source-clickhouse` |
+| Oracle      | `source-oracle`     |
+| MSSQL       | `source-mssql`      |
+| Redshift    | `source-redshift`   |
+| ...and more |                     |
+
+New connectors can be added in `mapping.py`.
+
+---
+
+## ⚙️ Command Reference
+
+| Flag              | Description                                        |
+| ----------------- | -------------------------------------------------- |
+| `--bundle <path>` | Path to the ZIP bundle from frontend               |
+| `--auto-import`   | Automatically use the latest bundle from Downloads |
+| `--verbose`       | Print detailed Docker and database logs            |
+| `-h`, `--help`    | Show help message                                  |
+
+---
+
+## 🧱 Development
+
+Structure:
+
+```
+causum-sync/
+├── src/
+│   ├── cli.py
+│   ├── runner.py
+│   ├── migrate.py
+│   ├── to_postgres.py
+│   ├── utils.py
+│   ├── constants.py
+│   └── mapping.py
+├── setup.py
+└── README.md
+```
+
+---
+
+## 🪪 License
+
+**MIT License**
+© 2025 Causum™ Analytics
+See [LICENSE](./LICENSE) for details.
+
+---
+
+## 💬 Acknowledgments
+
+This library uses [Airbyte connectors](https://airbyte.com/connectors) under the hood to perform source extraction and validation, leveraging Docker for execution and psycopg2 for Postgres ingestion.
