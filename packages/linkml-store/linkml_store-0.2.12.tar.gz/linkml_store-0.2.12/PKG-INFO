@@ -1,0 +1,215 @@
+Metadata-Version: 2.4
+Name: linkml-store
+Version: 0.2.12
+Summary: linkml-store
+License: MIT
+License-File: LICENSE
+Author: Author 1
+Author-email: author@org.org
+Requires-Python: >=3.10,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Provides-Extra: all
+Provides-Extra: analytics
+Provides-Extra: app
+Provides-Extra: bigquery
+Provides-Extra: fastapi
+Provides-Extra: frictionless
+Provides-Extra: h5py
+Provides-Extra: llm
+Provides-Extra: map
+Provides-Extra: mongodb
+Provides-Extra: neo4j
+Provides-Extra: pyarrow
+Provides-Extra: pyreadr
+Provides-Extra: rdf
+Provides-Extra: renderer
+Provides-Extra: scipy
+Provides-Extra: tests
+Provides-Extra: validation
+Requires-Dist: black (>=24.0.0) ; extra == "tests"
+Requires-Dist: click
+Requires-Dist: duckdb (>=0.10.1)
+Requires-Dist: duckdb-engine (>=0.11.2)
+Requires-Dist: fastapi ; extra == "fastapi"
+Requires-Dist: frictionless ; extra == "frictionless"
+Requires-Dist: google-cloud-bigquery ; extra == "bigquery"
+Requires-Dist: h5py ; extra == "h5py"
+Requires-Dist: jinja2 (>=3.1.4,<4.0.0)
+Requires-Dist: jsonlines (>=4.0.0,<5.0.0)
+Requires-Dist: jsonpatch (>=1.33)
+Requires-Dist: jsonpath-ng
+Requires-Dist: lightrdf ; extra == "rdf"
+Requires-Dist: linkml (>=1.8.0) ; extra == "validation"
+Requires-Dist: linkml-runtime (>=1.8.0)
+Requires-Dist: linkml_map ; extra == "map"
+Requires-Dist: linkml_renderer ; extra == "renderer"
+Requires-Dist: llm ; extra == "llm" or extra == "all"
+Requires-Dist: matplotlib ; extra == "analytics"
+Requires-Dist: multipledispatch
+Requires-Dist: neo4j ; extra == "neo4j" or extra == "all"
+Requires-Dist: networkx ; extra == "neo4j"
+Requires-Dist: pandas (>=2.2.1) ; extra == "analytics"
+Requires-Dist: plotly ; extra == "analytics"
+Requires-Dist: py2neo ; extra == "neo4j"
+Requires-Dist: pyarrow ; extra == "pyarrow"
+Requires-Dist: pydantic (>=2.0.0,<3.0.0)
+Requires-Dist: pymongo (>=4.11,<5.0) ; extra == "mongodb"
+Requires-Dist: pyreadr ; extra == "pyreadr"
+Requires-Dist: pystow (>=0.5.4,<0.6.0)
+Requires-Dist: python-dotenv (>=1.0.1,<2.0.0)
+Requires-Dist: ruff (>=0.6.2) ; extra == "tests"
+Requires-Dist: scikit-learn ; extra == "scipy"
+Requires-Dist: scipy ; extra == "scipy"
+Requires-Dist: seaborn ; extra == "analytics"
+Requires-Dist: sqlalchemy
+Requires-Dist: streamlit (>=1.32.2,<2.0.0) ; extra == "app"
+Requires-Dist: tabulate
+Requires-Dist: tiktoken ; extra == "llm"
+Requires-Dist: uvicorn ; extra == "fastapi"
+Requires-Dist: xmltodict (>=0.13.0)
+Description-Content-Type: text/markdown
+
+# linkml-store
+
+An AI-ready data management and integration platform. LinkML-Store
+provides an abstraction layer over multiple different backends
+(including DuckDB, MongoDB, Neo4j, and local filesystems), allowing for
+common query, index, and storage operations.
+
+For full documentation, see [https://linkml.io/linkml-store/](https://linkml.io/linkml-store/)
+
+See [these slides](https://docs.google.com/presentation/d/e/2PACX-1vSgtWUNUW0qNO_ZhMAGQ6fYhlXZJjBNMYT0OiZz8DDx8oj7iG9KofRs6SeaMXBBOICGknoyMG2zaHnm/embed?start=false&loop=false&delayms=3000) for a high level overview.
+
+__Warning__ LinkML-Store is still undergoing changes and refactoring,
+APIs and command line options are subject to change!
+
+## Quick Start
+
+Install, add data, query it:
+
+```
+pip install linkml-store[all]
+linkml-store -d duckdb:///db/my.db -c persons insert data/*.json
+linkml-store -d duckdb:///db/my.db -c persons query -w "occupation: Bricklayer"
+```
+
+Index it, search it:
+
+```
+linkml-store -d duckdb:///db/my.db -c persons index -t llm
+linkml-store -d duckdb:///db/my.db -c persons search "all persons employed in construction"
+```
+
+Validate it:
+
+```
+linkml-store -d duckdb:///db/my.db -c persons validate
+```
+
+## Basic usage
+
+* [Command Line](https://linkml.io/linkml-store/tutorials/Command-Line-Tutorial.html)
+* [Python](https://linkml.io/linkml-store/tutorials/Python-Tutorial.html)
+* API
+* Streamlit applications
+
+## The CRUDSI pattern
+
+Most database APIs implement the **CRUD** pattern: Create, Read, Update, Delete.
+LinkML-Store adds **Search** and **Inference** to this pattern, making it **CRUDSI**.
+
+The notion of "Search" and "Inference" is intended to be flexible and extensible,
+including:
+
+* Search
+   * Traditional keyword search
+   * Search using LLM Vector embeddings (*without* a dedicated vector database)
+   * Pluggable specialized search, e.g. genomic sequence (not yet implemented)
+* Inference (encompassing  *validation*, *repair*, and inference of missing data)
+   * Classic rule-based inference
+   * Inference using LLM Retrieval Augmented Generation (RAG)
+   * Statistical/ML inference
+
+## Features
+
+### Multiple Adapters
+
+LinkML-Store is designed to work with multiple backends, giving a common abstraction layer
+
+* [MongoDB](https://linkml.io/linkml-store/how-to/Use-MongoDB.html)
+* [DuckDB](https://linkml.io/linkml-store/tutorials/Python-Tutorial.html)
+* [Solr](https://linkml.io/linkml-store/how-to/Query-Solr-using-CLI.html)
+* [Neo4j](https://linkml.io/linkml-store/how-to/Use-Neo4j.html)
+
+* Filesystem
+
+Coming soon: any RDBMS, any triplestore, Neo4J, HDF5-based stores, ChromaDB/Vector dbs ...
+
+The intent is to give a union of all features of each backend. For
+example, analytic faceted queries are provided for *all* backends, not
+just Solr.
+
+### Composable indexes
+
+Many backends come with their own indexing and search
+schemes. Classically this was Lucene-based indexes, now it is semantic
+search using LLM embeddings.
+
+LinkML store treats indexing as an orthogonal concern - you can
+compose different indexing schemes with different backends. You don't
+need to have a vector database to run embedding search!
+
+See [How to Use-Semantic-Search](https://linkml.io/linkml-store/how-to/Use-Semantic-Search.html)
+
+### Use with LLMs
+
+TODO - docs
+
+### Validation
+
+LinkML-Store is backed by [LinkML](https://linkml.io), which allows
+for powerful expressive structural and semantic constraints.
+
+See [Indexing JSON](https://linkml.io/linkml-store/how-to/Index-Phenopackets.html)
+
+and [Referential Integrity](https://linkml.io/linkml-store/how-to/Check-Referential-Integrity.html)
+
+## Web API
+
+There is a preliminary API following HATEOAS principles implemented using FastAPI.
+
+To start you should first create a config file, e.g. `db/conf.yaml`:
+
+Then run:
+
+```
+export LINKML_STORE_CONFIG=./db/conf.yaml
+make api
+```
+
+The API returns links as well as data objects, it's recommended to use a Chrome plugin for JSON viewing
+for exploring the API. TODO: add docs here.
+
+The main endpoints are:
+
+* `http://localhost:8000/` - the root of the API
+* `http://localhost:8000/pages/` - browse the API via HTML
+* `http://localhost:8000/docs` - the Swagger UI
+
+## Streamlit app
+
+```
+make app
+```
+
+## Background
+
+See [these slides](https://docs.google.com/presentation/d/e/2PACX-1vSgtWUNUW0qNO_ZhMAGQ6fYhlXZJjBNMYT0OiZz8DDx8oj7iG9KofRs6SeaMXBBOICGknoyMG2zaHnm/embed?start=false&loop=false&delayms=3000) for more details
+
+
