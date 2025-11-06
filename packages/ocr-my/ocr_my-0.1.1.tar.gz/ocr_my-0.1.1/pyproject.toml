@@ -1,0 +1,48 @@
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# IMPORTANT: You MUST change this name to something unique on PyPI!
+# Check for availability here: https://pypi.org/
+name = "ocr_my"
+
+version = "0.1.1"
+authors = [
+  { name="MyMy", email="mynhk@mor.com.vn" },
+]
+description = "A versatile OCR and document processing command-line tool."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Text Processing",
+]
+
+# Core dependencies. RapidOCR is now included by default.
+dependencies = [
+    "docling-core>=0.2.0",
+    "pypdfium2",
+    "python-docx",
+    "pandas",
+    "openpyxl",
+    "Pillow",
+    "PyYAML",
+    "numpy",
+    "pydantic",
+    "rapidocr-onnxruntime" # MOVED: Now a core dependency
+]
+
+# Optional dependency for the EasyOCR engine
+[project.optional-dependencies]
+easyocr = ["easyocr"]
+all = ["myocr-tool[easyocr]"] # 'all' now just includes the optional engines
+
+[project.urls]
+#Homepage = "https://github.com/your-username/your-repo-name"
+#Issues = "https://github.com/your-username/your-repo-name/issues"
+
+[project.scripts]
+my-ocr-tool = "myocr_lib.__main__:main"
