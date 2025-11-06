@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+
+prune tests
+prune private
+
+global-exclude *.env *.pem *.key *.crt *.p12 *.sqlite .DS_Store
+exclude .env .env.*

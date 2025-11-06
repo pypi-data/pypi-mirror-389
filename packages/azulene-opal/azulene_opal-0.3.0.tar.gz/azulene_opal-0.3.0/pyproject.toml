@@ -1,0 +1,32 @@
+[project]
+name = "azulene-opal"
+version = "0.3.0"
+description = "A CLI and Python library to interact with Azulene Opal"
+readme = "README.md"
+authors = [{ name = "Azulene Labs", email = "contact@azulenelabs.com" }]
+dependencies = [
+    "typer",
+    "httpx",
+    "supabase",
+    "rich"
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://www.azulenelabs.com/"
+Repository = "https://github.com/Azulene-Labs/opal-cli"
+
+[project.scripts]
+opal = "opal.main:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = false  # don't auto-include non-code files
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["opal*"]           # only ship our package
+exclude = ["tests*", "private*"]  # keep these out
