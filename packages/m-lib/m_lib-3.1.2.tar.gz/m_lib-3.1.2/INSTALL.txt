@@ -1,0 +1,35 @@
+m_lib requires Python 2.7 or 3.4+.
+
+Installation script setup.py requires setuptools.
+
+Installation using pip:
+
+    System-wide:
+
+    sudo pip install m_lib
+
+    User mode:
+
+    pip install --user m_lib
+
+    Virtual environments:
+
+    pip install m_lib
+
+    For Python 2.7 the command is easy_install.
+
+Installation from sources:
+
+    To install the library from sources system-wide run run the following
+    command:
+
+    sudo python setup.py install
+
+    If you don't want to install it system-wide you can install it in your
+    home directory; run run the following command:
+
+    python setup.py install --user
+
+Option '--user' installs m_lib into
+$HOME/.local/lib/python$MAJOR.$MINOR/site-packages/ where python finds it
+automatically.

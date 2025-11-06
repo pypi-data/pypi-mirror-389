@@ -1,0 +1,66 @@
+
+   I am providing here two additional modules and two patches for the
+standard library.
+
+   Those two modules are ZODBhash and MKhash. They provide dbm-like
+interface based on ZODB and MetaKit. They are intended to be used by
+anydbm, so I am also providing corresponding patches for anydbm.py and
+whichdb.py.
+
+   Download mzhash.zip - it contains modules, patches and simple tests.
+
+   Also I made a patch for the shelve.py module. I created two additional
+shalve - CompressedShelf and CompressedKeysShelf. These shelve use zlib to
+compress/decompress data. CompressedShelf compresses only data, and
+CompressedKeysShelf compresses both data and keys.
+
+   Download mshelve.zip.
+
+   Below is a long story why I created all this and how I compared them.
+
+   I started with the need to create ispell-like hash with all forms of
+every word. I needed this for full-text search. (BTW, I think it'd be nice
+to include this kind of search into ZCatalog; I'll think about it later). I
+looked into ispell and htdig sources and manuals, and found that I'd better
+write my own programs and libraries instead of trying to wrap those
+complex ones.
+
+   I found (in ispell manual) I can generate simple text file with all
+neccessary information: ispell -e <russian.dict | sort >ruusian.words. So
+the task is to construct a hash for fast access to this information.
+
+   Very easy, thanks Python! Just read every line, split it and put into
+disk-based hash (anydbm!).
+
+   I wrote the program in a minute. The program generates two hashes. One
+hash, words2root maps every word to its normal form ("passing" => "pass").
+Another, root2words maps normal form to the list of all forms ("pass" =>
+["pass", "passed", "passing", "passes", "passable", "impassable"]). The
+hashes are named after htdig, of course.
+
+   The first run was a surprise. It was running for 5 hours, swapping a
+lot, and finally it generates two 85-megabytes files (Berkeley DB hashes).
+170 megs from 10M text file! Wow!!!
+
+   So I started to think I want to experiment with other disk-based hashes,
+and I wanted to find a way to speed things up and lower disk requirements.
+
+   Next thing I tried - ZODB. ZODB is itself hash (a sort of), so I easily
+wrote ZODBhash wrapper. I reran my program. It failed. ZODB ate /tmp very
+fast - 700 megabatyes by one hour. I tried to commit subtransactions or
+even transactions during write (__setitem__), but this was of not much
+help, and my program stopped by IOError, "no space left on device" :(
+
+   Then I tried to to write compressed data to the hash. I created two
+shelve - CompressedShelf and CompressedKeysShelf and tried them with bsddb.
+I cleared my computer from all jobs, stopped XWindows, etc - and reran the
+program two times - with Shelf and CompressedKeysShelf. Shelf created 2 85
+megs files in 3 hours, and CompressedShelf created 2 files - one 85 and the
+other 21 megs - in 3.5 hours. Win in disk space (not much) and loose in
+time.
+
+   I tried to use gdbm instead of bsddb. Again, I ran the program two
+times. Result: Shelf - 120 and 50 megs in 5 hours, CompressedKeysShelf -
+120 and 13 megs in 4 hours. Some win and some loose. During the runs my
+computer swapped a bit less than when I used Berkeley DB, so it seems gdbm
+uses less memory.
