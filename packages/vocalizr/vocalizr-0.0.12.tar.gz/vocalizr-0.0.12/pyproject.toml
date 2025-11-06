@@ -1,0 +1,60 @@
+[project]
+name = "vocalizr"
+version = "0.0.12"
+description = "Voice Generator part of the Chatacter Backend"
+readme = "README.md"
+requires-python = ">=3.12, <3.13"
+authors = [
+    { name = "Mohamed Hisham Abdelzaher", email = "mohamed.hisham.abdelzaher@gmail.com" },
+]
+keywords = ["audio", "kokoro", "voice"]
+classifiers = [
+    "Environment :: GPU :: NVIDIA CUDA :: 12 :: 12.4",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "gradio[mcp]>=5.49.1",
+    "kokoro>=0.9.4",
+    "pip>=25.3",
+    "pyfiglet>=1.0.4",
+    "soundfile>=0.13.1",
+]
+
+[project.urls]
+Issues = "https://github.com/AlphaSphereDotAI/vocalizr/issues"
+Repository = "https://github.com/AlphaSphereDotAI/vocalizr.git"
+Twitter = "https://x.com/AlphaSphereAI"
+
+[project.scripts]
+vocalizr = "vocalizr.__main__:main"
+
+[dependency-groups]
+dev = [
+    "gitpython>=3.1.45",
+    "gradio-client>=1.13.3",
+    "pytest-emoji>=0.2.0",
+    "pytest-md>=0.2.0",
+    "pytest-mergify>=2025.10.23.1",
+    "pytest>=8.4.2",
+    "ruff>=0.14.3",
+    "ty>=0.0.1a25",
+    "uv-build>=0.9.7",
+]
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+
+[tool.ruff]
+extend = ".trunk/configs/ruff.toml"
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu124" }]
+torchaudio = [{ index = "pytorch-cu124" }]
+
+[[tool.uv.index]]
+explicit = true
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
