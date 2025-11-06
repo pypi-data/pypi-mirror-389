@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: pymurmur
+Version: 0.0.1
+Summary: Python port of go-murmur for simple password storage
+Author-email: Mike Schilli <m@perlmeister.com>
+License: Apache-2.0
+Project-URL: Homepage, https://github.com/mschilli/pymurmur
+Project-URL: Issues, https://github.com/mschilli/pymurmur/issues
+Keywords: yaml,config,lookup
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: PyYAML>=6.0
+Dynamic: license-file
+
+# murmur
+
+A simple Python library for access to a YAML formatted password file.
+It's a Python port of the go-murmur Go library.
+
+## Installation
+```bash
+pip install pymurmur
+```
+
+## How to use it
+
+```
+$ cat ~/.murmur.yaml
+fooapp: topsecret
+barapp: hunter3
+
+$ cat murmur.py
+from murmur import Murmur
+m = Murmur()
+print(m.Lookup("barapp"))
+
+$ ./murmur.py
+val=hunter3
+```
+
+## Author
+
+Mike Schilli, m@perlmeister.com 2025
+
+## License
+
+Released under the [Apache 2.0](LICENSE)
