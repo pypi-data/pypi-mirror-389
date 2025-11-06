@@ -1,0 +1,41 @@
+[project]
+name = "yiwen-package"
+version = "0.1.0"
+description = "一个简单实用的 Python 工具包"
+authors = [
+    {name = "yw.hao", email = "yiwenlemo@gmail.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["utils", "utilities", "tools", "string", "list", "file", "time"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/ywhao/yiwen-package"
+Repository = "https://github.com/ywhao/yiwen-package"
+Issues = "https://github.com/ywhao/yiwen-package/issues"
+
+[tool.poetry]
+packages = [{include = "yiwen_package", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=4.0.0",
+]
