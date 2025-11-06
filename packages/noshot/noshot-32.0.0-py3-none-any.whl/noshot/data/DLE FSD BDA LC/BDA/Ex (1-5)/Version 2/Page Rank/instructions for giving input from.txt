@@ -1,0 +1,25 @@
+instructions for giving input from graph:
+
+
+Note:
+
+this code implements single iteration
+
+
+For simplicity, let's assume a graph with 3 nodes (A, B, C) and an initial PageRank of 1/3 for each.
+
+input:
+
+3
+A       B,C
+B       A
+C       A,B
+A       0.3333333333
+B       0.3333333333
+C       0.3333333333
+
+Explanation of input.txt:
+Node A links to B and C.
+Node B links to A.
+Node C links to A and B.
+Initial PageRank for A, B, and C is approximately 0.3333333333.

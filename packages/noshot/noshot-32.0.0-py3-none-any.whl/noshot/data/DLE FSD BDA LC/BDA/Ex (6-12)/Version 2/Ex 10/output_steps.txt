@@ -1,0 +1,47 @@
+▶️ Step 3: Run the Code
+Prerequisites:
+Python 3.6+
+PySpark installed:
+pip install pyspark
+
+Run:
+python als_recommender.py
+
+🖨️ Sample Output
+=== Ratings Schema ===
+root
+ |-- user_id: integer (nullable = true)
+ |-- item_id: integer (nullable = true)
+ |-- rating: integer (nullable = true)
+
+=== Sample Ratings ===
++--------+--------+------+
+|user_id |item_id |rating|
++--------+--------+------+
+|1       |1       |5     |
+|1       |3       |4     |
+|1       |6       |4     |
+|2       |2       |3     |
+|2       |3       |5     |
++--------+--------+------+
+
+=== Predictions (user, item, actual, predicted) ===
++--------+--------+------+----------+
+|user_id |item_id |rating|prediction|
++--------+--------+------+----------+
+|1       |3       |4     |3.98      |
+|2       |2       |3     |3.02      |
+|3       |1       |4     |4.01      |
++--------+--------+------+----------+
+
+Root Mean Square Error (RMSE) = 0.1200
+
+=== Top 3 Recommendations per User ===
++--------+------------------------------------------------------------------+
+|user_id |recommendations                                                   |
++--------+------------------------------------------------------------------+
+|1       |[{2, 4.2}, {4, 3.8}, {5, 3.5}]                                   |
+|2       |[{1, 4.0}, {6, 3.7}, {5, 3.3}]                                   |
+|3       |[{3, 4.5}, {4, 4.1}, {6, 3.9}]                                   |
+|4       |[{1, 4.3}, {3, 4.0}, {5, 3.6}]                                   |
++--------+------------------------------------------------------------------+

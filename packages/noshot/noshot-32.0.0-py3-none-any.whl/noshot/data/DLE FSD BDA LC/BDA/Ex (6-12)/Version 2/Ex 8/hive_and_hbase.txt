@@ -1,0 +1,100 @@
+📁 Step 1: Create Simple Unstructured Data
+Create a file called students.txt on your local machine:
+
+(Already present in folder: exp 8)
+
+📤 Step 2: Load into HDFS (Hadoop)
+Open terminal (or CMD):
+
+# Create folder in HDFS
+hdfs dfs -mkdir -p /user/data
+
+# Upload file
+hdfs dfs -put students.txt /user/data/
+
+✅ Now data is in Hadoop!
+
+🐝 Step 3: Use Hive to Make It Structured
+Open Hive CLI or Beeline:
+
+-- Create a database
+CREATE DATABASE school;
+USE school;
+
+-- Create EXTERNAL table (links to HDFS file)
+CREATE EXTERNAL TABLE raw_students (
+    line STRING
+)
+LOCATION '/user/data/';
+
+-- Check: you’ll see raw lines
+SELECT * FROM raw_students;
+-- Output: "1,Alice,20,CS" etc.
+
+🧱 Step 4: Create Proper Structured Table
+
+-- Create clean table
+CREATE TABLE students (
+    id INT,
+    name STRING,
+    age INT,
+    dept STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+-- Load data from raw (or directly from HDFS)
+LOAD DATA INPATH '/user/data/students.txt' INTO TABLE students;
+
+✅ Now data is structured!
+
+🔍 Step 5: Run Basic Queries
+-- See all students
+SELECT * FROM students;
+
+-- Output:
+-- 1	Alice	20	CS
+-- 2	Bob	22	Math
+-- 3	Charlie	21	Physics
+
+-- Find CS students
+SELECT name FROM students WHERE dept = 'CS';
+
+-- Count students by department
+SELECT dept, COUNT(*) FROM students GROUP BY dept;
+
+👁️ Step 6: Create a View
+-- Create view for adults (age >= 21)
+CREATE VIEW adult_students AS
+SELECT name, dept FROM students WHERE age >= 21;
+
+-- Use the view
+SELECT * FROM adult_students;
+-- Output:
+-- Bob      Math
+-- Charlie  Physics
+
+🗃️ Step 7: (Optional) Connect to HBase
+(In the Hbase Shell)
+hbase shell
+create 'hbase_students', 'info'
+
+(In Hive)
+CREATE TABLE hbase_students (
+    id INT,
+    name STRING,
+    age INT,
+    dept STRING
+)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES (
+    "hbase.columns.mapping" = ":key,info:name,info:age,info:dept"
+)
+TBLPROPERTIES ("hbase.table.name" = "hbase_students");
+
+-- Insert data
+INSERT INTO hbase_students SELECT * FROM students;
+
+✅Now your Hive table is backed by HBase!
+
