@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "q2netcdf"
+version = "0.4.0"
+authors = [{name="Pat Welch", email="pat@mousebrains.com"}]
+maintainers = [{name="Pat Welch", email="pat@mousebrains.com"}]
+description = "Manipulate Rockland Scientific's Q-files"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+keywords = ["Rockland", "MicroRider", "Q-file", "ISDP"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Oceanography",
+  "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "netcdf4>=1.5.3",
+    "numpy>=1.17.0",
+    "xarray>=0.16.0",
+    "pyyaml>=5.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+    "bandit[toml]>=1.7",
+]
+
+[project.urls]
+Repository = "https://github.com/mousebrains/q2netcdf"
+
+[project.scripts]
+q2netcdf = "q2netcdf.q2netcdf:main"
+mergeqfiles = "q2netcdf.mergeqfiles:main"
+mkISDPcfg = "q2netcdf.mkISDPcfg:main"
+QHeader = "q2netcdf.QHeader:main"
+QFile = "q2netcdf.QFile:main"
+QReduce = "q2netcdf.QReduce:main"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=q2netcdf",
+    "--cov-report=term-missing",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
