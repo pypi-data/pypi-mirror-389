@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+
+from setuptools import setup
+
+setup(
+    name = "m_lib_defenc",
+    version = "1.1.1",
+    description = "Get default encoding",
+    long_description = "Get default encoding. A part of Broytman Library for Python, Copyright (C) 1996-2025 PhiloSoft Design",
+    long_description_content_type="text/plain",
+    author = "Oleg Broytman",
+    author_email = "phd@phdru.name",
+    url = "https://phdru.name/Software/Python/#m_lib",
+    project_urls={
+        'Homepage': 'https://phdru.name/Software/Python/#m_lib',
+        'Download': 'https://pypi.org/project/m_lib_defenc/',
+        'Git repo': 'https://git.phdru.name/m_lib_defenc.git/',
+    },
+    license = "GPL",
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
+    platforms = "Any",
+    packages = ["m_lib"],
+    namespace_packages = ["m_lib"],
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+)
