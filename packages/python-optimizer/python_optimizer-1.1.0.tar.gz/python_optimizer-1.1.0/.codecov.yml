@@ -1,0 +1,43 @@
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    wait_for_ci: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...95"
+  
+  status:
+    project:
+      default:
+        target: 75%
+        threshold: 5%
+        if_no_uploads: error
+        informational: false
+    patch:
+      default:
+        target: 70%
+        threshold: 10%
+        if_no_uploads: error
+
+ignore:
+  - "tests/"
+  - "examples/"
+  - "benchmarks/"
+  - "scripts/"
+  - "docs/"
+  - "python_optimizer/benchmarks/"
+
+comment:
+  layout: "header, diff, flags, components, tree"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+
+flags:
+  unittests:
+    paths:
+      - python_optimizer/
+    carryforward: true
