@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "depgate"
+version = "0.6.0"
+description = "DepGate detects and prevents dependency confusion and supply-chain risks. (Hard fork of Apiiro's Dependency Combobulator)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "cognitivegears" }
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "requests>=2.32.4,<2.32.6",
+  "gql>=3.5.0",
+  "python-dotenv>=0.19.2",
+  "requirements-parser>=0.11.0",
+   "packaging>=23.2",
+   "semantic_version>=2.10.0",
+   "PyYAML>=6.0",
+  "mcp[cli]>=1.18.0",
+  "jsonschema>=4.19.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/cognitivegears/depgate"
+"Bug Tracker" = "https://github.com/cognitivegears/depgate/issues"
+
+[project.scripts]
+depgate = "depgate:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["depgate", "args", "constants", "metapackage", "cli_io", "cli_build", "cli_registry", "cli_classify", "cli_config", "cli_mcp"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+  "pytest>=7.0",
+  "pylint>=3.0",
+  "behave>=1.2.6",
+]
