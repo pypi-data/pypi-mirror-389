@@ -1,0 +1,164 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2023-07-11 15:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: fr\n"
+"Language-Name: French\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+
+#: ./browser/views.py:330
+msgid "Add items"
+msgstr "Ajouter des éléments"
+
+#: ./browser/views.py:361
+msgid "Added values"
+msgstr "Éléments à ajouter / fixés"
+
+#: ./browser/views.py:132
+msgid "Apply"
+msgstr "Appliquer"
+
+#: ./browser/views.py:328
+msgid "Batch action choice"
+msgstr "Choix de l'action à effectuer"
+
+#: ./browser/views.py:53
+msgid "Batch action form"
+msgstr "Batch action form"
+
+#: ./browser/views.py:504
+msgid "Batch contact field change"
+msgstr "Changement de contact par lot"
+
+#: ./browser/views.py:411
+msgid "Batch labels change"
+msgstr "Changer les étiquettes par lot"
+
+#: ./browser/views.py:164
+msgid "Batch state change"
+msgstr "Changer l'état par lot"
+
+#: ./browser/views.py:201
+msgid "Comment"
+msgstr "Commentaire"
+
+#: ./browser/views.py:217
+msgid "Delete elements"
+msgstr "Supprimer les éléments par lot"
+
+#: ./configure.zcml:32
+msgid "Extension profile for collective.eeafaceted.batchactions."
+msgstr "Extension profile for collective.eeafaceted.batchactions."
+
+#: ./browser/views.py:197
+msgid "No common or available transition. Modify your selection."
+msgstr "<span style='color: red;'>Aucune transition commune ou valide. Recommencez en modifiant votre sélection.</span>"
+
+#: ./browser/views.py:202
+msgid "Optional comment to display in history"
+msgstr "Commentaire optionnel qui sera affiché dans l'historique."
+
+#: ./browser/views.py:333
+msgid "Overwrite"
+msgstr "Écraser le contenu avec les éléments choisis"
+
+#: ./browser/views.py:331
+msgid "Remove items"
+msgstr "Retirer des éléments"
+
+#: ./browser/views.py:354
+msgid "Removed values"
+msgstr "Éléments à retirer"
+
+#: ./browser/views.py:332
+msgid "Replace some items by others"
+msgstr "Remplacer des éléments par d'autres"
+
+#: ./browser/views.py:536
+msgid "Search and select the values to add."
+msgstr "Chercher et sélectionner des contacts à ajouter."
+
+#: ./browser/views.py:528
+msgid "Search and select the values to remove, if necessary."
+msgstr "Chercher et sélectionner des contacts à retirer, si nécessaire."
+
+#: ./browser/views.py:282
+msgid "Select the values to add."
+msgstr "Sélectionner les éléments à ajouter."
+
+#: ./browser/views.py:416
+msgid "Select the values to add. A personal label is represented by (*)."
+msgstr "Sélectionner les éléments à ajouter. Une étiquette utilisateur est indiquée par (*)."
+
+#: ./browser/views.py:284
+msgid "Select the values to remove."
+msgstr "Sélectionner les éléments à retirer."
+
+#: ./browser/views.py:414
+msgid "Select the values to remove. A personal label is represented by (*)."
+msgstr "Sélectionner les éléments à retirer. Une étiquette utilisateur est indiquée par (*)."
+
+#: ./testing.zcml:17
+msgid "Steps to ease tests of collective.eeafaceted.batchactions"
+msgstr "Steps to ease tests of collective.eeafaceted.batchactions"
+
+#: ./browser/views.py:101
+msgid "This action will affect ${number} element(s)."
+msgstr "Cette action concerne <b>${number} élément(s)</b>."
+
+#: ./browser/views.py:239
+msgid "This action will only affect ${deletable_number} element(s), indeed you do not have the permission to delete ${not_deletable_number} element(s)."
+msgstr "Cette action ne sera appliquée que sur <b>${deletable_number} élément(s) sélectionné(s)</b> car <span style='color: red;'>vous n'avez pas la permission de supprimer les autres ${not_deletable_number} élément(s).</span>"
+
+#: ./browser/views.py:194
+msgid "Transition"
+msgstr "Transition"
+
+#: ./browser/views.py:254
+msgid "Update WF role mappings"
+msgstr "Mettre à jour les rôles/permissions (WF)"
+
+#: ./utils.py:9
+msgid "You can't change this field on selected items. Modify your selection."
+msgstr "<span style='color: red;'>Vous ne pouvez pas modifier de manière commune ce champ sur les éléments sélectionnés. Modifiez votre sélection.</span>"
+
+#. Default: "<p>When using \"Replace\", resulting elements will be updated only if removed values were selected on original element.</p>"
+msgid "aruo_action_replace_warning"
+msgstr "<p class='discreet'><strong>Attention</strong>, lors de l'utilisation de l'action \"Remplacer des éléments par d'autres\", l'action ne sera appliquée que si les \"Éléments à retirer\" sont tous présents à l'origine.</p>"
+
+#: ./configure.zcml:32
+msgid "collective.eeafaceted.batchactions"
+msgstr "collective.eeafaceted.batchactions"
+
+#: ./testing.zcml:17
+msgid "collective.eeafaceted.batchactions tests"
+msgstr "collective.eeafaceted.batchactions tests"
+
+#. Default: "Delete"
+#: ./browser/views.py:220
+msgid "delete-batch-action-but"
+msgstr "Supprimer"
+
+#. Default: "<p>Warning, field can not be empty.</p>"
+msgid "field_can_not_be_empty_warning"
+msgstr "<p class='discreet'><strong>Attention</strong>, le champ est requis et une action qui enleverait la dernière valeur sélectionnée ne sera pas appliquée.</p>"
+
+#. Default: "Change labels"
+msgid "labels-batch-action-but"
+msgstr "Changer les étiquettes"
+
+#. Default: "Change state"
+msgid "transition-batch-action-but"
+msgstr "Changer l'état"
+
+#. Default: "Update WF role mappings"
+msgid "update-wf-role-mappings-batch-action-but"
+msgstr "Mettre à jour les rôles/permissions (WF)"
