@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "json_toon"
+version = "1.0.1"
+description = "Convert JSON to TOON (Token-Oriented Object Notation) and back."
+authors = [{ name = "Monish Meher", email = "monishmeher@gmail.com" }]
+license = "MIT"
+keywords = ["json", "toon", "converter", "llm", "prompt"]
+requires-python = ">=3.8"
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/CatalystMonish/json_toon"
