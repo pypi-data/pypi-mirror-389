@@ -1,0 +1,57 @@
+[package]
+name = "globalsearch"
+version = "0.4.0"
+edition = "2021"
+authors = ["Germán Martín Heim <german.martin.heim@gmail.com>"]
+license = "MIT"
+description = "A multistart framework for global optimization with scatter search and local NLP solvers written in Rust"
+readme = "README.md"
+repository = "https://github.com/GermanHeim/globalsearch-rs"
+keywords = ["optimization", "math", "science"]
+categories = ["science", "mathematics"]
+exclude = ["/media", ".github", "/python"]
+rust-version = "1.78"                                                                                      # MSRV
+
+[dependencies]
+argmin = { version = "0.11.0" }
+argmin-math = { version = "0.5.1", features = ["ndarray_latest-nolinalg"] }
+ndarray = { version = "0.16.1" }
+rayon = { version = "1.11.0", optional = true }
+thiserror = "2.0.17"
+rand = "0.9.2"
+kdam = { version = "0.6.3", optional = true }
+serde = { version = "1.0.228", features = ["derive"], optional = true }
+bincode = { version = "2.0.1", features = ["serde"], optional = true }
+chrono = { version = "0.4.42", features = ["serde"], optional = true }
+cobyla = "0.8.0"
+
+[features]
+default = []
+rayon = ["dep:rayon"]
+progress_bar = ["dep:kdam"]
+checkpointing = ["dep:serde", "dep:bincode", "dep:chrono", "ndarray/serde"]
+
+[dev-dependencies]
+criterion = { git = "https://github.com/bheisler/criterion.rs", features = [
+    "html_reports",
+] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[[bench]]
+name = "six_hump_camel"
+harness = false
+
+[[bench]]
+name = "scatter_search"
+harness = false
+
+[[bench]]
+name = "batch_iterations"
+harness = false
+
+[[bench]]
+name = "parallel_performance"
+harness = false
