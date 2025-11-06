@@ -1,0 +1,153 @@
+name: Release to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Type of version bump'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_version: ${{ steps.calc_version.outputs.new_version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          echo "Latest tag: $latest_tag"
+
+      - name: Calculate new version
+        id: calc_version
+        run: |
+          latest_tag="${{ steps.get_latest_tag.outputs.latest_tag }}"
+          version=${latest_tag#v}
+          IFS='.' read -r major minor patch <<< "$version"
+
+          release_type="${{ github.event.inputs.release_type }}"
+
+          case $release_type in
+            major)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            minor)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            patch)
+              patch=$((patch + 1))
+              ;;
+          esac
+
+          new_version="v${major}.${minor}.${patch}"
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+          echo "New version: $new_version"
+
+      - name: Check if tag already exists remotely
+        run: |
+          new_version="${{ steps.calc_version.outputs.new_version }}"
+          if git ls-remote --tags origin | grep -q "refs/tags/$new_version$"; then
+            echo "::error::Tag $new_version already exists on remote!"
+            echo "::error::This may indicate a previous release attempt."
+            echo "::error::Please use a different version or delete the remote tag first."
+            exit 1
+          fi
+          echo "✅ Tag $new_version does not exist remotely"
+
+      - name: Create tag locally (do not push yet)
+        run: |
+          new_version="${{ steps.calc_version.outputs.new_version }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$new_version" -m "Release $new_version"
+
+          echo "✅ Created local tag: $new_version"
+          echo "   (Tag will be pushed only if build and tests succeed)"
+
+  test-and-build:
+    needs: [create-tag]
+    uses: ./.github/workflows/_reusable-test-build.yml
+    with:
+      python_version: '3.11'
+      test_path: 'pypi_workflow_generator/'
+      artifact_version: ${{ needs.create-tag.outputs.new_version }}
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: [create-tag, test-and-build]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # For PyPI Trusted Publishing
+      contents: write  # For pushing tags and creating releases
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+
+      - name: Push tag to remote
+        run: |
+          new_version="${{ needs.create-tag.outputs.new_version }}"
+          git fetch --tags
+          git push origin "$new_version"
+          echo "✅ Pushed tag to remote: $new_version"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        run: |
+          new_version="${{ needs.create-tag.outputs.new_version }}"
+          gh release create "$new_version" \
+            --title "Release $new_version" \
+            --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          new_version="${{ needs.create-tag.outputs.new_version }}"
+          echo "### Release Published Successfully :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: $new_version" >> $GITHUB_STEP_SUMMARY
+          echo "**Type**: ${{ github.event.inputs.release_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Steps completed**:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Package built" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Published to PyPI" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tag pushed to repository" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ GitHub Release created" >> $GITHUB_STEP_SUMMARY

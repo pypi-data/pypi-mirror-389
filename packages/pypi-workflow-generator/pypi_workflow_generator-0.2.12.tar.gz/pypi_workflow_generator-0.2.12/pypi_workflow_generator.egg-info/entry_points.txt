@@ -1,0 +1,5 @@
+[console_scripts]
+mcp-pypi-workflow-generator = pypi_workflow_generator.server:main
+pypi-release = pypi_workflow_generator.create_release:main
+pypi-workflow-generator = pypi_workflow_generator.main:main
+pypi-workflow-generator-init = pypi_workflow_generator.init:main
