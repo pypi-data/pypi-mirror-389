@@ -1,0 +1,122 @@
+[build-system]
+requires = ["hatchling", "hatch-regex-commit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nextline"
+description = "A Python library for controlling Python scripts execution"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Simons Observatory", email = "so_software@simonsobservatory.org" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = ["apluggy>=1.0", "exceptiongroup>=1.2", "transitions>=0.9.0"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["mypy", "tox", "twine"]
+tests = [
+  "nextline-test-utils>=0.1",
+  "pytest-asyncio>=0.18",
+  "pytest-cov>=4.0",
+  "pytest-timeout>=2.1",
+  "pytest>=8.0",
+  "hypothesis>=6.117",
+]
+
+[project.urls]
+Homepage = "https://github.com/simonsobs/nextline#readme"
+Issues = "https://github.com/simonsobs/nextline/issues"
+Source = "https://github.com/simonsobs/nextline"
+
+[tool.hatch.version]
+source = "regex_commit"
+path = "nextline/__about__.py"
+tag_sign = false
+
+[tool.hatch.build.targets.sdist]
+include = ["/nextline"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+timeout = 60
+addopts = "--doctest-modules"
+# doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE",]
+doctest_optionflags = ["ELLIPSIS"]
+filterwarnings = ["ignore::hypothesis.errors.NonInteractiveExampleWarning"]
+norecursedirs = [
+  ".hypothesis",
+  "build",
+  "tests/main/scenarios/example",
+  "tests/spawned/run/example",
+]
+log_cli = false
+log_cli_level = "INFO"
+
+[tool.coverage.run]
+branch = true
+source = ["nextline", "tests"]
+concurrency = ["multiprocessing", "thread"]
+omit = ["nextline/disable.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  'if __name__ == "__main__":',
+  "if TYPE_CHECKING:",
+  "^ *\\.\\.\\.$",
+]
+ignore_errors = true
+
+[tool.ruff]
+line-length = 88
+extend-exclude = ["tests/spawned/run/example/err.py"]
+
+[tool.ruff.format]
+quote-style = "preserve"
+
+[tool.ruff.lint]
+select = [
+  "E", # pycodestyle errors
+  "W", # pycodestyle warnings
+  "F", # pyflakes
+  "I", # isort
+]
+ignore = [
+  "E203", # Whitespace before '{symbol}'
+  "E265", # Block comment should start with #
+  "E266", # Too many leading # before block comment
+  "E501", # Line too long ({width} > {limit})
+  "E741", # Ambiguous variable name '{name}'
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20
+
+[tool.ruff.lint.isort]
+known-first-party = ["nextline_test_utils"]
+
+[tool.mypy]
+disallow_untyped_defs = true
+exclude = '''(?x)(
+  example/.*\.py$
+  | test_script\.py$
+)'''
+
+[[tool.mypy.overrides]]
+module = ["apluggy.*"]
+ignore_missing_imports = true
