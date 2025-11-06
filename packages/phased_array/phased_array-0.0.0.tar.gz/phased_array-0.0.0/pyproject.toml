@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phased_array"
+dynamic = ["version"]
+authors = [{name = "Cody Piersall", email = "cody.piersall@gmail.com"}]
+description = "Tools for dealing with phased arrays"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["radar", "antenna", "phased array"]
+dependencies = ["numpy"]
+
+[tool.setuptools]
+packages = ["phased_array"]
+
+[tool.setuptools.dynamic]
+version = {attr = "phased_array._version.__version__"}
+
+# no specific settings, but this lets editors know to do stuff.
+[tool.black]
