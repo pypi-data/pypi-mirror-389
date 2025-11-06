@@ -1,0 +1,106 @@
+Metadata-Version: 2.4
+Name: ecg-k-fold
+Version: 0.1.3
+Summary: ECG k-Fold utilities
+Author-email: Vajira Thambawita <vlbthambawita@gmail.com>
+License-Expression: MIT
+Keywords: ecg,machine-learning,kfold,huggingface,datasets
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: ruff>=0.6.0; extra == "dev"
+Requires-Dist: black>=24.3.0; extra == "dev"
+Requires-Dist: mypy>=1.8.0; extra == "dev"
+Requires-Dist: pre-commit>=3.7.0; extra == "dev"
+Requires-Dist: build>=1.2.1; extra == "dev"
+Requires-Dist: twine>=5.1.1; extra == "dev"
+Dynamic: license-file
+
+# ECG-k-Fold
+
+Utilities for creating reproducible k-fold splits for open-access ECG datasets (FAIR compliant), packaged as a Python library with a CLI and CI/CD. Includes an option to push datasets to the Hugging Face Hub.
+
+## Install
+
+```bash
+pip install ecg-k-fold
+```
+
+For development:
+
+```bash
+git clone <this-repo>
+cd ECG-k-Fold
+make init
+```
+
+Or manually:
+
+```bash
+git clone <this-repo>
+cd ECG-k-Fold
+# Install uv if not already installed: curl -LsSf https://astral.sh/uv/install.sh | sh
+uv pip install -e .[dev]
+uv run pre-commit install
+```
+
+## CLI
+
+Push a local dataset directory to the Hugging Face Hub. Requires an access token with write permissions.
+
+```bash
+export HF_TOKEN=hf_************************
+ecg-k-fold push-dataset ./path/to/dataset \
+  --repo-id org_or_user/dataset-name \
+  --private \
+  --commit-message "Add v1"
+```
+
+Flags:
+- `--repo-id`: target dataset repo, e.g. `your-org/ecg-dataset`
+- `--private/--public`: repository visibility (default private)
+- `--commit-message`: commit title for the upload
+- `--token`: override `HF_TOKEN` env var
+
+Dataset contents are uploaded as-is; common temp files are ignored.
+
+## Python API
+
+```python
+from pathlib import Path
+from ecg_k_fold.datasets.push_hf import push_local_dataset_to_hub
+
+push_local_dataset_to_hub(
+    local_dir=Path("./path/to/dataset"),
+    repo_id="your-org/ecg-dataset",
+    private=True,
+    commit_message="Initial upload",
+    hf_token="hf_...",
+)
+```
+
+## CI/CD
+
+- Lint, type-check, and tests run on PRs and pushes to `develop` and `main` (`.github/workflows/ci.yml`).
+- Publishing to PyPI happens on pushing a tag like `vX.Y.Z` (`.github/workflows/publish.yml`). Uses PyPI Trusted Publishers, no PyPI token needed. See https://docs.pypi.org/trusted-publishers/
+- A manual workflow can push datasets to Hugging Face (`.github/workflows/hf-dataset-push.yml`). Set `HF_TOKEN` in repo secrets.
+
+## Gitflow
+
+- Default branches: `main` (stable), `develop` (integration).
+- Create feature branches off `develop` (`feature/<name>`), open PRs into `develop`.
+- Release by creating a tag `vX.Y.Z` on `main` to trigger PyPI publish.
+
+See `CONTRIBUTING.md` for details.
+
+## License
+
+Apache-2.0. See `LICENSE`.
