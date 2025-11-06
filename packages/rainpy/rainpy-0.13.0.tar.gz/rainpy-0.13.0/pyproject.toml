@@ -1,0 +1,17 @@
+[project]
+name = "rainpy"
+version = "0.13.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "chardet>=5.2.0",
+    "diskcache>=5.6.3",
+    "jsonlines>=4.0.0",
+    "pandas>=2.3.3",
+    "pytest>=8.4.2",
+]
+
+[[tool.uv.index]]
+name = "Ali"
+url = "https://mirrors.aliyun.com/pypi/simple/"
