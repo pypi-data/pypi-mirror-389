@@ -1,0 +1,144 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "model-opt"
+version = "0.1.0"
+description = "Model optimization toolkit with agentic experimentation and intelligent workflow planning"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Model Opt Contributors"}
+]
+keywords = ["machine-learning", "model-optimization", "quantization", "pruning", "compression"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.21.0",
+    "requests>=2.31.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+pytorch = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "torchao>=0.1.0",
+    "torch-pruning>=1.3.0",
+    "tomesd",
+    "timm>=0.9.0",
+    "ultralytics>=8.0.0",
+]
+tensorflow = [
+    "tensorflow>=2.13.0",
+]
+optimization = [
+    "nncf",
+    "neural-compressor",
+]
+tree_search = [
+    "networkx>=3.1",
+]
+databases = [
+    "pymongo>=4.0",
+    "redis>=5.0",
+    "neo4j",
+    "chromadb>=0.4.0",
+]
+research = [
+    "aiohttp>=3.9.0",
+    "arxiv>=2.1.0",
+    "sentence-transformers>=2.2.0",
+    "faiss-cpu",
+]
+federated = [
+    "pymongo>=4.0",  # MongoDB 7.0+
+    "redis>=5.0",  # Redis 7.2+
+    "neo4j>=5.0",  # Neo4j 5.0+ (optional)
+    "networkx>=3.1",  # Graph operations
+    "numpy>=1.21",  # Statistical operations
+    "scipy>=1.9",  # t-distribution for conflict resolution
+    "httpx>=0.24.0",  # HTTP client for federated API
+]
+evaluation = [
+    "pycocotools",
+    "opencv-python",
+]
+llm = [
+    "openai",
+    "google-generativeai",
+    "together",
+    "vllm>=0.6.0",  # VLLM for local LLM serving
+    "uvloop>=0.19.0; platform_system != 'Windows'",  # High-performance event loop for vLLM (Unix only)
+]
+dev = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "torchao>=0.1.0",
+    "torch-pruning>=1.3.0",
+    "networkx>=3.1",
+]
+all = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "torchao>=0.1.0",
+    "torch-pruning>=1.3.0",
+    "tomesd",
+    "timm>=0.9.0",
+    "ultralytics>=8.0.0",
+    "tensorflow>=2.13.0",
+    "nncf",
+    "neural-compressor",
+    "networkx>=3.1",
+    "pymongo>=4.0",
+    "redis>=5.0",
+    "neo4j",
+    "chromadb>=0.4.0",
+    "aiohttp>=3.9.0",
+    "arxiv>=2.1.0",
+    "requests>=2.31.0",
+    "tqdm",
+    "Pillow",
+    "scikit-image",
+    "scikit-learn",
+    "tensorboard",
+    "matplotlib<3.10.0",
+    "scipy",
+    "protobuf",
+    "pydantic>=2.0,<2.12.0",
+    "sentence-transformers>=2.2.0",
+    "faiss-cpu",
+    "openai",
+    "google-generativeai",
+    "together",
+    "onnx>=1.14.0",
+    "onnxruntime>=1.16.0",
+    "pycocotools",
+    "opencv-python",
+    "vllm>=0.6.0",
+    "uvloop>=0.19.0; platform_system != 'Windows'",
+    "httpx>=0.24.0",
+]
+
+[project.scripts]
+model-opt = "model_opt.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.txt", "*.md", "*.yaml", "*.yml"]
+
