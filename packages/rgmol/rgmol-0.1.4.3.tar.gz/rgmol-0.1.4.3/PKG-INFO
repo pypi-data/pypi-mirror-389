@@ -1,0 +1,73 @@
+Metadata-Version: 2.4
+Name: rgmol
+Version: 0.1.4.3
+Summary: Visualization and computation of various chemical properties from DFT softwares. Its main purpose is to compute and visualize the condensed and non-condensed linear response function from CDFT.
+Author-email: Rémi Grincourt <remi.grincourt@ens-lyon.fr>
+License: MIT License
+        
+        Copyright (c) 2024 re-gr
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Repository, https://github.com/re-gr/rgmol
+Project-URL: Documentation, https://re-gr.github.io/re-gr/rgmol_wiki
+Keywords: molecule,representation,dft,cdft,visualization,chemistry
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: periodictable
+Requires-Dist: pyvista
+Requires-Dist: matplotlib
+
+<h1 align="center">
+rgmol v0.1.4.3
+</h1>
+
+rgmol is a python package that intends to offer calculations and visualizations of molecular properties.
+Its main purpose is to compute and visualize the condensed and non-condensed linear response function from CDFT.
+
+- **Github :** https://github.com/re-gr/rgmol
+- **Documentation :** https://re-gr.github.io/rgmol_wiki/
+
+Installation :
+
+	pip install rgmol
+
+## Getting Started
+
+An example script can be found in "rgmol/example_script.py"
+
+A detailed tutorial can be found in the documentation.
+
+## Depedencies
+
+	numpy
+	scipy
+   	periodictable
+	pyvista
+	matplotlib
+
+## Contact
+
+Email : [Rg](mailto:remi.grincourt@ens-lyon.fr)
+
+
