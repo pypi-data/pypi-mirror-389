@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: bioplexpy
+Version: 1.1.0
+Summary: Python-side access to PPI data from Gygi lab
+Author-email: Roger Vargas <roger_vargas@g.harvard.edu>, Ludwig Geistlinger <ludwig_geistlinger@hms.harvard.edu>, Tyrone Lee <tyrone_lee@hms.harvard.edu>
+License: MIT License
+        
+        Copyright (c) 2022 Center for Computational Biomedicine
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+License-File: LICENSE
+Requires-Dist: anndata
+Requires-Dist: biopython
+Requires-Dist: matplotlib
+Requires-Dist: networkx
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: pypdb
+Requires-Dist: requests
+Requires-Dist: scipy
+Provides-Extra: devel
+Requires-Dist: ruff; extra == 'devel'
+Description-Content-Type: text/markdown
+
+# BioPlexPy
+-------------
+[![Documentation Status](https://readthedocs.org/projects/bioplexpy/badge/?version=latest)](http://bioplexpy.readthedocs.io/?badge=latest)
+
+Python-side access to PPI data from Gygi lab
+
+## Citation
+-------------
+
+If you use the BioPlexPy package in published research, please cite:
+
+Ludwig Geistlinger, Roger Vargas Jr, Tyrone Lee, Joshua Pan, Edward Huttlin, Robert Gentleman (2023) BioPlexR and BioPlexPy: integrated data products for the analysis of human protein interactions. *Bioinformatics*. doi: [10.1093/bioinformatics/btad091](https://doi.org/10.1093/bioinformatics/btad091). 
+
+## Installation
+-------------
+The package can be installed through pypi or through github
+
+`pip install bioplexpy`
+or 
+`pip install git+https://github.com/ccb-hms/BioPlexPy.git#egg=BioPlexPy`
+
+
+## Usage
+-------------
+See the [BioPlex examples notebook](https://github.com/ccb-hms/BioPlexPy/blob/main/docs/BioPlex_Examples.ipynb) for basic usage and how to obtain
+BioPlex datasets.
+
+https://bioplexpy.readthedocs.io/en/latest/
+
+## Running Tests
+-------------
+
+* `python -m doctest BioPlexPy/` to run the respective test for the file
+*Warning*: By default, doctests will not print anything if tests are successful.
+Add the `-v` option to print verbose output.
+
