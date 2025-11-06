@@ -1,0 +1,49 @@
+Metadata-Version: 2.4
+Name: stashapi
+Version: 0.1.2
+Summary: API wrapper and tools for interfacing with a [Stash](https://github.com/stashapp/stash) instance
+Project-URL: Homepage, https://github.com/stg-annon/stashapi
+Author-email: stg-annon <14135675+stg-annon@users.noreply.github.com>
+License-Expression: MIT
+License-File: LICENSE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.11
+Requires-Dist: requests>=2.32.3
+Requires-Dist: typing-extensions>=4.12.2
+Description-Content-Type: text/markdown
+
+# stashapi
+This library primarily serves as an API wrapper for [Stash](https://github.com/stashapp/stash) written in Python
+
+## Requirements
+Developed using python 3.11.X with attempts to make things as backwards compatible where possible, if you are having issues please try using python 3.11
+
+Should be fully supported up to and including Python 3.13. Stash currently bundles Python 3.12.7
+
+## Installation 
+
+##### To install from PyPI use this command:
+`pip install stashapi`
+
+##### To install directly from this repo use this command:
+`pip install git+https://github.com/stg-annon/stashapi`
+
+## Usage
+```python
+import stashapi.log as log
+from stashapi.stashapp import StashInterface
+
+stash = StashInterface({
+    "scheme": "http",
+    "host":"localhost",
+    "port": "9999",
+    "logger": log
+})
+
+scene_data = stash.find_scene(1234)
+log.info(scene_data)
+```
+This example creates a connection to Stash query's a scene with ID 1234 and prints the result to Stash's logs
