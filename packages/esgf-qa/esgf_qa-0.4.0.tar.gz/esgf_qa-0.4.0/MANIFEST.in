@@ -1,0 +1,21 @@
+include LICENSE
+include README.md
+
+recursive-include tests *.py
+recursive-include fonts *
+
+global-exclude __pycache__ *.py[co]
+
+# Exclude GitHub workflows and metadata
+prune .github
+
+# Exclude CI environment
+prune ci
+
+# Exclude documentation
+prune docs
+
+# Exclude project config files
+exclude mkdocs.yml
+exclude .pre-commit.yml
+exclude .gitignore
