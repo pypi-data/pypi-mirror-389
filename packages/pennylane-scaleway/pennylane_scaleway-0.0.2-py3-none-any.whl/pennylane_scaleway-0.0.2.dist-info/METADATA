@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: pennylane-scaleway
+Version: 0.0.2
+Summary: A Pennylane-compatible package to run pennylane circuits on Scaleway Quantum as a Service
+Author: The Scaleway Developers
+Author-email: vmacheret@scaleway.com
+License: Apache 2
+Project-URL: Documentation, https://www.scaleway.com/en/quantum-as-a-service/
+Project-URL: Source, https://github.com/scaleway/pennylane-scaleway
+Project-URL: Tracker, https://github.com/scaleway/pennylane-scaleway/issues
+Requires-Python: >=3.12.0
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: appdirs==1.4.4
+Requires-Dist: astunparse==1.6.3
+Requires-Dist: autograd==1.8.0
+Requires-Dist: autoray==0.8.0
+Requires-Dist: cachetools==6.2.1
+Requires-Dist: certifi==2025.10.5
+Requires-Dist: charset-normalizer==3.4.4
+Requires-Dist: diastatic-malt==2.15.2
+Requires-Dist: gast==0.6.0
+Requires-Dist: idna==3.11
+Requires-Dist: networkx==3.5
+Requires-Dist: numpy==2.3.4
+Requires-Dist: packaging==25.0
+Requires-Dist: pennylane==0.43.0
+Requires-Dist: pennylane_lightning==0.43.0
+Requires-Dist: requests==2.32.5
+Requires-Dist: rustworkx==0.17.1
+Requires-Dist: scipy==1.16.2
+Requires-Dist: scipy-openblas32==0.3.30.0.4
+Requires-Dist: six==1.17.0
+Requires-Dist: termcolor==3.2.0
+Requires-Dist: tomlkit==0.13.3
+Requires-Dist: typing_extensions==4.15.0
+Requires-Dist: urllib3==2.5.0
+Requires-Dist: wheel==0.45.1
+Provides-Extra: aer
+Requires-Dist: qiskit-scaleway; extra == "aer"
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# pennylane-scaleway
+Scaleway provider implementation for Pennylane SDK (Quantum Machine Learning)
