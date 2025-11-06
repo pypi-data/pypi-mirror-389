@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel>=0.41", "build>=1.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enterprise-docs"
+version = "0.1.0"
+description = "Unified enterprise documentation suite for Dhruv13x organization"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Dhruv", email = "dhruv13x@gmail.com" }]
+keywords = ["documentation", "policy", "templates", "enterprise", "compliance"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+enterprise-docs = "enterprise_docs.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/dhruv13x/enterprise-docs"
+Repository = "https://github.com/dhruv13x/enterprise-docs.git"
+Documentation = "https://github.com/dhruv13x/enterprise-docs/tree/main/docs"
