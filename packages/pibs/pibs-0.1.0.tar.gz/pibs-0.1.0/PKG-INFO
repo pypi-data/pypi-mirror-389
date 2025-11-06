@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: pibs
+Version: 0.1.0
+Summary: PIBS: Permutational Invariance Block Solver implements a numerically exact method for solving the dissipative Tavis-Cummings model with local losses
+Project-URL: Homepage, https://github.com/lukasfreter/pibs/tree/main
+Author-email: Lukas Freter <lukas.freter@aalto.fi>, Piper Fowler-Wright <piperfw@gmail.com>
+License-Expression: GPL-3.0-or-later
+License-File: LICENSE
+Keywords: cavity-qed,computational-physics,open-quantum-system,physics,superradiance
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering :: Physics
+Requires-Python: <3.14,>=3.10
+Requires-Dist: numpy
+Requires-Dist: scipy
+Description-Content-Type: text/markdown
+
+# PIBS: Permutational Invariance Block Solver
+
+
+This python package implements an efficient, numerically exact method for solving the dynamics of the dissipative Tavis-Cummings model with local loss and dephasing processes (no gain!). The method exploits the weak permutation symmetry and the weak U(1) symmetry of the Lindblad master equation.
+
+This code has been used in the publication [1].
+
+
+## Installation
+PIBS can be installed using pip:
+```
+$ python3 -m pip install pibs
+```
+
+## Example/Tutorial
+An example for using PIBS is given in `tutorials/example.py`, and a jupyter-notebook with more detailed explanation in `tutorials/pibs_example.ipynb`
+
+
+- **[1]** L. Freter, P. Fowler-Wright, J. Cuerda, B. W. Lovett, J. Keeling, and P. Törmä, ‘Theory of dynamical superradiance in organic materials’, arXiv: arXiv:2509.03067 (https://doi.org/10.48550/arXiv.2509.03067) (2025)  
+
