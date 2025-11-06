@@ -1,0 +1,414 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/Laerdal/python-objdictgen/main/src/objdictgen/schema/od.schema.json",
+    "title": "Object Dictionary",
+    "description": "A Object Dictionary description for canfestival",
+    "type": "object",
+    "properties": {
+        "$id": {
+            "description": "File description",
+            "enum": [
+                "od data"
+            ]
+        },
+        "$version": {
+            "description": "File version",
+            "enum": [
+                1, "1"
+            ]
+        },
+        "$description": {
+            "description": "Description about the file",
+            "type": "string"
+        },
+        "$schema": {
+            "description": "The schema that this file is based on",
+            "type": "string"
+        },
+        "$tool": {
+            "description": "Tool that generated this file (optional)",
+            "type": "string"
+        },
+        "$date": {
+            "description": "Date file last changed",
+            "type": "string"
+        },
+        "name": {
+            "description": "The unique identifier for the OD",
+            "type": "string"
+        },
+        "description": {
+            "description": "A description of the OD",
+            "type": "string"
+        },
+        "type": {
+            "description": "Object type",
+            "enum": [
+                "master",
+                "slave"
+            ]
+        },
+        "id": {
+            "description": "Node ID",
+            "type": "integer",
+            "minimum": 0
+        },
+        "profile": {
+            "description": "Name of the included profile",
+            "type": "string"
+        },
+        "default_string_size": {
+            "type": "integer",
+            "minium": 1
+        },
+        "dictionary": {
+            "description": "Dictionary contents.",
+            "type": "array",
+            "items": {
+                "$ref": "#object"
+            }
+        }
+    },
+    "required": [
+        "$id", "$version", "name", "description", "type", "dictionary"
+    ],
+    "additionalProperties": false,
+
+    "definitions": {
+
+        "object": {
+            "$id": "#object",
+            "description": "Dictionary object",
+            "type": "object",
+            "if": {
+                "properties": { "repeat": { "$ref": "#repeat", "const": true }},
+                "required": ["repeat"]
+            },
+            "then": {
+                "description": "Repeated dictionary object",
+                "properties": {
+                    "index": { "$ref": "#index" },
+                    "repeat": { "$ref": "#repeat" },
+                    "struct": { "$ref": "#struct" },
+                    "callback": { "$ref": "#callback" },
+                    "sub": {
+                        "description": "Sub object items in repeated parameter",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#subitem_repeat"
+                        },
+                        "minItems": 0
+                    }
+                },
+                "required": ["index", "repeat", "struct", "sub"],
+                "additionalProperties": false
+            },
+            "else": {
+                "description": "Dictionary object",
+                "properties": {
+                    "index": { "$ref": "#index" },
+                    "repeat": { "$ref": "#repeat" },
+                    "name": { "$ref": "#name" },
+                    "struct": { "$ref": "#struct" },
+                    "group": { "$ref": "#group" },
+                    "mandatory": { "$ref": "#mandatory" },
+                    "profile_callback": { "$ref": "#callback" },
+                    "callback": { "$ref": "#callback" },
+                    "unused": { "$ref": "#unused" },
+                    "default": { "$ref": "#value" },
+                    "size": { "$ref": "#size" },
+                    "incr": { "$ref": "#incr" },
+                    "nbmax": { "$ref": "#nbmax" },
+                    "each": { "$ref": "#each" },
+                    "sub": {
+                        "description": "Sub object items",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#subitem"
+                        },
+                        "minItems": 0
+                    }
+                },
+                "required": ["index", "name", "struct", "sub"],
+                "additionalProperties": false
+            }
+        },
+
+        "subitem": {
+            "$id": "#subitem",
+            "description": "Sub object item",
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#name" },
+                "comment": { "$ref": "#comment" },
+                "buffer_size": { "$ref": "#buffer_size" },
+                "type": { "$ref": "#type" },
+                "access": { "$ref": "#access" },
+                "pdo": { "$ref": "#pdo" },
+                "default": { "$ref": "#value" },
+                "save": { "$ref": "#save" },
+                "value": { "$ref": "#value" }
+            },
+            "additionalProperties": false,
+            "anyOf": [
+                {
+                    "required": ["name"]
+                },
+                {
+                    "required": ["value"]
+                }
+            ],
+            "dependencies": {
+                "name": { "required": ["type", "access", "pdo"] }
+            }
+        },
+
+        "subitem_repeat": {
+            "$id": "#subitem_repeat",
+            "description": "Sub object item in repeated parameter",
+            "type": "object",
+            "properties": {
+                "comment": { "$ref": "#comment" },
+                "buffer_size": { "$ref": "#buffer_size" },
+                "save": { "$ref": "#save" },
+                "value": { "$ref": "#value" }
+            },
+            "additionalProperties": false
+        },
+
+        "each": {
+            "$id": "#each",
+            "description": "Sub object template item for each sub element",
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#name" },
+                "type": { "$ref": "#type" },
+                "access": { "$ref": "#access" },
+                "pdo": { "$ref": "#pdo" },
+                "nbmin": { "$ref": "#nbmin" },
+                "nbmax": { "$ref": "#nbmax" },
+                "default": { "$ref": "#value" }
+            },
+            "additionalProperties": false,
+            "required": ["name", "type", "access", "pdo", "nbmax"]
+        },
+
+        "access": {
+            "$id": "#access",
+            "description": "Access rights",
+            "enum": [
+                "ro",
+                "rw",
+                "wo"
+            ]
+        },
+
+        "base": {
+            "$id": "#base",
+            "description": "Index number that contains the definition for this parameter",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^([0-9]{1,5}|0x[a-fA-F0-9]{1,4})$"
+                },
+                {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
+                }
+            ]
+        },
+
+        "buffer_size": {
+            "$id": "#buffer_size",
+            "description": "Buffer size (for strings)",
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+
+        "callback": {
+            "$id": "#callback",
+            "description": "Set if callback code shall be generated",
+            "type": "boolean"
+        },
+
+        "comment": {
+            "$id": "#comment",
+            "description": "Free-text comment"
+        },
+
+        "group": {
+            "$id": "#group",
+            "description": "Object group membership",
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "enum": [
+                        "user",
+                        "profile",
+                        "ds302",
+                        "built-in"
+                    ]
+                }
+            ],
+            "default": "user"
+        },
+
+        "incr": {
+            "$id": "#incr",
+            "type": "integer"
+        },
+
+        "index": {
+            "$id": "#index",
+            "description": "Dictionary parameter index",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^([0-9]{1,5}|0x[a-fA-F0-9]{1,4})$"
+                },
+                {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
+                }
+            ]
+        },
+
+        "mandatory": {
+            "$id": "#mandatory",
+            "description": "Set if the object is mandatory in the output",
+            "type": "boolean"
+        },
+
+        "name": {
+            "$id": "#name",
+            "description": "Unique name of object",
+            "type": "string"
+        },
+
+        "nbmax": {
+            "$id": "#nbmax",
+            "type": "integer"
+        },
+
+        "nbmin": {
+            "$id": "#nbmin",
+            "type": "integer"
+        },
+
+        "pdo": {
+            "$id": "#pdo",
+            "description": "Set if object is usable in a PDO",
+            "type": "boolean"
+        },
+
+        "repeat": {
+            "$id": "#repeat",
+            "description": "Set if object is a repeated object",
+            "type": "boolean",
+            "default": false
+        },
+
+        "save": {
+            "$id": "#save",
+            "description": "Save?",
+            "type": "boolean"
+        },
+
+        "size": {
+            "$id": "#size",
+            "type": "integer"
+        },
+
+        "struct": {
+            "$id": "#struct",
+            "description": "Object structure type",
+            "enum": [
+                1, 3, 7, 9, 11, 15,
+                "var",
+                "array",
+                "record",
+                "nvar",
+                "narray",
+                "nrecord"
+            ]
+        },
+
+        "type": {
+            "$id": "#type",
+            "description": "Object type",
+            "anyOf": [
+                {
+                    "enum": [
+                        "BOOLEAN",
+                        "INTEGER8",
+                        "INTEGER16",
+                        "INTEGER32",
+                        "UNSIGNED8",
+                        "UNSIGNED16",
+                        "UNSIGNED32",
+                        "REAL32",
+                        "VISIBLE_STRING",
+                        "OCTET_STRING",
+                        "UNICODE_STRING",
+                        "DOMAIN",
+                        "INTEGER24",
+                        "REAL64",
+                        "INTEGER40",
+                        "INTEGER48",
+                        "INTEGER56",
+                        "INTEGER64",
+                        "UNSIGNED24",
+                        "UNSIGNED40",
+                        "UNSIGNED48",
+                        "UNSIGNED56",
+                        "UNSIGNED64"
+                    ]
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4095
+                }
+            ]
+        },
+
+        "unused": {
+            "$id": "#unused",
+            "description": "Unused dictionary",
+            "type": "boolean"
+        },
+
+        "value": {
+            "$id": "#value",
+            "description": "Object data content",
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "number"
+                }
+            ]
+        }
+
+    }
+}
