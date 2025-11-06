@@ -1,0 +1,82 @@
+site_name: AIoD Python SDK
+site_url: https://aiondemand.github.io/aiondemand
+repo_url: https://www.github.com/aiondemand/aiondemand
+repo_name: aiondemand
+
+watch:
+  - src/aiod
+
+theme:
+  name: material
+  logo: images/secondary-neg-white-25p.webp
+  features:
+    - content.code.copy
+  font:
+    text: 'Montserrat'
+  palette:
+    scheme: 'aiod'
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Introduction: 'README.md'
+  - Examples:
+    - 'Getting Started': 'examples/getting-started.ipynb'
+    - Sharing: 'examples/sharing.ipynb'
+  - API Reference:
+      - 'api/configuration.md'
+      - 'api/authentication.md'
+      - 'api/taxonomies.md'
+      - 'api/bookmarks.md'
+      - 'Others': 'api/aiod.md'
+      - Assets:
+        - 'api/assets/case_studies.md'
+        - 'api/assets/computational_assets.md'
+        - 'api/assets/contacts.md'
+        - 'api/assets/datasets.md'
+        - 'api/assets/educational_resources.md'
+        - 'api/assets/events.md'
+        - 'api/assets/experiments.md'
+        - 'api/assets/ml_models.md'
+        - 'api/assets/news.md'
+        - 'api/assets/organisations.md'
+        - 'api/assets/persons.md'
+        - 'api/assets/platforms.md'
+        - 'api/assets/projects.md'
+        - 'api/assets/publications.md'
+        - 'api/assets/services.md'
+        - 'api/assets/teams.md'
+  - 'changelog.md'
+  - 'contributing.md'
+  - 'conduct.md'
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+plugins:
+- search
+- privacy
+- asset-type-replacer 
+- mkdocs-jupyter:
+    # TODO: when we can configure aiod, we should start running notebooks
+    # execute: true
+    # allow_errors: false
+    ignore:
+      - "*.py"
+    include_source: True
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_style: numpy
+          force_inspection: true
+          show_source: false
+          filters: ["!^_"]
