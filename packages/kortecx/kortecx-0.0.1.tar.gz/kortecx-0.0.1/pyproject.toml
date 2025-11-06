@@ -1,0 +1,89 @@
+[project]
+name = "kortecx"
+version = "0.0.1"
+description = "Executable Intelligence platform"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    { name = "Kortecx", email = "kortecxhelp@gmail.com" },
+    { name = "Jay Reddy", email = "jayachandra.s.reddy@gmail.com" }
+]
+requires-python = ">=3.10"
+keywords = ["ai", "llm", "reinforcement learning", "machine learning", "artificial intelligence", "Agents", "AI Workflows"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "accelerate>=1.11.0",
+    "click>=8.3.0",
+    "diffusers>=0.35.2",
+    "duckdb>=1.4.1",
+    "maturin>=1.9.6",
+    "mlflow>=3.5.1",
+    "neo4j>=6.0.2",
+    "onnx>=1.19.1",
+    "peft>=0.17.1",
+    "protobuf>=6.33.0",
+    "qdrant-client>=1.15.1",
+    "torch>=2.9.0",
+    "torchaudio>=2.9.0",
+    "torchvision>=0.24.0",
+    "transformers>=4.57.1",
+    "trl>=0.24.0",
+]
+[project.urls]
+homepage = "https://kortecx.com"
+issues = "https://github.com/kortecx/kortecx/issues"
+documentation = "https://kortecx.com/docs"
+repository = "https://github.com/kortecx/kortecx"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+kx = "kortecx.__main__:cli"
+
+[dependency-groups]
+dev = [
+    "black>=25.9.0",
+    "ruff>=0.14.3",
+    "twine>=6.2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src/kortecx/**"]
+exclude = [
+    ".venv*",
+    "__pycache__*",
+    "kortecx.egg-info*",
+    "src/kortecx/frontend/node_modules/**",
+    "src/kortecx/frontend/.svelte-kit/**",
+    "src/kortecx/frontend/dist/**",
+    "src/kortecx/backend/target/**",
+    "backend/target/**",
+    "__pycache__/**",
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    ]
+
+[tool.setuptools.package-data]
+kortecx = [
+    "**/*.js",
+    "**/*.ts",
+    "**/*.json",
+    "**/*.html",
+    "**/*.css",
+    # Add any other file types you need
+]
+
+[tool.black]
+line-length = 120
