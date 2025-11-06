@@ -1,0 +1,75 @@
+Metadata-Version: 2.4
+Name: weathercache
+Version: 0.0.1
+Summary: Store weather from different providers
+Author-email: revesansparole <revesansparole@gmail.com>
+Maintainer-email: Jerome Chopard <revesansparole@gmail.com>
+License: cc_by_nc
+Project-URL: repository, https://gitlab.com/revesansparole/weathercache
+Project-URL: pip, https://pypi.org/project/weathercache/0.0.1/
+Project-URL: conda, https://anaconda.org/revesansparole/weathercache
+Project-URL: doc, https://revesansparole.gitlab.io/weathercache/
+Project-URL: pypi, https://badge.fury.io/py/weathercache
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.10
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+License-File: AUTHORS.rst
+Provides-Extra: doc
+Requires-Dist: sphinx; extra == "doc"
+Requires-Dist: sphinx-gallery; extra == "doc"
+Requires-Dist: sphinx-rtd-theme; extra == "doc"
+Provides-Extra: dvlpt
+Requires-Dist: black; extra == "dvlpt"
+Requires-Dist: twine; extra == "dvlpt"
+Provides-Extra: test
+Requires-Dist: coverage; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Dynamic: license-file
+
+========================
+weathercache
+========================
+
+.. {# pkglts, doc
+
+.. image:: https://revesansparole.gitlab.io/weathercache/_images/badge_pkging_pip.svg
+    :alt: PyPI version
+    :target: https://pypi.org/project/weathercache/0.0.1/
+
+.. image:: https://revesansparole.gitlab.io/weathercache/_images/badge_pkging_conda.svg
+    :alt: Conda version
+    :target: https://anaconda.org/revesansparole/weathercache
+
+.. image:: https://revesansparole.gitlab.io/weathercache/_images/badge_doc.svg
+    :alt: Documentation status
+    :target: https://revesansparole.gitlab.io/weathercache/
+
+.. image:: https://badge.fury.io/py/weathercache.svg
+    :alt: PyPI version
+    :target: https://badge.fury.io/py/weathercache
+
+.. #}
+.. {# pkglts, glabpkg_dev, after doc
+
+main: |main_build|_ |main_coverage|_
+
+.. |main_build| image:: https://gitlab.com/revesansparole/weathercache/badges/main/pipeline.svg
+.. _main_build: https://gitlab.com/revesansparole/weathercache/commits/main
+
+.. |main_coverage| image:: https://gitlab.com/revesansparole/weathercache/badges/main/coverage.svg
+.. _main_coverage: https://gitlab.com/revesansparole/weathercache/commits/main
+.. #}
+
+Store weather from different providers
+
