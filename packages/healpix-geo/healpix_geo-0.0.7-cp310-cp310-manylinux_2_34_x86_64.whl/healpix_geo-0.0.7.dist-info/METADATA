@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: healpix-geo
+Version: 0.0.7
+Classifier: Programming Language :: Rust
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Dist: numpy
+Requires-Dist: shapely>=2 ; extra == 'geometries'
+Requires-Dist: pytest ; extra == 'tests'
+Requires-Dist: sphinx ; extra == 'docs'
+Requires-Dist: pydata-sphinx-theme ; extra == 'docs'
+Requires-Dist: myst-parser ; extra == 'docs'
+Requires-Dist: jupyter-sphinx ; extra == 'docs'
+Requires-Dist: matplotlib ; extra == 'docs'
+Requires-Dist: sphinx-autobuild ; extra == 'docs'
+Requires-Dist: markdown ; extra == 'docs'
+Requires-Dist: tabulate ; extra == 'docs'
+Provides-Extra: geometries
+Provides-Extra: tests
+Provides-Extra: docs
+License-File: LICENSE
+License-Expression: Apache-2.0
+Requires-Python: >=3.10
