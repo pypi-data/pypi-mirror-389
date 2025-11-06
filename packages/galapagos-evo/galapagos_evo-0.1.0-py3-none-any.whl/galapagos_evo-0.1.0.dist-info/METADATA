@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: galapagos-evo
+Version: 0.1.0
+Summary: A small didatic package for evolution simulations
+Author-email: Luan Leal <luanleal@usp.br>, Micael Baruch <micael.mbaruch@usp.br>
+License-Expression: GPL-3.0-or-later
+Project-URL: Homepage, https://github.com/thefire888/galapagos
+Project-URL: Issues, https://github.com/thefire888/galapagos/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.14
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# Instalando o Galapagos
+
+- clone este repositório em uma pasta local usando git clone [LINK]
+- instale o pixi usando seu gerenciador de pacotes favorito
+    https://pixi.sh/dev/installation/
+
+# Rodando a simulação da aula:
+
+Abra um terminal na pasta local em que o repositório foi clonado e digite os seguintes comandos:
+
+```
+pixi run build
+pixi shell
+python examples/simulate_class.py
+```
+
