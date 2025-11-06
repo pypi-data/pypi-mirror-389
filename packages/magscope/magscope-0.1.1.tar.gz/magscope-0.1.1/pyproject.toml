@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "magscope"
+description = "Python framework for live data acquisition and analysis in magnetic tweezers microscopy"
+version = "0.1.1"
+readme = "README.md"
+authors = [
+    {name = "James London", email = "7jameslondon@gmail.com" }
+]
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: Microsoft :: Windows",
+]
+license = "GPL-3.0"
+license-files = ["license"]
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11.1",
+    "matplotlib",
+    "tifffile",
+    "PyYAML",
+    "magtrack",
+    "PyQt6",
+]
+
+[project.optional-dependencies]
+cpu = []
+gpu = ["cupy-cuda12x>=13.0; sys_platform != 'darwin'"]
+zaber = ["zaber_motion"]
+pi = ["PIPython"]
+harvesters = ["harvesters"]
+docs = [
+    "sphinx>=7",
+    "furo",
+    "myst-parser",
+    "sphinx-autoapi",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-autodoc-typehints",
+    "sphinx-book-theme",
+]
+
+[project.urls]
+Homepage = "https://github.com/7jameslondon/MagScope"
+Issues = "https://github.com/7jameslondon/MagScope/issues"
+
+[tool.setuptools]
+packages = ["magscope"]
