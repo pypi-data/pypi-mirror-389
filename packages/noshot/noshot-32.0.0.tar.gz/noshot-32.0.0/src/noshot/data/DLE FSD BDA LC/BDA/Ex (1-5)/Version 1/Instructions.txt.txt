@@ -1,0 +1,136 @@
+(Note: The codebase is not fully tested :/)
+===============================================
+		Initial Steps
+===============================================
+1. Open Experiment 1 (For Example)
+2. Find BDA-Lab Folder
+3. Copy it & Paste it Cloudera's Home Directory
+4. Go To BDA-Lab in Cloudera's Home
+5. Right-click & Choose Open in Terminal
+(Note: Replace the Input File in BDA-Lab With The Dataset (If Given Any) & Rename it as input.txt or input.csv accordingly)
+
+=========================
+Commands For Copy & Paste
+=========================
+Ctrl + X to Cut
+Ctrl + C to Copy
+Ctrl + V to Paste
+
+Ctrl + Shift + C to Copy  (Terminal)
+Ctrl + Shift + V to Paste (Terminal)
+
+=============================================================================
+	Commands To Run In Terminal 1 By 1 (Common To All Map-Reduce)
+=============================================================================
+(Important: If python doesnt work try using python3)
+(Note: if input file is text file)
+cat input.txt                                               
+cat input.txt | python mapper.py                           
+cat input.txt | python mapper.py | sort | python reducer.py
+hadoop fs -rm input.txt
+hadoop fs -rm -r laboutput
+hadoop fs -put input.txt
+hadoop fs -ls
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar -files /home/cloudera/BDA-Lab/mapper.py,/home/cloudera/BDA-Lab/reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input /user/cloudera/input.txt -output /user/cloudera/laboutput
+hadoop fs -ls /user/cloudera/laboutput
+hadoop fs -cat /user/cloudera/laboutput/part-00000
+
+(Note: if input file is csv file)
+cat input.csv                                               
+cat input.csv | python mapper.py                           
+cat input.csv | python mapper.py | sort | python reducer.py
+hadoop fs -rm input.csv
+hadoop fs -rm -r laboutput
+hadoop fs -put input.csv
+hadoop fs -ls
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar -files /home/cloudera/BDA-Lab/mapper.py,/home/cloudera/BDA-Lab/reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input /user/cloudera/input.csv -output /user/cloudera/laboutput
+hadoop fs -ls /user/cloudera/laboutput
+hadoop fs -cat /user/cloudera/laboutput/part-00000
+==========================================================
+		Detailed Explanation
+==========================================================
+==========================================================
+		     Basic Cmds
+==========================================================
+mkdir (Create a directory)
+cd    (Change directory)
+ls    (lists files & directories in the current directory)
+gedit filename.extension (Editor to create & edit files)
+
+============================================================================================================================
+						   Explanation & Troubleshooting
+============================================================================================================================
+(cat input.txt)
+To display contents of a file
+============================================================================================================================
+(cat input.txt | python mapper.py)
+Checking mapper output
+if error occurs mapper code is wrong
+============================================================================================================================
+(cat input.txt | python mapper.py | sort | python reducer.py)
+Checking reducer output
+if error occurs while previous cmd works reducer code is wrong
+============================================================================================================================
+(hadoop fs -rm input.txt)
+To remove a file/directory in Hadoop. 
+Here input.txt cannot be added to hadoop if another file with the same name already exists.
+So we remove if any file with the same name exists
+(Note: Dont worry if this returns error which just means that the file doesnt exist)
+============================================================================================================================
+(hadoop fs -rm -r laboutput)
+To remove a directory recursively in Hadoop.
+Output directory specified in the hadoop jar cmd shouldnt already exist in hadoop.
+So we remove if any exist already
+(Note: If you run hadoop jar command once the result/output directory is created so running the command again to execute the job will not work because the result/output directory already exists so execute this cmd again or change the name of the output directory)
+(Note: Dont worry if this returns error which means that the directory doesnt exist)
+============================================================================================================================
+(hadoop fs -put input.txt)
+To add the input.txt file to Hadoop
+No error should occur but if any it may be related to connection to the server
+============================================================================================================================
+(hadoop fs -ls)
+Lists out all the files and directories in Hadoop.
+Verify that input.txt exists in Hadoop.
+Same no error normally
+============================================================================================================================
+(hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar -files /home/cloudera/BDA-Lab/mapper.py,/home/cloudera/BDA-Lab/reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input /user/cloudera/input.txt -output /user/cloudera/laboutput)
+To execute the map-reduce job in Hadoop.
+The result gets stored in laboutput directory in this case.
+
+Several Possible Errors
+1. If the jar file path is wrong.
+	In that case u need to open Computer & go to /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/ and
+	right click the jar file click the name's value and press Ctrl+A & Ctrl+C to copy the file name now\
+	replace hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar in the jar file path with copied file name using
+	Ctrl+Shift+V and this is because of different versions of cloudera installed in the different systems.
+2. Mapper or Reducer or Input Path Wrong.
+	Check the paths of mapper, reducer and input file whether missed any / infront or wrong location is
+	given as path for mapper and reducer codes.
+3. Output directory already esits
+	Run this (hadoop fs -rm -r laboutput). Re-execute the jar cmd.
+4. Logic Error of Mapper.
+	The input is split by the hadoop to exectue parallely in different data nodes so if u implement
+	mapper logically wrong the map-reduce will return with an error while processing. I encountered it
+	once.
+============================================================================================================================
+(hadoop fs -ls /user/cloudera/laboutput)
+This lists the content of the output directory which contains the map-reduce output in part-00000
+============================================================================================================================
+(hadoop fs -cat /user/cloudera/laboutput/part-00000)
+This is the result of map-reduce executed using Hadoop and should be same as the output of
+(cat input.txt | python mapper.py | sort | python reducer.py)
+============================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+

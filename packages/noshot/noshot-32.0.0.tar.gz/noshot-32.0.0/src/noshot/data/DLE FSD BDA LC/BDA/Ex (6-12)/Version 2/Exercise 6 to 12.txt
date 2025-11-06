@@ -1,0 +1,776 @@
+Exercise 6(Girvan Newman)
+
+Mapper code
+
+#!/usr/bin/env python3
+import sys
+from collections import defaultdict, deque
+
+def bfs_shortest_paths(graph, start):
+    """Find all shortest paths from start node using BFS"""
+    distances = {start: 0}
+    predecessors = defaultdict(list)
+    queue = deque([start])
+    
+    while queue:
+        current = queue.popleft()
+        for neighbor in graph.get(current, []):
+            if neighbor not in distances:
+                distances[neighbor] = distances[current] + 1
+                queue.append(neighbor)
+                predecessors[neighbor].append(current)
+            elif distances[neighbor] == distances[current] + 1:
+                predecessors[neighbor].append(current)
+    
+    return distances, predecessors
+
+def calculate_edge_flow(start, distances, predecessors):
+    """Calculate edge flow for betweenness calculation"""
+    node_flow = defaultdict(float)
+    edge_flow = defaultdict(float)
+    
+    # Initialize node flow
+    nodes_sorted = sorted(distances.keys(), key=lambda x: distances[x], reverse=True)
+    
+    for node in nodes_sorted:
+        if node == start:
+            continue
+            
+        # Add 1 for each shortest path ending at this node
+        node_flow[node] += 1.0
+        
+        # Distribute flow to predecessors
+        total_pred = len(predecessors[node])
+        for pred in predecessors[node]:
+            edge = tuple(sorted((pred, node)))
+            edge_flow[edge] += node_flow[node] / total_pred
+            node_flow[pred] += node_flow[node] / total_pred
+    
+    return edge_flow
+
+# Main mapper logic
+graph = defaultdict(list)
+
+# Build graph from input
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+        
+    parts = line.split()
+    if len(parts) < 2:
+        continue
+        
+    node1, node2 = parts[0], parts[1]
+    graph[node1].append(node2)
+    graph[node2].append(node1)
+
+# Calculate betweenness for each node as starting point
+for start_node in graph.keys():
+    distances, predecessors = bfs_shortest_paths(graph, start_node)
+    edge_flow = calculate_edge_flow(start_node, distances, predecessors)
+    
+    # Emit edge betweenness scores
+    for edge, flow in edge_flow.items():
+        # Emit in sorted order for consistency
+        sorted_edge = tuple(sorted(edge))
+        print(f"{sorted_edge[0]},{sorted_edge[1]}\t{flow}")
+
+
+Reducer code
+
+#!/usr/bin/env python3
+import sys
+
+current_edge = None
+total_betweenness = 0.0
+
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+        
+    edge_str, betweenness_str = line.split('\t')
+    node1, node2 = edge_str.split(',')
+    betweenness = float(betweenness_str)
+    
+    # Create canonical edge representation
+    canonical_edge = tuple(sorted([node1, node2]))
+    
+    if current_edge == canonical_edge:
+        total_betweenness += betweenness
+    else:
+        if current_edge:
+            # Emit the accumulated betweenness for previous edge
+            # Divide by 2 because each edge is counted twice in undirected graph
+            print(f"{current_edge[0]}\t{current_edge[1]}\t{total_betweenness / 2:.6f}")
+        
+        current_edge = canonical_edge
+        total_betweenness = betweenness
+
+# Don't forget the last edge
+if current_edge:
+    print(f"{current_edge[0]}\t{current_edge[1]}\t{total_betweenness / 2:.6f}")
+
+
+input data
+user1 user2
+user1 user3
+user2 user3
+user2 user4
+user3 user5
+user4 user5
+user4 user6
+user5 user6
+
+# Using Hadoop Streaming
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+    -files mapper.py,reducer.py \
+    -input /input/social_network \
+    -output /output/betweenness \
+    -mapper mapper.py \
+    -reducer reducer.py
+
+# Using local testing
+cat social_network.txt | python3 mapper.py | sort | python3 reducer.py
+
+
+output
+user1	user2	12.500000
+user1	user3	8.333333
+user2	user3	6.666667
+user2	user4	4.166667
+====================================================================================
+
+Exercise 7(Hive and Pig)
+
+[cloudera@quickstart ~]$ hdfs dfs -mkdir -p /user/hive/data
+[cloudera@quickstart ~]$ hdfs dfs -put employees.csv /user/hive/data/
+[cloudera@quickstart ~]$ hdfs dfs -put departments.csv /user/hive/data/
+
+after that write hive
+[cloudera@quickstart ~]$ hive
+
+hive> LOAD DATA INPATH '/user/hive/data/departments.csv' INTO TABLE
+departments;
+
+hive> SELECT * FROM employees;
+
+hive> SELECT name, salary FROM employees;
+
+hive> SELECT * FROM employees WHERE salary > 55000;
+
+hive> SELECT e.emp_id, e.name, e.salary, d.dept_name FROM employees e JOIN departments d ON e.dept_id = d.dept_id;
+
+hive> SELECT dept_id, AVG(salary) AS avg_salary FROM employees GROUP BY dept_id;
+
+hive> SELECT * FROM employees ORDER BY salary DESC;
+
+------------------------------------------------------------------------------------
+PIG SCRIPT(here to write everything in terminal only)
+
+[cloudera@quickstart ~]$ pig
+
+grunt> -- Load employees dataset
+grunt> employees = LOAD '/user/pig/data/employees.csv'
+>> USING PigStorage(',')
+>> AS (emp_id:int, name:chararray, dept_id:int, salary:int);
+
+grunt> -- Load departments dataset
+grunt> departments = LOAD '/user/pig/data/departments.csv'
+>> USING PigStorage(',')
+>> AS (dept_id:int, dept_name:chararray);
+grunt> projected = FOREACH employees GENERATE name, salary;
+grunt> DUMP projected;
+
+grunt> high_salary = FILTER employees BY salary > 55000;
+DUMP high_salary;high_salary = FILTER employees BY salary > 55000;
+
+grunt> emp_dept = JOIN employees BY dept_id, departments BY dept_id;
+grunt> DUMP emp_dept;
+
+grunt> grouped = GROUP employees BY dept_id;
+grunt> avg_salary = FOREACH grouped
+>> GENERATE group AS dept_id,
+>> AVG(employees.salary) AS avg_salary;
+grunt> DUMP avg_salary;
+
+grunt> sorted = ORDER employees BY salary DESC;
+grunt> DUMP sorted;
+
+=====================================================================================
+
+Exercise 8 ( Hive unstructured data)
+
+[cloudera@quickstart ~]$ # Create directory in HDFS
+[cloudera@quickstart ~]$ hdfs dfs -mkdir -p /user/cloudera/logs
+[cloudera@quickstart ~]$ # Copy local file into HDFS
+[cloudera@quickstart ~]$ hdfs dfs -put logs.txt /user/cloudera/logs/
+[cloudera@quickstart ~]$ hdfs dfs -ls /user/cloudera/logs/
+
+[cloudera@quickstart ~]$ hive
+
+hive> CREATE DATABASE IF NOT EXISTS logdb;
+hive> USE logdb;
+
+hive>
+> CREATE EXTERNAL TABLE logs_structured (
+> log_time STRING,
+> log_level STRING,
+> user STRING,
+> action STRING
+> )
+> ROW FORMAT DELIMITED
+> FIELDS TERMINATED BY ' '
+> LINES TERMINATED BY '\n'
+> STORED AS TEXTFILE
+> LOCATION '/user/cloudera/logs/';
+OK
+
+hive> -- View for error logs only
+> CREATE VIEW error_logs AS
+> SELECT *
+> FROM logs_structured
+
+> WHERE log_level = 'ERROR';
+OK
+
+hive>
+> -- View for user login actions
+> CREATE VIEW login_logs AS
+> SELECT *
+> FROM logs_structured
+> WHERE action LIKE 'logged%';
+OK
+
+hive> -- Create an index on log_level for faster querying
+> CREATE INDEX idx_log_level
+> ON TABLE logs_structured (log_level)
+> AS 'COMPACT'
+> WITH DEFERRED REBUILD;
+OK
+
+hive>
+> -- Rebuild index
+> ALTER INDEX idx_log_level ON logs_structured REBUILD;
+
+hive> -- Select all logs
+> SELECT * FROM logs_structured;
+OK
+
+hive>
+> -- Select only INFO logs
+> SELECT * FROM logs_structured WHERE log_level='INFO';
+OK
+
+hive>
+> -- Count logs per user
+> SELECT user, COUNT(*) as total_logs
+> FROM logs_structured
+> GROUP BY user;
+
+hive>
+> -- Query using view
+> SELECT * FROM error_logs;
+OK
+
+====================================================================================
+
+Exercise 9(Pig Latin Script)
+to write in a file and then just execute in the terminal
+
+employee_analysis.pig file
+
+-- Load the employee data
+employees = LOAD 'employee.csv' USING PigStorage(',')
+    AS (emp_id:int, name:chararray, dept_id:int, salary:int);
+
+-- Display original data
+DUMP employees;
+
+-- 1. FILTERING: Filter employees with salary greater than 55000
+high_salary_employees = FILTER employees BY salary > 55000;
+DUMP high_salary_employees;
+
+-- 2. PROJECTION: Select only name and salary columns
+employee_salaries = FOREACH employees GENERATE name, salary;
+DUMP employee_salaries;
+
+-- 3. SORTING: Sort employees by salary in descending order
+sorted_employees = ORDER employees BY salary DESC;
+DUMP sorted_employees;
+
+-- 4. GROUPING: Group employees by department and calculate statistics
+dept_groups = GROUP employees BY dept_id;
+dept_stats = FOREACH dept_groups GENERATE
+    group AS dept_id,
+    COUNT(employees) AS employee_count,
+    MIN(employees.salary) AS min_salary,
+    MAX(employees.salary) AS max_salary,
+    AVG(employees.salary) AS avg_salary;
+DUMP dept_stats;
+
+-- 5. FILTERING + PROJECTION: Employees in department 1 with specific fields
+dept1_employees = FILTER employees BY dept_id == 1;
+dept1_details = FOREACH dept1_employees GENERATE name, salary;
+DUMP dept1_details;
+
+-- 6. SORTING within GROUP: Get highest paid employee in each department
+-- First group by department
+dept_employee_groups = GROUP employees BY dept_id;
+
+-- Then for each department, order employees by salary and take the first one
+dept_top_earners = FOREACH dept_employee_groups {
+    sorted = ORDER employees BY salary DESC;
+    top_earner = LIMIT sorted 1;
+    GENERATE group AS dept_id, FLATTEN(top_earner);
+}
+DUMP dept_top_earners;
+
+-- 7. PROJECTION with calculations: Add bonus calculation
+employees_with_bonus = FOREACH employees GENERATE
+    emp_id,
+    name,
+    dept_id,
+    salary,
+    (salary * 0.10) AS bonus,
+    (salary + (salary * 0.10)) AS total_compensation;
+DUMP employees_with_bonus;
+
+-- 8. FILTERING with multiple conditions: Specific salary range and department
+mid_range_employees = FILTER employees BY
+    salary >= 52000 AND salary <= 60000 AND dept_id != 3;
+DUMP mid_range_employees;
+
+-- 9. GROUPING with FILTER: Department statistics only for departments with more than 1 employee
+dept_groups_filtered = GROUP employees BY dept_id;
+large_depts = FILTER dept_groups_filtered BY COUNT(employees) > 1;
+large_dept_stats = FOREACH large_depts GENERATE
+    group AS dept_id,
+    COUNT(employees) AS employee_count,
+    AVG(employees.salary) AS avg_salary;
+DUMP large_dept_stats;
+
+-- 10. SORTING by multiple fields: Sort by department then by salary
+sorted_by_dept_salary = ORDER employees BY dept_id ASC, salary DESC;
+DUMP sorted_by_dept_salary;
+
+-- Store the results
+STORE sorted_employees INTO 'sorted_employees';
+STORE dept_stats INTO 'department_statistics';
+STORE employees_with_bonus INTO 'employees_with_bonus';
+
+
+
+employees.csv
+
+101,John Doe,1,50000
+102,Jane Smith,2,60000
+103,Mike Johnson,1,55000
+104,Sarah Brown,3,65000
+105,David Lee,2,52000
+
+
+Command to run the program :
+
+pig -x local employee_analysis.pig
+
+=====================================================================================
+
+Exercise 10(Collaborative Filtering)
+
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, collect_set, size, array_intersect, array_union
+from pyspark.sql.types import *
+from pyspark.sql.functions import udf
+import urllib.request
+import zipfile
+import math
+
+# Start Spark
+spark = SparkSession.builder \
+    .appName("CollaborativeFiltering") \
+    .getOrCreate()
+
+print("Spark started successfully!")
+
+# Download MovieLens dataset
+print("Downloading MovieLens dataset...")
+url = "http://files.grouplens.org/datasets/movielens/ml-100k.zip"
+urllib.request.urlretrieve(url, "ml-100k.zip")
+
+# Extract the zip file
+with zipfile.ZipFile("ml-100k.zip", 'r') as zip_ref:
+    zip_ref.extractall()
+
+print("Dataset downloaded and extracted!")
+
+# Load ratings data
+schema = StructType([
+    StructField("userId", IntegerType(), True),
+    StructField("movieId", IntegerType(), True),
+    StructField("rating", FloatType(), True),
+    StructField("timestamp", LongType(), True)
+])
+
+ratings = spark.read.csv("ml-100k/u.data", sep="\t", schema=schema)
+ratings = ratings.drop("timestamp") # Remove timestamp as we don't need it
+
+print(f"Loaded {ratings.count()} movie ratings")
+ratings.show(5)
+
+# Create user preference sets (movies with rating >= 3)
+user_preferences = ratings.filter(col("rating") >= 3) \
+    .groupBy("userId") \
+    .agg(collect_set("movieId").alias("liked_movies"))
+
+print("Created user preference sets for similarity calculation")
+user_preferences.show(5)
+
+# Define Jaccard similarity function
+def jaccard_similarity(set1, set2):
+    if not set1 or not set2:
+        return 0.0
+
+    intersection = len(set(set1).intersection(set(set2)))
+    union = len(set(set1).union(set(set2)))
+
+    return float(intersection) / union if union > 0 else 0.0
+
+# Register UDF for parallel execution
+jaccard_udf = udf(jaccard_similarity, FloatType())
+
+print("Jaccard similarity UDF created successfully!")
+
+# Create user pairs and calculate Jaccard similarity in parallel
+user_pairs = user_preferences.alias("u1").crossJoin(
+    user_preferences.alias("u2")
+).filter(col("u1.userId") < col("u2.userId"))  # Avoid duplicate pairs
+
+# Calculate Jaccard similarities using PySpark for parallelization
+similarities = user_pairs.select(
+    col("u1.userId").alias("user1"),
+    col("u2.userId").alias("user2"),
+    jaccard_udf(col("u1.liked_movies"), col("u2.liked_movies")).alias("jaccard_similarity")
+)
+
+# Filter significant similarities
+significant_similarities = similarities.filter(col("jaccard_similarity") > 0.2)
+
+print("Calculated similarities using parallel processing:")
+significant_similarities.orderBy(col("jaccard_similarity").desc()).show(5)
+
+# Define Cosine similarity function
+def cosine_similarity(set1, set2):
+    if not set1 or not set2:
+        return 0.0
+
+    intersection = len(set(set1).intersection(set(set2)))
+    magnitude1 = math.sqrt(len(set1))
+    magnitude2 = math.sqrt(len(set2))
+
+    return float(intersection) / (magnitude1 * magnitude2) if magnitude1 * magnitude2 > 0 else 0.0
+
+# Register Cosine UDF for parallel execution
+cosine_udf = udf(cosine_similarity, FloatType())
+
+# Calculate Cosine similarities in parallel
+cosine_similarities = user_pairs.select(
+    col("u1.userId").alias("user1"),
+    col("u2.userId").alias("user2"),
+    cosine_udf(col("u1.liked_movies"), col("u2.liked_movies")).alias("cosine_similarity")
+)
+
+# Filter significant cosine similarities
+significant_cosine = cosine_similarities.filter(col("cosine_similarity") > 0.3)
+
+print("Cosine similarity UDF created successfully!")
+significant_cosine.orderBy(col("cosine_similarity").desc()).show(5)
+
+print("=== COLLABORATIVE FILTERING RESULTS ===")
+print("✓ Implemented Jaccard and Cosine similarity measures")
+print("✓ Used PySpark for parallel computation of similarities")
+print("✓ Processed user preferences efficiently across multiple cores")
+
+# Show sample similar users using Jaccard similarity
+print("\nTop similar user pairs (Jaccard):")
+significant_similarities.orderBy(col("jaccard_similarity").desc()).show(3)
+
+print("\nTop similar user pairs (Cosine):")
+significant_cosine.orderBy(col("cosine_similarity").desc()).show(3)
+
+# Stop Spark
+spark.stop()
+print("Experiment completed successfully!")
+
+====================================================================================
+Exercise 11(Binary classification)
+
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.classification import LogisticRegression, LinearSVC, DecisionTreeClassifier
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator, BinaryClassificationEvaluator
+from sklearn.datasets import load_breast_cancer
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Start Spark
+spark = SparkSession.builder \
+    .appName("BinaryClassification") \
+    .getOrCreate()
+
+print("Spark is ready!")
+
+# Load Breast Cancer dataset (binary classification)
+cancer = load_breast_cancer()
+cancer_df = pd.DataFrame(cancer.data, columns=cancer.feature_names)
+cancer_df['diagnosis'] = cancer.target  # 0 = malignant, 1 = benign
+
+# Save to CSV file
+cancer_df.to_csv('breast_cancer_dataset.csv', index=False)
+print("Breast Cancer dataset CSV created successfully!")
+
+# Load from CSV using PySpark
+spark_df = spark.read.csv('breast_cancer_dataset.csv', header=True, inferSchema=True)
+
+print(f"Dataset loaded from CSV with {spark_df.count()} samples")
+print(f"Classes: 0=Malignant, 1=Benign")
+print("\nFirst 5 rows:")
+spark_df.select('mean radius', 'mean texture', 'mean perimeter', 'diagnosis').show(5)
+
+# Check class distribution
+print("Class distribution:")
+spark_df.groupBy('diagnosis').count().orderBy('diagnosis').show()
+
+# Verify we have exactly 2 classes
+num_classes = spark_df.select('diagnosis').distinct().count()
+print(f"\nNumber of classes: {num_classes}")
+print("✓ This is a binary classification dataset (2 classes)")
+
+# Create feature vector using all columns except diagnosis
+feature_cols = [col for col in spark_df.columns if col != 'diagnosis']
+assembler = VectorAssembler(inputCols=feature_cols, outputCol='features')
+assembled_df = assembler.transform(spark_df)
+
+# Select only features and diagnosis (target)
+final_df = assembled_df.select('features', 'diagnosis')
+
+# Split data: 70% training, 30% testing
+(train_data, test_data) = final_df.randomSplit([0.7, 0.3], seed=42)
+
+print(f"Training data: {train_data.count()} samples")
+print(f"Test data: {test_data.count()} samples")
+
+# Create three classifiers for binary classification
+lr = LogisticRegression(featuresCol='features', labelCol='diagnosis')
+svm = LinearSVC(featuresCol='features', labelCol='diagnosis', maxIter=10)
+dt = DecisionTreeClassifier(featuresCol='features', labelCol='diagnosis')
+
+# Train models
+print("Training models...")
+lr_model = lr.fit(train_data)
+svm_model = svm.fit(train_data)
+dt_model = dt.fit(train_data)
+print("All models trained successfully!")
+
+# Make predictions
+lr_predictions = lr_model.transform(test_data)
+svm_predictions = svm_model.transform(test_data)
+dt_predictions = dt_model.transform(test_data)
+
+# Create evaluators for binary classification
+precision_evaluator = MulticlassClassificationEvaluator(
+    labelCol='diagnosis', predictionCol='prediction', metricName='weightedPrecision')
+recall_evaluator = MulticlassClassificationEvaluator(
+    labelCol='diagnosis', predictionCol='prediction', metricName='weightedRecall')
+f1_evaluator = MulticlassClassificationEvaluator(
+    labelCol='diagnosis', predictionCol='prediction', metricName='f1')
+
+print("=== BINARY CLASSIFICATION RESULTS ===")
+print("Dataset: Breast Cancer (2 classes: Malignant=0, Benign=1)\n")
+
+# Store results
+results = []
+
+# Logistic Regression
+lr_precision = precision_evaluator.evaluate(lr_predictions)
+lr_recall = recall_evaluator.evaluate(lr_predictions)
+lr_f1 = f1_evaluator.evaluate(lr_predictions)
+results.append(['Logistic Regression', lr_precision, lr_recall, lr_f1])
+print(f"Logistic Regression - Precision: {lr_precision:.3f}, Recall: {lr_recall:.3f}, F1: {lr_f1:.3f}")
+
+# SVM (works with binary data)
+svm_precision = precision_evaluator.evaluate(svm_predictions)
+svm_recall = recall_evaluator.evaluate(svm_predictions)
+svm_f1 = f1_evaluator.evaluate(svm_predictions)
+results.append(['SVM', svm_precision, svm_recall, svm_f1])
+print(f"SVM - Precision: {svm_precision:.3f}, Recall: {svm_recall:.3f}, F1: {svm_f1:.3f}")
+
+# Decision Tree
+dt_precision = precision_evaluator.evaluate(dt_predictions)
+dt_recall = recall_evaluator.evaluate(dt_predictions)
+dt_f1 = f1_evaluator.evaluate(dt_predictions)
+results.append(['Decision Tree', dt_precision, dt_recall, dt_f1])
+print(f"Decision Tree - Precision: {dt_precision:.3f}, Recall: {dt_recall:.3f}, F1: {dt_f1:.3f}")
+
+# Create simple comparison chart
+algorithms = [result[0] for result in results]
+f1_scores = [result[3] for result in results]
+
+plt.figure(figsize=(8, 5))
+plt.bar(algorithms, f1_scores, color=['blue', 'green', 'orange'])
+plt.title('F1-Score Comparison - Binary Classification')
+plt.ylabel('F1-Score')
+plt.ylim(0, 1)
+plt.grid(axis='y', alpha=0.3)
+plt.show()
+
+# Find and display best algorithm
+best_index = f1_scores.index(max(f1_scores))
+print(f"\nBest Algorithm: {algorithms[best_index]} with F1-Score: {f1_scores[best_index]:.3f}")
+
+# Show sample predictions from best model
+print(f"Sample predictions from {algorithms[best_index]}:")
+print("(0=Malignant, 1=Benign)\n")
+
+if best_index == 0:  # Logistic Regression
+    lr_predictions.select('diagnosis', 'prediction').show(10)
+elif best_index == 1:  # SVM
+    svm_predictions.select('diagnosis', 'prediction').show(10)
+else:  # Decision Tree
+    dt_predictions.select('diagnosis', 'prediction').show(10)
+
+# Stop Spark
+spark.stop()
+print("Experiment completed successfully!")
+
+=====================================================================================
+
+Exercise 12(K means clustering)
+
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.ml.feature import VectorAssembler, StandardScaler
+from pyspark.ml.clustering import KMeans
+from pyspark.ml.evaluation import ClusteringEvaluator
+from sklearn.datasets import load_breast_cancer
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Start Spark
+spark = SparkSession.builder \
+    .appName("BreastCancerClustering") \
+    .getOrCreate()
+
+print("Spark is ready to use!")
+
+# Load the Breast Cancer dataset
+breast_cancer = load_breast_cancer()
+
+# Create a table with the measurements
+cancer_df = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
+
+# Convert to Spark format
+spark_df = spark.createDataFrame(cancer_df)
+
+# Select first few features for easier processing
+feature_columns = ['mean radius', 'mean texture', 'mean perimeter', 'mean area', 'mean smoothness']
+spark_df = spark_df.select(*feature_columns)
+
+# Rename columns for simplicity
+spark_df = spark_df.withColumnRenamed('mean radius', 'mean_radius') \
+                   .withColumnRenamed('mean texture', 'mean_texture') \
+                   .withColumnRenamed('mean perimeter', 'mean_perimeter') \
+                   .withColumnRenamed('mean area', 'mean_area') \
+                   .withColumnRenamed('mean smoothness', 'mean_smoothness')
+
+print(f"We have {spark_df.count()} samples in our dataset")
+spark_df.select('mean_radius', 'mean_texture', 'mean_perimeter').show(5)
+
+# Combine all measurements into one column for clustering
+feature_cols = ['mean_radius', 'mean_texture', 'mean_perimeter', 'mean_area', 'mean_smoothness']
+assembler = VectorAssembler(inputCols=feature_cols, outputCol='features_raw')
+assembled_data = assembler.transform(spark_df)
+
+# Scale the features for better clustering results
+scaler = StandardScaler(inputCol='features_raw', outputCol='features', withStd=True, withMean=True)
+scaler_model = scaler.fit(assembled_data)
+scaled_data = scaler_model.transform(assembled_data)
+
+print("Data is now ready for clustering!")
+print("Here's what the prepared data looks like:")
+scaled_data.select('features').show(5)
+
+# Train K-means model with 2 clusters (often matches benign/malignant)
+kmeans = KMeans(featuresCol='features', k=2, seed=42)
+model = kmeans.fit(scaled_data)
+
+# Get cluster assignments
+clustered_data = model.transform(scaled_data)
+
+print("Clustering completed!")
+print("Here are some samples with their cluster assignments:")
+clustered_data.select('mean_radius', 'mean_texture', 'prediction').show(10)
+
+# Calculate silhouette score
+evaluator = ClusteringEvaluator(featuresCol='features', predictionCol='prediction')
+silhouette_score = evaluator.evaluate(clustered_data)
+print(f"Final silhouette score: {silhouette_score:.3f}")
+
+# Show cluster distribution
+print("\nNumber of samples in each cluster:")
+clustered_data.groupBy('prediction').count().orderBy('prediction').show()
+
+# Convert PySpark DataFrame to Pandas for visualization
+plot_data = clustered_data.select('mean_radius', 'mean_texture', 'mean_area', 'prediction').toPandas()
+
+# Create visualization
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 8))
+
+# Plot 1: Mean Radius vs Mean Texture
+colors = ['red', 'blue']
+for i in [0, 1]:
+    cluster_data = plot_data[plot_data['prediction'] == i]
+    ax1.scatter(cluster_data['mean_radius'], cluster_data['mean_texture'],
+               c=colors[i], label=f'Cluster {i}', alpha=0.6)
+
+ax1.set_xlabel('Mean Radius')
+ax1.set_ylabel('Mean Texture')
+ax1.set_title('K-Means Clustering: Mean Radius vs Mean Texture')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Plot 2: Mean Radius vs Mean Area
+for i in [0, 1]:
+    cluster_data = plot_data[plot_data['prediction'] == i]
+    ax2.scatter(cluster_data['mean_radius'], cluster_data['mean_area'],
+               c=colors[i], label=f'Cluster {i}', alpha=0.6)
+
+ax2.set_xlabel('Mean Radius')
+ax2.set_ylabel('Mean Area')
+ax2.set_title('K-Means Clustering: Mean Radius vs Mean Area')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+print("Clusters visualized successfully!")
+print(f"Cluster 0 (Red): {len(plot_data[plot_data['prediction'] == 0])} samples")
+print(f"Cluster 1 (Blue): {len(plot_data[plot_data['prediction'] == 1])} samples")
+
+print("=== EXPERIMENT SUMMARY ===")
+print(f"✓ Successfully clustered {spark_df.count()} breast cancer samples into 2 groups")
+print(f"✓ Achieved silhouette score of {silhouette_score:.3f}")
+print(f"✓ Visualized clusters graphically using scatter plots")
+print("✓ Each cluster represents samples with similar characteristics")
+print("\nK-Means clustering helps identify patterns in medical data!")
+
+# Stop Spark
+spark.stop()
+print("\nExperiment completed successfully!")
+
+======================================THE END========================================

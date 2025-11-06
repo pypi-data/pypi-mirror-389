@@ -1,0 +1,46 @@
+==================
+Run These Commands
+==================
+(Note: In Page rank map-reduce output is the new input for next iteration)
+
+(Important: If new input is given construct the input.txt and update reducer.py N value)
+(N = 4 is provided in reducer update it to the no of pages in the input.txt)
+=========
+In Local
+=========
+(4 Iterations) input5 is the ranking of pages after 4 iterations (rank is based on which has highest value)
+cat input.txt  | python mapper.py | sort | python reducer.py > input2.txt
+cat input2.txt | python mapper.py | sort | python reducer.py > input3.txt
+cat input3.txt | python mapper.py | sort | python reducer.py > input4.txt
+cat input4.txt | python mapper.py | sort | python reducer.py > input5.txt
+. . .
+It goes on till convergence(when the values dont change much)
+
+=========
+In Hadoop
+=========
+(Iteration 1)
+cat input.txt                                               
+cat input.txt | python mapper.py                           
+cat input.txt | python mapper.py | sort | python reducer.py
+hadoop fs -rm input.txt
+hadoop fs -rm -r laboutput
+hadoop fs -put input.txt
+hadoop fs -ls
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar -files /home/cloudera/BDA-Lab/mapper.py,/home/cloudera/BDA-Lab/reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input /user/cloudera/input.txt -output /user/cloudera/laboutput
+hadoop fs -ls /user/cloudera/laboutput
+hadoop fs -cat /user/cloudera/laboutput/part-00000
+
+(Iteration 2)
+(Note: Different cmd is added & input is replaced with input2 & laboutput is replaced with laboutput2)
+hadoop fs -cat /user/cloudera/laboutput/part-00000 | hadoop fs -put - /user/cloudera/input2.txt
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar -files /home/cloudera/BDA-Lab/mapper.py,/home/cloudera/BDA-Lab/reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input /user/cloudera/input2.txt -output /user/cloudera/laboutput2
+hadoop fs -ls /user/cloudera/laboutput2
+hadoop fs -cat /user/cloudera/laboutput2/part-00000
+
+(Iteration 3)
+(Note: Different cmd is added & input2 is replaced with input3 & laboutput2 is replaced with laboutput3)
+hadoop fs -cat /user/cloudera/laboutput2/part-00000 | hadoop fs -put - /user/cloudera/input3.txt
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.6.0-mr1-cdh5.4.2.jar -files /home/cloudera/BDA-Lab/mapper.py,/home/cloudera/BDA-Lab/reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input /user/cloudera/input3.txt -output /user/cloudera/laboutput3
+hadoop fs -ls /user/cloudera/laboutput3
+hadoop fs -cat /user/cloudera/laboutput3/part-00000

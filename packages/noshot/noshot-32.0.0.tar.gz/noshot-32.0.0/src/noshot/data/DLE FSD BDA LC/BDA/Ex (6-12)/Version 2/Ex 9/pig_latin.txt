@@ -1,0 +1,170 @@
+📁 Step 1: Prepare Input Data
+We’ll use two small CSV files:
+(students.txt and enrollments.txt are already present in the folder exp 9)
+
+📤 Step 2: Upload to HDFS
+Open terminal (or CMD in Cloudera VM):
+hdfs dfs -mkdir -p /user/pig/data
+hdfs dfs -put students.txt /user/pig/data/
+hdfs dfs -put enrollments.txt /user/pig/data/
+
+🐷 Step 3: Write Pig Latin Script (analysis.pig)
+Save this as analysis.pig:(the full code below, or run it line by line in cloudera terminal )
+
+-- Load data
+students = LOAD '/user/pig/data/students.txt' 
+           USING PigStorage(',') 
+           AS (id:int, name:chararray, age:int, dept:chararray);
+
+enrollments = LOAD '/user/pig/data/enrollments.txt' 
+              USING PigStorage(',') 
+              AS (student_id:int, course_id:chararray);
+
+-- 1. FILTER: Only CS students
+cs_students = FILTER students BY dept == 'CS';
+
+-- 2. PROJECT: Get only name and dept
+cs_names = FOREACH cs_students GENERATE name, dept;
+
+-- 3. JOIN: Students with their courses
+student_courses = JOIN students BY id, enrollments BY student_id;
+
+-- 4. GROUP: Group courses by student
+grouped = GROUP student_courses BY students::id;
+
+-- 5. SORT: Sort students by age (ascending)
+sorted_students = ORDER students BY age ASC;
+
+-- Output results
+STORE cs_names INTO '/user/pig/output/cs_names';
+STORE student_courses INTO '/user/pig/output/joined';
+STORE grouped INTO '/user/pig/output/grouped';
+STORE sorted_students INTO '/user/pig/output/sorted';
+
+▶️ Step 4: Run the Pig Script
+In terminal:
+pig analysis.pig
+("Wait for job to complete (you’ll see Success!)")
+
+📂 Step 5: Check Output in HDFS
+View each output:
+1. Filtered & Projected (CS students)
+hdfs dfs -cat /user/pig/output/cs_names/part-m-*
+
+✅ Output:
+Alice,CS
+Diana,CS
+
+2. Joined Data (students + courses)
+hdfs dfs -cat /user/pig/output/joined/part-m-*
+
+✅ Output:
+1,Alice,20,CS,1,CS101
+1,Alice,20,CS,1,CS102
+2,Bob,22,Math,2,MATH201
+3,Charlie,21,Physics,3,PHYS101
+4,Diana,20,CS,4,CS101
+
+3. Grouped by Student ID
+hdfs dfs -cat /user/pig/output/grouped/part-m-*
+
+✅ Output (simplified view):
+1	{(1,Alice,20,CS,1,CS101),(1,Alice,20,CS,1,CS102)}
+2	{(2,Bob,22,Math,2,MATH201)}
+3	{(3,Charlie,21,Physics,3,PHYS101)}
+4	{(4,Diana,20,CS,4,CS101)}
+
+4. Sorted by Age (ascending)
+hdfs dfs -cat /user/pig/output/sorted/part-m-*
+
+✅ Output:
+1,Alice,20,CS
+4,Diana,20,CS
+3,Charlie,21,Physics
+2,Bob,22,Math
+
+---------------------------------------------------------------------------
+NOTE:
+✅ The Only Change Needed for Local Mode
+🔁 Replace HDFS paths with local file paths
+1. Keep your input files on local disk (not HDFS)
+
+# Put files in your home folder (e.g., /home/cloudera/)
+cp students.txt enrollments.txt /home/cloudera/
+
+
+2. Modify your Pig script (analysis.pig) to use local paths:
+
+cat > analysis_local.pig <<'EOF'
+-- Load data from LOCAL file system
+students = LOAD '/home/cloudera/students.txt' 
+           USING PigStorage(',') 
+           AS (id:int, name:chararray, age:int, dept:chararray);
+
+enrollments = LOAD '/home/cloudera/enrollments.txt' 
+              USING PigStorage(',') 
+              AS (student_id:int, course_id:chararray);
+
+-- 1. FILTER: Only CS students
+cs_students = FILTER students BY dept == 'CS';
+
+-- 2. PROJECT: Get only name and dept
+cs_names = FOREACH cs_students GENERATE name, dept;
+
+-- 3. JOIN: Students with their courses
+student_courses = JOIN students BY id, enrollments BY student_id;
+
+-- 4. GROUP: Group by student ID
+grouped = GROUP student_courses BY students::id;
+
+-- 5. SORT: Sort by age (ascending)
+sorted_students = ORDER students BY age ASC;
+
+-- Save outputs to local disk
+STORE cs_names INTO '/home/cloudera/output/cs_names';
+STORE student_courses INTO '/home/cloudera/output/joined';
+STORE grouped INTO '/home/cloudera/output/grouped';
+STORE sorted_students INTO '/home/cloudera/output/sorted';
+EOF
+
+
+3. Run Pig in local mode:
+# Create output folder
+mkdir -p /home/cloudera/output
+
+# Run Pig in LOCAL mode
+pig -x local analysis_local.pig
+
+
+The -x local flag tells Pig to bypass Hadoop and use local file system + local execution. 
+
+4. View the Results
+# 1. CS Students (Filtered + Projected)
+echo "=== CS Students ==="
+cat /home/cloudera/output/cs_names/part-m-00000
+
+# 2. Joined Data
+echo -e "\n=== Joined (Students + Courses) ==="
+cat /home/cloudera/output/joined/part-m-00000
+
+# 3. Sorted by Age
+echo -e "\n=== Sorted by Age ==="
+cat /home/cloudera/output/sorted/part-m-00000
+
+✅ Expected Output
+=== CS Students ===
+Alice,CS
+Diana,CS
+
+=== Joined (Students + Courses) ===
+1,Alice,20,CS,1,CS101
+1,Alice,20,CS,1,CS102
+2,Bob,22,Math,2,MATH201
+3,Charlie,21,Physics,3,PHYS101
+4,Diana,20,CS,4,CS101
+
+=== Sorted by Age ===
+1,Alice,20,CS
+4,Diana,20,CS
+3,Charlie,21,Physics
+2,Bob,22,Math
