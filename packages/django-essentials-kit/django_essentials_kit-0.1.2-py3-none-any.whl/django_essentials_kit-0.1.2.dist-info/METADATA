@@ -1,0 +1,199 @@
+Metadata-Version: 2.4
+Name: django-essentials-kit
+Version: 0.1.2
+Summary: Essential utilities for Django development
+Home-page: https://github.com/alex-deus/django-essentials-kit
+Author: alex-deus
+Project-URL: Bug Reports, https://github.com/alex-deus/django-essentials-kit/issues
+Project-URL: Source, https://github.com/alex-deus/django-essentials-kit
+Keywords: django,utilities,admin,fancybox
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 3.2
+Classifier: Framework :: Django :: 4.0
+Classifier: Framework :: Django :: 4.1
+Classifier: Framework :: Django :: 4.2
+Classifier: Framework :: Django :: 5.0
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: Django>=3.2
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Django Essentials
+
+Essential utilities for Django that make common tasks easier and more efficient.
+
+## Features
+
+- **Admin Utilities**: Enhanced admin interface components including FancyBox image display
+- **Model Utilities**: Helper functions for common model operations
+
+## Installation
+
+```bash
+pip install django-essentials-kit
+```
+
+## Quick Start
+
+### Admin Utilities
+
+The library provides `MediaFancybox` class and `get_fancybox_image` function for enhanced image display in Django admin:
+
+```python
+from django.contrib import admin
+from django_essentials_kit.admin import MediaFancybox, get_fancybox_image
+from .models import YourModel
+
+@admin.register(YourModel)
+class YourModelAdmin(admin.ModelAdmin):
+    list_display = ['name', 'image_preview']
+
+    class Media(MediaFancybox):
+        ...
+
+    def image_preview(self, obj) -> SafeString:
+        return get_fancybox_image(obj, 'image_field', w=60, h=60)
+```
+
+### Model Utilities
+
+Use `get_object_or_none` for safe object retrieval:
+
+```python
+from django_essentials_kit.utils import get_object_or_none
+
+from .models import YourModel
+
+# Instead of try/except blocks
+obj = get_object_or_none(YourModel, pk=1)
+if obj:
+    ...  # Do something with obj
+```
+
+## Requirements
+
+- Python 3.8+
+- Django 3.2+
+
+## Contributing
+
+We welcome contributions! Here's how you can help improve Django Toolkit Essentials:
+
+### Getting Started
+
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/alex-deus/django-toolkit-essentials.git
+   cd django-toolkit-essentials
+   ```
+
+3. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+4. **Install development dependencies and setup pre-commit**:
+   ```bash
+   make install-dev
+   # Or manually:
+   pip install -e .
+   pip install -r requirements-dev.txt
+   pre-commit install
+   ```
+
+### Development Workflow
+
+1. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make your changes** following our coding standards:
+   - Follow PEP 8 style guidelines
+   - Add type hints where appropriate
+   - Write docstrings for new functions and classes
+   - Keep functions focused and well-named
+
+3. **Test your changes**:
+   ```bash
+   make check  # Run all checks (tests, linting, formatting)
+   # Or run individual commands:
+   make test          # Run tests
+   make lint          # Run linters
+   make format        # Format code
+   pre-commit run --all-files  # Run pre-commit hooks
+   ```
+
+4. **Commit your changes**:
+   ```bash
+   git add .
+   git commit -m "Add: brief description of your changes"
+   ```
+
+5. **Push and create a Pull Request**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+### What We're Looking For
+
+- **Bug fixes** - Help us squash those pesky bugs
+- **New utilities** - Add helpful Django utilities that follow our patterns
+- **Documentation improvements** - Better docs help everyone
+- **Performance optimizations** - Make things faster and more efficient
+- **Test coverage** - Help us maintain high code quality
+
+### Code Style Guidelines
+
+- Use type hints for all function parameters and return values
+- Follow Django conventions and best practices
+- Write clear, descriptive variable and function names
+- Add docstrings to public functions and classes
+- Keep imports organized (standard library, third-party, local)
+
+**Automated Code Quality:**
+- Pre-commit hooks automatically run on every commit to ensure code quality
+- Code is automatically formatted with Black and isort
+- Linting with flake8, mypy, and bandit catches issues early
+- Use `make format` to format code manually
+- Use `make lint` to run all linters manually
+
+### Reporting Issues
+
+Found a bug or have a feature request? Please:
+
+1. Check existing issues first to avoid duplicates
+2. Use our issue templates when available
+3. Provide clear reproduction steps for bugs
+4. Include relevant system information (Python/Django versions)
+
+### Questions?
+
+Feel free to open an issue for questions or join discussions in existing issues.
+
+## License
+
+MIT License - see LICENSE file for details.
