@@ -1,0 +1,157 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to distribute the simulation 
+* across several GPUs and/or workstations.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.simulation;
+
+import "google/protobuf/wrappers.proto";
+
+// Configuration parameters for the AVX simulation deployment.
+// 
+//
+message DeployConfiguration
+{
+  // Parameters used to spawn the AVX local processes.
+  //
+  LocalNodes local_nodes = 4;
+
+  // Parameters used to spawn the AVX remote processes.
+  //
+  repeated DeployHost deploy_hosts = 5;
+}
+
+// Deploy parameters of the local workstation.
+//
+message LocalNodes {
+  // The first TCP port used to communicate with local nodes.
+  //
+  // AVX allocates ports to communicate with different 
+  // processes starting from the port defined in this field.
+  //
+  // Note: The value must be greater than 1024.
+  //
+  google.protobuf.Int32Value min_port = 1;
+
+  // The last TCP port used to communicate with local nodes.
+  //
+  // AVX allocates ports to communicate with different 
+  // processes up to this last port.
+  //
+  // Note: The value must be greater than the value defined in the `min_port` 
+  // field.
+  //
+  google.protobuf.Int32Value max_port = 2;
+
+  // The identifiers of the GPUs that are available on the local host.
+  //
+  // Note: Make sure that the identifiers that you provide are valid.
+  //
+  repeated GpuIdentifier gpu_identifiers = 3;
+}
+
+// Deploy nodes on a remote host.
+//
+// A deploy host is identified by its IPv4 address.
+//
+// Note: A deploy host can contain several deploy nodes.
+//
+message DeployHost {
+  // IPv4 host address used to spawn the AVX processes.
+  //
+  string address = 1;
+
+  // List of deploy nodes on this host.
+  // 
+  repeated DeployNode deploy_nodes = 2;
+
+  // The TCP port used for the resource manager process on this deploy host.
+  //
+  google.protobuf.Int32Value resource_manager_port = 3;
+
+  // The identifiers of the GPUs that are available on this deploy host.
+  //
+  // Note: Make sure that the identifiers that you provide are valid.
+  //
+  repeated GpuIdentifier gpu_identifiers = 4;
+
+  // The TCP port used to communicate with the data access server (optional).
+  //
+  google.protobuf.Int32Value data_access_server_port = 5;
+}
+
+// Parameters for a deploy node.
+//
+message DeployNode {
+  // A user-defined identifier for the node.
+  //
+  // This identifier must be unique to the node.
+  //
+  // Note: The identifier is case-sensitive and can be any string 
+  // without length constraint.
+  //
+  string node_id = 1;
+
+  // The TCP port used to communicate with the node.
+  //
+  google.protobuf.Int32Value port = 2;
+}
+
+// Identifier of a GPU that includes a name and the identification number 
+// of the GPU.
+//
+message GpuIdentifier {
+  // A user-defined name for the GPU.
+  //
+  // This identifier must be unique.
+  //
+  // Note: The identifier is case-sensitive and can be any string 
+  // without length constraint.
+  //
+  string name = 1;
+  
+  oneof gpu_id {
+    // The index number of the GPU.
+    //
+    // Note: The GPU index might not be consistent between PC reboots. 
+    // Therefore, it is recommended to use the PCI bus ID (`bus_id`) or the 
+    // UUID (`uuid`) instead. 
+    // For more details, refer to AVxcelerate Sensors Simulator User's Guide.
+    //
+    string index = 2;
+    
+    // The PCI bus identifier of the GPU.
+    //
+    // Note: The PCI bus identifier must have the format a:b:c.d with 
+    // a = domain ID, b = bus ID, c = device ID, d = function ID and each 
+    // represented as base-16 number with 1 to 8 digits.
+    //
+    string bus_id = 3;
+    
+    // The UUID of the GPU.
+    //
+    // Note: The UUID must be a string starting with an upper-case 'GPU' 
+    // followed by five base-16 number blocks separated with a hyphen. The 
+    // blocks must have the following amount of digits: 8, 4, 4, 4 and 12. 
+    // Example: GPU-12345678-1234-1234-1234-123456789abc
+    //
+    string uuid = 4;
+  }
+}

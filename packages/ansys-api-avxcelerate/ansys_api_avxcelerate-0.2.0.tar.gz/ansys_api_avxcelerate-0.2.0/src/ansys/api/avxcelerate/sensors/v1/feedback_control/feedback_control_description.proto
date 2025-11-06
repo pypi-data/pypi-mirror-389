@@ -1,0 +1,79 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the message used to alter sensor parameters 
+* during the simulation execution.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.feedback_control;
+
+import "ansys/api/avxcelerate/sensors/v1/feedback_control/feedback_control_camera_parameters.proto";
+import "ansys/api/avxcelerate/sensors/v1/feedback_control/feedback_control_radar_parameters.proto";
+import "ansys/api/avxcelerate/sensors/v1/feedback_control/feedback_control_lidar_parameters.proto";
+
+// Update to apply to one or several parameters of a sensor during the 
+// simulation.
+//
+// This messages contains the sensor parameter(s) to be updated.
+//
+// Note: At least one parameter must be provided at each call.
+//
+// Note: The changes are not directly applied to the sensor. First, the update 
+// will be sent to the sensor at the next world update (requested using 
+// the `Update` method of the Simulation service). Then, the sensor will be 
+// reloaded so that the updated parameter(s) are used for the next output 
+// calculation. However, a sensor cannot be reloaded during an ongoing output 
+// calculation, it can be reloaded only after the computation is completed.
+//
+message FeedbackControlDescription {
+  // The identifier of the sensor as defined in the sensor configuration.
+  // 
+  // Note: This identifier is required for each call and must identify 
+  // a sensor.
+  //
+  string sensor_id = 1;
+  
+  oneof feedback_control_sensor_parameters {
+    // This message is used to update a camera parameters during 
+    // the simulation.
+    //
+    FeedbackControlCameraParameters feedback_control_camera_parameters = 2;
+    
+    // This message is used to update a radar parameters during 
+    // the simulation.
+    //
+    FeedbackControlRadarParameters feedback_control_radar_parameters = 3;
+    
+    // This message is used to update a lidar parameters during 
+    // the simulation.
+    //
+    FeedbackControlLidarParameters feedback_control_lidar_parameters = 4;
+  }
+
+  // Enables IP protection for the sensor. When IP protection is enabled for a 
+  // radar, no waveform report is generated for this radar. This has no effect 
+  // on any other sensor.
+  //
+  SensorProtectionEnabler enable_sensor_protection = 5;
+}
+
+// This message is used to enable sensor protection.
+//
+// Note: Once enabled, IP protection cannot be disabled. 
+//
+message SensorProtectionEnabler {}

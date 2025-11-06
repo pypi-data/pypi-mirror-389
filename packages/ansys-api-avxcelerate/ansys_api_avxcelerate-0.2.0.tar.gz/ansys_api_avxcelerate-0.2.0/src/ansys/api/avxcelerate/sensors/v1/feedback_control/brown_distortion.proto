@@ -1,0 +1,67 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the brown distortion messages that are used in other 
+* messages of the API.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.feedback_control;
+
+import "google/protobuf/wrappers.proto";
+
+// Definition of the brown distortion.
+//
+message BrownDistortion {
+  // BrownRadialDistortion.
+  //
+  BrownRadialDistortion radial_distortion = 1;
+  
+  // BrownTangentialDistortion.
+  //
+  BrownTangentialDistortion tangential_distortion = 2;
+}
+
+// Lens radial distortion coefficients for Brown-Conrady distortion 
+// model (k1, k2, k3).
+//
+message BrownRadialDistortion {
+  // K1 coefficient value of radial distortion.
+  //
+  google.protobuf.DoubleValue k1 = 1;
+  
+  // K2 coefficient value of radial distortion.
+  //
+  google.protobuf.DoubleValue k2 = 2;
+  
+  // K3 coefficient value of radial distortion.
+  //
+  google.protobuf.DoubleValue k3 = 3;
+}
+
+// Lens tangential distortion coefficients for Brown-Conrady distortion 
+// model (p1, p2).
+//
+message BrownTangentialDistortion {
+  // P1 coefficient value of tangential distortion.
+  //
+  google.protobuf.DoubleValue p1 = 1;
+  
+  // P2 coefficient value of tangential distortion.
+  //
+  google.protobuf.DoubleValue p2 = 2;
+}

@@ -1,0 +1,77 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the service used to execute the simulation.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.simulation;
+
+import "ansys/api/avxcelerate/sensors/v1/simulation/configuration.proto";
+import "ansys/api/avxcelerate/sensors/v1/simulation/world_update.proto";
+import "ansys/api/avxcelerate/sensors/v1/status.proto";
+import "google/protobuf/empty.proto";
+
+// Simulation Service
+//
+// This service provides the simulation control procedures.
+//
+// Note: When using simulation control procedures, make sure you follow a 
+// valid simulation sequence. For more details, 
+// refer to the API description section of the API documentation. 
+// Procedure calls that are not consistent with the current AVX state will end 
+// in error.
+//
+service Simulation {
+  // Loads AVX with a track, a list of assets, some simulation parameters, 
+  // a sensor configuration, a Lighting System (optional), some deployment 
+  // parameters and the ID of the ego vehicle (the vehicle instance to which 
+  // the sensor configuration will be attached).
+  //
+  rpc Load(Configuration) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+  
+  // Sets the desired initial position, orientation and state of all the 
+  // components of the world. Changes the AVX state to RUNNING.
+  //
+  // Note: When called after the Stop command, the Initialize command resets 
+  // the sensors and advanced lighting systems to their initial loaded states. 
+  // This simulation reset is a Beta feature in the current release. For more 
+  // information on this feature, refer to the Simulation section of the 
+  // API description chapter in the API documentation.
+  //
+  rpc Initialize(WorldUpdate) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+  
+  // Applies a world model update to AVX.
+  // 
+  rpc Update(WorldUpdate) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+  
+  // Stops the simulation. Changes the AVX state from RUNNING to LOADED.
+  // 
+  rpc Stop(google.protobuf.Empty) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+  
+  // Unloads the simulation. Changes the AVX state back to STARTED.
+  // 
+  // Note: This command allows the restart of a simulation without having to 
+  // restart AVX.
+  //
+  rpc Unload(google.protobuf.Empty) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+  
+  // Sends a signal to end all the AVX processes properly. 
+  // Closes the gRPC server.
+  // 
+  rpc Kill(google.protobuf.Empty) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+}

@@ -1,0 +1,414 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to alter some camera parameters 
+* during the simulation execution.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.feedback_control;
+
+import "google/protobuf/wrappers.proto";
+import "ansys/api/avxcelerate/sensors/v1/feedback_control/brown_distortion.proto";
+
+// Update to apply to one or several parameters of a camera sensor during the 
+// simulation.
+// This messages contains the camera parameter(s) to be updated.
+//
+// Note: At least one parameter must be provided at each call.
+//
+// Note: The changes are not directly applied to the camera. First, the update 
+// will be sent to the camera at the next world update (requested using 
+// the `Update` method of the Simulation service). Then, the camera will be 
+// reloaded (except for camera gain, exposure and time encoding) so that the 
+// updated parameter(s) are used for the next output 
+// calculation. However, a camera cannot be reloaded during an ongoing output 
+// calculation, it can be reloaded only after the computation is completed.
+//
+message FeedbackControlCameraParameters {
+  // Lens parameters.
+  //
+  Lens lens = 1;
+
+  // Imager parameters.
+  //
+  Imager imager = 2;
+
+  // Electronics (post-processing) parameters.
+  //
+  Electronics electronics = 3;
+}
+
+// Camera Lens System Parameters
+//
+// Parameters of the camera lens system: focal length, distortion model, 
+// shape of the lens' aperture, and type of chromatic aberration.
+//
+// Note: Changing the lens distortion model or the aperture shape 
+// during the simulation is not allowed.
+//
+message Lens {
+  oneof distortion {
+    // Polynomial distortion parameters (for fisheye cameras).
+    //
+    FisheyePolynomialDistortion fisheye_polynomial_distortion = 1;
+    
+    // Brown distortion parameters (for cameras with standard field of view).
+    //
+    BrownDistortion brown_distortion = 2;
+  }
+
+  oneof aperture_shape {
+    // Circular aperture.
+    //
+    CircularAperture circular = 3;
+    
+    // Regular convex polygon aperture.
+    //
+    RegularConvexPolygonAperture regular_convex = 4;
+  }
+
+  oneof lens_chromatic_aberration {
+    // Simple chromatic aberration.
+    //
+    SimpleChromaticAberration simple_chromatic_aberration = 5;
+
+    // Advanced chromatic aberration.
+    //
+    AdvancedChromaticAberration advanced_chromatic_aberration = 6;
+  }
+}
+
+// Simple Chromatic Aberration Parameters
+//
+// Note: It is not possible to change from a Chromatic Dispersion Preset 
+// to a Custom Chromatic Dispersion or vice-versa.
+//
+message SimpleChromaticAberration {
+  // Focal length of the lens system.
+  //
+  // Unit: meter (m)
+  //
+  google.protobuf.DoubleValue focal_length = 1;
+  
+  // Wavelength at which the focal length is not affected
+  // by chromatic aberration.
+  // Unit: meter (m)
+  //
+  google.protobuf.DoubleValue wavelength_of_focal_length = 2;
+  
+  oneof chromatic_dispersion {
+    // Preset chromatic dispersion
+    //
+    PresetChromaticDispersion preset_chromatic_dispersion = 3;
+  
+    // Custom chromatic dispersion
+    //
+    CustomChromaticDispersion custom_chromatic_dispersion = 4;
+  }
+}
+
+// Custom Chromatic Dispersion Parameters
+//
+message CustomChromaticDispersion {
+  // Focal length difference between the maximum and minimum wavelengths. 
+  //
+  // Unit: meter (m)
+  //
+  double focal_shift = 1;
+}
+
+// The available chromatic dispersion presets.
+// 
+enum PresetChromaticDispersion {
+  NONE = 0;
+  LOW = 1;
+  MEDIUM = 2;
+  HIGH = 3;
+}
+
+// Advanced Chromatic Aberration Parameters
+// 
+message AdvancedChromaticAberration {
+  // Focal length of the lens system.
+  //
+  SpectralFocalLengthDistribution focal_lengths = 1;
+}
+
+// Spectral Focal Length Distribution
+//
+message SpectralFocalLengthDistribution {
+  // Distance between the optical center of the lens and the focal point for 
+  // the 390 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_390 = 1;
+  // Distance between the optical center of the lens and the focal point for 
+  // the 427 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_427 = 2;
+  // Distance between the optical center of the lens and the focal point for 
+  // the 464 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_464 = 3;
+  // Distance between the optical center of the lens and the focal point for 
+  // the 390 wavelength.
+  // Unit: meter (m)
+  //
+  //
+    double focal_length_502 = 4;
+  // Distance between the optical center of the lens and the focal point for 
+  // the 502 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_539 = 5;
+  // Distance between the optical center of the lens and the focal point for 
+  // the 539 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_577 = 6;
+  // Distance between the optical center of the lens and the focal point for 
+  // the 577 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_614 = 7;
+  // 652 between the optical center of the lens and the focal point for 
+  // the 390 wavelength.
+  //
+  // Unit: meter (m)
+  //
+    double focal_length_652 = 8;
+}
+
+// Circular Aperture Shape
+// 
+message CircularAperture {
+  // The aperture area.
+  //
+  // Unit: square meters (m^2)
+  //
+  google.protobuf.DoubleValue aperture_area = 1;
+}
+
+// Polygonal Aperture Shape
+//
+message RegularConvexPolygonAperture {
+  // The aperture area.
+  //
+  // Unit: square meters (m^2)
+  //
+  google.protobuf.DoubleValue aperture_area = 1;
+  
+  // The offset angle.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue offset_angle = 2;
+  
+  // The number of aperture sides/edges.
+  //
+  google.protobuf.Int32Value edge_number = 3;
+}
+
+// Fisheye Distortion Parameters
+//
+message FisheyePolynomialDistortion {
+  // A1 coefficient value of fisheye parameter.
+  //
+  google.protobuf.DoubleValue a1 = 1;
+  
+  // A2 coefficient value of fisheye parameter.
+  //
+  google.protobuf.DoubleValue a2 = 2;
+  
+  // A3 coefficient value of fisheye parameter.
+  //
+  google.protobuf.DoubleValue a3 = 3;
+  
+  // A4 coefficient value of fisheye parameter.
+  //
+  google.protobuf.DoubleValue a4 = 4;
+  
+  // A5 coefficient value of fisheye parameter.
+  //
+  google.protobuf.DoubleValue a5 = 5;
+}
+
+// Camera Imager System Parameters
+//
+// Parameters of the camera imager: resolution, exposure time, 
+// read out noise and thermal noise model.
+//
+// Note: Changing the thermal noise model during the simulation is not allowed.
+//
+message Imager {
+  // ImagerResolution.
+  //
+  ImagerResolution resolution = 1;
+  
+  // Exposure time value.
+  //
+  // Unit: seconds (s)
+  //
+  google.protobuf.DoubleValue exposure_time = 2;
+  
+  // ReadoutNoise.
+  //
+  ReadoutNoise readout_noise = 3;
+  
+  oneof thermal_noise {
+    // ThermalNoiseSimpleModel.
+    //
+    ThermalNoiseSimpleModel thermal_noise_simple = 4;
+    
+    // ThermalNoiseAdvancedModel.
+    //
+    ThermalNoiseAdvancedModel thermal_noise_advanced = 5;
+  }
+}
+
+// Resolution of the Imager
+//
+// Note: Changing the sensor resolution does not update the resolution 
+// of the rendering window.
+//
+message ImagerResolution {
+  // Width of the sensor in number of pixels.
+  //
+  google.protobuf.Int32Value width = 1;
+  
+  // Height of the sensor in number of pixels.
+  //
+  google.protobuf.Int32Value height = 2;
+}
+
+// Readout Noise Parameters
+//
+message ReadoutNoise {
+  // Average value of the Gaussian distribution.
+  //
+  // Unit: number of electrons.
+  //
+  google.protobuf.DoubleValue readout_noise_average = 1;
+  
+  // Standard deviation of the Gaussian distribution.
+  //
+  // Unit: number of electrons.
+  //
+  google.protobuf.DoubleValue readout_noise_standard = 2;
+}
+
+// Thermal Noise Parameters for the Advanced Model
+//
+message ThermalNoiseAdvancedModel {
+  // Dark current reference value.
+  //
+  // Unit: number of electrons per second
+  //
+  google.protobuf.DoubleValue dark_current_reference_value = 1;
+  
+  // Dark current reference temperature.
+  //
+  // Unit: Kelvin (K)
+  //
+  google.protobuf.DoubleValue dark_current_reference_temperature = 2;
+  
+  // Imager temperature.
+  //
+  // Unit: Kelvin (K)
+  //
+  google.protobuf.DoubleValue imager_temperature = 3;
+  
+  // Dark current temperature coefficient.
+  //
+  // Unit: Kelvin (K)
+  //
+  google.protobuf.DoubleValue dark_current_coefficient = 4;
+}
+
+// Thermal Noise Parameters for the Simple Model
+//
+message ThermalNoiseSimpleModel {
+  // Average dark current value.
+  //
+  // Unit: number of electrons per second
+  //
+  google.protobuf.DoubleValue dark_current_average_value = 1;
+}
+
+// Camera Electronics Parameters
+//
+// Note: Changing the result conversion type during the simulation 
+// is not allowed. 
+//
+message Electronics {
+  // The number defining the native bit depth of the camera.
+  //
+  google.protobuf.Int32Value bits = 1;
+  
+  // The voltage gain of the camera.
+  //
+  // Unit: dB
+  //
+  google.protobuf.DoubleValue gain = 2;
+  
+  oneof results_conversion {
+    // Demosaicing output.
+    //
+    Demosaicing demosaicing = 3;
+    
+    // Injection output.
+    //
+    Injection injection = 4;
+  }
+}
+
+// Parameters for the Physics-based Camera Demosaicing Output
+//
+message Demosaicing {
+  // Number of bits for the data encoding.
+  //
+  google.protobuf.Int32Value bit_depth_reduction = 1;
+}
+
+// Parameters for the Injection Data Output
+//
+message Injection {
+  // InjectionTimeEncoding.
+  //
+  InjectionTimeEncoding time_encoding = 1;
+}
+
+// The Timestamp Encoding
+//
+message InjectionTimeEncoding {
+  // Row position of the pixel in which the simulation time is encoded.
+  //
+  google.protobuf.Int32Value row = 1;
+  
+  // Column position of the pixel in which the simulation time is encoded.
+  //
+  google.protobuf.Int32Value column = 2;
+}

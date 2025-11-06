@@ -1,0 +1,56 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used by the Resource Uploader service.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.simulation;
+
+
+// Upload request message.
+//
+message UploadRequest {
+  // The metadata used to identify the resource to upload.
+  //
+  UploadMetaData upload_metadata = 1;
+  
+  // The data to upload.
+  //
+  bytes data = 2;
+}
+
+// Provides information on the resource to upload.
+//
+// Note: Metadata must be sent in the first `UploadRequest`. 
+// Metadata sent later are ignored.
+//
+message UploadMetaData {
+  // Map containing metadata values.
+  //
+  // Key [string]: Type of the metadata.
+  // Must be "ResourceIdentifier" for Tracks, Assets, and Lighting Systems 
+  // or "ResourceType" for sensor configuration.
+  // 
+  // Value [string]: Value associated with the metadata type. 
+  //  
+  // Note: This field must contain at least one "ResourceIdentifier" key 
+  // (without associated value), or one "ResourceType" key with the
+  // associated value "SensorConfiguration".
+  //
+  map<string, string> values = 1;
+}

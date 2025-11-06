@@ -1,0 +1,127 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used for the lidar output data.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.sensor_data;
+
+// Output data produced by a lidar sensor.
+//
+message LidarOutputData {
+  // Point Cloud data produced by a lidar sensor.
+  //
+  PointCloudData point_clouds = 1;
+  
+  // Digital Waveform data produced by a lidar sensor.
+  //
+  WaveformData waveforms = 2;
+  
+  // Contribution list data.
+  //
+  ContributionData contributions = 3;
+
+  // Radiant Flux data produced by a lidar sensor configured to 
+  // generate "Lens Output (Radiant Flux)".
+  //
+  LensOutputData lens_output = 4;
+}
+
+// Array of lidar point cloud data.
+//
+// Note: There is one point-cloud data for each lidar return.
+//
+message PointCloudData {
+  repeated PointCloud point_clouds = 1;
+}
+ 
+// Point cloud data for one lidar return.
+//
+// Each point is defined by 4 float values defining its position (x, y, z) 
+// and its intensity.
+//
+message PointCloud {
+  repeated float data = 1;
+}
+
+// Digital Waveform data.
+//
+// Note: Digital waveforms are stored sequentially. Each single waveform
+// data has length.
+//
+message WaveformData {
+  // The number of values contained in a single digital waveform.
+  //
+  int32 waveform_length = 1;
+  
+  // All the intensity values for all the waveforms.
+  //
+  repeated float data = 2;
+}
+
+// Lidar contribution output data.
+//
+// For each point of the point cloud, the contribution data contains  
+// the ID of each contributor and its contribution ratio.
+//
+message ContributionData {
+  // An array of Contributions.
+  //
+  repeated Contributions contributions = 1;
+}
+
+// Group of contributions for each point of the point cloud.
+//
+message Contributions {
+  // An array of lidar Contribution.
+  //
+  repeated Contribution contributions = 1;
+}
+
+// The contribution per contributor.
+//
+message Contribution {
+  // Identifier of a contributor (the material part the lidar encountered
+  // during the simulation).
+  //
+  // Note: This identifier is automatically generated for 
+  // each material part during the data preparation.
+  //
+  uint32 identity = 1;
+  
+  // The contribution ratio of the associated material part.
+  //
+  // Note: The ratio is expressed as a float value
+  // comprised between [0 ; 1].
+  //
+  float weight = 2;
+}
+
+// Radiant flux data.
+//
+// Note: Lens output data are stored sequentially.
+//
+message LensOutputData {
+  // The number of values for each sample.
+  //
+  int32 waveform_length = 1;
+
+  // All the radiant flux values for all the samples.
+  //
+  repeated float data = 2;
+}

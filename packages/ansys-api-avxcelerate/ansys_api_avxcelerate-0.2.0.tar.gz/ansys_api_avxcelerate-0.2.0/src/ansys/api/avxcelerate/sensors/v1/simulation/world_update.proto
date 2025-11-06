@@ -1,0 +1,267 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the message used to send a world update to be 
+* applied at a given simulation step.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.simulation;
+
+import "ansys/api/avxcelerate/sensors/v1/object_identifier.proto";
+import "ansys/api/avxcelerate/sensors/v1/geometry.proto";
+import "ansys/api/avxcelerate/sensors/v1/colors.proto";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+// Contains a world update to apply to AVX at a given simulation time.
+//
+message WorldUpdate {
+  // Simulation time corresponding to this world update. The value is 
+  // represented as a count of seconds and fractions of seconds at 
+  // nanosecond resolution.
+  //
+  google.protobuf.Duration simulation_time = 1;
+  
+  // List of changes to the environment.
+  //
+  repeated EnvironmentUpdate environment_updates = 2;
+  
+  // List of changes to simulation objects.
+  //
+  repeated ObjectUpdate object_updates = 3;
+}
+
+// Update to apply to the environment.
+//
+message EnvironmentUpdate {
+  oneof value {
+    // Time of day (as sent by the simulation framework) 
+    // to apply to the AVX sky model.
+    //
+    google.protobuf.Timestamp date_time = 1;
+    
+    // State to apply to all the nodes of the track that hold the 
+    // "StreetLight" tag.
+    //
+    // Note: "ON" and "OFF" are the only accepted values.
+    //
+    State street_lights_state  = 2;
+
+    // Weather conditions.
+    //
+    Weather weather = 3;
+  }
+}
+
+// Definition of the weather conditions.
+//
+// Note: The weather conditions impact only camera sensors with 
+// the LPE rendering engine.
+//
+// Note: Defining weather conditions delivered 
+// as a beta feature in the current release.
+//
+message Weather {
+  // State of the fog to apply to the simulation
+  //
+  Fog fog = 1;
+
+  // State of the rain to apply to the simulation.
+  //
+  Rain rain = 2;
+}
+
+// Parameters defining the fog.
+//
+// Note: Fog is correct in daytime simulations only.
+//
+// Note: In co-simulations with CarMaker, only the maximum visibility distance 
+// parameter can be updated during the simulation.
+//
+message Fog {
+  // Activation of the fog in the simulation.
+  //
+  // Default value: false
+  //
+  optional bool fog_activation = 1;
+
+  // The maximum visibility is defined with respect to the Annex 3 to the 
+  // Convention on International Civil Aviation, i.e. a residual 5% of contrast 
+  // will be obtained at the given maximum visibility distance.
+  //
+  // Unit: meters (m)
+  //
+  // Range: Strictly positive
+  //
+  // Default value: 100
+  //
+  optional double maximum_visibility_distance = 2;
+
+  oneof fog_color {
+    // Color of the fog, defined in the RGB format.
+    //
+    // Default value: [255, 255, 255]
+    //
+    ansys.api.avxcelerate.sensors.v1.Color color = 3;
+
+    // Spectrum of the fog.
+    //  
+    ansys.api.avxcelerate.sensors.v1.Spectrum spectrum = 4;
+  }
+}
+
+// Parameters defining the rain.
+//
+message Rain  {
+    // Amount of rain pouring onto the ground.
+    //
+    // Unit: millimeters per hour (mm/h)
+    //
+    // Range: Positive or null
+    //
+    // Default value: 0
+    //
+    // Note: In the current release, the value set does not define the rain 
+    // rate, but only acts as a toggle: 0 means no rain, positive means rain 
+    // is activated with a default rate.
+    //
+    optional float rain_rate = 1;
+}
+
+// Update to apply to an object.
+//
+message ObjectUpdate {
+  // Key defining the object to which the update applies.
+  //
+  ObjectKey key = 1;
+  
+  // Kinematic properties update to apply to the object.
+  //
+  // Note: All the properties are absolute (i.e.the updates are applied 
+  // with respect to the root node of the track).
+  //
+  KinematicProperties kinematic_properties = 2;
+  
+  // State to apply to the object. 
+  //
+  // The available states are defined and attached to the object 
+  // during the data preparation of the asset with 
+  // AVxcelerate Data Preparation.
+  //
+  State state = 3;
+}
+
+// Key to identify the object, or some of its nodes, to which the update 
+// applies.
+//
+message ObjectKey {
+  // The unique identifier of an object in the simulation.
+  //
+  // Note: The identifier is case-sensitive and must correspond to one defined 
+  // in the loaded configuration. Each object has a unique `vss_identity`.
+  //
+  ansys.api.avxcelerate.sensors.v1.ObjectIdentifier vss_identity = 1;
+  
+  // Tag attached to the object, or to some of its nodes, during the 
+  // asset preparation with AVxcelerate Asset Preparation.
+  //
+  Tag tag = 2;
+}
+
+// Definition of the tag, including its name and, in some cases, an index.
+// 
+// To update the whole object, set the name of the 
+// asset tag (for example "Animal", "Pedestrian", "Vehicle", "RoadSign", 
+// "StreetLight", or "SimulationObject") and no index.
+//
+// To update the node(s) of a object that have a specific tag, 
+// set the name of the node tag (for example "Wheel" or "HighBeam").
+// Set no index to update all the nodes holding the tag, 
+// set an index to update one specific node.
+//
+// Note: For a complete description of the naming conventions and standards 
+// that you should follow when tagging assets in AVxcelerate, refer to 
+// the Data Preparation section of the AVxcelerate Sensors Simulator 
+// User's Guide.
+//
+message Tag {
+  // The name of the tag.
+  //
+  string name = 1;
+  
+  // The index.
+  //
+  // Note: The `index` field is required with the "Wheel" and "TurnIndicator" 
+  // tag when you need to identify one specific node of the object among  
+  // several nodes holding the same tag.
+  // The index for each wheel, when the vehicle has been prepared as 
+  // stated in the user documentation, is 0 for the front left wheel, 
+  // 1 for the front right wheel, 2 for the rear left wheel and 
+  // 3 for the rear right wheel.
+  // The index is 0 for the left turn indicator and 1 for the right turn 
+  // indicator.
+  //
+  google.protobuf.Int32Value index = 2;
+}
+
+// Properties that define the motion of a solid.
+//
+message KinematicProperties {
+  // Position of the object in the world reference frame.
+  //
+  // Unit: meters (m)
+  //
+  Vector3D position = 1;
+  
+  // Velocity of the object relative to the world reference frame.
+  //
+  // Unit: meters per second (m/s)
+  //
+  Vector3D velocity = 2;
+  
+  // Orientation of the object relative to the world reference frame.
+  // 
+  // Note: When applying the Euler angles update, it is done
+  // in the standard order yaw, pitch, roll.
+  //
+  // Unit: radians (rad)
+  //
+  EulerAngles orientation = 3;
+  
+  // The new angular velocity vector of the object expressed in the world
+  // reference frame. 
+  //
+  // Note: The value on the Y axis corresponds to the yaw rotation. The value
+  // on the X axis corresponds to the pitch rotation. The value on the Z axis
+  // corresponds to the roll rotation.
+  //
+  // Unit: radians per second (rad/s)
+  //
+  Vector3D angular_velocity = 4;
+}
+
+// State defined on an object node.
+//
+message State {
+  // Unique identifier of the state defined during the asset preparation 
+  // with AVxcelerate Asset Preparation.
+  //
+  string identifier = 1;
+}

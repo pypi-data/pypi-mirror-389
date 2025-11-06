@@ -1,0 +1,39 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the service used to manage Lighting Systems.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.lighting_system_control;
+
+import "ansys/api/avxcelerate/sensors/v1/object_identifier.proto";
+import "ansys/api/avxcelerate/sensors/v1/status.proto";
+
+// Lighting System Service
+//
+// This service provides the procedure to define the Lighting System 
+// to set as active.
+//
+// Note: The changes will be applied at the next world update (requested using 
+// the `Update` method of the Simulation service).
+//
+service LightingSystem {
+  // Changes the active Lighting System to the one defined as input parameter.
+  //
+  rpc Switch(ObjectIdentifier) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+}

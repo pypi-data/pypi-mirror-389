@@ -1,0 +1,141 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+******************************************************************************/
+/**
+*
+* This file describes the messages containing the needed information 
+* to interpret the serialized sensor data received from AVX. 
+* A sensor data is composed of one or multiple data chunks (e.g. lidar sensor 
+* data can be composed of a point-cloud chunk, a waveforms chunk, etc.).
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.sensor_data;
+
+import "ansys/api/avxcelerate/sensors/v1/sensor_data/camera_output_data.proto";
+import "ansys/api/avxcelerate/sensors/v1/sensor_data/lidar_output_data.proto";
+import "ansys/api/avxcelerate/sensors/v1/sensor_data/radar_output_data.proto";
+import "google/protobuf/duration.proto";
+
+// Structure of the data produced by a single sensor for one simulation step.
+//
+// Time stamp and type of the produced sensor data.
+//
+message SensorData {
+  // The simulation time stamp at which the data was produced.
+  //
+  google.protobuf.Duration time_stamp = 1;
+  
+  oneof data {
+    // The type of data produced by the camera sensor.
+    //
+    CameraData camera_data = 2;
+    
+    // The type of data produced by the lidar sensor.
+    //
+    LidarData lidar_data = 3;
+    
+    // The type of data produced by the radar sensor.
+    //
+    RadarData radar_data = 4;
+  }
+}
+
+// Block containing a set of camera data.
+//
+message CameraData {
+  // List of camera data entries.
+  //
+  repeated CameraDataEntry entries = 1;
+}
+
+// Block containing a set of formatted lidar data.
+//
+message LidarData {
+  // List of lidar data entries.
+  //
+  repeated LidarDataEntry entries = 1;
+}
+
+// Block containing a set of formatted radar data.
+//
+message RadarData {
+  // List of radar data entries.
+  //
+  repeated RadarDataEntry entries = 1;
+}
+
+// A single formatted camera data.
+//
+message CameraDataEntry {
+
+  oneof output {
+    // Image produced by the camera sensor.
+    //
+    CameraImageData image_data = 1;
+    
+    // Ground truth data produced for the camera sensor.
+    //
+    CameraGroundTruthData ground_truth_data = 2;
+    
+    // 2D Bounding box produced.
+    //
+    BoundingBox2D bounding_box_2d = 3;
+
+    // Spectral irradiance map, which is the lens output of the camera sensor.
+    //
+    CameraLensOutput camera_lens_output = 4;
+
+    // Custom data, which is custom data output of the camera sensor.
+    //
+    CameraImageData camera_custom_data_output = 5;
+
+    // 3D Bounding box produced.
+    //
+    BoundingBox3D bounding_box_3d = 6;
+  }
+}
+
+// A single formatted lidar data.
+//
+message LidarDataEntry {
+
+  oneof format {
+    // Point cloud data produced by the lidar sensor.
+    //
+    sensor_data.PointCloudData point_cloud_data = 1;
+    
+    // Digital waveform data produced by the lidar sensor.
+    //
+    sensor_data.WaveformData waveform_data = 2;
+    
+    // Contribution List produced for the lidar sensor.
+    //
+    sensor_data.ContributionData contribution_data = 3;
+
+    // Lens Output data produced by the lidar sensor.
+    //
+    sensor_data.LensOutputData lens_output_data = 4;
+  }
+}
+
+// A single formatted radar data.
+//
+message RadarDataEntry {
+
+  oneof format {
+    // RadarOutputData
+    //
+    sensor_data.RadarOutputData radar_data = 1;
+  }
+}

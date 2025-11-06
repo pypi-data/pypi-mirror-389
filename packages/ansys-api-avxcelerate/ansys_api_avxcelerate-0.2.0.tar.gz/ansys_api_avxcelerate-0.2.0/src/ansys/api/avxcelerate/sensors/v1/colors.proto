@@ -1,0 +1,62 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the `Color` message used in other messages of this API.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1;
+
+// Defines a color in RGB format.
+//
+message Color {
+
+  // The value for the red component.
+  //
+  // Range: [0, 255]
+  //
+  uint32 red = 1;
+
+  // The value for the green component.
+  //
+  // Range: [0, 255]
+  //
+  uint32 green = 2;
+
+  // The value for the blue component.
+  //
+  // Range: [0, 255]
+  //
+  uint32 blue = 3;
+}
+
+// Defines a spectrum with a percent intensity value per wavelength.
+// For each wavelength, the value corresponds to the part of this wavelength
+// power in the total spectrum power.
+//
+message Spectrum {
+
+  // A list of pairs, each pair associating a wavelength with a value in percent.
+  //
+  // Units:
+  // The wavelength is in nanometer (nm).
+  // The intensity for this wavelength is in percent (value between 0 and 100).
+  // 
+  // Note: You must provide an even number of data.
+  //
+  repeated double data = 1;
+}
