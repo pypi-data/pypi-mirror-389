@@ -1,0 +1,85 @@
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
+<section class="video-hero-banner" 
+    style="
+    {% if value.background_image %}
+    {% image value.background_image original as background_img %}
+    background: url('{{ background_img.url }}');
+    background-size: cover;
+    {% else %} 
+    background: {{ value.cor_fundo }};
+    {% endif %}
+    height: {{ value.altura_banner }};"
+>
+    
+    <!-- Overlay para melhor legibilidade do texto -->
+    <div class="video-hero-overlay"></div>
+    
+    <div class="container">
+        <!-- Vídeo em tela cheia -->
+        {% if value.video_file %}
+        <div class="video-hero-media">
+            <div class="video-frame">
+                <video class="video-player" autoplay muted loop>
+                    <source src="{{ value.video_file.url }}" type="video/mp4">
+                    <p>Seu navegador não suporta o elemento de vídeo.</p>
+                </video>
+                
+                <!-- Conteúdo sobreposto ao vídeo -->
+                <div class="video-content-overlay">
+                    <div class="video-hero-content">
+                        
+                        <!-- Título principal -->
+                        {% if value.titulo %}
+                        <h1 class="video-hero-title">{{ value.titulo|richtext }}</h1>
+                        {% endif %}
+                        
+                        <!-- Subtítulo -->
+                        {% if value.subtitulo %}
+                        <div class="video-hero-subtitle">
+                            {{ value.subtitulo|richtext }}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Logo -->
+                        {% if value.logo %}
+                        <div class="card-imagem">
+                            {% image value.logo width-400 as logo_img %}
+                            <img src="{{ logo_img.url }}" 
+                                    alt="Logos"
+                                    class="logo-image">
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Fallback caso não tenha vídeo -->
+        <div class="video-hero-content-only">
+            
+            <!-- Título principal -->
+            {% if value.titulo %}
+            <h1 class="video-hero-title">{{ value.titulo }}</h1>
+            {% endif %}
+            
+            <!-- Subtítulo -->
+            {% if value.subtitulo %}
+            <div class="video-hero-subtitle">
+                {{ value.subtitulo|richtext }}
+            </div>
+            {% endif %}
+            
+            <!-- Logo -->
+            {% if value.logo %}
+            <div class="video-hero-logo">
+                <img src="{{ value.logo.get_rendition.url }}" 
+                    alt="Logo" class="logo-image">
+            </div>
+            {% endif %}
+            
+        </div>
+        {% endif %}
+    </div>
+</section>
