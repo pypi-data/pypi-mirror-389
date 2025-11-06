@@ -1,0 +1,43 @@
+[CDF-26167] Mixpanel subcommand list (#2169)
+
+# Description
+
+For event type ...Command we currently track subcommands like
+positionalArg0, positionalArg1 . Let’s use the list type property to
+capture subcommands in a subcommand list instead.
+
+(Not making a distinction between app/command here, just calling
+everything after `cdf` a subcommand.)
+
+So 
+
+```
+ModulesCommand 
+positionalArg0 modules
+positionalArg1 upgrade
+```
+
+becomes 
+
+```
+
+ModulesCommand 
+subcommands [“modules”, “upgrade”]
+
+```
+
+
+## Changelog
+
+- [x] Patch
+- [ ] Skip
+
+## cdf
+
+### Improved
+
+- Tracking subcommands as list
+
+## templates
+
+No changes.
