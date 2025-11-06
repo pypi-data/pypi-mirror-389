@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: ragmint
+Version: 0.2.2
+Summary: A modular framework for evaluating and optimizing RAG pipelines.
+Author-email: Andre Oliveira <oandreoliveira@outlook.com>
+License: Apache License 2.0
+Project-URL: Homepage, https://github.com/andyolivers/ragmint
+Project-URL: Documentation, https://andyolivers.com
+Project-URL: Issues, https://github.com/andyolivers/ragmint/issues
+Keywords: RAG,LLM,retrieval,optimization,AI,evaluation
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.23
+Requires-Dist: pandas>=2.0
+Requires-Dist: scikit-learn>=1.3
+Requires-Dist: openai>=1.0
+Requires-Dist: tqdm
+Requires-Dist: pyyaml
+Requires-Dist: chromadb>=0.4
+Requires-Dist: faiss-cpu; sys_platform != "darwin"
+Requires-Dist: optuna>=3.0
+Requires-Dist: pytest
+Requires-Dist: colorama
+Requires-Dist: google-generativeai>=0.8.0
+Requires-Dist: supabase>=2.4.0
+Dynamic: license-file
