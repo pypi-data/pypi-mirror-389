@@ -1,0 +1,116 @@
+Metadata-Version: 2.4
+Name: regions
+Version: 0.11
+Summary: An Astropy coordinated package for region handling
+Author-email: Regions Developers <astropy.team@gmail.com>
+License-Expression: BSD-3-Clause
+Project-URL: Homepage, https://github.com/astropy/regions
+Project-URL: Documentation, https://astropy-regions.readthedocs.io/en/stable/
+Keywords: astronomy,astrophysics,astropy,regions
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Cython
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Astronomy
+Requires-Python: >=3.11
+Description-Content-Type: text/x-rst
+License-File: LICENSE.rst
+Requires-Dist: numpy>=1.25
+Requires-Dist: astropy>=6.0
+Provides-Extra: all
+Requires-Dist: matplotlib>=3.8; extra == "all"
+Requires-Dist: shapely>=2.0.0; extra == "all"
+Provides-Extra: test
+Requires-Dist: pytest-astropy>=0.11; extra == "test"
+Requires-Dist: pytest-xdist>=2.5.0; extra == "test"
+Requires-Dist: pytest-arraydiff>=0.6.1; extra == "test"
+Requires-Dist: tox>4.0; extra == "test"
+Provides-Extra: docs
+Requires-Dist: regions[all]; extra == "docs"
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-astropy>=1.9; extra == "docs"
+Provides-Extra: dev
+Requires-Dist: regions[docs,test]; extra == "dev"
+Requires-Dist: pre-commit>4.0; extra == "dev"
+Dynamic: license-file
+
+=======
+Regions
+=======
+
+|PyPI Version| |Conda Version| |Astropy|
+
+|CI Status| |Codecov Status| |Latest RTD Status|
+
+Regions is an `Astropy`_ package for region handling.
+
+Please see the `online documentation
+<https://astropy-regions.readthedocs.io>`_ for `installation
+instructions
+<https://astropy-regions.readthedocs.io/en/stable/install.html>`_
+and usage information.
+
+
+Citing Regions
+--------------
+
+|Zenodo|
+
+If you use Regions for a project that leads to a publication, whether
+directly or as a dependency of another package, please include the
+following acknowledgment::
+
+    This research made use of Regions, an Astropy package for region
+    handling (Bradley et al. 202X).
+
+where (Bradley et al. 202X) is a citation to the `Zenodo
+record <https://doi.org/10.5281/zenodo.5826358>`_ of the
+Regions version that was used. We also encourage citations in
+the main text wherever appropriate. Please see the `CITATION
+<https://github.com/astropy/regions/blob/main/regions/CITATION.rst>`_
+file for details and an example BibTeX entry.
+
+
+License
+-------
+
+Regions is licensed under a BSD 3-clause license.  Please see the
+`LICENSE
+<https://github.com/astropy/regions/blob/main/LICENSE.rst>`_ file
+for details.
+
+
+.. |PyPI Version| image::  https://img.shields.io/pypi/v/regions.svg?logo=pypi&logoColor=white&label=PyPI
+    :target: https://pypi.org/project/regions/
+    :alt: PyPI Latest Release
+
+.. |Conda Version| image:: https://img.shields.io/conda/vn/conda-forge/regions?label=conda%20package
+    :target: https://anaconda.org/conda-forge/regions
+    :alt: Conda Latest Release
+
+.. |Astropy| image:: https://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
+    :target: https://www.astropy.org/
+    :alt: Powered by Astropy
+
+.. |Zenodo| image:: https://zenodo.org/badge/35690635.svg
+    :target: https://zenodo.org/badge/latestdoi/35690635
+
+.. |CI Status| image:: https://github.com/astropy/regions/workflows/CI%20Tests/badge.svg#
+    :target: https://github.com/astropy/regions/actions
+    :alt: CI Status
+
+.. |Codecov Status| image:: https://img.shields.io/codecov/c/github/astropy/regions?logo=codecov
+    :target: https://codecov.io/gh/astropy/regions
+    :alt: Coverage Status
+
+.. |Stable RTD Status| image:: https://img.shields.io/readthedocs/astropy-regions/latest.svg?logo=read%20the%20docs&logoColor=white&label=Docs&version=stable
+    :target: https://astropy-regions.readthedocs.io/en/stable/
+    :alt: Stable Documentation Status
+
+.. |Latest RTD Status| image:: https://img.shields.io/readthedocs/astropy-regions/latest.svg?logo=read%20the%20docs&logoColor=white&label=Docs&version=latest
+    :target: https://astropy-regions.readthedocs.io/en/latest/
+    :alt: Latest Documentation Status
+
+.. _Astropy: https://www.astropy.org/
