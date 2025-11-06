@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "moboard/",
+    "README.md",
+    "LICENSE",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["moboard"]
+
+[project]
+name = "moboard"
+version = "0.1.0"
+authors = [
+    { name = "Vincent Warmerdam" },
+]
+description = "A Python package for fresh data processing"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "anywidget",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "marimo",
+    "polars",
+    "mohtml",
+]
+alt = [
+    "altair", 
+    "vl-convert-python",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/vincentwarmerdam/moboard"
+"Bug Tracker" = "https://github.com/vincentwarmerdam/moboard/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
