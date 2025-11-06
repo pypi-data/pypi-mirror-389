@@ -1,0 +1,46 @@
+all:
+  tool:
+    - .*
+  prompt:
+    - ^(?!test_).*
+  resource:
+    - .*
+
+tester:
+  tool:
+    - .*
+  prompt:
+    - .*
+  resource:
+    - .*
+
+dba:
+  tool:
+    - ^dba_*
+    - ^base_*
+    - ^sec_*
+  prompt:
+    - ^dba_*
+
+dataScientist:
+  tool:
+    - ^base_*
+    - ^rag_*
+    - ^sql_*
+    - ^fs_*
+    - ^qlty_*
+    - ^tdvs_*
+    - ^sec_userDbPermissions
+    - ^dba_userSqlList
+    - ^plot_*
+    - ^tdml_*
+  prompt:
+    - ^rag_*
+    - ^sql_*
+    - ^tdvs_*
+
+eda:
+  tool:
+    - "base_(?!(writeQuery|dynamicQuery)$).*"
+    - qlty_.*
+    - sec_userDbPermissions
