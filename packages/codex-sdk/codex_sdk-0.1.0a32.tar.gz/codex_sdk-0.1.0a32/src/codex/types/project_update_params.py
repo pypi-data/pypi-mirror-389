@@ -1,0 +1,468 @@
+# File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
+
+from __future__ import annotations
+
+from typing import Dict, Optional
+from typing_extensions import Literal, Required, TypedDict
+
+__all__ = [
+    "ProjectUpdateParams",
+    "Config",
+    "ConfigEvalConfig",
+    "ConfigEvalConfigCustomEvals",
+    "ConfigEvalConfigCustomEvalsEvals",
+    "ConfigEvalConfigCustomEvalsEvalsGuardrailedFallback",
+    "ConfigEvalConfigDefaultEvals",
+    "ConfigEvalConfigDefaultEvalsContextSufficiency",
+    "ConfigEvalConfigDefaultEvalsContextSufficiencyGuardrailedFallback",
+    "ConfigEvalConfigDefaultEvalsQueryEase",
+    "ConfigEvalConfigDefaultEvalsQueryEaseGuardrailedFallback",
+    "ConfigEvalConfigDefaultEvalsResponseGroundedness",
+    "ConfigEvalConfigDefaultEvalsResponseGroundednessGuardrailedFallback",
+    "ConfigEvalConfigDefaultEvalsResponseHelpfulness",
+    "ConfigEvalConfigDefaultEvalsResponseHelpfulnessGuardrailedFallback",
+    "ConfigEvalConfigDefaultEvalsTrustworthiness",
+    "ConfigEvalConfigDefaultEvalsTrustworthinessGuardrailedFallback",
+]
+
+
+class ProjectUpdateParams(TypedDict, total=False):
+    auto_clustering_enabled: Optional[bool]
+
+    config: Optional[Config]
+
+    description: Optional[str]
+
+    name: Optional[str]
+
+
+class ConfigEvalConfigCustomEvalsEvalsGuardrailedFallback(TypedDict, total=False):
+    message: Required[str]
+    """
+    Fallback message to use if this eval fails and causes the response to be
+    guardrailed
+    """
+
+    priority: Required[int]
+    """
+    Priority order for guardrails (lower number = higher priority) to determine
+    which fallback to use if multiple guardrails are triggered
+    """
+
+    type: Required[Literal["ai_guidance", "expert_answer"]]
+    """Type of fallback to use if response is guardrailed"""
+
+
+class ConfigEvalConfigCustomEvalsEvals(TypedDict, total=False):
+    criteria: Required[str]
+    """
+    The evaluation criteria text that describes what aspect is being evaluated and
+    how
+    """
+
+    eval_key: Required[str]
+    """
+    Unique key for eval metric - currently maps to the TrustworthyRAG name property
+    and eval_scores dictionary key to check against threshold
+    """
+
+    name: Required[str]
+    """Display name/label for the evaluation metric"""
+
+    context_identifier: Optional[str]
+    """
+    The exact string used in your evaluation criteria to reference the retrieved
+    context.
+    """
+
+    enabled: bool
+    """Allows the evaluation to be disabled without removing it"""
+
+    guardrailed_fallback: Optional[ConfigEvalConfigCustomEvalsEvalsGuardrailedFallback]
+    """message, priority, type"""
+
+    is_default: bool
+    """Whether the eval is a default, built-in eval or a custom eval"""
+
+    priority: Optional[int]
+    """
+    Priority order for evals (lower number = higher priority) to determine primary
+    eval issue to surface
+    """
+
+    query_identifier: Optional[str]
+    """
+    The exact string used in your evaluation criteria to reference the user's query.
+    """
+
+    response_identifier: Optional[str]
+    """
+    The exact string used in your evaluation criteria to reference the RAG/LLM
+    response.
+    """
+
+    should_escalate: bool
+    """
+    If true, failing this eval means the question should be escalated to Codex for
+    an SME to review
+    """
+
+    should_guardrail: bool
+    """If true, failing this eval means the response should be guardrailed"""
+
+    threshold: float
+    """Threshold value that determines if the evaluation fails"""
+
+    threshold_direction: Literal["above", "below"]
+    """Whether the evaluation fails when score is above or below the threshold"""
+
+
+class ConfigEvalConfigCustomEvals(TypedDict, total=False):
+    evals: Dict[str, ConfigEvalConfigCustomEvalsEvals]
+
+
+class ConfigEvalConfigDefaultEvalsContextSufficiencyGuardrailedFallback(TypedDict, total=False):
+    message: Required[str]
+    """
+    Fallback message to use if this eval fails and causes the response to be
+    guardrailed
+    """
+
+    priority: Required[int]
+    """
+    Priority order for guardrails (lower number = higher priority) to determine
+    which fallback to use if multiple guardrails are triggered
+    """
+
+    type: Required[Literal["ai_guidance", "expert_answer"]]
+    """Type of fallback to use if response is guardrailed"""
+
+
+class ConfigEvalConfigDefaultEvalsContextSufficiency(TypedDict, total=False):
+    eval_key: Required[str]
+    """
+    Unique key for eval metric - currently maps to the TrustworthyRAG name property
+    and eval_scores dictionary key to check against threshold
+    """
+
+    name: Required[str]
+    """Display name/label for the evaluation metric"""
+
+    enabled: bool
+    """Allows the evaluation to be disabled without removing it"""
+
+    guardrailed_fallback: Optional[ConfigEvalConfigDefaultEvalsContextSufficiencyGuardrailedFallback]
+    """message, priority, type"""
+
+    priority: Optional[int]
+    """
+    Priority order for evals (lower number = higher priority) to determine primary
+    eval issue to surface
+    """
+
+    should_escalate: bool
+    """
+    If true, failing this eval means the question should be escalated to Codex for
+    an SME to review
+    """
+
+    should_guardrail: bool
+    """If true, failing this eval means the response should be guardrailed"""
+
+    threshold: float
+    """Threshold value that determines if the evaluation fails"""
+
+    threshold_direction: Literal["above", "below"]
+    """Whether the evaluation fails when score is above or below the threshold"""
+
+
+class ConfigEvalConfigDefaultEvalsQueryEaseGuardrailedFallback(TypedDict, total=False):
+    message: Required[str]
+    """
+    Fallback message to use if this eval fails and causes the response to be
+    guardrailed
+    """
+
+    priority: Required[int]
+    """
+    Priority order for guardrails (lower number = higher priority) to determine
+    which fallback to use if multiple guardrails are triggered
+    """
+
+    type: Required[Literal["ai_guidance", "expert_answer"]]
+    """Type of fallback to use if response is guardrailed"""
+
+
+class ConfigEvalConfigDefaultEvalsQueryEase(TypedDict, total=False):
+    eval_key: Required[str]
+    """
+    Unique key for eval metric - currently maps to the TrustworthyRAG name property
+    and eval_scores dictionary key to check against threshold
+    """
+
+    name: Required[str]
+    """Display name/label for the evaluation metric"""
+
+    enabled: bool
+    """Allows the evaluation to be disabled without removing it"""
+
+    guardrailed_fallback: Optional[ConfigEvalConfigDefaultEvalsQueryEaseGuardrailedFallback]
+    """message, priority, type"""
+
+    priority: Optional[int]
+    """
+    Priority order for evals (lower number = higher priority) to determine primary
+    eval issue to surface
+    """
+
+    should_escalate: bool
+    """
+    If true, failing this eval means the question should be escalated to Codex for
+    an SME to review
+    """
+
+    should_guardrail: bool
+    """If true, failing this eval means the response should be guardrailed"""
+
+    threshold: float
+    """Threshold value that determines if the evaluation fails"""
+
+    threshold_direction: Literal["above", "below"]
+    """Whether the evaluation fails when score is above or below the threshold"""
+
+
+class ConfigEvalConfigDefaultEvalsResponseGroundednessGuardrailedFallback(TypedDict, total=False):
+    message: Required[str]
+    """
+    Fallback message to use if this eval fails and causes the response to be
+    guardrailed
+    """
+
+    priority: Required[int]
+    """
+    Priority order for guardrails (lower number = higher priority) to determine
+    which fallback to use if multiple guardrails are triggered
+    """
+
+    type: Required[Literal["ai_guidance", "expert_answer"]]
+    """Type of fallback to use if response is guardrailed"""
+
+
+class ConfigEvalConfigDefaultEvalsResponseGroundedness(TypedDict, total=False):
+    eval_key: Required[str]
+    """
+    Unique key for eval metric - currently maps to the TrustworthyRAG name property
+    and eval_scores dictionary key to check against threshold
+    """
+
+    name: Required[str]
+    """Display name/label for the evaluation metric"""
+
+    enabled: bool
+    """Allows the evaluation to be disabled without removing it"""
+
+    guardrailed_fallback: Optional[ConfigEvalConfigDefaultEvalsResponseGroundednessGuardrailedFallback]
+    """message, priority, type"""
+
+    priority: Optional[int]
+    """
+    Priority order for evals (lower number = higher priority) to determine primary
+    eval issue to surface
+    """
+
+    should_escalate: bool
+    """
+    If true, failing this eval means the question should be escalated to Codex for
+    an SME to review
+    """
+
+    should_guardrail: bool
+    """If true, failing this eval means the response should be guardrailed"""
+
+    threshold: float
+    """Threshold value that determines if the evaluation fails"""
+
+    threshold_direction: Literal["above", "below"]
+    """Whether the evaluation fails when score is above or below the threshold"""
+
+
+class ConfigEvalConfigDefaultEvalsResponseHelpfulnessGuardrailedFallback(TypedDict, total=False):
+    message: Required[str]
+    """
+    Fallback message to use if this eval fails and causes the response to be
+    guardrailed
+    """
+
+    priority: Required[int]
+    """
+    Priority order for guardrails (lower number = higher priority) to determine
+    which fallback to use if multiple guardrails are triggered
+    """
+
+    type: Required[Literal["ai_guidance", "expert_answer"]]
+    """Type of fallback to use if response is guardrailed"""
+
+
+class ConfigEvalConfigDefaultEvalsResponseHelpfulness(TypedDict, total=False):
+    eval_key: Required[str]
+    """
+    Unique key for eval metric - currently maps to the TrustworthyRAG name property
+    and eval_scores dictionary key to check against threshold
+    """
+
+    name: Required[str]
+    """Display name/label for the evaluation metric"""
+
+    enabled: bool
+    """Allows the evaluation to be disabled without removing it"""
+
+    guardrailed_fallback: Optional[ConfigEvalConfigDefaultEvalsResponseHelpfulnessGuardrailedFallback]
+    """message, priority, type"""
+
+    priority: Optional[int]
+    """
+    Priority order for evals (lower number = higher priority) to determine primary
+    eval issue to surface
+    """
+
+    should_escalate: bool
+    """
+    If true, failing this eval means the question should be escalated to Codex for
+    an SME to review
+    """
+
+    should_guardrail: bool
+    """If true, failing this eval means the response should be guardrailed"""
+
+    threshold: float
+    """Threshold value that determines if the evaluation fails"""
+
+    threshold_direction: Literal["above", "below"]
+    """Whether the evaluation fails when score is above or below the threshold"""
+
+
+class ConfigEvalConfigDefaultEvalsTrustworthinessGuardrailedFallback(TypedDict, total=False):
+    message: Required[str]
+    """
+    Fallback message to use if this eval fails and causes the response to be
+    guardrailed
+    """
+
+    priority: Required[int]
+    """
+    Priority order for guardrails (lower number = higher priority) to determine
+    which fallback to use if multiple guardrails are triggered
+    """
+
+    type: Required[Literal["ai_guidance", "expert_answer"]]
+    """Type of fallback to use if response is guardrailed"""
+
+
+class ConfigEvalConfigDefaultEvalsTrustworthiness(TypedDict, total=False):
+    eval_key: Required[str]
+    """
+    Unique key for eval metric - currently maps to the TrustworthyRAG name property
+    and eval_scores dictionary key to check against threshold
+    """
+
+    name: Required[str]
+    """Display name/label for the evaluation metric"""
+
+    enabled: bool
+    """Allows the evaluation to be disabled without removing it"""
+
+    guardrailed_fallback: Optional[ConfigEvalConfigDefaultEvalsTrustworthinessGuardrailedFallback]
+    """message, priority, type"""
+
+    priority: Optional[int]
+    """
+    Priority order for evals (lower number = higher priority) to determine primary
+    eval issue to surface
+    """
+
+    should_escalate: bool
+    """
+    If true, failing this eval means the question should be escalated to Codex for
+    an SME to review
+    """
+
+    should_guardrail: bool
+    """If true, failing this eval means the response should be guardrailed"""
+
+    threshold: float
+    """Threshold value that determines if the evaluation fails"""
+
+    threshold_direction: Literal["above", "below"]
+    """Whether the evaluation fails when score is above or below the threshold"""
+
+
+class ConfigEvalConfigDefaultEvals(TypedDict, total=False):
+    context_sufficiency: ConfigEvalConfigDefaultEvalsContextSufficiency
+    """A pre-configured evaluation metric from TrustworthyRAG or built into the system.
+
+    The evaluation criteria and identifiers are immutable and system-managed, while
+    other properties like thresholds and priorities can be configured.
+    """
+
+    query_ease: ConfigEvalConfigDefaultEvalsQueryEase
+    """A pre-configured evaluation metric from TrustworthyRAG or built into the system.
+
+    The evaluation criteria and identifiers are immutable and system-managed, while
+    other properties like thresholds and priorities can be configured.
+    """
+
+    response_groundedness: ConfigEvalConfigDefaultEvalsResponseGroundedness
+    """A pre-configured evaluation metric from TrustworthyRAG or built into the system.
+
+    The evaluation criteria and identifiers are immutable and system-managed, while
+    other properties like thresholds and priorities can be configured.
+    """
+
+    response_helpfulness: ConfigEvalConfigDefaultEvalsResponseHelpfulness
+    """A pre-configured evaluation metric from TrustworthyRAG or built into the system.
+
+    The evaluation criteria and identifiers are immutable and system-managed, while
+    other properties like thresholds and priorities can be configured.
+    """
+
+    trustworthiness: ConfigEvalConfigDefaultEvalsTrustworthiness
+    """A pre-configured evaluation metric from TrustworthyRAG or built into the system.
+
+    The evaluation criteria and identifiers are immutable and system-managed, while
+    other properties like thresholds and priorities can be configured.
+    """
+
+
+class ConfigEvalConfig(TypedDict, total=False):
+    custom_evals: ConfigEvalConfigCustomEvals
+    """Configuration for custom evaluation metrics."""
+
+    default_evals: ConfigEvalConfigDefaultEvals
+    """Configuration for default evaluation metrics."""
+
+
+class Config(TypedDict, total=False):
+    ai_guidance_threshold: float
+
+    clustering_use_llm_matching: bool
+
+    eval_config: ConfigEvalConfig
+    """Configuration for project-specific evaluation metrics"""
+
+    llm_matching_model: str
+
+    llm_matching_quality_preset: Literal["best", "high", "medium", "low", "base"]
+
+    lower_llm_match_distance_threshold: float
+
+    max_distance: float
+
+    query_use_llm_matching: bool
+
+    question_match_llm_prompt: str
+
+    question_match_llm_prompt_with_answer: str
+
+    tlm_evals_model: str
+
+    upper_llm_match_distance_threshold: float
