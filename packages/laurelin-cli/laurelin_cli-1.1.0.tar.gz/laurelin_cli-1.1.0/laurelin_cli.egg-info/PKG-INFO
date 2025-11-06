@@ -1,0 +1,546 @@
+Metadata-Version: 2.4
+Name: laurelin-cli
+Version: 1.1.0
+Summary: Terminal interface for Laurelin nuclear fusion chat platform
+Home-page: https://laurelin-inc.com
+Author: Laurelin Inc.
+Author-email: support@laurelin-inc.com
+License: MIT
+Keywords: laurelin nuclear fusion plasma chat cli terminal
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.0.0
+Requires-Dist: requests>=2.28.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Laurelin CLI
+
+[![PyPI version](https://badge.fury.io/py/laurelin-cli.svg)](https://badge.fury.io/py/laurelin-cli)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Access Laurelin's AI-powered nuclear fusion research assistant directly from your terminal.**
+
+Laurelin CLI is a command-line interface for the Laurelin nuclear fusion chat platform. Chat with specialized AI models trained on plasma physics, fusion engineering, and nuclear science research - all from the comfort of your terminal.
+
+---
+
+## Features
+
+- **AI-Powered Fusion Research** - Access Laurelin's specialized AI models for nuclear fusion research
+- **Interactive Chat Mode** - Natural conversation flow with context-aware responses
+- **Session Management** - Continue previous conversations seamlessly across sessions
+- **Secure Token Authentication** - CLI token-based authentication with automatic refresh
+- **Progress Indicators** - Real-time visual feedback for API requests
+- **Color-Coded Terminal Output** - Easy-to-read, syntax-highlighted interface
+- **Production & Development Modes** - Switch between production and local development APIs
+- **ITAR/EAR Compliant** - US location verification for controlled technology access
+
+---
+
+## Installation
+
+### From PyPI (Recommended)
+
+```bash
+pip install laurelin-cli
+```
+
+### From Source
+
+```bash
+git clone https://github.com/laurelin-inc/laurelin-cli.git
+cd laurelin-cli
+pip install -e .
+```
+
+### Requirements
+
+- Python 3.8 or higher
+- Active internet connection
+- Laurelin account with CLI access enabled
+
+---
+
+## Quick Start
+
+### 1. Get Your CLI Tokens
+
+Visit the Laurelin API Access page to generate your CLI tokens:
+
+**https://chat.laurelin-inc.com/api-access**
+
+**Access Requirements:**
+- Active paid subscription (Basic or Enterprise tier)
+- US location verification (ITAR/EAR compliance)
+- Admin users have unrestricted access
+
+### 2. Login
+
+Authenticate with your CLI tokens:
+
+```bash
+laurelin login
+```
+
+You'll be prompted to enter your access token and refresh token. These are stored securely in `~/.laurelin/credentials.json` with user-only permissions (chmod 600).
+
+### 3. Start Chatting
+
+Ask questions about nuclear fusion research:
+
+```bash
+# Single question
+laurelin chat "What is the plasma density in a tokamak reactor?"
+
+# Interactive mode
+laurelin chat --interactive
+
+# Continue a previous session
+laurelin chat -s abc123 "What about magnetic field strength?"
+```
+
+---
+
+## Usage
+
+### Authentication Commands
+
+#### `laurelin login`
+
+Authenticate with your CLI access tokens.
+
+**Options:**
+- `--production` - Use production API endpoint (default)
+- `--dev` - Use development API endpoint (localhost:8080)
+
+**Example:**
+```bash
+# Production login
+laurelin login --production
+
+# Development login (for local testing)
+laurelin login --dev
+```
+
+#### `laurelin logout`
+
+Clear stored authentication tokens and log out.
+
+```bash
+laurelin logout
+```
+
+#### `laurelin status`
+
+Display current authentication status and configuration.
+
+```bash
+laurelin status
+```
+
+**Output:**
+```
+Laurelin CLI Status
+==================================================
+Authentication: ✅ Logged in
+Credentials: /Users/joe/.laurelin/credentials.json
+
+API Endpoint: https://api.laurelin-inc.com
+Production Mode: True
+
+Connection Test: ✅ Connected
+```
+
+---
+
+### Chat Commands
+
+#### `laurelin chat <message>`
+
+Send a message to Laurelin AI.
+
+**Arguments:**
+- `message` - Your question or message (optional in interactive mode)
+
+**Options:**
+- `--interactive`, `-i` - Start interactive chat session
+- `--session SESSION_ID`, `-s SESSION_ID` - Continue an existing conversation
+
+**Examples:**
+
+**Single Question:**
+```bash
+laurelin chat "Explain magnetic confinement fusion"
+```
+
+**Interactive Mode:**
+```bash
+laurelin chat --interactive
+```
+```
+You> What is plasma confinement time?
+Laurelin (gemini-pro): Plasma confinement time (τE) is a measure of how well
+a fusion device retains energy in the plasma...
+
+You> How does it relate to the Lawson criterion?
+Laurelin (gemini-pro): The Lawson criterion establishes the minimum conditions...
+```
+
+**Continue Previous Session:**
+```bash
+laurelin chat -s abc12345 "What about inertial confinement?"
+```
+
+**Exit Interactive Mode:**
+Type `exit`, `quit`, or `q` to end the session.
+
+---
+
+### Session Management
+
+#### `laurelin sessions`
+
+List your recent chat sessions with session IDs.
+
+```bash
+laurelin sessions
+```
+
+**Output:**
+```
+Your Chat Sessions
+======================================================================
+
+[abc12345] Tokamak plasma physics discussion
+  Created: 2025-01-15
+
+[def67890] ITER magnetic field configuration
+  Created: 2025-01-14
+```
+
+Use session IDs to continue previous conversations:
+```bash
+laurelin chat -s abc12345 "Follow-up question"
+```
+
+---
+
+### Token Management
+
+#### `laurelin tokens`
+
+List all your active CLI tokens with usage information.
+
+```bash
+laurelin tokens
+```
+
+**Output:**
+```
+Active CLI Tokens
+======================================================================
+
+● My MacBook CLI Token
+  ID: cli_a1b2c3d4...
+  Created: 2025-01-10
+  Last used: 2025-01-15
+
+● Work Desktop Token
+  ID: cli_e5f6g7h8...
+  Created: 2025-01-12
+  Last used: 2025-01-14
+```
+
+---
+
+## Configuration
+
+### Configuration Files
+
+All configuration files are stored in `~/.laurelin/`:
+
+**`~/.laurelin/credentials.json`**
+- Stores access and refresh tokens
+- Permissions: 600 (user read/write only)
+- Automatically created on first login
+
+**`~/.laurelin/config.json`**
+- CLI configuration settings
+- API endpoint preferences
+- Automatically managed by CLI
+
+### Environment Variables
+
+**`LAURELIN_API_URL`**
+- Override the default API endpoint
+- Useful for testing or enterprise deployments
+
+```bash
+export LAURELIN_API_URL=https://custom-api.example.com
+laurelin status
+```
+
+### API Endpoints
+
+**Production (Default):**
+```
+https://api.laurelin-inc.com
+```
+
+**Development:**
+```
+http://localhost:8080
+```
+
+Switch between environments using login flags:
+```bash
+# Production
+laurelin login --production
+
+# Development
+laurelin login --dev
+```
+
+---
+
+## Security
+
+Laurelin CLI implements multiple security measures:
+
+- **Secure Token Storage** - Credentials stored with 600 permissions (user-only access)
+- **Automatic Token Refresh** - Access tokens expire after 1 hour; refresh tokens automatically renew them
+- **HTTPS Encryption** - All production API communication uses HTTPS
+- **Location Verification** - US-only access enforcement for ITAR/EAR compliance
+- **No Password Storage** - Only tokens are stored locally; passwords never saved
+
+**Security Best Practices:**
+- Never share your CLI tokens
+- Generate separate tokens for each device
+- Revoke unused tokens from the web interface
+- Use `laurelin logout` on shared machines
+
+---
+
+## Admin Access
+
+Admin users (Laurelin team members) have unrestricted CLI access:
+
+**Admin Privileges:**
+- Bypass subscription requirements
+- Unrestricted token generation
+- Access to all CLI features
+- Development environment access
+
+**Current Admin Team:**
+- jsf2178@columbia.edu
+- finbergenator@gmail.com
+- aansh.shah@laurelin-inc.com
+- joseph.finberg@laurelin-inc.com
+- gerard.geer@laurelin-inc.com
+
+---
+
+## Development
+
+### Local Development Setup
+
+Install in development mode for testing:
+
+```bash
+# Clone repository
+git clone https://github.com/laurelin-inc/laurelin-cli.git
+cd laurelin-cli
+
+# Install in editable mode
+pip install -e .
+
+# Login with development endpoint
+laurelin login --dev
+```
+
+### Testing Connection
+
+Verify your setup:
+
+```bash
+# Check authentication status
+laurelin status
+
+# Test with a simple query
+laurelin chat "Hello, Laurelin!"
+
+# List your tokens
+laurelin tokens
+```
+
+### Running Local Backend
+
+If developing against a local backend:
+
+```bash
+# Start local backend on port 8080
+cd laurelin-chat-backend
+python app/main.py
+
+# In another terminal, use dev mode
+laurelin login --dev
+laurelin chat "Test message"
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**"Not authenticated" error:**
+```bash
+# Solution: Login first
+laurelin login
+```
+
+**"Cannot connect to API" warning:**
+```bash
+# Check your internet connection
+# Verify API endpoint
+laurelin status
+
+# Try logging in again
+laurelin logout
+laurelin login --production
+```
+
+**Token expired errors:**
+- The CLI automatically refreshes tokens
+- If issues persist, login again: `laurelin login`
+
+**Permission denied on credentials file:**
+```bash
+# Fix file permissions
+chmod 600 ~/.laurelin/credentials.json
+```
+
+---
+
+## Examples
+
+### Research Workflow
+
+```bash
+# Start research session
+laurelin chat -i
+
+You> What is the Lawson criterion for fusion?
+Laurelin: The Lawson criterion defines the minimum conditions...
+
+You> Calculate it for deuterium-tritium fusion
+Laurelin: For D-T fusion at 15 keV temperature...
+
+You> exit
+```
+
+### Quick Facts
+
+```bash
+# Single-shot questions
+laurelin chat "What is ITER's planned Q value?"
+laurelin chat "Explain the tokamak magnetic field configuration"
+laurelin chat "What are the main challenges in fusion energy?"
+```
+
+### Session Continuation
+
+```bash
+# Start new discussion
+laurelin chat "Explain plasma instabilities"
+
+# Later, continue the conversation
+laurelin sessions  # Find session ID
+laurelin chat -s abc123 "What about ELMs specifically?"
+laurelin chat -s abc123 "How does ITER plan to handle them?"
+```
+
+---
+
+## Resources
+
+### Documentation
+- **Website:** https://laurelin-inc.com
+- **Documentation:** https://docs.laurelin-inc.com
+- **API Access:** https://chat.laurelin-inc.com/api-access
+
+### Support
+- **GitHub Repository:** https://github.com/laurelin-inc/laurelin-cli
+- **Issue Tracker:** https://github.com/laurelin-inc/laurelin-cli/issues
+- **Email Support:** support@laurelin-inc.com
+
+### Community
+- Join discussions about fusion research
+- Share your CLI workflows
+- Contribute to the project
+
+---
+
+## License
+
+MIT License
+
+Copyright (c) 2025 Laurelin Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## About Laurelin
+
+Laurelin is building the next generation of nuclear fusion research tools powered by artificial intelligence. Our platform helps researchers analyze plasma physics, design fusion experiments, and accelerate the path to commercial fusion energy.
+
+**Mission:** Accelerate the development of fusion energy through AI-powered research tools.
+
+**Vision:** Make fusion energy research more accessible, efficient, and collaborative.
+
+---
+
+**Built with dedication by the Laurelin team**
+
+*Advancing fusion energy, one conversation at a time.*
