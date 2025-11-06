@@ -1,0 +1,35 @@
+[project]
+name = "strangeworks-qiskit-ionq-extension"
+version = "0.8.0rc1"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Strange Devs", email = "hello@strangeworks.com" },
+]
+requires-python = ">=3.11"
+dependencies = [
+    "strangeworks-extensions>=0.7.0",
+]
+
+[project.entry-points.sdk-extensions]
+qiskit-ionq = "strangeworks_ionq_extension:setup"
+
+[tool.uv.sources.strangeworks-extensions]
+workspace = true
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src/strangeworks_ionq_extension",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/strangeworks_ionq_extension",
+]
+
+[build-system]
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"
+
