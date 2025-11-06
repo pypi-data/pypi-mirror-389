@@ -1,0 +1,32 @@
+Metadata-Version: 2.4
+Name: ros-trajectory-msgs
+Version: 5.5.1
+Summary: ROS `trajectory_msgs` package providing standard message definitions for robotic joint trajectories.
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ros-rosidl-default-runtime~=1.7.1
+Requires-Dist: ros-geometry-msgs~=5.5.1
+Requires-Dist: ros-builtin-interfaces~=2.3.0
+Requires-Dist: ros-std-msgs~=5.5.1
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+Built using https://github.com/ycheng517/ros-python-wheels.
+
+# trajectory_msgs
+
+This package provides several messages for defining robotic joint trajectories.
+
+For more information about ROS 2 interfaces, see [docs.ros.org](https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html).
+
+## Messages (.msg)
+* [JointTrajectory](msg/JointTrajectory.msg): A coordinated sequence of joint configurations to be reached at prescribed time points.
+* [JointTrajectoryPoint](msg/JointTrajectoryPoint.msg): A single configuration for multiple joints in a JointTrajectory.
+* [MultiDOFJointTrajectory](msg/MultiDOFJointTrajectory.msg): A representation of a multi-dof joint trajectory (each point is a transformation).
+* [MultiDOFJointTrajectoryPoint](msg/MultiDOFJointTrajectoryPoint.msg): A single configuration for multiple joints in a MultiDOFJointTrajectory.
+
+## Quality Declaration
+This package claims to be in the **Quality Level 2** category, see the [Quality Declaration](QUALITY_DECLARATION.md) for more details.
