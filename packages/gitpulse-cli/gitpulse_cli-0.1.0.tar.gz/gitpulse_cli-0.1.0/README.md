@@ -1,0 +1,209 @@
+# 🛰️ GitPulse CLI
+
+> Track every git pull across your repositories — automatically.
+
+GitPulse is a lightweight Python CLI that silently tracks `git pull` events and reports them to a GitPulse dashboard (Laravel-based). It's designed for teams, freelancers, and open-source maintainers who want to know **who pulled what, and when** — without any friction.
+
+---
+
+## 🚀 Part 1: For Regular Users
+
+If you just want to use GitPulse with the official dashboard (hosted by the GitPulse team), follow these simple steps 👇
+
+### 🧩 Installation
+
+Make sure you have **Python 3.7+** installed, then run:
+
+```bash
+pip install gitpulse-cli
+```
+
+Once installed, confirm it works:
+
+```bash
+gitpulse --version
+```
+
+---
+
+### ⚙️ Setup Inside a Git Project
+
+Navigate into any of your Git repositories and run:
+
+```bash
+gitpulse setup
+```
+
+**That's it ✅**  
+This will automatically install a Git hook that runs after every `git pull`.
+
+If you ever want to reinstall the hook cleanly:
+
+```bash
+gitpulse setup --force
+```
+
+---
+
+### 📡 How It Works
+
+Every time you or anyone in your team runs:
+
+```bash
+git pull
+```
+
+GitPulse automatically sends a lightweight event to the GitPulse API, containing:
+
+- ✅ Repository name
+- ✅ Current branch
+- ✅ Git user email
+- ✅ UTC timestamp
+
+Your Laravel-powered dashboard will instantly update with who pulled the latest changes and when.
+
+---
+
+### 🖥️ View Pull Activity
+
+Log into the **GitPulse Dashboard**:
+
+👉 **[https://gitpulse.io](https://gitpulse.io)**
+
+You'll see your repositories, branches, and last pull timestamps beautifully displayed.
+
+---
+
+### 🧹 Uninstall
+
+If you ever want to remove the GitPulse hook from a project:
+
+```bash
+rm .git/hooks/post-merge
+```
+
+---
+
+## 🧠 Part 2: For Developers / Self-Hosting
+
+If you're a developer who wants to run your own private GitPulse server (e.g., for enterprise or intranet use), you can easily clone and customize both components.
+
+### 1️⃣ Clone the CLI
+
+```bash
+git clone https://github.com/yourusername/gitpulse-cli.git
+cd gitpulse-cli
+pip install -e .
+```
+
+This installs it locally in **"editable" mode** so you can modify the source.
+
+---
+
+### 2️⃣ Set Your Own API Endpoint
+
+Edit `gitpulse/main.py` and update the API URL:
+
+```python
+API_URL = "https://your-private-domain.com/api/report-pull"
+```
+
+Now your CLI will send pull events to your private backend instead of the public GitPulse server.
+
+---
+
+### 3️⃣ Deploy the Laravel Backend
+
+You can either fork or deploy the official GitPulse backend (Laravel app).
+
+**Features include:**
+
+- REST API endpoint (`/api/report-pull`)
+- Admin dashboard with real-time pull activity
+- User authentication & access control
+- Per-repo and per-user activity logs
+
+**Setup is as simple as:**
+
+```bash
+git clone https://github.com/yourusername/gitpulse-laravel.git
+composer install
+php artisan migrate
+php artisan serve
+```
+
+Then update your CLI's `API_URL` to point to this new backend.
+
+---
+
+### 4️⃣ Optional: Publish Your Forked CLI
+
+You can publish your modified version to your private PyPI server:
+
+```bash
+python -m build
+twine upload --repository-url https://your-pypi-server.com dist/*
+```
+
+---
+
+## 🧩 Example Workflow
+
+```bash
+# 1. Developer clones a repo
+git clone https://github.com/org/project.git
+
+# 2. Installs GitPulse hook once
+gitpulse setup
+
+# 3. Pulls latest updates
+git pull
+
+# 4. Event automatically sent
+✅ Git pull event reported successfully!
+```
+
+Dashboard updates automatically 🎉
+
+---
+
+## 🧰 Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `gitpulse setup` | Install GitPulse hook in current repo |
+| `gitpulse setup --force` | Force reinstall the hook |
+| `gitpulse run` | Manually send pull event (used internally by the hook) |
+
+---
+
+## 📄 License
+
+**MIT License © 2025 Tayo Adepetu**
+
+You're free to use, modify, and distribute GitPulse under the terms of the MIT license.
+
+---
+
+## 🌐 Links
+
+- 🖥️ **Official Dashboard** → [https://gitpulse.io](https://gitpulse.io)
+- 🐍 **Python Package** → [https://pypi.org/project/gitpulse-cli](https://pypi.org/project/gitpulse-cli)
+- 💬 **Issues / Feedback** → [https://github.com/yourusername/gitpulse-cli/issues](https://github.com/yourusername/gitpulse-cli/issues)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+<p align="center">Made with ❤️ by <a href="https://github.com/yourusername">Tayo Adepetu</a></p>
+<p align="center">⭐ Star this repo if you find it helpful!</p>
