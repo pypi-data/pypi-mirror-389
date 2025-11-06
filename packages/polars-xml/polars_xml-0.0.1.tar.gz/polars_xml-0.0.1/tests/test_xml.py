@@ -1,0 +1,50 @@
+import polars as pl
+import polars_xml as px
+from polars.testing import assert_frame_equal
+
+
+def _sample_df() -> pl.DataFrame:
+    rows = []
+    for i in range(1000):
+        sample_xml = f"""
+        <foo>
+            <bar quux="hello from quux {i}">hello from bar {i}</bar>
+            <baz xyzzy="hello from xyzzy {i}">hello from baz {i}</baz>
+        </foo>
+        """
+        rows.append(
+            {
+                "index": i,
+                "xml_data": sample_xml,
+            }
+        )
+
+    return pl.DataFrame(rows)
+
+
+def test_parse_xml():
+    sample = _sample_df()
+
+    result = sample.select(
+        index=pl.col("index"),
+        bar=px.xpath(pl.col("xml_data"), "//foo//bar"),
+        baz=px.xpath(pl.col("xml_data"), "//foo//baz"),
+        quux=px.xpath(pl.col("xml_data"), "//foo//bar/@quux"),
+        xyzzy=px.xpath(pl.col("xml_data"), "//foo//baz/@xyzzy"),
+        missing=px.xpath(pl.col("xml_data"), "//foo//wow"),
+    )
+
+    expected = sample.select(
+        index=pl.col("index"),
+        bar="hello from bar " + pl.col("index").cast(pl.String),
+        baz="hello from baz " + pl.col("index").cast(pl.String),
+        quux="hello from quux " + pl.col("index").cast(pl.String),
+        xyzzy="hello from xyzzy " + pl.col("index").cast(pl.String),
+        missing=pl.lit("").cast(pl.String),
+    )
+
+    assert_frame_equal(expected, result)
+
+
+if __name__ == "__main__":
+    test_parse_xml()
