@@ -1,0 +1,39 @@
+[project]
+name = "ulta"
+version = "0.1.0"
+description = "Image Orientation Detection Library"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Muhammad Mominul Huque", email = "mominul2082@gmail.com"}
+]
+keywords = ["machine-learning", "inference", "image-processing", "computer-vision", "orientation-detection"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy==1.26.4",
+    "pillow>=11.3.0",
+    "tensorboard>=2.20.0",
+    "torch>=2.8.0",
+    "torchvision>=0.23.0",
+    "requests>=2.31.0",
+    "tqdm>=4.66.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
