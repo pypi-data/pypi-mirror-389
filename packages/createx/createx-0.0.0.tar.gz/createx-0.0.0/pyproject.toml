@@ -1,0 +1,56 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools", "setuptools-scm"]
+
+[[tool.uv.cache-keys]]
+file = "pyproject.toml"
+[[tool.uv.cache-keys]]
+git = { commit = true, tags = true }
+
+[project]
+name = "createx"
+dynamic = [ "version" ]
+description = "Ape-based Python SDK for CreateX"
+readme = "README.md"
+authors = [
+    { name = "ApeWorX", email = "admin@apeworx.io" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "eth-ape>=0.8,<1",
+]
+
+[project.scripts]
+createx = "createx._cli:cli"
+
+[dependency-groups]
+lint = [
+    "ruff",
+    "mypy",
+]
+test = [
+    "ape-foundry",
+]
+docs = []
+dev = [
+    "ape-solidity",
+    {include-group = "lint"},
+    {include-group = "test"},
+    {include-group = "docs"},
+]
+
+[tool.setuptools.packages.find]
+where = [ "src" ]
+[tool.setuptools.package-data]
+createx = [ "manifest.json", "deployments.json" ]
+
+[tool.ape.ethereum.local]
+default_provider = "foundry"
+
+[[tool.ape.dependencies]]
+name = "createx"
+github = "pcaversaccio/createx"
+ref = "main"
+
+[tool.ape.compile]
+exclude = ["*.json"]
