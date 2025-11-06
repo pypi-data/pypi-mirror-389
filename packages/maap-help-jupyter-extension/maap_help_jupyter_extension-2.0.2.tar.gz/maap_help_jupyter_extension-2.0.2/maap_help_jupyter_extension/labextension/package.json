@@ -1,0 +1,98 @@
+{
+  "name": "maap-help-jupyter-extension",
+  "version": "2.0.2",
+  "description": "Jupyter extension with an interactive MAAP tutorial and MAAP specific help tab options.",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/MAAP-Project/maap-help-jupyter-extension/",
+  "bugs": {
+    "url": "https://github.com/MAAP-Project/maap-help-jupyter-extension/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Grace Llewellyn",
+    "email": "grace.llewellyn@jpl.nasa.gov"
+  },
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,tsx,woff2,ttf}",
+    "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+    "schema/*.json"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MAAP-Project/maap-help-jupyter-extension/.git"
+  },
+  "scripts": {
+    "build": "jlpm build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm clean && jlpm build:lib && jlpm build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "jlpm clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf maap_help_jupyter_extension/labextension",
+    "clean:all": "jlpm clean:lib && jlpm clean:labextension",
+    "install:extension": "jlpm build",
+    "start": "jupyter lab --config tests/jupyter_server_test_config.py",
+    "test": "jlpm playwright test",
+    "test:ui": "jlpm playwright test --ui",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^4.1.8",
+    "@jupyterlab/apputils": "^4.1.8",
+    "@jupyterlab/mainmenu": "^4.1.8",
+    "@jupyterlab/statedb": "^4.1.8",
+    "@lumino/widgets": "^2.3.2",
+    "jupyterlab-tour": "^4.0.1"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^4.1.8",
+    "@jupyterlab/galata": "^5.2.0",
+    "@playwright/test": "^1.44.0",
+    "@types/react-dom": "^18.3.0",
+    "node-fetch": "^3.3.0",
+    "npm-run-all": "^4.1.5",
+    "react-joyride": "2.8.1",
+    "rimraf": "^3.0.2",
+    "typescript": "~5.4.5",
+    "webpack": "^5.75.0"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "styleModule": "style/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "maap_help_jupyter_extension/labextension",
+    "schemaDir": "schema",
+    "_build": {
+      "load": "static/remoteEntry.0af3776711bfcc16ef88.js",
+      "extension": "./extension",
+      "style": "./style"
+    }
+  },
+  "jupyter-releaser": {
+    "hooks": {
+      "before-build-npm": [
+        "python -m pip install jupyterlab~=4.1",
+        "jlpm"
+      ],
+      "before-build-python": [
+        "jlpm clean:all"
+      ]
+    }
+  }
+}
