@@ -1,0 +1,255 @@
+# Best Library To Signture Tiktok apis and more
+# New Update 8404 Gorgon and more
+
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+
+SignerPy is a Python library that provides various tools for encryption, signing, URL parsing, token generation, and more, mainly designed for interacting with TikTok APIs.
+
+---
+
+## Table of Contents
+- [Installation](#installation)
+- [Modules](#modules)
+- [Usage Examples](#usage-examples)
+- [Output Samples](#output-samples)
+
+---
+
+## Installation
+
+```bash
+pip install SignerPy==0.11.2
+git clone https://github.com/is-L7N/SignerPy.git
+cd SignerPy
+
+```
+---
+
+## Modules
+
+SignerPy contains the following modules:
+
+| Module | Description |
+|--------|-------------|
+| `sign` | Generates request headers signatures.|
+| `get` | update params iid, device_id, cdid, etc...|
+| `encryption` | Provides `enc` and `dec` functions for encryption/decryption. |
+| `hosts` | Returns a list of TikTok API hosts using `host()`. |
+| `xor` | Simple XOR encoding of strings. |
+| `url_to_params` | Parses a URL query string into a dictionary using `dicts()`. |
+| `xtoken` | Generates `x-token` values for API requests. |
+| `trace_id` | Generates a trace ID for TikTok devices. |
+| `sign` | Generates request signatures. |
+| `edata` | edata Tiktok Encryption and Decryption easy |
+| `ttencrypt` | Provides advanced encryption (`Enc().encrypt()`). |
+| `md5stub` | Generates MD5 hash of a string or body. |
+| `*` | Imports all functions for easy access. |
+
+---
+
+## Usage Examples
+
+## Signture Headers
+
+**Sample Output:**
+
+```bash
+{'x-ss-req-ticket': '1762387009792', 'x-khronos': '1762387009', 'x-gorgon': '0404b0d30000d4cec309eb57387ccee15dbc3694a62765ae25d4', 'x-ss-stub': 'D41D8CD98F00B204E9800998ECF8427E', 'x-ladon': 'cfyN2aMtfQ/hwsBzfpdfjK4HjO64+9+eAsAbXFoG7Fdsq5LE', 'x-argus': '8oGzD48Lx0I+DCXDwk+l2r542RIQVcGognB+CPA22nzh1Pn93HEBilqjiOSbjSPgqG0N9qYeHcveeZRXBg99oAMRTjLWjQ/YphKc/rfFnLFfAYGmPqG9WER/XDi3cTpgwihmg8f8PYCtoS6h+wdsMZd0UXf/wxbjaovR/31i1No+zBUDnInkI6FTGGOqopkbweiNmtUg2VeSmH92+RU0nM3azBwy+ROe3HNJRwcIK1yb/zlX8blEM46qE3vT6Xevz5g8lv4SLGlNgf6W08t4Ixeu'}
+```
+## if You Need 8402 or 4404 or 8404 Gorgon
+
+```python
+from SignerPy import sign
+
+signature = sign(params=params, payload=None, version=8404) # version=4404 or version=8402 
+print(signature)
+```
+**Sample Output:**
+```bash
+{'x-ss-req-ticket': '1762259171000', 'x-khronos': '1762259171', 'x-gorgon': '840490e90000eb195e1a4e93f8ee4c6096ef9be9245477614426', 'content-length': '2', 'x-ss-stub': 'D2E4201A71AB14D92FD36DA8B4DC6E47', 'x-ladon': 'YVfzzrPh5G1mKlCPOwnRyTBLvSlCwcMoUJpynWn7LKq5IpjO', 'x-argus': '8oES6TTDk19XpiXVRoMY8sSm2PHDIlHeay5JCmPO6o+RltBIOc0BCDuZDMos550YipLLaqxeRkhXwqg+r6keWsdL5eeIWHPB7906llEJi+4oUlXZHjQZUpgu8hhojjt6SluTr8zDWpDsP9eoSbrEX/sE6FLWogayQpDgfivNeEzjMI1qs/CKZi0KNC4Es1+LjBii6IHrWtwgPlv9fmiL+xlS8rc5+L9hrqK38Bm49QsmmA=='}
+```
+
+## Get Modern Params
+
+```python
+from SignerPy import get
+params.update(SignerPy.get(params=params))
+```
+
+### Encryption & Decryption
+
+```python
+from SignerPy.encryption import enc, dec
+
+data = {
+    "aid": "1988",
+    "app_name": "tiktok_web",
+    "device_platform": "web_pc"
+}
+
+encrypted = enc(data)
+print(encrypted)
+
+decrypted = dec(encrypted)
+print(decrypted)
+```
+
+**Sample Output:**
+
+```json
+{
+  "aid": "1988",
+  "app_name": "tiktok_web",
+  "device_platform": "web_pc"
+}
+```
+
+### Hosts
+
+```python
+from SignerPy.hosts import host
+
+print(host())
+```
+
+**Sample Output:**
+
+```
+['api16-normal-no1a.tiktokv.eu', 'api16-normal-c-alisg.tiktokv.com', ...]
+```
+
+### XOR Encoding
+
+```python
+from SignerPy import xor
+
+encoded = xor("email or username")
+print(encoded)
+```
+
+**Sample Output:**
+
+```
+6068646c69256a7725707660776b646860
+```
+
+### URL to Dictionary
+
+```python
+from SignerPy.url_to_params import dicts
+
+url = "https://api16-normal-c-alisg.tiktokv.com/lite/v2/public/item/list/?source=0&sec_user_id=XXXXX"
+params = dicts(url=url)
+print(params)
+```
+
+**Sample Output:**
+
+```json
+{
+  "source": "0",
+  "sec_user_id": "XXXXX",
+  "count": "9",
+  "app_name": "musically_go"
+}
+```
+
+### XToken
+
+```python
+from SignerPy import xtoken
+
+x_token = xtoken(params="", sessionid="")
+print(x_token)
+```
+
+**Sample Output:**
+
+```
+7a3465ad525ddf8ba13bc005d45c99a0f480a503b4c3b2a3f5aa184cdb332102--...
+```
+
+### Trace ID
+
+```python
+from SignerPy import trace_id
+
+trace = trace_id(device_id="1234567890")
+print(trace)
+```
+
+**Sample Output:**
+
+```
+00-4eee0edf08499602d2277ea43fe8-4eee0edf08499602-01
+```
+
+### MD5 Hash
+
+```python
+from SignerPy import md5stub
+
+hash_value = md5stub(body="username=L7N")
+print(hash_value)
+```
+
+**Sample Output:**
+
+```
+866F9F9C270106B1AF8063FFD0A80A22
+```
+### edata decrypt
+
+```python
+from SignerPy.edata import decrypt
+
+print(decrypt(edata="ARMZiZCPPJD5AodPZbiXUFiNZYY/zPssCFJJmuLj6yeVRqG3NZ+ryYE0xAr/OVIbQemdMonPYUUzSyWcFHS5bwxmB9s="))
+```
+**Sample Output:**
+
+'''
+{"need_captcha":false"}
+'''
+### edata encrypt
+
+```python
+from SignerPy.edata import encrypt
+
+print(encrypt(edata=b'{"need_captcha":false"}'))
+```
+
+**Sample Output:**
+
+'''
+ATgiwD0XRkbaBpYdr1oTAs2PvSg6d5ExfzfmZanrGWShoooGLLhPIa1nImegxqCo0OOjpG6Uz2Vzndu6uxRPRfd72VA=
+'''
+
+### TTEncrypt
+
+```python
+from SignerPy import ttencrypt
+
+encrypted = ttencrypt.Enc().encrypt(data="username=L7N")
+print(encrypted)
+```
+
+**Sample Output:**
+
+```
+b'tc\x05\x10\x00\x00\x1c^\xe4\xa6...'
+```
+
+## ✍️ Author
+- [![Telegram](https://img.shields.io/badge/Telegram-PyL7N-0088cc?style=flat-square&logo=telegram)](https://t.me/PyLast)
+- [![GitHub](https://img.shields.io/badge/GitHub-is--L7N-181717?style=flat-square&logo=github)](https://github.com/is-L7N)
+
+---
+</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Author-L7N-blue?style=flat-square" alt="author">
+  <img src="https://img.shields.io/badge/Language-Python-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/Status-Working-success?style=flat-square">
+</p>
+
+---
