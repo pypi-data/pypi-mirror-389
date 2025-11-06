@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pairwise-combinatorial"
+version = "0.1.1"
+description = "Combinatorial method for pairwise comparison aggregation using Prüfer sequences with parallel processing"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Daniil Olekh", email = "danyaolekhq@gmail.com"}
+]
+keywords = ["pairwise-comparison", "combinatorial-optimization", "prufer-sequences", "ahp", "decision-making"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "numpy>=2.3.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/scape76/pairwise-combinatorial"
+Repository = "https://github.com/yourusername/pairwise-combinatorial"
+Issues = "https://github.com/yourusername/pairwise-combinatorial/issues"
