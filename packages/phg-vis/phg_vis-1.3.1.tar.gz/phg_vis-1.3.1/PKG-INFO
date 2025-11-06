@@ -1,0 +1,723 @@
+Metadata-Version: 2.1
+Name: phg_vis
+Version: 1.3.1
+Summary: A package for the PHG modeling language and 3D visualization tool.
+Home-page: https://github.com/panguojun/Coordinate-System
+Author: romeosoft
+Author-email: 18858146@qq.com
+Platform: Windows
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Microsoft :: Windows
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# PHG - Python Hypergraphics Library
+
+PHG (Python Hypergraphics) is a powerful 3D modeling and visualization library that combines a minimalist modeling language with Python integration. It provides procedural 3D scene generation, shader-based rendering, and specialized pipe system visualization.
+
+---
+
+## 🌟 Features
+
+- **Minimalist Syntax** - Declarative node tree description for 3D scenes
+- **Hierarchical Modeling** - Support for nested nodes and transform inheritance
+- **Parametric Design** - Flexible property system and function definitions
+- **Pipe Visualization** - Specialized system for visualizing pipe structures with world/local coordinate support
+- **Shader Conversion** - Convert PHG scripts to GLSL shaders for GPU rendering
+- **Dual Rendering Modes** - Both real-time visualization (vis.exe) and offscreen rendering
+- **Python Integration** - Comprehensive Python API for all features
+
+---
+
+## 📦 Installation
+
+```bash
+pip install phg_vis
+```
+
+Or install from source:
+```bash
+pip install phg
+```
+
+---
+
+## 🚀 Quick Start
+
+### Python Usage
+
+```python
+import phg
+
+# Define PHG code
+phg_code = """
+{
+    # Create a simple cylinder
+    base{md:cylinder 5 10; rgb:100,150,200}
+}setup_draw();
+"""
+
+# Execute PHG code
+phg.run(phg_code)
+```
+
+### Visualization Rendering
+
+```python
+import phg
+
+# Method 1: Direct rendering
+phg.image("box(10);", filename="cube.png")
+
+# Method 2: Complex scene rendering
+scene = """
+{
+    base{md:cylinder 10 2; rgb:100,100,100}
+    column{md:cylinder 5 20; y:2; rgb:200,200,200}
+    top{md:cone 5 3 3; y:22; rgb:150,150,150}
+    structure{[base,column,top]}
+}setup_draw(structure);
+"""
+phg.image(scene, filename="tower.png")
+
+# Method 3: Multi-view rendering
+phg.image("sphere(5);|||view=2 width=1920 height=1080", filename="top_view.png")
+```
+
+---
+
+## 📖 Syntax Reference
+
+### 1. Basic Structure
+
+```phg
+{
+    # Scene node definitions
+    node definitions...
+}setup();draw();  # or setup_draw();
+```
+
+**Key Points:**
+- All nodes must be defined within the root node (anonymous braces)
+- Call `setup();draw();` or `setup_draw()` at the end for scene rendering
+- Use `#` for single-line comments
+
+### 2. Node Definition
+
+#### 2.1 Basic Syntax
+```phg
+nodeName{attributes and content}
+```
+
+#### 2.2 Node Attributes
+
+| Attribute Type | Syntax | Description |
+|----------------|--------|-------------|
+| Position | `x:value` `y:value` `z:value` | Single-axis position |
+| Position (Combined) | `xyz:x,y,z` | Three-axis position |
+| Rotation | `rx:angle` `ry:angle` `rz:angle` | Single-axis rotation (degrees) |
+| Rotation (Combined) | `rxyz:x,y,z` | Three-axis rotation |
+| Scale | `s:scale` | Uniform scaling |
+| Color | `rgb:red,green,blue` | RGB color (0-255) |
+| Tessellation | `ts:subdivisions` | Curve/surface subdivision level |
+
+**Examples:**
+```phg
+node1{x:10; y:20; z:30; rx:45; ry:90; rz:0}
+node2{xyz:10,20,30; rxyz:45,90,0; s:2.0}
+node3{rgb:255,128,0; ts:32}
+```
+
+#### 2.3 Node Composition Methods
+
+**Sequence Composition (Transform Propagation):**
+```phg
+parent{<child1,child2,child3>}
+```
+- Use angle brackets `<>` for sequences
+- Parent node transforms are **propagated sequentially** to child nodes
+- Commonly used for creating repetitive patterns (turbine blades, gear teeth)
+
+**Array Composition (Independent Transforms):**
+```phg
+group{[item1,item2,item3]}
+```
+- Use square brackets `[]` for arrays
+- Each child node maintains **independent transforms**
+- Used for combining unrelated components
+
+**Comparison Example:**
+```phg
+{
+    # Sequence: Each box accumulates rotation
+    gear1{<box1,box1,box1,box1>; rz:90}  # Four boxes at 0°, 90°, 180°, 270°
+
+    # Array: Each box has independent transform
+    gear2{[box1{rz:0},box1{rz:90},box1{rz:180},box1{rz:270}]}
+}
+```
+
+#### 2.4 Node Reference and Reuse
+
+```phg
+# Define template node
+template{md:cylinder 10 20}
+
+# Reference node
+instance1{template; x:10}              # Inherit template and add translation
+instance2{{template; s:0.5}; y:20}    # Scale first, then translate
+```
+
+---
+
+### 3. Model Definition (md Command)
+
+#### 3.1 Basic Syntax
+```phg
+{md:commandName param1 param2 ...}
+```
+
+#### 3.2 2D Shapes
+
+| Command | Syntax | Description |
+|---------|--------|-------------|
+| Rectangle | `md:rect width height` | Rectangle |
+| Circle | `md:circle radius` | Circle |
+| Ellipse | `md:ellipse2d majorAxis minorAxis` | Ellipse |
+| Polygon | `md:poly x1,y1,z1 x2,y2,z2 ...` | Arbitrary polygon |
+
+**Examples:**
+```phg
+rect1{md:rect 10 20}
+circle1{md:circle 5; ts:64}               # 64 subdivisions
+triangle{md:poly 0,0,0 10,0,0 5,10,0}
+```
+
+#### 3.3 3D Primitives
+
+| Command | Syntax | Description |
+|---------|--------|-------------|
+| Cylinder | `md:cylinder radius height` | Cylinder |
+| Cone | `md:cone bottomRadius topRadius height` | Cone/Frustum |
+| Spherical Crown | `md:sphericalcrown radiusX radiusY radiusZ` | Spherical cap/hemisphere |
+| Box | `md:box length width height` | Box |
+
+**Examples:**
+```phg
+cylinder1{md:cylinder 5 10}
+cone1{md:cone 5 2 8}
+hemisphere{md:sphericalcrown 3 3 1.5}
+box1{md:box 10 5 2}
+```
+
+#### 3.4 Curve Commands
+
+**Interpolated Curves:**
+```phg
+{md:ccurve interpolationType startNode endNode}
+```
+
+Interpolation Types:
+- `lerpTX` - Linear interpolation (tangent X direction)
+- `lerpTY` - Linear interpolation (tangent Y direction)
+- `lerpTZ` - Linear interpolation (tangent Z direction)
+- `lerp` - Standard linear interpolation
+
+**Example:**
+```phg
+{
+    p1{} p2{x:10; rz:15}
+    curve1{md:ccurve lerpTX p1 p2}
+}
+```
+
+#### 3.5 Surface Commands
+
+**Patch:**
+```phg
+{md:face interpolationType curve1 curve2}
+```
+
+**Extrusion:**
+```phg
+{md:extrudex profile xStart yStart length}
+```
+
+**Loft:**
+```phg
+{md:loft profile1 profile2 path parameters}
+```
+
+---
+
+### 4. Data Structures
+
+#### 4.1 Location Data (Locations)
+```phg
+{md:Locations;
+list:"
+1
+    1 0 0  # x coordinate
+    0 1 0  # y coordinate
+    0 0 1  # z coordinate
+"
+}
+```
+
+#### 4.2 Curve Data (Curves)
+```phg
+{md:Curves;
+list:"
+    type param1 param2 param3 dirX dirY dirZ
+"
+}
+```
+
+---
+
+### 5. Control Statements
+
+#### 5.1 Conditional Statement
+```phg
+?(condition) { statement } : { else_statement };
+```
+
+#### 5.2 Loop Statement
+```phg
+@n { statement1 ? (_i = x) ~; statement2; }
+```
+
+#### 5.3 Function Definition
+```phg
+$functionName(args...) { statement; $return }
+```
+
+---
+
+### 6. Scene Rendering Functions
+
+```phg
+setup();draw();                  # Setup and draw entire scene
+setup_draw();                    # Combined call
+setup_draw(node1);               # Draw specified node
+setup_draw(node1,node2,...);     # Draw multiple specified nodes
+```
+
+---
+
+## 🎨 Visualization Features
+
+### 1. Interactive Screenshot (UI Button)
+
+Click the **Shot** button in the 3D view interface to take a screenshot.
+
+**Features:**
+- One-click operation with auto-generated timestamped filename
+- Default save location: Desktop as `screenshot_YYYYMMDD_HHMMSS.png`
+- Real-time notification of screenshot results
+
+### 2. Python API Rendering (Recommended)
+
+```python
+import phg
+
+# Default screenshot (shot.png)
+phg.image("box(10);")
+
+# Specify filename
+phg.image("box(10);", filename="cube_render.png")
+
+# Full path
+phg.image("box(10);", filename="C:/output/result.png")
+
+# Advanced: Custom resolution and view
+phg_code = "box(10);"
+phg.image(phg_code + "|||width=1920 height=1080 view=2")
+```
+
+### 3. HTTP API
+
+**Save to File:**
+```http
+POST http://127.0.0.1:5088/phg_img
+Content-Type: text/plain
+
+box(10);|||file=output.png width=1920 height=1080 view=0
+```
+
+**Return Binary Data:**
+```http
+POST http://127.0.0.1:5088/phg_img
+Content-Type: text/plain
+
+box(10);|||width=800 height=600
+```
+
+### 4. Rendering Parameters
+
+**Request Body Format:**
+```
+<PHG_CODE>|||<PARAMETERS>
+```
+
+**Available Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `file` | string | - | Output filename, omit for binary return |
+| `width` | int | 1288 | Render width (pixels) |
+| `height` | int | 800 | Render height (pixels) |
+| `view` | int | 3 | View mode (see table below) |
+| `quality` | string | high | Render quality: high/low |
+
+**View Modes:**
+
+| Value | Mode | Description |
+|-------|------|-------------|
+| 0 | Front | Front view (orthographic projection) |
+| 1 | Right | Right view (orthographic projection) |
+| 2 | Top | Top view (orthographic projection) |
+| 3 | Perspective | **Perspective view (default)** |
+
+### 5. Batch Rendering Example
+
+```python
+import phg
+
+# Batch generate different views
+views = [(0,"front"), (1,"right"), (2,"top"), (3,"perspective")]
+phg_code = "box(10);"
+
+for view_id, view_name in views:
+    phg.image(
+        f"{phg_code}|||view={view_id}",
+        filename=f"cube_{view_name}.png"
+    )
+
+# Batch render different sizes
+for size in [5, 10, 15, 20]:
+    phg.image(f"box({size});", filename=f"box_{size}.png")
+```
+
+---
+
+## 🔧 Pipe Visualization System
+
+PHG includes a specialized pipe visualization system for creating 3D pipe structures from simple string commands.
+
+### Pipe String Commands
+
+- **F** - Forward (move forward in current direction)
+- **B** - Back (move backward in current direction)
+- **R** - Right (turn right and move)
+- **L** - Left (turn left and move)
+- **U** - Up (turn up and move)
+- **D** - Down (turn down and move)
+
+### World Coordinate System
+
+World coordinate pipes use absolute directions regardless of current orientation:
+
+```python
+import phg
+from coordinate_system import vec3, quat, coord3
+
+# Create a pipe in world coordinates
+# F moves along world Z+, R moves along world X+, etc.
+start_pos = coord3(vec3(0, 0, 0), quat(1, 0, 0, 0))
+phg_script = phg.world_pipestr_vis("FFRRUD", start_pos)
+
+# Custom pipe appearance
+phg.world_pipestr_vis(
+    "FFLLUU",
+    start_pos,
+    pipe_color=(255, 100, 50),  # Orange pipe
+    pipe_radius=0.5               # Thicker pipe
+)
+```
+
+### Local Coordinate System
+
+Local coordinate pipes use directions relative to current orientation:
+
+```python
+import phg
+from coordinate_system import vec3, quat, coord3
+
+# Create a pipe in local coordinates
+# F moves forward relative to current orientation
+start_pos = coord3(vec3(0, 0, 0), quat(1, 0, 0, 0))
+phg_script = phg.local_pipestr_vis("FFRRUD", start_pos)
+
+# The same string produces different results in local vs world coordinates
+phg.local_pipestr_vis(
+    "FFRRFF",  # Forward, Forward, Right turn, Right turn, Forward, Forward
+    start_pos,
+    pipe_color=(0, 255, 100)  # Green pipe
+)
+```
+
+### Direct PHG Script Generation
+
+For advanced use cases, you can generate PHG scripts without immediate visualization:
+
+```python
+import phg
+from coordinate_system import vec3, quat, coord3
+
+start = coord3(vec3(5, 0, 0), quat(1, 0, 0, 0))
+
+# Generate PHG script for world coordinates
+world_phg = phg.world_pipe_to_phg("FFRUD", start)
+
+# Generate PHG script for local coordinates
+local_phg = phg.local_pipe_to_phg("FFRUD", start)
+
+# Visualize later
+phg.vis(world_phg)
+```
+
+### Example: Complex Pipe System
+
+```python
+import phg
+from coordinate_system import vec3, quat, coord3
+
+# Create a complex pipe network
+def create_pipe_network():
+    # Main pipeline
+    main_pipe = phg.world_pipestr_vis(
+        "FFFFRRFFRRUUFFLLFF",
+        coord3(vec3(0, 0, 0), quat(1, 0, 0, 0)),
+        pipe_color=(100, 100, 255),
+        pipe_radius=0.5
+    )
+
+    # Branch 1
+    branch1 = phg.world_pipestr_vis(
+        "RRUUFFFF",
+        coord3(vec3(4, 0, 0), quat(1, 0, 0, 0)),
+        pipe_color=(255, 100, 100),
+        pipe_radius=0.3
+    )
+
+    # Branch 2
+    branch2 = phg.local_pipestr_vis(
+        "FFLLDDFF",
+        coord3(vec3(8, 2, 2), quat(1, 0, 0, 0)),
+        pipe_color=(100, 255, 100),
+        pipe_radius=0.3
+    )
+
+    return main_pipe, branch1, branch2
+
+# Create and visualize the network
+pipes = create_pipe_network()
+```
+
+---
+
+## 💡 Complete Examples
+
+### Example 1: Simple Geometry
+```phg
+{
+    # Create a cylinder with base
+    base{md:cylinder 10 2; rgb:100,100,100}
+    column{md:cylinder 5 20; y:2; rgb:200,200,200}
+    top{md:cone 5 3 3; y:22; rgb:150,150,150}
+
+    structure{[base,column,top]}
+}setup_draw(structure);
+```
+
+### Example 2: Parametric Gear
+```phg
+{
+    # Create gear tooth
+    tooth{md:box 2 5 3; z:10}
+
+    # Create gear by rotating around center (8 teeth)
+    gear{
+        <tooth,tooth,tooth,tooth,tooth,tooth,tooth,tooth>
+        rz:45  # Each tooth automatically rotates 45° (360/8)
+    }
+
+    # Center shaft
+    shaft{md:cylinder 3 10; rgb:50,50,50}
+
+    # Assembly
+    assembly{[gear,shaft]; rx:90}
+}setup_draw(assembly);
+```
+
+### Example 3: Turbine Blade (Complex Assembly)
+```phg
+{
+    # Define control points
+    p1{}
+    p2{x:4; rz:15}
+    p3{x:4; rz:-15}
+
+    # Create curves
+    c1{{md:ccurve lerpTX p1 p2}{md:ccurve lerpTX p1 p3}}
+    c2{c1; z:14; rz:75; s:0.75}
+
+    # Create blade surface
+    blade{{md:face lerp c1 c2; z:2; rz:90}ry:15}
+
+    # Create impeller (24 blades)
+    wheel{<blade,blade,blade,blade,blade,blade,blade,blade,
+           blade,blade,blade,blade,blade,blade,blade,blade,
+           blade,blade,blade,blade,blade,blade,blade,blade>}
+
+    # Hub
+    hub{md:cylinder 8 5; rgb:80,80,80}
+
+    # Assembly
+    turbine{[wheel,hub]}
+}setup_draw(turbine);
+```
+
+### Example 4: Python Rendering Workflow
+```python
+import phg
+
+# Define complex scene
+scene = """
+{
+    # Ground
+    ground{md:cylinder 20 0.5; rgb:80,80,80}
+
+    # Main structure
+    base{md:cylinder 5 2; y:0.5; rgb:150,150,150}
+    column{md:cylinder 2 10; y:3.5; rgb:200,200,200}
+    top{md:cone 3 0 2; y:9; rgb:180,180,180}
+
+    # Decoration
+    ring1{md:cylinder 4 0.3; y:5; rgb:255,200,0}
+    ring2{md:cylinder 4 0.3; y:7; rgb:255,200,0}
+
+    # Assembly
+    monument{[ground,base,column,top,ring1,ring2]}
+}setup_draw(monument);
+"""
+
+# Render multiple views
+phg.image(scene + "|||view=3", filename="monument_perspective.png")
+phg.image(scene + "|||view=0", filename="monument_front.png")
+phg.image(scene + "|||view=2 width=2560 height=1440", filename="monument_top_4k.png")
+```
+
+---
+
+## 🎯 Best Practices
+
+### 1. Naming Conventions
+- Use meaningful node names
+- Use lowercase letters and underscores
+- Avoid using PHG keywords as node names
+
+### 2. Structure Organization
+- Group related nodes together
+- Use comments to explain complex structures
+- Use node references to reduce repetition
+
+### 3. Performance Optimization
+- Set appropriate tessellation levels (`ts` parameter)
+- Reuse node definitions instead of recreating
+- Use sequence and array composition appropriately
+
+### 4. Debugging Tips
+- Build complex models incrementally
+- Use `setup_draw(nodeName)` to test nodes individually
+- Check coordinate system and transform order
+
+---
+
+## 📚 Built-in Functions
+
+### Math Functions
+- `rnd()` - Random number
+- `sin()` - Sine
+- `cos()` - Cosine
+
+### Node Operations
+- `im()` - Image operations
+- `on()` - Enable node
+- `wak()` - Wake node
+- `dump()` - Dump node data
+
+### Data Conversion
+- `tojson()` - Convert to JSON format
+
+---
+
+## 🔧 Coordinate System
+
+### Coordinate System
+- Uses **right-hand coordinate system**
+- X-axis: Right
+- Y-axis: Up
+- Z-axis: Forward
+
+### Rotation Rules
+- Rotation angle unit is **degrees**
+- Positive rotation follows **right-hand rule**
+
+### Transform Order
+- Transform order: **Scale → Rotation → Translation**
+- Child node transforms are applied on top of parent transforms
+
+---
+
+## ❓ FAQ
+
+### Q1: What's the difference between sequences and arrays?
+- **Sequence** `<a,b,c>` equals `{a {b {c}}}` - Transforms accumulate
+- **Array** `[a,b,c]` equals `{{a}{b}{c}}` - Transforms are independent
+
+### Q2: How to create repetitive structures?
+Use sequence composition `<>` with rotation:
+```phg
+# Create 8 evenly distributed elements
+element{md:box 2 2 2; z:10; rz:45}
+ring{<element,element,element,element,element,element,element,element>}
+```
+
+### Q3: How to set transparent background?
+Currently the rendering engine uses RGB format and doesn't support transparent backgrounds. For transparency, remove the background color in post-processing.
+
+### Q4: Is there a resolution limit for rendering?
+Recommended maximum resolution is **4096 x 4096**. Excessively large resolutions may cause insufficient GPU memory or rendering failures.
+
+---
+
+## 🔗 Links
+
+- [PyPI Package](https://pypi.org/project/phg/)
+- [Mathematical Foundation](https://github.com/panguojun/Coordinate-System)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 🙏 Acknowledgments
+
+PHG is inspired by concepts from group theory, aiming to provide a flexible way to describe complex data structures in programming. Special thanks to all developers who have contributed to the PHG ecosystem.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues or pull requests.
+
+---
+
+**© 2025 PHG - Minimalist 3D Modeling Language**
