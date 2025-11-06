@@ -1,0 +1,13 @@
+! test.ecs
+
+    script Test
+    
+    variable N
+    
+    debug step
+    put 1 into N
+    log N
+Label:
+    put 2 into N
+    log N
+    stop
