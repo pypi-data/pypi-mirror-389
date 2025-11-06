@@ -1,0 +1,22 @@
+[project]
+name = "chromatograpy"
+version = "0.1.0"
+description = "Library to analyze chromatograms"
+authors = [
+    {name = "c.moevus@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "rainbow-api",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
