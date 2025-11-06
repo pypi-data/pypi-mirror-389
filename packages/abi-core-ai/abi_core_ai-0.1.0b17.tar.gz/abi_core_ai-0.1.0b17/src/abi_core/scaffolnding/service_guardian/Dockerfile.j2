@@ -1,0 +1,21 @@
+# {{ project_name }} Guardian Service
+FROM abi-image:latest
+
+WORKDIR /app
+
+# Copy service-specific requirements and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose Guardian port
+EXPOSE 11438
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:11438/health || exit 1
+
+# Run the Guardian service
+CMD ["python", "main.py"]
