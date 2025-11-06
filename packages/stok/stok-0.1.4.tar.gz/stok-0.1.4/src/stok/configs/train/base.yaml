@@ -1,0 +1,31 @@
+optimizer:
+  name: adamw
+  lr: 3e-4
+  betas: [0.9, 0.95]
+  weight_decay: 0.01
+
+scheduler:
+  name: cosine
+  warmup_steps: 2000
+
+
+# step/epoch governance
+num_steps: 10000
+epochs: null
+
+# intervals (in steps)
+eval_steps: 1000
+log_steps: 50
+
+# training mechanics
+grad_accum_steps: 1
+grad_clip_norm: 1.0
+
+# logging
+wandb:
+  enabled: true
+  project: "stok"
+  entity: null
+  group: null
+  name: null
+  tags: []

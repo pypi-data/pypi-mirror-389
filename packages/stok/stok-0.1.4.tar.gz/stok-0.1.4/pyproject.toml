@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stok"
+version = "0.1.4"
+description = "Encoder-only protein tagger (SDPA + RoPE + SwiGLU)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Bryan Briney" }]
+dependencies = [
+  "torch",
+  "hydra-core",
+  "omegaconf",
+  "graphein",
+  "torch_geometric",
+  "click>=8.1",
+  "wandb",
+  "accelerate",
+  "tokenizers",
+  "numpy",
+  "pandas",
+  "biopython",
+  "transformers",
+  "x-transformers",
+  "typing-extensions; python_version < '3.11'",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["stok*"]
+exclude = []
+
+
+[tool.setuptools.package-data]
+stok = [
+  "configs/**",
+  "checkpoints/**",
+]
+
+
+[project.scripts]
+stok = "stok.cli.cli:cli"
+
+
