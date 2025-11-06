@@ -1,0 +1,25 @@
+[project]
+name = "galapagos-evo"
+version = "0.1.0"
+authors = [
+  { name="Luan Leal", email="luanleal@usp.br" },
+  { name="Micael Baruch", email="micael.mbaruch@usp.br"}
+]
+description = "A small didatic package for evolution simulations"
+readme = "README.md"
+requires-python = ">=3.14"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/thefire888/galapagos"
+Issues = "https://github.com/thefire888/galapagos/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["galapagos"]
+
