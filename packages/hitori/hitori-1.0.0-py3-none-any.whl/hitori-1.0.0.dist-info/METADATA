@@ -1,0 +1,53 @@
+Metadata-Version: 2.4
+Name: hitori
+Version: 1.0.0
+Summary: Parsing and serializing Sakura Expressions
+Author-email: Hannes Braun <hannes@hannesbraun.net>
+License-Expression: BlueOak-1.0.0
+Project-URL: homepage, https://git.sr.ht/~hannes/hitori
+Project-URL: documentation, https://hannesbraun.net/share/doc/hitori/index.html
+Project-URL: repository, https://git.sr.ht/~hannes/hitori
+Project-URL: changelog, https://git.sr.ht/~hannes/hitori/refs
+Keywords: Sakura Expressions,S-Expression,Parser
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Dynamic: license-file
+
+# hitori
+
+*a Python library for [Sakura Expressions](https://git.sr.ht/~hannes/sakura-expressions)*
+
+This library also supports parsing in fragments. The input can be given piece by
+piece to the library before the final result is returned.
+
+## Installation
+
+The package can be installed via the PyPI:
+
+    pip install hitori
+
+## Usage
+
+You can find a documentation of the API here:
+https://hannesbraun.net/share/doc/hitori
+
+Here is a small example:
+
+```python
+import hitori
+
+root = parse("(foo bar baz)")
+print(root[0][0])  # prints "foo"
+serialized = hitori.serialize(root)
+print(serialized)  # prints "(foo bar baz)"
+```
+
+## License
+
+hitori is published under the terms of the [Blue Oak Model License](LICENSE.md).
+
