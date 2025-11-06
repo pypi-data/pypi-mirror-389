@@ -1,0 +1,23 @@
+{
+    "amazon_reviews_embedded": {
+      "rev_id": "VARCHAR(64000)",
+      "aid": "VARCHAR(64000)",
+      "rating": "DECIMAL(10,2)",
+      "prodsummary": "VARCHAR(64000)",
+      "embedding": "VARCHAR(64000)",
+      "rev_text": "VARCHAR(64000)"
+    },
+    "amazon_reviews_embedded_10_alter": {
+      "rev_id": "VARCHAR(64000)",
+      "aid": "VARCHAR(64000)",
+      "rating": "DECIMAL(10,2)",
+      "prodsummary": "VARCHAR(64000)",
+      "embedding": "VARCHAR(64000)",
+      "rev_text": "VARCHAR(64000)"
+    },
+    "amazon_review_query": {
+      "queryID": "INTEGER",
+      "queryColumn": "VARCHAR(64000)",
+      "queryEmbedding": "VECTOR"
+    }
+  }
