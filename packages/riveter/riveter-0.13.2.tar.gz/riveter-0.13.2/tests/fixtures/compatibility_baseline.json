@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.13.0",
+  "commands": {
+    "scan_table": {
+      "command": "riveter scan --format table",
+      "output_structure": {
+        "headers": ["Rule ID", "Resource", "Status", "Message"],
+        "column_count": 4,
+        "separator": "|"
+      }
+    },
+    "scan_json": {
+      "command": "riveter scan --format json",
+      "output_structure": {
+        "type": "object",
+        "required_fields": ["summary", "results", "metadata"],
+        "summary_fields": ["total_rules", "passed", "failed", "errors"]
+      }
+    },
+    "scan_sarif": {
+      "command": "riveter scan --format sarif",
+      "output_structure": {
+        "type": "object",
+        "required_fields": ["version", "runs"],
+        "sarif_version": "2.1.0"
+      }
+    },
+    "scan_junit": {
+      "command": "riveter scan --format junit",
+      "output_structure": {
+        "type": "xml",
+        "root_element": "testsuites",
+        "required_attributes": ["tests", "failures", "errors", "time"]
+      }
+    }
+  },
+  "exit_codes": {
+    "success": 0,
+    "validation_failures": 1,
+    "error": 2,
+    "invalid_args": 2
+  },
+  "file_formats": {
+    "terraform_extensions": [".tf", ".tfvars"],
+    "rules_extensions": [".yml", ".yaml"],
+    "config_extensions": [".yml", ".yaml", ".json"]
+  }
+}
