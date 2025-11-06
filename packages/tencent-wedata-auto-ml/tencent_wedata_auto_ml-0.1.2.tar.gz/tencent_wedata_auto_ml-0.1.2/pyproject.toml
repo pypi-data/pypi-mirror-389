@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tencent-wedata-auto-ml"
+version = "0.1.2"
+description = "AutoML SDK for Tencent Cloud WeData using FLAML with MLflow integration."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "ZhangChunLin", email = "blueszzhang@tencent.com" }
+]
+dependencies = [
+  "flaml[automl,notebook]==2.3.6",
+  "mlflow",
+  "scikit-learn",
+  "pandas",
+  "numpy"
+]
+
+[project.optional-dependencies]
+xgboost = ["xgboost"]
+lightgbm = ["lightgbm"]
+
+[project.urls]
+Homepage = "https://git.woa.com/WeDataOS/wedata-automl"
+Repository = "https://git.woa.com/WeDataOS/wedata-automl.git"
+
+[project.scripts]
+wedata-automl-demo = "wedata_automl.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
