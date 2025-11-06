@@ -1,0 +1,302 @@
+Metadata-Version: 2.4
+Name: vention-communication
+Version: 0.1.0
+Summary: A framework for storing and managing component and application data for machine apps.
+License: Proprietary
+Author: VentionCo
+Requires-Python: >=3.10,<3.11
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Requires-Dist: fastapi (>=0.116.1,<0.117.0)
+Requires-Dist: uvicorn (>=0.35.0,<0.36.0)
+Description-Content-Type: text/markdown
+
+# Vention Communication
+
+A thin, FastAPI-powered RPC layer for machine-apps that exposes Connect-compatible request-response and server-streaming endpoints — plus .proto generation from Python decorators, allowing typed SDKs to be generated separately via Buf.
+
+## Table of Contents
+
+- [✨ Features](#-features)
+- [🧠 Concepts & Overview](#-concepts--overview)
+- [⚙️ Installation & Setup](#️-installation--setup)
+- [🚀 Quickstart Tutorial](#-quickstart-tutorial)
+- [🛠 How-to Guides](#-how-to-guides)
+- [📖 API Reference](#-api-reference)
+- [🔍 Troubleshooting & FAQ](#-troubleshooting--faq)
+
+## ✨ Features
+
+- **Decorator-based RPCs**: `@action()` for request-response calls, `@stream()` for server streams. Types inferred from Python type hints or Pydantic models.
+- **Connect-compatible endpoints**: Works seamlessly with Connect clients — compatible with `@connectrpc/connect-web` and `connectrpc-python`.
+- **FastAPI-based**: Leverages FastAPI for routing and async concurrency.
+- **Single service surface**: All methods exposed under `/rpc/<package.Service>/<Method>`.
+- **Automatic .proto emission**: Generates a single .proto file describing all registered RPCs and models at runtime, ready for use in Buf-based SDK generation.
+
+## 🧠 Concepts & Overview
+
+### What is an RPC?
+
+**RPC (Remote Procedure Call)** is a way to call a function on a remote server as if it were a local function. Instead of manually crafting HTTP requests and parsing responses, you define your functions with decorators, and the library handles the network communication for you. Your client code can call `client.ping({ message: "Hello" })` and get back a response, just like calling a local function.
+
+### What is Connect?
+
+**Connect** is a protocol for building APIs that combines the simplicity of REST with the type safety of gRPC. It uses Protocol Buffers (protobuf) for defining your API contract, but sends data as JSON over HTTP, making it easy to use from browsers and simple HTTP clients. Connect provides:
+
+- **Type safety**: Your API contract is defined in a `.proto` file, ensuring clients and servers agree on the data structure
+- **Error handling**: Standardized error responses that work across languages
+- **Streaming**: Built-in support for server-side streaming (continuously sending updates to clients)
+- **Developer experience**: Works with standard HTTP tools and browsers
+
+### Core Concepts
+
+- **Actions (Request-Response)** — send a request, get a response back. Input and output types are inferred from function annotations. If either is missing, `google.protobuf.Empty` is used.
+- **Streams (Server streaming)** — continuous updates broadcast to all subscribers. Each stream can optionally replay the last value when someone subscribes. Queues default to size-1 to always show the latest value.
+- **Service Surface** — all actions and streams belong to one service, e.g. `vention.app.v1.<YourAppName>Service`, with routes mounted under `/rpc`.
+- **Proto Generation** — `VentionApp.finalize()` writes a .proto to disk, capturing all decorated RPCs, inferred models, and scalar wrappers. SDK generation (via Buf) is handled externally.
+
+### Stream Configuration Options
+
+When creating a stream with `@stream()`, you can configure how updates are delivered to subscribers:
+
+#### `replay` (default: `True`)
+
+Controls whether new subscribers receive the last published value immediately when they subscribe.
+
+- **`replay=True`**: New subscribers instantly receive the most recent value (if one exists). Useful for state streams where clients need the current state immediately upon connection.
+- **`replay=False`**: New subscribers only receive values published after they subscribe. Useful for event streams where you only want to see new events.
+
+
+#### `queue_maxsize` (default: `1`)
+
+The maximum number of items that can be queued for each subscriber before the delivery policy kicks in.
+
+- **`queue_maxsize=1`**: Only the latest value is kept. Perfect for state streams where you only care about the current state.
+- **`queue_maxsize=N`** (N > 1): Allows buffering up to N items. Useful when subscribers might process items slower than they're published, but you still want to limit memory usage.
+
+```python
+# Only keep latest temperature reading
+@stream(name="Temperature", payload=Temperature, queue_maxsize=1)
+
+# Buffer up to 10 sensor readings
+@stream(name="SensorData", payload=SensorReading, queue_maxsize=10)
+```
+
+#### `policy` (default: `"latest"`)
+
+Controls what happens when a subscriber's queue is full and a new value is published.
+
+- **`policy="latest"`**: Drops the oldest item and adds the new one. Ensures subscribers always have the most recent data. Best for state streams where you only care about the current value.
+- **`policy="fifo"`**: Waits for the subscriber to process items and make space in the queue before adding new items. Ensures no data is lost but may cause backpressure if subscribers are slow. Best for event streams where you need to process every event.
+
+```python
+# Latest-wins: always show current state
+@stream(name="Status", payload=Status, policy="latest", queue_maxsize=1)
+
+# FIFO: process every event, even if slow
+@stream(name="Events", payload=Event, policy="fifo", queue_maxsize=100)
+```
+
+**Common Combinations:**
+
+- **State monitoring** (default): `replay=True`, `queue_maxsize=1`, `policy="latest"` — subscribers get current state immediately and always see the latest value.
+- **Event streaming**: `replay=False`, `queue_maxsize=100`, `policy="fifo"` — subscribers only see new events and process them in order.
+
+## ⚙️ Installation & Setup
+
+**Requirements:**
+
+- Python 3.10+
+- FastAPI
+- Uvicorn (for serving)
+
+**Install:**
+
+```bash
+pip install vention-communication
+```
+
+**Optional client libraries:**
+
+- TypeScript: `@connectrpc/connect-web`
+- Python: `connectrpc` with `httpx.AsyncClient`
+
+## 🚀 Quickstart Tutorial
+
+### 1. Define your RPCs
+
+```python
+# demo/main.py
+from pydantic import BaseModel
+
+from vention_communication.app import VentionApp
+from vention_communication.decorators import action, stream
+
+
+class PingRequest(BaseModel):
+    message: str
+
+
+class PingResponse(BaseModel):
+    message: str
+
+
+class Heartbeat(BaseModel):
+    value: str
+    timestamp: int
+
+
+app = VentionApp(name="DemoApp", emit_proto=True, proto_path="proto/app.proto")
+
+
+@action()
+async def ping(req: PingRequest) -> PingResponse:
+    return PingResponse(message=f"Pong: {req.message}")
+
+
+@stream(name="Heartbeat", payload=Heartbeat)
+async def heartbeat_publisher() -> Heartbeat:
+    from time import time
+    import random
+    return Heartbeat(value=f"{random.random():.2f}", timestamp=int(time()))
+
+
+app.finalize()
+```
+
+**Run:**
+
+```bash
+uvicorn demo.main:app --reload
+```
+
+Routes are exposed under:
+
+- `/rpc/vention.app.v1.DemoAppService/Ping`
+- `/rpc/vention.app.v1.DemoAppService/Heartbeat`
+
+### 2. Generated .proto
+
+After startup, `proto/app.proto` is emitted automatically.
+
+You can now use Buf or protoc to generate client SDKs:
+
+```bash
+buf generate --template buf.gen.ts.yaml
+buf generate --template buf.gen.python.yaml
+```
+
+SDK generation is external to vention-communication — allowing you to control versions and plugins.
+
+### 3. Example TypeScript Client
+
+```typescript
+import { createClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
+import { DemoAppService } from "./gen/connect/proto/app_connect";
+
+const transport = createConnectTransport({
+  baseUrl: "http://localhost:8000/rpc",
+  useBinaryFormat: false,
+});
+
+const client = createClient(DemoAppService, transport);
+
+const res = await client.ping({ message: "Hello" });
+console.log(res.message);
+
+for await (const hb of client.heartbeat({})) {
+  console.log("Heartbeat", hb.value, hb.timestamp);
+}
+```
+
+## 🛠 How-to Guides
+
+### Add a new request-response endpoint
+
+```python
+@action()
+async def get_status() -> dict:
+    return {"ok": True}
+```
+
+### Add a new stream
+
+```python
+@stream(name="Status", payload=dict)
+async def publish_status() -> dict:
+    return {"ok": True}
+```
+
+### Emit proto to a custom path
+
+```python
+app = VentionApp(name="MyService", emit_proto=True, proto_path="out/myservice.proto")
+app.finalize()
+```
+
+## 📖 API Reference
+
+### VentionApp
+
+```python
+VentionApp(
+  name: str = "VentionApp",
+  *,
+  emit_proto: bool = False,
+  proto_path: str = "proto/app.proto",
+  **fastapi_kwargs
+)
+```
+
+**Methods:**
+
+- `.extend_bundle(bundle: RpcBundle)` — merges external action/stream definitions (e.g., from state-machine or storage).
+- `.finalize()` — registers routes, emits .proto, and makes publishers available.
+
+**Attributes:**
+
+- `connect_router`: internal FastAPI router for Connect RPCs.
+- `proto_path`: location of the emitted .proto.
+
+### Decorators
+
+```python
+@action(name: Optional[str] = None)
+# → Registers a request-response handler
+
+@stream(
+    name: str,
+    payload: type,
+    replay: bool = True,
+    queue_maxsize: int = 1,
+    policy: Literal["latest", "fifo"] = "latest"
+)
+# → Registers a server-streaming RPC and publisher
+```
+
+**Stream Parameters:**
+
+- `name`: Unique name for the stream
+- `payload`: Type of data to stream (Pydantic model or JSON-serializable type)
+- `replay`: Whether new subscribers receive the last value (default: `True`)
+- `queue_maxsize`: Maximum items per subscriber queue (default: `1`)
+- `policy`: Delivery policy when queue is full - `"latest"` drops old items, `"fifo"` waits for space (default: `"latest"`)
+
+Type inference ensures annotations are valid. Pydantic models are expanded into message definitions in the emitted .proto.
+
+## 🔍 Troubleshooting & FAQ
+
+**Q: Can I disable proto generation at runtime?**
+
+Yes — set `emit_proto=False` in `VentionApp(...)`.
+
+**Q: Publishing raises `KeyError: Unknown stream`.**
+
+Ensure `app.finalize()` has been called before publishing or subscribing.
+
+**Q: How do I integrate this with other libraries (state machine, storage, etc.)?**
+
+Use `app.extend_bundle()` to merge additional RPC definitions before calling `.finalize()`.
+
