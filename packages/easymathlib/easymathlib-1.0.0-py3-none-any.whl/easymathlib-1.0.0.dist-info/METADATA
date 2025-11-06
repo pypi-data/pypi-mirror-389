@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: easymathlib
+Version: 1.0.0
+Summary: A simple Python math library with basic, advanced, and geometry operations.
+Home-page: https://github.com/yourusername/mymathlib
+Author: Krishna Varshney
+Author-email: your_email@example.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+Dynamic: summary
+
+# MyMathLib ðŸ§®
+A simple math library for Python with basic, advanced, and geometry functions.
+
+## ðŸ“¦ Installation
+```bash
+pip install mymathlib
+
+ #USAGE
+
+from mymathlib import BasicMath, AdvancedMath, Geometry
+
+b = BasicMath()
+print(b.add(5, 3))
+
+a = AdvancedMath()
+print(a.factorial(5))
+
+g = Geometry()
+print(g.area_circle(7))
