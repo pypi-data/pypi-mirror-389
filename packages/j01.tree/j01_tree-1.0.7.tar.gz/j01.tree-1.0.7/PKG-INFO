@@ -1,0 +1,83 @@
+Metadata-Version: 2.1
+Name: j01.tree
+Version: 1.0.7
+Summary: JSON-RPC tree based on JQuery for Zope 3
+Home-page: http://pypi.python.org/pypi/j01.tree
+Author: Roger Ineichen, Projekt01 GmbH
+Author-email: dev@projekt01.ch
+License: ZPL 2.1
+Description: This package provides a javascript navigation tree based on JQuery and loading
+        it's child items with JSONRPC for Zope3.
+        
+        
+        =======
+        CHANGES
+        =======
+        
+        1.0.7 (2025-11-05)
+        ------------------
+        
+        - bugfix; use string.ascii_uppercase for string.uppercase for python 3
+        
+        
+        1.0.6 (2025-10-30)
+        ------------------
+        
+        - cleanup, removed coverage report setup, fixed less styles
+        
+        - added tests
+        
+        
+        1.0.5 (2025-10-28)
+        ------------------
+        
+        - python 3 release
+        
+        
+        1.0.4 (2025-06-12)
+        ------------------
+        
+        - bugfix: missing declaration for zope.interface implementer
+        
+        
+        1.0.3 (2025-06-12)
+        ------------------
+        
+        - bugfix: missing declaration for zope.interface implementer
+        
+        
+        1.0.2 (2025-06-12)
+        ------------------
+        
+        - bugfix: bad char in code file
+        
+        
+        1.0.1 (2025-06-12)
+        ------------------
+        
+        - removed functional testing setup in browser code
+        
+        
+        1.0.0 (2025-06-11)
+        ------------------
+        
+        - switch more z3c.jsonrpc to p01.jsonrpc
+        
+        
+        0.5.0 (2013-06-28)
+        ------------------
+        
+        - initial release
+        
+Keywords: J01 jsonrpc tree JQuery Zope3
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Zope Public License
+Classifier: Programming Language :: Python
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Framework :: Zope3
+Provides-Extra: test

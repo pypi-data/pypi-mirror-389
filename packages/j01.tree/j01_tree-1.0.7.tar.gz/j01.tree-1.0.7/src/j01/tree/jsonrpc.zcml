@@ -1,0 +1,15 @@
+<configure 
+    xmlns:zope="http://namespaces.zope.org/zope"
+    xmlns="http://namespaces.zope.org/browser"
+    xmlns:p01="http://namespaces.zope.org/p01"
+    i18n_domain="p01">
+
+  <!-- this method only returns what the user has permission for -->
+  <p01:jsonrpc
+      for="*"
+      class="j01.tree.jsonrpc.JSONTreeItems"
+      permission="zope.Public"
+      methods="loadJSONTreeItems"
+      />
+
+</configure>

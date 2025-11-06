@@ -1,0 +1,40 @@
+<configure 
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="p01">
+
+  <!-- provider and template for content providers -->
+  <adapter
+      name="tree"
+      factory=".browser.TreeProvider"
+      />
+  <z3c:template
+      template="tree.pt"
+      for="j01.tree.interfaces.ITreeProvider"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <adapter
+      name="li"
+      factory=".browser.LITagProvider"
+      />
+  <z3c:template
+      template="li.pt"
+      for="j01.tree.interfaces.ILITagProvider"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <adapter
+      name="ul"
+      factory=".browser.ULTagProvider"
+      />
+  <z3c:template
+      template="ul.pt"
+      for="j01.tree.interfaces.IULTagProvider"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <include file="jsonrpc.zcml" />
+  <include file="browser.zcml" />
+
+</configure>

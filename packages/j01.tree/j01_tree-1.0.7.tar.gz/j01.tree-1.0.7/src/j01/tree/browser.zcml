@@ -1,0 +1,35 @@
+<configure 
+    xmlns:zope="http://namespaces.zope.org/zope"
+    xmlns="http://namespaces.zope.org/browser"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="p01">
+
+  <resourceDirectory
+      name="j01TreeIMG"
+      directory="img"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <!-- default icons -->
+  <icon
+      name="j01TreeCollapsedIcon"
+      for="zope.interface.Interface"
+      file="img/j01TreeCollapsed.gif"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <icon
+      name="j01TreeExpandedIcon"
+      for="zope.interface.Interface"
+      file="img/j01TreeExpanded.gif"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <icon
+      name="j01TreeStaticIcon"
+      for="zope.interface.Interface"
+      file="img/j01TreeStatic.gif"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+</configure>
