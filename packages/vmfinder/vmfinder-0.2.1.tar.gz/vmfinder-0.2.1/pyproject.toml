@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vmfinder"
+dynamic = ["version"]
+description = "A libvirt-based VM management tool"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+keywords = ["libvirt", "vm", "virtualization", "cloud", "virtualization management"]
+authors = [
+    {name = "wheatfox", email = "wheatfox17@icloud.com"}
+]
+maintainers = [
+    {name = "wheatfox", email = "wheatfox17@icloud.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "libvirt-python>=11.8.0",
+    "pyyaml>=6.0",
+    "jinja2>=3.1.0",
+    "tabulate>=0.9.0",
+    "argcomplete>=3.0.0",
+    "requests>=2.25.0",
+]
+
+[project.scripts]
+vmfinder = "vmfinder.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/enkerewpo/vmfinder"
+Repository = "https://github.com/enkerewpo/vmfinder"
+Issues = "https://github.com/enkerewpo/vmfinder/issues"
+Documentation = "https://github.com/enkerewpo/vmfinder/blob/main/README.md"
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vmfinder*"]
+
+[tool.setuptools.package-data]
+vmfinder = ["templates/*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "vmfinder.__version__"}
+
