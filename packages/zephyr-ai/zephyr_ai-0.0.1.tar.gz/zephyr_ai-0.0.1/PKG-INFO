@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: zephyr-ai
+Version: 0.0.1
+Summary: Zephyr orchestration toolkit (namespace reservation stub)
+Author-email: Your Org <dev@yourorg.com>
+License: Proprietary
+Project-URL: Homepage, https://github.com/your-org/zephyr-ai
+Project-URL: Repository, https://github.com/your-org/zephyr-ai
+Project-URL: Documentation, https://your-org.github.io/zephyr-ai
+Project-URL: Issues, https://github.com/your-org/zephyr-ai/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# Zephyr AI
+
+`zephyr-ai` is the distribution name reserved for the Zephyr orchestration toolkit. Installing it will expose the `zephyr` Python package and the `zephyr` CLI stub.
+
+## Quick start
+
+```bash
+pip install zephyr-ai
+zephyr --version
+python -c "import zephyr; print(zephyr.__version__)"
+```
+
+## Project layout
+
+```text
+zephyr-ai/
+├─ pyproject.toml
+└─ src/
+   └─ zephyr/
+      ├─ __init__.py
+      └─ cli.py
+```
+
+This repository currently ships placeholder implementations so we can secure the package namespace on PyPI. Extend the modules in `src/zephyr/` as functionality evolves.

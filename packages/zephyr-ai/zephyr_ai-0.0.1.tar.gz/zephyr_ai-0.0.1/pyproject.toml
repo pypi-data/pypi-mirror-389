@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zephyr-ai"
+version = "0.0.1"
+description = "Zephyr orchestration toolkit (namespace reservation stub)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Proprietary" }
+authors = [{ name = "Your Org", email = "dev@yourorg.com" }]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/your-org/zephyr-ai"
+Repository = "https://github.com/your-org/zephyr-ai"
+Documentation = "https://your-org.github.io/zephyr-ai"
+Issues = "https://github.com/your-org/zephyr-ai/issues"
+
+[project.scripts]
+zephyr = "zephyr.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
