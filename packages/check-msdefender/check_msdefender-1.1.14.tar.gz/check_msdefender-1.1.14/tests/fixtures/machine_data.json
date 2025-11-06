@@ -1,0 +1,90 @@
+{
+  "machine_by_id": {
+    "test-machine-1": {
+      "id": "test-machine-1",
+      "computerDnsName": "test-machine-1.domain.com",
+      "lastSeen": "2024-01-01T10:00:00Z",
+      "osPlatform": "Windows10",
+      "version": "1909",
+      "osProcessor": "x64",
+      "lastIpAddress": "192.168.1.100",
+      "lastExternalIpAddress": "203.0.113.1",
+      "healthStatus": "Active",
+      "deviceValue": "Normal",
+      "rbacGroupId": 123,
+      "riskScore": "Medium",
+      "onboardingStatus": "Onboarded"
+    },
+    "test-machine-2": {
+      "id": "test-machine-2",
+      "computerDnsName": "test-machine-2.domain.com",
+      "lastSeen": "2024-01-05T15:30:00Z",
+      "osPlatform": "Windows11",
+      "version": "22H2",
+      "osProcessor": "x64",
+      "lastIpAddress": "192.168.1.101",
+      "lastExternalIpAddress": "203.0.113.2",
+      "healthStatus": "Inactive",
+      "deviceValue": "Low",
+      "rbacGroupId": 456,
+      "riskScore": "Low",
+      "onboardingStatus": "InsufficientInfo"
+    },
+    "test-machine-3": {
+      "id": "test-machine-3",
+      "computerDnsName": "test-machine-3.domain.com",
+      "lastSeen": "2024-01-10T08:45:00Z",
+      "osPlatform": "WindowsServer2019",
+      "version": "1809",
+      "osProcessor": "x64",
+      "lastIpAddress": "192.168.1.102",
+      "lastExternalIpAddress": "203.0.113.3",
+      "healthStatus": "Active",
+      "deviceValue": "High",
+      "rbacGroupId": 789,
+      "riskScore": "High",
+      "onboardingStatus": "Unknown"
+    },
+    "test-machine-4": {
+      "id": "test-machine-4",
+      "computerDnsName": "test-machine-4.domain.com",
+      "lastSeen": "2024-01-08T12:00:00Z",
+      "osPlatform": "Windows11",
+      "version": "22H2",
+      "osProcessor": "x64",
+      "lastIpAddress": "192.168.1.103",
+      "lastExternalIpAddress": "203.0.113.4",
+      "healthStatus": "Active",
+      "deviceValue": "Normal",
+      "rbacGroupId": 999,
+      "riskScore": "Low",
+      "onboardingStatus": "Onboarded"
+    }
+  },
+  "machine_by_dns": {
+    "test-machine-1.domain.com": {
+      "value": [
+        {
+          "id": "test-machine-1"
+        }
+      ]
+    },
+    "test-machine-2.domain.com": {
+      "value": [
+        {
+          "id": "test-machine-2"
+        }
+      ]
+    },
+    "test-machine-3.domain.com": {
+      "value": [
+        {
+          "id": "test-machine-3"
+        }
+      ]
+    },
+    "nonexistent.domain.com": {
+      "value": []
+    }
+  }
+}
