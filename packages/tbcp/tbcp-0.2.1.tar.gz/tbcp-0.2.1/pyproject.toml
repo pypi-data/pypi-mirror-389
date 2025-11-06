@@ -1,0 +1,13 @@
+[project]
+name = "tbcp"
+version = "0.2.1"
+description = "OCI Generative AI monkey-patch for logging input/output/cost"
+authors = [{ name="Your Name", email="you@example.com" }]
+dependencies = [
+    "oci",
+    "tiktoken"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
