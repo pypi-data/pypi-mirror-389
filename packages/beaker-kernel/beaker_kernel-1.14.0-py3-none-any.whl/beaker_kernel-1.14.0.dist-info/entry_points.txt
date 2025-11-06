@@ -1,0 +1,9 @@
+[console_scripts]
+beaker = beaker_kernel.cli.main:cli
+
+[hatch]
+beaker = beaker_kernel.builder.hooks
+
+[nbconvert.exporters]
+full_context_notebook = beaker_kernel.lib.exporters.full_context_notebook:FullContextNotebookExporter
+streamline = beaker_kernel.lib.exporters.streamline:StreamlineExporter
