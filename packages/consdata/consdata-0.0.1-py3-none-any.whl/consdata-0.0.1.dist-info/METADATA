@@ -1,0 +1,58 @@
+Metadata-Version: 2.4
+Name: consdata
+Version: 0.0.1
+Summary: Utility to fetch constituents data from various sources
+Keywords: utility
+Author: Furechan
+Author-email: Furechan <furechan@xsmail.com>
+License-Expression: MIT
+Classifier: Development Status :: 1 - Planning
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Dist: click
+Requires-Dist: pandas
+Requires-Dist: pyarrow
+Requires-Dist: cloudpathlib
+Requires-Dist: s3fs>=2024.0.0 ; extra == 's3'
+Requires-Python: >=3.9
+Provides-Extra: s3
+Description-Content-Type: text/markdown
+
+# Utility to fetch constituents data from various sources
+
+This module is a small library to fetch various lists of symbols/constituents stored as parquet dataframes somewhere in the file system or in the cloud.
+
+
+## Configuration
+- CONSDATA_ROOTPATH environment variable
+- Default location ~/Document/ConsData
+
+
+## Usage
+
+To list available datasets
+
+```python
+import consdata
+
+consdata.list_items()
+```
+
+To get a constituents
+
+```python
+consdata.get_cons(name)
+```
+
+To get list of symbols
+
+```python
+consdata.get_symbols(name)
+```
+
+## Related projects and Resources
+- [FinanceDataBase](https://github.com/JerBouma/FinanceDatabase)
+Database of 300.000+ symbols containing Equities, ETFs, Funds, Indices, Currencies, Cryptocurrencies and Money Markets
+
+
