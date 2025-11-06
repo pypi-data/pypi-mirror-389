@@ -1,0 +1,57 @@
+{% extends "djadmin/admin_base.html" %}
+
+{% block title %}
+    Dashboard - {{ site_title|default:"Django Admin" }}
+{% endblock %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>Dashboard</h1>
+        </header>
+
+        <div>
+            {% for app in app_list %}
+                <section class="app-section">
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="2">
+                                        <a href="{{ app.url }}">{{ app.verbose_name }}</a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in app.model_admins %}
+                                    <tr>
+                                        <td>{{ item.display_name }}</td>
+                                        <td>
+                                            <menu>
+                                                {# General actions (main entry points like ListView, Add) #}
+                                                {% for action in item.general_actions %}
+                                                    <li>
+                                                        <a href="{{ action.url }}" {% if action.css_class %}class="{{ action.css_class }}"{% else %}class="primary"{% endif %}>
+                                                            {% if action.icon %}
+                                                                {% include "djadmin/includes/_icon.html" with icon=action.icon %}
+                                                            {% endif %}
+                                                            {{ action.label }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </menu>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            {% empty %}
+                <div>
+                    <p>No apps registered.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </article>
+{% endblock %}

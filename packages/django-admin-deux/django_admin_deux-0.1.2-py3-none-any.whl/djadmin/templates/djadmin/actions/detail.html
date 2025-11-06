@@ -1,0 +1,72 @@
+{% extends "djadmin/base_action.html" %}
+
+{% block action_content %}
+  <div>
+    {% if layout_items %}
+      {# Render layout items #}
+      {% for item in layout_items %}
+        {% if item.type == 'fieldset' %}
+          <fieldset {% if item.css_classes %}class="{{ item.css_classes|join:' ' }}"{% endif %}>
+            {% if item.legend %}<legend>{{ item.legend }}</legend>{% endif %}
+            {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+
+            {% for field_item in item.items %}
+              {% include "djadmin/actions/_detail_item.html" with item=field_item %}
+            {% endfor %}
+          </fieldset>
+
+        {% elif item.type == 'row' %}
+          <div class="row" {% if item.css_classes %}style="{{ item.css_classes|join:' ' }}"{% endif %}>
+            {% for field_item in item.items %}
+              {% include "djadmin/actions/_detail_item.html" with item=field_item %}
+            {% endfor %}
+          </div>
+
+        {% elif item.type == 'field' %}
+          {% include "djadmin/actions/_detail_item.html" with item=item %}
+
+        {% elif item.type == 'collection' %}
+          <section>
+            <h3>{{ item.legend }}</h3>
+            {% if item.items %}
+              <ul>
+                {% for collection_item in item.items %}
+                  <li>
+                    {% for field in collection_item.fields %}
+                      <strong>{{ field.label }}:</strong> {{ field.value }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>No items.</p>
+            {% endif %}
+          </section>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {# Fallback if no layout #}
+      <p>{{ object }}</p>
+    {% endif %}
+  </div>
+
+  <footer>
+    <a href="{{ list_url }}" class="secondary">Back to List</a>
+
+    {% if model_admin.record_actions %}
+      <menu>
+        {% for record_action in model_admin.record_actions %}
+          {# Skip the current action (View) #}
+          {% if record_action.url_name != action.url_name %}
+            <a href="{% url action_namespace|add:':'|add:record_action.url_name pk=object.pk %}" {% if record_action.css_class %}class="{{ record_action.css_class }}"{% endif %}>
+              {% if record_action.icon %}
+                {% include "djadmin/includes/_icon.html" with icon=record_action.icon %}
+              {% endif %}
+              {{ record_action.label }}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </menu>
+    {% endif %}
+  </footer>
+{% endblock %}
