@@ -1,0 +1,137 @@
+[project]
+name = "titiler-stacapi"
+description = "Connect titiler to STAC APIs."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Vincent Sarago", email = "vincent@developmentseed.com" },
+]
+keywords = [
+    "TiTiler",
+    "STAC API",
+]
+classifiers = [
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+    "orjson",
+    "titiler.core>=0.17.0,<0.19",
+    "titiler.mosaic>=0.17.0,<0.19",
+    "pystac-client",
+    "pydantic>=2.4,<3.0",
+    "pydantic-settings~=2.0",
+]
+dynamic = []
+version = "0.3.3"
+
+[project.license]
+file = "LICENSE"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "bump-my-version",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-asyncio",
+    "httpx",
+    "owslib",
+]
+
+[project.urls]
+Homepage = "https://developmentseed.org/titiler-stacapi/"
+Documentation = "https://developmentseed.org/titiler-stacapi/"
+Issues = "https://github.com/developmentseed/titiler-stacapi/issues"
+Source = "https://github.com/developmentseed/titiler-stacapi"
+Changelog = "https://developmentseed.org/titiler-stacapi/release-notes/"
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm.version]
+source = "file"
+path = "titiler/stacapi/__init__.py"
+
+[tool.pdm.build]
+includes = [
+    "titiler/stacapi",
+]
+excludes = [
+    "tests/",
+    "**/.mypy_cache",
+    "**/.DS_Store",
+]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.isort]
+profile = "black"
+known_first_party = [
+    "titiler",
+]
+known_third_party = [
+    "rasterio",
+    "morecantile",
+    "rio_tiler",
+    "cogeo_mosaic",
+    "geojson_pydantic",
+]
+default_section = "THIRDPARTY"
+
+[tool.ruff]
+select = [
+    "D1",
+    "E",
+    "W",
+    "F",
+    "C",
+    "B",
+]
+ignore = [
+    "E501",
+    "B008",
+    "B905",
+]
+
+[tool.mypy]
+no_implicit_optional = true
+strict_optional = true
+namespace_packages = true
+explicit_package_bases = true
+
+[tool.bumpversion]
+current_version = "0.3.3"
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+tag = false
+commit = true
+allow_dirty = false
+tag_name = "{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "titiler/stacapi/__init__.py"
+search = "__version__ = \"{current_version}\""
+replace = "__version__ = \"{new_version}\""
