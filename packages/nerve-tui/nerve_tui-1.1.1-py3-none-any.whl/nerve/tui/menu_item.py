@@ -1,0 +1,397 @@
+# SPDX-FileCopyrightText: 2023 CELESTIFYX Team
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+from __future__ import annotations
+
+from enum import Enum
+from collections.abc import Callable
+from dataclasses import (dataclass, field)
+from functools import cached_property
+from typing import (Any, ClassVar)
+
+from nerve.lib.translationhandler import tr
+from nerve.lib.utils.unicode import unicode_ljust
+
+@dataclass
+class MenuItem:
+    text: str
+    value: Any | None = None
+    action: Callable[[Any], Any] | None = None
+    enabled: bool = True
+    read_only: bool = False
+    mandatory: bool = False
+    dependencies: list[str | Callable[[], bool]] = field(default_factory=list)
+    display_action: Callable[[Any], str] | None = None
+    preview_action: Callable[[Any], str | None] | None = None
+    key: str | None = None
+
+    _yes: ClassVar[MenuItem | None] = None
+    _no:  ClassVar[MenuItem | None] = None
+
+    def get_value(self) -> Any:
+        assert self.value is not None
+        return self.value
+
+    @classmethod
+    def yes(cls, action: Callable[[Any], Any] | None = None) -> 'MenuItem':
+        if not cls._yes:
+            cls._yes = cls(tr('Yes'), value=True, key='yes', action=action)
+
+        return cls._yes
+
+    @classmethod
+    def no(cls, action: Callable[[Any], Any] | None = None) -> 'MenuItem':
+        if not cls._no:
+            cls._no = cls(tr('No'), value=False, key='no', action=action)
+
+        return cls._no
+
+    def is_empty(self) -> bool:
+        return not self.text
+
+    def has_value(self) -> bool:
+        return False if not self.value or (isinstance(self.value, (list, dict)) and not len(self.value)) else True
+
+    def get_display_value(self) -> str | None:
+        return self.display_action(self.value) if self.display_action else None
+
+class MenuItemGroup:
+    def __init__(self, menu_items: list[MenuItem], focus_item: MenuItem | None = None, default_item: MenuItem | None = None, sort_items: bool = False, sort_case_sensitive: bool = True, checkmarks: bool = False) -> None:
+        if len(menu_items) < 1:
+            raise ValueError('Menu must have at least one item')
+
+        if sort_items:
+            menu_items = sorted(menu_items, key=lambda x: x.text if sort_case_sensitive else x.text.lower())
+
+        self._filter_pattern: str = ''
+        self._checkmarks: bool = checkmarks
+
+        self.menu_items: list[MenuItem] = menu_items
+        self.focus_item: MenuItem | None = focus_item
+        self.selected_items: list[MenuItem] = []
+        self.default_item: MenuItem | None = default_item
+
+        if not focus_item:
+            self.focus_first()
+
+        if self.focus_item not in self.items:
+            raise ValueError('Selected item not in menu: ' + str(focus_item))
+
+    def add_item(self, item: MenuItem) -> None:
+        self.menu_items.append(item)
+        delattr(self, 'items')  # resetting the cache
+
+    def find_by_key(self, key: str) -> MenuItem:
+        for item in self.menu_items:
+            if item.key == key:
+                return item
+
+        raise ValueError('No key found for: ' + key)
+
+    def get_enabled_items(self) -> list[MenuItem]:
+        return [it for it in self.items if self.is_enabled(it)]
+
+    @staticmethod
+    def yes_no() -> 'MenuItemGroup':
+        return MenuItemGroup(menu_items=[
+            MenuItem.yes(),
+            MenuItem.no()
+        ], sort_items=True)
+
+    @staticmethod
+    def from_enum(enum_cls: type[Enum], sort_items: bool = False, preset: Enum | None = None) -> 'MenuItemGroup':
+        # noinspection PyTypeChecker
+        items: list[MenuItem] = [MenuItem(elem.value, value=elem) for elem in enum_cls]
+        group: MenuItemGroup = MenuItemGroup(items, sort_items=sort_items)
+
+        if preset:
+            group.set_selected_by_value(preset)
+
+        return group
+
+    def set_preview_for_all(self, action: Callable[[Any], str | None]) -> None:
+        for item in self.items:
+            item.preview_action = action
+
+    def set_focus_by_value(self, value: Any) -> None:
+        for item in self.menu_items:
+            if item.value == value:
+                self.focus_item = item
+                break
+
+    def set_default_by_value(self, value: Any) -> None:
+        for item in self.menu_items:
+            if item.value == value:
+                self.default_item = item
+                break
+
+    def set_selected_by_value(self, values: Any | list[Any] | None) -> None:
+        if values is None:
+            return
+
+        if not isinstance(values, list):
+            values = [values]
+
+        for item in self.menu_items:
+            if item.value in values:
+                self.selected_items.append(item)
+
+        if values:
+            self.set_focus_by_value(values[0])
+
+    def index_focus(self) -> int | None:
+        if self.focus_item and self.items:
+            try:
+                return self.items.index(self.focus_item)
+            except ValueError:
+                # on large menus (15k+) when filtering very quickly,
+                # the index search is too slow while the filter reduces the items,
+                # and it will blow up as it cannot find the
+                # focus item
+                pass
+
+        return None
+
+    @property
+    def size(self) -> int:
+        return len(self.items)
+
+    def get_max_width(self) -> int:
+        # use the menu_items not the items here, otherwise the preview
+        # will get resized all the time when a filter is applied
+        return max([len(self.get_item_text(item)) for item in self.menu_items])
+
+    @cached_property
+    def _max_items_text_width(self) -> int:
+        return max([len(item.text) for item in self.menu_items])
+
+    def get_item_text(self, item: MenuItem) -> str:
+        if item.is_empty():
+            return ''
+
+        max_width: int = self._max_items_text_width
+        display_text: str | None = item.get_display_value()
+        default_text: str | None = self._default_suffix(item)
+
+        text:    str = unicode_ljust(str(item.text), max_width, fillbyte=' ')
+        spacing: str = ' ' * 4
+
+        if display_text:
+            text = text + spacing + str(display_text)
+        elif self._checkmarks:
+            from nerve.tui.types import Chars
+            text = (text + spacing + str(Chars.CHECK.value)) if item.has_value() and item.get_value() else item.text
+
+        if default_text:
+            text = text + ' ' + str(default_text)
+
+        return text.rstrip(' ')
+
+    def _default_suffix(self, item: MenuItem) -> str | None:
+        return tr('(default)') if self.default_item == item else None
+
+    def set_action_for_all(self, action: Callable[[Any], Any]) -> None:
+        for item in self.items:
+            item.action = action
+
+    @cached_property
+    def items(self) -> list[MenuItem]:
+        pattern: str = self._filter_pattern.lower()
+        return [item for item in self.menu_items if item.is_empty() or pattern in item.text.lower()]
+
+    @property
+    def filter_pattern(self) -> str:
+        return self._filter_pattern
+
+    def has_filter(self) -> bool:
+        return self._filter_pattern != ''
+
+    def set_filter_pattern(self, pattern: str) -> None:
+        self._filter_pattern = pattern
+        delattr(self, 'items')  # resetting the cache
+
+        self._reload_focus_item()
+
+    def append_filter(self, pattern: str) -> None:
+        self._filter_pattern += pattern
+        delattr(self, 'items')  # resetting the cache
+
+        self._reload_focus_item()
+
+    def reduce_filter(self) -> None:
+        self._filter_pattern = self._filter_pattern[:-1]
+        delattr(self, 'items')  # resetting the cache
+
+        self._reload_focus_item()
+
+    def _reload_focus_item(self) -> None:
+        self.focus_first() if self.items and self.focus_item not in self.items else setattr(self, 'focus_item', None)
+
+    def is_item_selected(self, item: MenuItem) -> bool:
+        return item in self.selected_items
+
+    def select_current_item(self) -> None:
+        if self.focus_item:
+            self.selected_items.remove(self.focus_item) if self.focus_item in self.selected_items else self.selected_items.append(self.focus_item)
+
+    def focus_index(self, index: int) -> None:
+        enabled: list[MenuItem] = self.get_enabled_items()
+        self.focus_item = enabled[index]
+
+    def focus_first(self) -> None:
+        if len(self.items) == 0:
+            return
+
+        first_item: MenuItem | None = self.items[0]
+
+        if first_item and not self._is_selectable(first_item):
+            first_item = self._find_next_selectable_item(self.items, first_item, direction=1)
+
+        if first_item:
+            self.focus_item = first_item
+
+    def focus_last(self) -> None:
+        if len(self.items) == 0:
+            return
+
+        last_item: MenuItem | None = self.items[-1]
+
+        if last_item and not self._is_selectable(last_item):
+            last_item = self._find_next_selectable_item(self.items, last_item, -1)
+
+        if last_item:
+            self.focus_item = last_item
+
+    def focus_prev(self) -> None:
+        if not self.focus_item:
+            return
+
+        item: MenuItem | None = self._find_next_selectable_item(self.items, self.focus_item, -1)
+
+        if item:
+            self.focus_item = item
+
+    def focus_next(self) -> None:
+        if not self.focus_item:
+            return
+
+        item: MenuItem | None = self._find_next_selectable_item(self.items, self.focus_item, direction=1)
+
+        if item:
+            self.focus_item = item
+
+    def _find_next_selectable_item(self, items: list[MenuItem], start_item: MenuItem, direction: int) -> MenuItem | None:
+        start_index:   int = self.items.index(start_item)
+        n:             int = len(items)
+        current_index: int = start_index
+
+        for _ in range(n):
+            current_index = (current_index + direction) % n
+
+            if self._is_selectable(items[current_index]):
+                return items[current_index]
+
+        return None
+
+    def is_mandatory_fulfilled(self) -> bool:
+        for item in self.menu_items:
+            if item.mandatory and not item.value:
+                return False
+
+        return True
+
+    def _is_selectable(self, item: MenuItem) -> bool:
+        return not item.is_empty() and not item.read_only and self.is_enabled(item)
+
+    def is_enabled(self, item: MenuItem) -> bool:
+        if not item.enabled:
+            return False
+
+        for dep in item.dependencies:
+            if not isinstance(dep, str):
+                return dep()
+
+            item: MenuItem = self.find_by_key(dep)
+
+            if not item.value or not self.is_enabled(item):
+                return False
+
+        return True
+
+class MenuItemsState:
+    def __init__(self, item_group: MenuItemGroup, total_cols: int, total_rows: int, with_frame: bool) -> None:
+        self._item_group: MenuItemGroup = item_group
+        self._total_cols: int = total_cols
+        self._total_rows: int = (total_rows - 2) if with_frame else total_rows
+
+        self._prev_row_idx: int = -1
+        self._prev_visible_rows: list[int] = []
+        self._view_items: list[list[MenuItem]] = []
+
+    def _determine_focus_row(self) -> int | None:
+        focus_index: int | None = self._item_group.index_focus()
+
+        if focus_index is None:
+            return None
+
+        row_index: int = focus_index // self._total_cols
+        return row_index
+
+    def get_view_items(self) -> list[list[MenuItem]]:
+        enabled_items: list[MenuItem] = self._item_group.get_enabled_items()
+        focus_row_idx: int | None = self._determine_focus_row()
+
+        if focus_row_idx is None:
+            return []
+
+        if (len(self._view_items) == 0) or (self._prev_row_idx == -1) or self._item_group.has_filter():  # initial setup or filter
+            if focus_row_idx < self._total_rows:
+                start = 0
+                end   = self._total_rows
+            elif focus_row_idx > (len(enabled_items) - self._total_rows):
+                start = len(enabled_items) - self._total_rows
+                end   = len(enabled_items)
+            else:
+                start = focus_row_idx
+                end   = focus_row_idx + self._total_rows
+
+        elif len(enabled_items) <= self._total_rows:  # the view can handle oll items
+            start = 0
+            end   = self._total_rows
+        elif not self._item_group.has_filter() and focus_row_idx in self._prev_visible_rows:  # focus is on the same view
+            self._prev_row_idx = focus_row_idx
+            return self._view_items
+        else:
+            start: int | None = None
+            end:   int | None = None
+
+            if self._item_group.has_filter():
+                start = focus_row_idx
+                end   = focus_row_idx + self._total_rows
+
+            if not self._item_group.has_filter():
+                delta: int = focus_row_idx - self._prev_row_idx
+
+                start = (focus_row_idx - self._total_rows + 1) if delta > 0 else focus_row_idx
+                end   = (focus_row_idx + 1) if delta > 0 else (focus_row_idx + self._total_rows)
+
+        self._view_items        = self._get_view_items(enabled_items, start, end)
+        self._prev_visible_rows = list(range(start, end))
+        self._prev_row_idx      = focus_row_idx
+
+        return self._view_items
+
+    def _get_view_items(self, items: list[MenuItem], start_row: int, total_rows: int) -> list[list[MenuItem]]:
+        groups: list[list[MenuItem]] = []
+        nr_items: int = self._total_cols * min(total_rows, len(items))
+
+        for x in range(start_row, nr_items, self._total_cols):
+            groups.append(items[x:x + self._total_cols])
+
+        return groups
+
+    def _max_visible_items(self) -> int:
+        return self._total_cols * self._total_rows
+
+    def _remaining_next_spots(self) -> int:
+        return self._max_visible_items() - self._prev_row_idx
