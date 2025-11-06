@@ -1,0 +1,24 @@
+default_context:
+    project_name: Biskotaki Gold Standard
+    project_type: module+cli
+    project_slug: biskotaki-gold-standard
+    pkg_name: biskotakigold
+    repo_name: biskotaki-gold
+    readthedocs_project_slug: biskotaki-gold
+    docker_image: bgs
+    full_name: Konstantinos Lampridis
+    author: Konstantinos Lampridis
+    email: k.lampridis@hotmail.com
+    author_email: k.lampridis@hotmail.com
+    github_username: boromir674
+    project_short_description: Project generated from https://github.com/boromir674/cookiecutter-python-package/
+    initialize_git_repo: 'no'
+
+    # Python 3.12 is in bugfix mode, same as 3.11
+    interpreters: {"supported-interpreters": ["3.10", "3.11", "3.12"]}
+
+    ## Documentation Config ##
+    docs_builder: "mkdocs"
+    ## READ THE DOCS CI Config ##
+    rtd_python_version: "3.11"
+    cicd: 'experimental'
