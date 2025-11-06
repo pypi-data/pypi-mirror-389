@@ -1,0 +1,327 @@
+# DagRuff
+
+An extremely fast Python linter for Apache Airflow DAG files, written in Python.
+
+[![PyPI version](https://badge.fury.io/py/dagruff.svg)](https://badge.fury.io/py/dagruff)
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Coverage](https://img.shields.io/badge/coverage-77%25-brightgreen.svg)](https://github.com/dkfancska/dagruff)
+
+DagRuff is a linter designed to catch common errors and enforce best practices in Apache Airflow DAG files. It checks for over 31 rules covering DAG structure, best practices, and Airflow-specific patterns.
+
+## Features
+
+- **Fast**: Built with performance in mind, using AST parsing for static analysis
+- **Caching**: Results are cached based on file hash for improved performance
+- **Comprehensive**: 31+ lint rules covering DAG structure, best practices, and Airflow patterns
+- **Auto-fix**: Automatically fix many common issues with `--fix`
+- **Configurable**: Configure rules via `pyproject.toml` or `.dagruff.toml` with validation
+- **Plugin Support**: Extend functionality with custom rule plugins via entry points
+- **No Airflow Required**: Works without Airflow for AST-based checks (optional DagBag validation requires Airflow)
+
+## Installation
+
+```bash
+# Basic installation (no Airflow, AST checks only)
+pip install dagruff
+
+# With Airflow support (recommended for full DagBag validation)
+pip install dagruff[airflow]
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/dkfancska/dagruff.git
+cd dagruff
+pip install -e ".[airflow]"
+```
+
+**Note:** Basic installation works without Airflow and performs all static checks via AST. For DagBag validation (import checking and code execution), install with the `airflow` extra.
+
+## Usage
+
+After installation, use the `dagruff` command:
+
+```bash
+# Check a single file
+dagruff examples/example_dag_good.py
+
+# Check a directory
+dagruff examples/
+
+# Filter by severity
+dagruff examples/ --severity warning
+
+# JSON output
+dagruff examples/ --format json
+
+# Use configuration file
+dagruff --config .dagruff.toml
+
+# Without path - uses paths from config
+dagruff
+
+# Auto-fix all fixable issues
+dagruff examples/ --fix
+
+# Auto-fix specific rules
+dagruff examples/ --fix DAG001 DAG009 AIR003
+
+# Ignore specific rules
+dagruff examples/ --ignore DAG006 DAG007
+
+# Disable caching (useful for CI/CD)
+dagruff examples/ --no-cache
+
+# Verbose logging
+dagruff examples/ --log-level debug
+```
+
+## Lint Rules
+
+DagRuff implements **31 lint rules** from various sources:
+
+### DAG Rules (13 rules)
+- DAG import and definition checks
+- `dag_id` validation and uniqueness
+- Required DAG parameters (`dag_id`, `start_date`)
+- Recommended parameters (`dag_md`)
+- Special checks for `KubernetesPodOperator` (requires `container_resources` and `executor_resources`)
+
+### Ruff AIR Rules (4 rules)
+- `AIR002`: Check for `start_date` presence
+- `AIR003`: Check `catchup` parameter
+- `AIR013`: Recommend `max_active_runs`
+- `AIR014`: Recommend `max_active_tasks` for Airflow 2+ (warn about deprecated `concurrency`)
+
+### flake8-airflow Rules (4 rules)
+- `AF001`: Forbid `SubDagOperator` usage
+- `AF002`: Security warnings for `BashOperator`
+- `AF003`: Check `task_id` uniqueness
+- `AF004`: Detect deprecated operators
+
+### airflint AST Rules (4 rules)
+- `AIRFLINT001`: Check task dependencies
+- `AIRFLINT002`: Check XCom usage
+- `AIRFLINT003`: Check Variables usage
+- `AIRFLINT004`: Check required operator parameters
+
+### Best Practices Rules (6 rules)
+- `BP001`: Check for top-level code avoidance
+- `BP002`: Check datetime function usage
+- `BP003`: Recommend `execution_timeout` for tasks
+- `BP004`: Check dependency method consistency
+- `BP005`: Recommend docstrings for tasks
+- `BP006`: Recommend `dagrun_timeout` for DAGs
+
+**Full documentation:**
+- 📖 [RULES.md](RULES.md) - Complete rule descriptions with examples, quick reference, and grouping
+- 🔌 [PLUGINS.md](PLUGINS.md) - Plugin system documentation
+- 🔧 [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- ✅ [PRE_COMMIT.md](PRE_COMMIT.md) - Pre-commit hooks setup
+
+## Auto-fix (--fix)
+
+DagRuff supports automatic fixing of many issues via the `--fix` flag:
+
+### Fixable Rules:
+- **DAG001** - Adds `from airflow import DAG` import
+- **DAG005** - Removes extra spaces in `dag_id`
+- **DAG009** - Adds `"owner": "airflow"` to `default_args`
+- **DAG010** - Adds `"retries": 1` to `default_args`
+- **AIR003** - Adds `catchup=False` to DAG
+- **AIR013** - Adds `max_active_runs=1` to DAG
+- **AIR014** - Replaces `concurrency` with `max_active_tasks` or adds `max_active_tasks=1`
+
+### Usage:
+
+```bash
+# Fix all fixable issues
+dagruff examples/ --fix
+
+# Fix only specific rules
+dagruff examples/ --fix DAG001 DAG009
+
+# Combine with other options
+dagruff examples/ --fix DAG001 --severity warning
+```
+
+**Note:** Auto-fix preserves code formatting and checks for duplicates before adding parameters. Uses AST-based approach for more reliable fixes with fallback to regex when needed.
+
+## Configuration
+
+DagRuff can be configured via `pyproject.toml` or `.dagruff.toml`:
+
+```toml
+[tool.dagruff]
+# Enable/disable specific rules
+select = ["DAG001", "DAG002", "AIR003"]
+ignore = ["DAG006", "BP005"]
+
+# Set minimum severity level
+severity = "error"  # or "warning", "info"
+
+# Paths to check (automatically validated)
+paths = ["dags/", "custom_dags/"]
+
+# Per-file ignores
+[tool.dagruff.per-file-ignores]
+"legacy_dags/*.py" = ["DAG006", "DAG007"]
+```
+
+**Configuration Validation:** DagRuff validates configuration values:
+- Ensures `paths` and `ignore` are lists of strings
+- Validates rule ID format (e.g., DAG001, AIR002)
+- Normalizes whitespace and filters empty values
+- Gracefully handles invalid values with warnings
+
+**Caching:** Results are cached by default based on file hash. Use `--no-cache` to disable:
+- Automatic cache invalidation on file changes
+- Memory-efficient singleton cache
+- Deep copy returns for safety
+
+## Examples
+
+The `examples/` directory contains:
+- `example_dag_good.py` - Example of a correct DAG
+- `example_dag_bad.py` - Example DAG with errors to demonstrate the linter
+
+## Plugins
+
+DagRuff supports custom rule plugins via Python entry points. See [PLUGINS.md](PLUGINS.md) for detailed documentation.
+
+**Quick Example:**
+```python
+# my_plugin/__init__.py
+from typing import List
+from dagruff.rules.ast_collector import ASTCollector
+from dagruff.models import LintIssue, Severity
+
+def check_all_custom_rules(collector: ASTCollector, file_path: str) -> List[LintIssue]:
+    """Custom rule checker following RuleChecker protocol."""
+    issues = []
+    # Your custom logic here
+    return issues
+```
+
+```toml
+# pyproject.toml
+[project.entry-points."dagruff.rules"]
+my_custom_rule = "my_plugin:check_all_custom_rules"
+```
+
+## Contributing
+
+Contributions are welcome and highly appreciated! To get started:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Ensure tests pass (`pytest tests/`) - 296+ tests with 77% code coverage
+5. Ensure code is formatted (`ruff format`) and linted (`ruff check`)
+6. Commit your changes (`git commit -m 'Add amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+**Pre-commit Hooks:** Tests run automatically before each commit. See [PRE_COMMIT.md](PRE_COMMIT.md) for setup.
+
+## Development
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/dkfancska/dagruff.git
+cd dagruff
+
+# Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install in development mode (with Airflow for full functionality)
+pip install -e ".[airflow,dev]"
+# or using uv
+uv pip install -e ".[airflow,dev]"
+
+# Run tests (296+ tests)
+pytest tests/
+
+# Run tests with coverage (current coverage: 77%)
+pytest --cov=dagruff tests/
+
+# Format code
+ruff format dagruff tests/
+
+# Lint code
+ruff check dagruff tests/
+
+# Run specific test file
+pytest tests/test_linter.py -v
+```
+
+### Project Structure
+
+```
+dagruff/
+├── dagruff/                # Main package
+│   ├── __init__.py
+│   ├── cli/                # CLI package (refactored)
+│   │   ├── __init__.py     # Main entry point
+│   │   ├── runner.py       # CLI orchestrator
+│   │   ├── linter.py       # Linting functions
+│   │   ├── commands/       # Command pattern
+│   │   │   ├── base.py     # BaseCommand
+│   │   │   ├── check.py    # CheckCommand
+│   │   │   └── fix.py      # FixCommand
+│   │   ├── formatters/    # Output formatters
+│   │   │   ├── human.py   # Human-readable format
+│   │   │   └── json.py    # JSON format
+│   │   └── utils/          # CLI utilities
+│   │       ├── args.py     # Argument parsing
+│   │       ├── files.py    # File utilities
+│   │       ├── config_handler.py
+│   │       └── autofix_handler.py
+│   ├── config.py           # Configuration handling with validation
+│   ├── linter.py           # Main linter with caching
+│   ├── cache.py            # Caching implementation
+│   ├── models.py           # Data models
+│   ├── autofix.py          # Auto-fix implementation
+│   ├── plugins.py          # Plugin system
+│   ├── validation.py       # Input validation
+│   ├── logger.py           # Logging setup
+│   └── rules/              # Lint rules
+│       ├── base.py         # Protocols (RuleChecker, Linter, Autofixer)
+│       ├── ast_collector.py # AST data collector
+│       ├── dag_rules.py    # DAG-specific rules
+│       ├── ruff_air_rules.py
+│       ├── best_practices_rules.py
+│       ├── airflint_rules.py
+│       └── utils.py        # Rule utilities
+├── tests/                  # Tests (296+ tests)
+├── examples/               # Example DAG files
+├── pyproject.toml          # Project configuration
+├── README.md               # This file
+└── RULES.md                # Rule descriptions
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+DagRuff draws inspiration from:
+
+- [Ruff](https://github.com/astral-sh/ruff) - For project structure and design philosophy
+- [flake8-airflow](https://github.com/BernhardWenzel/flake8-airflow) - For Airflow-specific rules
+- [airflint](https://github.com/databricks/airflint) - For AST-based linting approaches
+- [Astronomer Guides](https://www.astronomer.io/guides/) - For best practices
+
+Special thanks to the Apache Airflow community for their excellent documentation and tooling.
+
+## Support
+
+Having trouble? Check out the existing [Issues](https://github.com/dkfancska/dagruff/issues) or feel free to [open a new one](https://github.com/dkfancska/dagruff/issues/new).

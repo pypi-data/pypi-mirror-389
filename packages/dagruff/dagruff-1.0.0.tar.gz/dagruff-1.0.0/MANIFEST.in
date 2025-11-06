@@ -1,0 +1,12 @@
+include README.md
+include RULES.md
+include LICENSE
+include CHANGELOG.md
+include SECURITY.md
+include CONTRIBUTING.md
+include pyproject.toml
+include .dagruff.toml.example
+recursive-include examples *.py
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
