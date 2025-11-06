@@ -1,0 +1,17 @@
+[project]
+name = "yemot-flow"
+version = "0.2.11"
+description = "Modern async/await Python IVR framework for Yemot HaMashiach - Simple as Node.js yemot-router2"
+readme = "README.md"
+authors = [
+    { name = "davidTheDeveloper", email = "dev@code-chai.com" }
+]
+requires-python = ">=3.11"
+dependencies = ["flask>=2.3"]
+
+[project.scripts]
+yemot-flow = "yemot_flow:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
