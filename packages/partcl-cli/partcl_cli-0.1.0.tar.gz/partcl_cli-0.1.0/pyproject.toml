@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "partcl-cli"
+dynamic = ["version"]
+description = "Python CLI and library for Partcl EDA tools"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Partcl Team", email = "support@partcl.com" },
+]
+keywords = ["eda", "timing", "cli", "semiconductor", "gpu"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+dependencies = [
+    "click>=8.1.0",
+    "httpx>=0.24.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "tabulate>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-httpx>=0.21.0",
+    "black>=22.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+partcl = "partcl.main:cli"
+
+[project.urls]
+Homepage = "https://partcl.com"
+Documentation = "https://docs.partcl.com"
+Repository = "https://github.com/partcleda/partcl-cli"
+"Bug Tracker" = "https://github.com/partcleda/partcl-cli/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "partcl._version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["partcl*"]
+exclude = ["tests*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "UP", "B", "SIM", "I"]
+target-version = "py38"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
