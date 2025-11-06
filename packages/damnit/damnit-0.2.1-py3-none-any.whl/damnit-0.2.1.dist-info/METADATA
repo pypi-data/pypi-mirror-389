@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: damnit
+Version: 0.2.1
+Summary: The Data And Metadata iNspection Interactive Thing
+Author-email: Thomas Kluyver <thomas.kluyver@xfel.eu>, Luca Gelisio <luca.gelisio@xfel.eu>
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Classifier: License :: OSI Approved :: BSD License
+License-File: LICENSE
+Requires-Dist: h5netcdf>=1.4.1
+Requires-Dist: h5py
+Requires-Dist: numpy
+Requires-Dist: orjson
+Requires-Dist: pandas >=2.1.0
+Requires-Dist: plotly
+Requires-Dist: xarray
+Requires-Dist: EXtra-data ; extra == "backend"
+Requires-Dist: EXtra-proposal ; extra == "backend"
+Requires-Dist: ipython ; extra == "backend"
+Requires-Dist: kafka-python-ng ; extra == "backend"
+Requires-Dist: kaleido ; extra == "backend"
+Requires-Dist: matplotlib ; extra == "backend"
+Requires-Dist: numpy ; extra == "backend"
+Requires-Dist: pyyaml ; extra == "backend"
+Requires-Dist: requests ; extra == "backend"
+Requires-Dist: supervisor ; extra == "backend"
+Requires-Dist: termcolor ; extra == "backend"
+Requires-Dist: mkdocs ; extra == "docs"
+Requires-Dist: mkdocs-material ; extra == "docs"
+Requires-Dist: mkdocstrings ; extra == "docs"
+Requires-Dist: mkdocstrings-python ; extra == "docs"
+Requires-Dist: pymdown-extensions ; extra == "docs"
+Requires-Dist: adeqt ; extra == "gui"
+Requires-Dist: fonticon-fontawesome6 ; extra == "gui"
+Requires-Dist: mplcursors ; extra == "gui"
+Requires-Dist: mpl-pan-zoom ; extra == "gui"
+Requires-Dist: natsort ; extra == "gui"
+Requires-Dist: openpyxl ; extra == "gui"
+Requires-Dist: PyQt5 ; extra == "gui"
+Requires-Dist: PyQtWebEngine ; extra == "gui"
+Requires-Dist: pyflakes ; extra == "gui"
+Requires-Dist: QScintilla==2.13 ; extra == "gui"
+Requires-Dist: scikit-learn ; extra == "gui"
+Requires-Dist: superqt ; extra == "gui"
+Requires-Dist: tabulate ; extra == "gui"
+Requires-Dist: pillow ; extra == "test"
+Requires-Dist: pytest ; extra == "test"
+Requires-Dist: pytest-qt ; extra == "test"
+Requires-Dist: pytest-cov ; extra == "test"
+Requires-Dist: pytest-xvfb ; extra == "test"
+Requires-Dist: pytest-timeout ; extra == "test"
+Requires-Dist: pytest-venv ; extra == "test"
+Requires-Dist: testpath ; extra == "test"
+Project-URL: Home, https://github.com/European-XFEL/DAMNIT
+Provides-Extra: backend
+Provides-Extra: docs
+Provides-Extra: gui
+Provides-Extra: test
+
+# DAMNIT
+
+[![Documentation Status](https://readthedocs.org/projects/damnit/badge/?version=latest)](https://damnit.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/European-XFEL/DAMNIT/graph/badge.svg?token=NGwo3ShLNw)](https://codecov.io/gh/European-XFEL/DAMNIT)
+
+DAMNIT is a tool developed at the European XFEL to help users create an
+automated overview of their experiment. Check out the documentation for more
+information: https://damnit.rtfd.io
+
+# Acknowledgements
+
+This work is partially supported by the consortium
+[DAPHNE4NFDI](https://www.daphne4nfdi.de/) in the context of the work of the
+[NFDI e.V.](https://www.nfdi.de/). The consortium is funded by the Deutsche
+Forschungsgemeinschaft ([DFG](https://www.dfg.de/), German Research Foundation)
+- project number 460248799.
+
