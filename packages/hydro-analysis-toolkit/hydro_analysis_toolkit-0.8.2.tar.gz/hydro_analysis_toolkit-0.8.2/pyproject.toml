@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools>=65", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hydro_analysis_toolkit"
+requires-python = ">=3.9"
+authors = [
+    {name = "European Centre for Medium-Range Weather Forecasts (ECMWF)", email = "software.support@ecmwf.int"},
+]
+maintainers = [
+    {name = "Corentin Carton de Wiart", email = "corentin.carton@ecmwf.int"},
+    {name = "Oisín M. Morrison", email = "oisin.morrison@ecmwf.int"}
+]
+description = "ECMWF's Hydrological Analysis Toolkit"
+license = { text = "Apache License Version 2.0" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering"
+    ]
+dynamic = ["version", "readme"]
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "xarray",
+    "matplotlib",
+    "geopandas",
+    "typer", # check if necessary
+    "humanize", # check if necessary
+    "tqdm",
+    "ipyleaflet",
+    "ipywidgets",
+    "earthkit-data>=0.13.8",
+    "earthkit-hydro",
+    "earthkit-meteo",
+    "cfgrib", # check if necessary
+    "netCDF4", # check if necessary
+    "eccodes", # check if necessary
+    "plotly",
+    "floods-html",
+    "geopy",
+    "setuptools",
+    "anywidget"
+]
+
+[project.urls]
+    repository = "https://github.com/ecmwf/hat"
+    documentation = "https://hydro-analysis-toolkit.readthedocs.io"
+    issues = "https://github.com/ecmwf/hat/issues"
+
+[project.optional-dependencies]
+    test = [
+        "pytest"
+    ]
+    dev = [
+        "pytest",
+        "ruff",
+        "pre-commit"
+    ]
+
+[project.scripts]
+    hat-extract-timeseries = "hat.cli:extractor_cli"
+    hat-hydrostats = "hat.cli:stat_calc_cli"
+    hat-station-mapping = "hat.cli:mapper_cli"
+
+# Linting settings
+[tool.ruff]
+line-length = 120
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "F401", # unused imports
+    ]
+"tests/*" = [
+    "F401", # unused imports
+    ]
+
+# Testing
+[tool.pytest.ini_options]
+addopts = "--pdbcls=IPython.terminal.debugger:Pdb"
+testpaths = [
+    "tests",
+]
+
+# Packaging/setuptools options
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests"]
+
+[tool.setuptools_scm]
+version_file = "hat/_version.py"
+version_file_template = '''
+# Do not change! Do not track in version control!
+__version__ = "{version}"
+'''
+parentdir_prefix_version='hat-'  # get version from GitHub-like tarballs
+fallback_version='0.7.1'
+local_scheme = "no-local-version"
