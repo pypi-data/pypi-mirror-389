@@ -1,0 +1,7 @@
+#!/usr/bin/python3
+
+import sys
+from pyspecdata.datadir import register_directory
+
+if __name__ == '__main__':
+    sys.exit(register_directory())
