@@ -1,0 +1,13 @@
+
+[dev]
+bump2version
+tox
+pre-commit
+
+[tests]
+ruff
+pytest
+pytest-benchmark
+
+[tests:implementation_name == "cpython"]
+pytest-mypy
