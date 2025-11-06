@@ -1,0 +1,80 @@
+Metadata-Version: 2.4
+Name: brainsig
+Version: 0.1.0
+Summary: A package for computing 'neural signatures' from fMRI data.
+Project-URL: Homepage, https://github.com/ajbarrow/brainsig
+Project-URL: Source Code, https://github.com/ajbarrow/brainsig
+Project-URL: Bug Tracker, https://github.com/ajbarrow/brainsig/issues
+Project-URL: Documentation, https://brainsig.readthedocs.io
+Project-URL: Download, https://pypi.org/project/brainsig/#files
+Author-email: Tony Barrows <ajbarrow@uvm.edu>
+License-Expression: MIT
+License-File: LICENSE
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3 :: Only
+Requires-Python: >=3.10
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: scikit-learn>=1.3
+Provides-Extra: build
+Requires-Dist: pip; extra == 'build'
+Requires-Dist: pip-audit; extra == 'build'
+Requires-Dist: twine; extra == 'build'
+Provides-Extra: dev
+Requires-Dist: hatch; extra == 'dev'
+Requires-Dist: pre-commit; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: myst-parser>=4.0; extra == 'docs'
+Requires-Dist: pydata-sphinx-theme~=0.16; extra == 'docs'
+Requires-Dist: sphinx-autoapi>=3.6.0; extra == 'docs'
+Requires-Dist: sphinx-autobuild>=2024.10.3; extra == 'docs'
+Requires-Dist: sphinx-copybutton>=0.5.2; extra == 'docs'
+Requires-Dist: sphinx-design>=0.6.1; extra == 'docs'
+Requires-Dist: sphinx~=8.0; extra == 'docs'
+Provides-Extra: style
+Requires-Dist: pydoclint; extra == 'style'
+Requires-Dist: ruff; extra == 'style'
+Provides-Extra: tests
+Requires-Dist: pytest; extra == 'tests'
+Requires-Dist: pytest-cov; extra == 'tests'
+Requires-Dist: pytest-raises; extra == 'tests'
+Requires-Dist: pytest-randomly; extra == 'tests'
+Requires-Dist: pytest-xdist; extra == 'tests'
+Description-Content-Type: text/markdown
+
+# Welcome to brainsig
+
+|        |        |
+|--------|--------|
+| Package | [![Latest PyPI Version](https://img.shields.io/pypi/v/brainsig.svg)](https://pypi.org/project/brainsig/) [![Supported Python Versions](https://img.shields.io/pypi/pyversions/brainsig.svg)](https://pypi.org/project/brainsig/) [![Documentation](https://readthedocs.org/projects/brainsig/badge/?version=latest)](https://brainsig.readthedocs.io/en/latest/?badge=latest) |
+| Meta   | [![Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md) |
+
+*TODO: the above badges that indicate python version and package version will only work if your package is on PyPI.
+If you don't plan to publish to PyPI, you can remove them.*
+
+brainsig is a project that (describe what it does here).
+
+## Get started
+
+You can install this package into your preferred Python environment using pip:
+
+```bash
+$ pip install brainsig
+```
+
+TODO: Add a brief example of how to use the package to this section
+
+To use brainsig in your code:
+
+```python
+>>> import brainsig
+>>> brainsig.hello_world()
+```
+
+## Copyright
+
+- Copyright © 2025 Tony Barrows.
+- Free software distributed under the [MIT License](./LICENSE).
