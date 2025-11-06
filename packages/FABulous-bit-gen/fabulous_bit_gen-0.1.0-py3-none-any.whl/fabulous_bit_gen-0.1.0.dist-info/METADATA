@@ -1,0 +1,60 @@
+Metadata-Version: 2.4
+Name: FABulous-bit-gen
+Version: 0.1.0
+Summary: Bitstream generation utilities for FABulous FPGA fabrics
+Author-email: "Jing, Nguyen, Bea, Bardia, Dirk" <dirk.koch@manchester.ac.uk>
+Project-URL: Repository, https://github.com/FPGA-Research/FABulous
+Project-URL: Documentation, https://fabulous.readthedocs.io
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: loguru>=0.7.0
+Requires-Dist: fasm>=0.0.2
+Dynamic: license-file
+
+# FABulous bit_gen
+
+Bitstream generation utilities for FABulous FPGA fabrics.
+
+This package provides functionality for generating bitstreams from FASM (FPGA Assembly)
+files for FABulous FPGA fabrics. It handles the conversion of place-and-route results
+into configuration bitstreams that can be loaded onto the FPGA fabric.
+
+## Features
+
+- Parse FASM files containing FPGA configuration features
+- Process configuration bits according to bitstream specifications
+- Generate bitstream output in multiple formats:
+  - Binary (.bin)
+  - CSV (.csv)
+  - Verilog header (.vh)
+  - VHDL package (.vhd)
+
+## Installation
+
+```bash
+pip install FABulous-bit-gen
+```
+
+## Usage
+
+### Command Line
+
+```bash
+bit_gen -genBitstream input.fasm spec.pkl output.bin
+```
+
+### Python API
+
+```python
+from FABulous_bit_gen import genBitstream
+
+genBitstream("input.fasm", "spec.pkl", "output.bin")
+```
+
+## License
+
+Apache Software License 2.0
