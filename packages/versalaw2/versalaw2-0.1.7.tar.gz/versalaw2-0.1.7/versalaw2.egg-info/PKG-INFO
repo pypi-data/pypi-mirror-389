@@ -1,0 +1,55 @@
+Metadata-Version: 2.4
+Name: versalaw2
+Version: 0.1.7
+Summary: Comprehensive Indonesian Law Library with International Law Modules
+Author: Your Name
+Author-email: your.email@example.com
+Keywords: law,legal,indonesia,international,criminal,civil,analysis,nlp
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Legal Industry
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Education
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: requests>=2.25.0
+Requires-Dist: scikit-learn>=1.0.0
+Requires-Dist: transformers>=4.20.0
+Requires-Dist: torch>=1.9.0
+Requires-Dist: beautifulsoup4>=4.9.0
+Requires-Dist: fastapi>=0.68.0
+Requires-Dist: uvicorn>=0.15.0
+Requires-Dist: pydantic>=1.8.0
+Requires-Dist: spacy>=3.0.0
+Requires-Dist: python-dateutil>=2.8.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# VERSALAW2 - Legal Document Analysis
+
+AI-powered legal document analysis with risk assessment.
+
+## Installation
+pip install versalaw2
+
+## Usage
+import versalaw2
+result = versalaw2.analyze_contract("Your text here")
