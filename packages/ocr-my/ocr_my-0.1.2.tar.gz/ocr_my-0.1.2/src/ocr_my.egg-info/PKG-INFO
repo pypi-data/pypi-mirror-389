@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: ocr_my
+Version: 0.1.2
+Summary: A versatile OCR and document processing command-line tool.
+Author-email: MyMy <mynhk@mor.com.vn>
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Text Processing
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: docling-core>=0.2.0
+Requires-Dist: pypdfium2
+Requires-Dist: python-docx
+Requires-Dist: pandas
+Requires-Dist: openpyxl
+Requires-Dist: Pillow
+Requires-Dist: PyYAML
+Requires-Dist: numpy
+Requires-Dist: pydantic
+Requires-Dist: rapidocr-onnxruntime
+Provides-Extra: easyocr
+Requires-Dist: easyocr; extra == "easyocr"
+Provides-Extra: all
+Requires-Dist: myocr-tool[easyocr]; extra == "all"
+
+# My OCR Tool
+
+A versatile OCR and document processing command-line tool, built with Python and the `docling` library. It uses **RapidOCR** by default and also supports EasyOCR.
+
+## Features
+
+- Process various file types: PDF, PNG, JPG, DOCX, XLSX, CSV.
+- Supports `rapidocr` (default) and `easyocr` engines, configurable via YAML files.
+- Outputs processed documents into Markdown, JSON, and YAML formats.
+
+## Installation
+
+First, ensure you have Python 3.8+ installed.
+
+You can install the tool from PyPI. The default engine, `rapidocr`, is included automatically.
+
+```bash
+pip install myocr-tool
+```
+### Test the Optional Engine (EasyOCR)
+```bash
+my-ocr-tool --ocr-engine easyocr "path/to/your/image.png"
+```
+
+### Test with a Configuration File
+```bash
+my-ocr-tool --config rapidocr_config.yaml "path/to/your/image.png"
+```
