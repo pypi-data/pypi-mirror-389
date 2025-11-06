@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hello-gunner"
+version = "0.1.2"
+description = "A simple example CLI that says hello — created by Gunner"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+authors = [{ name = "Gunner", email = "pranesh@test.com" }]
+license = { text = "MIT" }
+
+[project.scripts]
+hello = "hello_gunner.cli:main"
+
+[tool.setuptools.package-data]
+hello_pkg = ["py.typed"]
