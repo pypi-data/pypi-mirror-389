@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: rio-stac-io
+Version: 0.3.4
+Author-email: Thomas Maschler <thomas.maschler@planet.com>
+License-File: LICENSE
+Requires-Python: >=3.10
+Requires-Dist: pystac-client>=0.9.0
+Requires-Dist: pystac>=1.11.0
+Requires-Dist: rasterio>=1.4.3
+Provides-Extra: gti
+Requires-Dist: stac-geoparquet>=0.7.0; extra == 'gti'
