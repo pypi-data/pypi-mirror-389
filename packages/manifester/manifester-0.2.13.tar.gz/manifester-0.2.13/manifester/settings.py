@@ -1,0 +1,19 @@
+"""Retrieves settings from configuration file and runs Dynaconf validators."""
+
+from dynaconf import Dynaconf, Validator
+
+from manifester._settings import settings_path
+
+validators = [
+    Validator("offline_token", must_exist=True),
+    Validator("username_prefix", len_min=3),
+    Validator("max_export_retries", default=5, is_type_of=int, gt=0),
+    Validator("max_retry_timeout", default=240, is_type_of=int, gt=0),
+]
+settings = Dynaconf(
+    settings_file=str(settings_path.absolute()),
+    ENVVAR_PREFIX_FOR_DYNACONF="MANIFESTER",
+    load_dotenv=True,
+    validators=validators,
+)
+# settings.validators.validate()
