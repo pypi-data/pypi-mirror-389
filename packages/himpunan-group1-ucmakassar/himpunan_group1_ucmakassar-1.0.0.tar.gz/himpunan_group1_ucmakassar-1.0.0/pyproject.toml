@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "himpunan-group1-ucmakassar" 
+version = "1.0.0"
+authors = [
+  { name="Group 1", email="mchlstvny@gmail.com" }
+]
+description = "A simple Python library for set operations (Himpunan) supporting fractions and decimals."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["himpunan", "set", "mathematics", "fraction", "decimal"]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/mchlstvny/himpunan-project-discrete-mathematics.git"
