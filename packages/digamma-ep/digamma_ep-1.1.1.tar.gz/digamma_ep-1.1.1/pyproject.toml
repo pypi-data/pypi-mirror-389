@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digamma_ep"
+version = "1.1.1"
+description = "Symbolic audit framework with CZVS, curvature, and compliance logic"
+authors = [{ name = "Cesar", email = "your@email.com" }]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "sympy",
+    "matplotlib"
+]
+
+[project.urls]
+Homepage = "https://github.com/Cerene-Salt/Digamma-Prime-Framework"
