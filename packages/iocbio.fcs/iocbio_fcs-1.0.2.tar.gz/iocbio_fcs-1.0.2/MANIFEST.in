@@ -1,0 +1,16 @@
+include iocbio/fcs/models/psf/engines/prodtools.pyx
+include iocbio/fcs/models/psf/engines/psfmult.pyx
+include iocbio/fcs/models/psf/engines/psfmult_impl.cpp
+
+# Exclude all generated files from Cython
+exclude iocbio/fcs/models/psf/engines/prodtools.cpp
+exclude iocbio/fcs/models/psf/engines/psfmult.cpp
+
+# Include documentation
+include README.md
+include LICENSE.md
+include AUTHORS.md
+
+# Include configuration files
+include pyproject.toml
+include setup.cfg
