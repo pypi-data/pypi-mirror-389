@@ -1,0 +1,43 @@
+Metadata-Version: 2.4
+Name: vsi-cli
+Version: 1.0.5
+Summary: vsi cli | aws cli wrapper
+Home-page: https://gitlab.spectrumflow.net/C-Ermias.Girmai/vsi-cli
+Author: ermiasgirmai
+Author-email: c-ermias.girmai@charter.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: typer>=0.9.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# vsi-cli 1.0.4
+
+a vsi cli wrapper built on top of aws cli to simplify aws operations.
+non-stable, wip.
+
+## Installation
+
+```bash
+pip install vsi-cli==1.0.5
+```
+*requirements: latest aws cli, aws ssm plugin
+
+## Supported features
+
+supported commands:
+    -sso to aws account
+    -set up sso profile
+    -list configured sso profiles
+    -tunnel to bastion
+    -port forward to resources
+    -install latest aws cli
