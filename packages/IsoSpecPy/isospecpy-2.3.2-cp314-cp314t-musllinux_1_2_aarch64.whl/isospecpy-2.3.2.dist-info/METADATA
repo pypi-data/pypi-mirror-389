@@ -1,0 +1,43 @@
+Metadata-Version: 2.4
+Name: IsoSpecPy
+Version: 2.3.2
+Summary: IsoSpecPy is a Python library for computing isotopic distributions of molecules.
+Keywords: isotopic distribution,mass spectrometry,chemistry,isotopic envelope,isotopologues
+Author: Michał Startek, Mateusz Łącki
+License-Expression: BSD-2-Clause
+License-File: LICENCE
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Operating System :: OS Independent
+Project-URL: Homepage, https://github.com/MatteoLacki/IsoSpec
+Project-URL: Repository, https://github.com/MatteoLacki/IsoSpec
+Requires-Python: >=3.6
+Requires-Dist: cffi
+Provides-Extra: testing
+Requires-Dist: pytest; extra == "testing"
+Requires-Dist: OldIsoSpecPy; extra == "testing"
+Description-Content-Type: text/markdown
+
+IsoSpec, the isotopic fine structure calculator
+===============================================
+
+The main purpose of this software package is to be used as a library, 
+mostly in mass spectrometry software. We do not provide any standalone
+programs, except for those in Examples directory which are intended to
+showcase the usage of the library.
+
+Please see the code in Examples directory for example usage.
+
+The software is publically available under a 2-clause BSD licence. If 
+you require other licensing terms, please contact the authors. See 
+LICENCE file for more details.
+
+More details about the program may be found in the following Analytical
+Chemistry publications:
+
+https://pubs.acs.org/doi/10.1021/acs.analchem.0c00959
+https://pubs.acs.org/doi/abs/10.1021/acs.analchem.6b01459
+
+See especially the Supporting Information for details about the algorithm.
