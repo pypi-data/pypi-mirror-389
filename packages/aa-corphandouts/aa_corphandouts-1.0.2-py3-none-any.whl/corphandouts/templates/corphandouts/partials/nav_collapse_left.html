@@ -1,0 +1,6 @@
+{% load i18n %}
+{% load navactive %}
+<li class="nav-item">
+    <a class="nav-link {% navactive request '' %}"
+       href="{% url 'corphandouts:index' %}">{% translate "View all doctrine reports" %}</a>
+</li>

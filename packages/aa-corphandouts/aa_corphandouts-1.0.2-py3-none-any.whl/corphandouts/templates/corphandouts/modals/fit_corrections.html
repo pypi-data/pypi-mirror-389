@@ -1,0 +1,2 @@
+{% url "corphandouts:fitting" metenox.pk as new_page_url %}
+{% include "corphandouts/modals/content_base.html" with modal_content_id="fit-modal-content-id" modal_body_url="corphandouts/partials/fit_corrections.html" modal_title="Fit corrections" new_page_url=new_page_url %}

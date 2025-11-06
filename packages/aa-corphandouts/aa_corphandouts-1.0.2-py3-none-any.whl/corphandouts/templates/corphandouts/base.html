@@ -1,0 +1,30 @@
+{% extends 'allianceauth/base-bs5.html' %}
+{% load i18n %}
+{% load navactive %}
+{% block header_nav_brand %}
+    {% translate "Corporation handouts" %}
+{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block header_nav_collapse_left %}
+    {% include "corphandouts/partials/nav_collapse_left.html" %}
+    {% block extra_nav_collapse_left %}{% endblock %}
+{% endblock %}
+{% block content %}
+    <div class="aa-corphandouts">
+        {% block handouts_block %}{% endblock %}
+    </div>
+{% endblock %}
+{% block extra_javascript %}{% endblock %}
+{% block extra_script %}{% endblock %}
+{% block extra_css %}
+    <style>
+        a.nostyle,
+        .table a.nostyle:not(.btn),
+        table a.nostyle:not(.btn) {
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
+    {% include 'bundles/datatables-css-bs5.html' %}
+    {% block more_css %}{% endblock %}
+{% endblock %}

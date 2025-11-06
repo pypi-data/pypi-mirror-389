@@ -1,0 +1,91 @@
+{% extends 'corphandouts/base.html' %}
+{% load i18n %}
+{% load evelinks %}
+{% load static %}
+{% block handouts_block %}
+    <h3>
+        {% blocktranslate with doctrine_name=doctrine_report.name trimmed %}
+            Fittings of doctrine <i>{{ doctrine_name }}</i>
+        {% endblocktranslate %}
+    </h3>
+    {% if not fitting_reports %}
+    {% else %}
+        <table class="table table-striped table-hover" id="fittingReportsTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{% translate "Fit Name" %}</th>
+                    <th>
+                        <p>
+                            {% translate "Correct fits" %}
+                            <br>
+                            {% translate "Expected fits" %}
+                        </p>
+                    </th>
+                    <th>{% translate "Fits with errors" %}</th>
+                    <th>{% translate "Ships missing" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fitting_report in fitting_reports %}
+                    <tr>
+                        <td>
+                            {% if fitting_report.count_errors %}
+                                <a href="{% url "corphandouts:doctrine_fit_report" fitting_report.doctrine.id fitting_report.id %}">
+                                {% endif %}
+                                <span class="d-block" style="min-width: 250px;">
+                                    <span class="me-2" style="height: 64px; width: 64px;">
+                                        <img src="{{ fitting_report.fit.ship_type_type_id|type_icon_url:64 }}"
+                                             class="rounded"
+                                             height="64"
+                                             width="64"
+                                             alt="">
+                                    </span>
+                                </span>
+                                {% if fitting_report.count_errors %}</a>{% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url "fittings:view_fit" fitting_report.fit.id %}">{{ fitting_report.fit.name }}</a>
+                        </td>
+                        <td>
+                            <p>
+                                {{ fitting_report.ok_ships }}
+                                {% if fitting_report.expected_amount %}
+                                    <br>
+                                    {{ fitting_report.expected_amount }}
+                                {% endif %}
+                            </p>
+                        </td>
+                        <td>{{ fitting_report.count_errors }}</td>
+                        <td>
+                            {% if fitting_report.count_missing %}{{ fitting_report.count_missing }}{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+{% block extra_nav_collapse_left %}
+    <li class="nav-item">
+        <a class="nav-link"
+           href="{% url "corphandouts:doctrine_fit_report_all" doctrine_report.id %}">
+            {% translate "View all fits with errors for this doctrine" %}
+        </a>
+    </li>
+{% endblock %}
+{% block extra_javascript %}
+    {% include "bundles/datatables-js-bs5.html" %}
+    {% include "bundles/filterdropdown-js.html" %}
+    {% include "corphandouts/partials/handle_modals.html" %}
+    {% get_datatables_language_static LANGUAGE_CODE as DT_LANG_PATH %}
+    <script>
+        $(document).ready(() => {
+            {% if fitting_reports %}
+                $('#fittingReportsTable').dataTable({
+                    order: [[ 0, "asc" ]],
+                })
+            {% endif %}
+        })
+    </script>
+{% endblock %}
