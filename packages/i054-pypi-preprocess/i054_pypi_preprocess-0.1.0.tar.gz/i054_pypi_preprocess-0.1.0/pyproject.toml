@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61", "wheel", "tomli"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "i054_pypi_preprocess"
+version = "0.1.0"
+description = "Tiny NLP preprocessing helpers (tokenize, normalize, remove_stopwords)."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Anumay Pandey", email = "anumay.marshmelo@gmail.com" }
+]
+license = { text = "MIT" }
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://example.com"
