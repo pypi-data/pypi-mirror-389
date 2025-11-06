@@ -1,0 +1,141 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zotero2readwise"
+version = "1.3.0"
+description = "Export your Zotero annotations and notes to Readwise"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "ealizadeh", email = "hello@ealizadeh.com" }
+]
+requires-python = ">=3.12"
+keywords = ["Zotero", "Readwise"]
+classifiers = [
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Utilities",
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "Pyzotero>=1.4.26",
+    "requests>=2.26.0",
+    "python-dotenv<1.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipython>=8.10.0",
+    "pre-commit>=3.5.0",
+    "ipdb>=0.13.13",
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/e-alizadeh/Zotero2Readwise"
+Repository = "https://github.com/e-alizadeh/Zotero2Readwise"
+Documentation = "https://github.com/e-alizadeh/Zotero2Readwise"
+
+[project.scripts]
+run = "zotero2readwise.run:main"
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+version_variables = [
+    "zotero2readwise/__init__.py:__version__",
+]
+# Don't build during semantic-release - we'll build afterwards when uv is available
+build_command = "echo 'Skipping build - will build after semantic-release'"
+major_on_zero = false
+tag_format = "v{version}"
+
+[tool.semantic_release.branches.main]
+match = "(main|master)"
+
+[tool.semantic_release.changelog]
+changelog_file = "CHANGELOG.md"
+exclude_commit_patterns = []
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = [
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "perf",
+    "test",
+    "build",
+    "ci",
+    "chore",
+]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
+
+[tool.semantic_release.remote]
+type = "github"
+token = { env = "GH_TOKEN" }
+
+[tool.mypy]
+python_version = "3.12"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+fix = true
+
+[tool.ruff.isort]
+known-first-party = ["zotero2readwise"]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--cov=zotero2readwise",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+[tool.coverage.run]
+source = ["zotero2readwise"]
+omit = ["tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  release:
+    name: Release and Publish
+    runs-on: ubuntu-latest
+    concurrency: release
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: 📦 Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: 🐍 Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: 🔧 Install dependencies
+        run: uv sync --all-extras
+
+      - name: 🐍 Python Semantic Release
+        id: srelease
+        uses: python-semantic-release/python-semantic-release@v9.15.1
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+        env:
+          # Ensure semantic-release can access uv in PATH
+          PATH: ${{ env.PATH }}
+
+      - name: 🔍 Print Semantic Release Output
+        if: always()
+        run: |
+          echo "Released: ${{ steps.srelease.outputs.released }}"
+          echo "Version: ${{ steps.srelease.outputs.version }}"
+          echo "Tag: ${{ steps.srelease.outputs.tag }}"
+
+      - name: 🛠️ Build distributions with uv
+        if: steps.srelease.outputs.released == 'true'
+        run: |
+          echo "Building version ${{ steps.srelease.outputs.version }}"
+          uv build
+          ls -lh dist/
+
+      - name: 🚀 Publish to PyPI
+        if: steps.srelease.outputs.released == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+
+      - name: 🚀 Publish to GitHub Releases
+        if: steps.srelease.outputs.released == 'true'
+        uses: python-semantic-release/upload-to-gh-release@main
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          tag: ${{ steps.srelease.outputs.tag }}
