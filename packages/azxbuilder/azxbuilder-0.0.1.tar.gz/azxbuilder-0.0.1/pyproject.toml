@@ -1,0 +1,32 @@
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "azxbuilder"
+version = "0.0.1"
+authors = [
+  { name="hussain_syrer", email="h2311065@gmail.com" },
+]
+description = "A revolutionary full-stack application generator."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "Jinja2",
+    "typer[all]",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/your-username/azxbuilder"
+"Bug Tracker" = "https://github.com/your-username/azxbuilder/issues"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
