@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: vibe-eats-backend
+Version: 0.1.0.post20251106035248
+Summary: Backend API for Vibe Eats restaurant application with AI-powered recommendations
+Home-page: https://github.com/yourusername/vibe-eats
+Author: Vibe Eats Team
+Author-email: team@vibeeats.example.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Framework :: Flask
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
+Requires-Python: >=3.7
+Description-Content-Type: text/plain
+Requires-Dist: Flask
+Requires-Dist: supabase
+Requires-Dist: python-dotenv
+Requires-Dist: flask-cors
+Requires-Dist: pytest
+Requires-Dist: pytest-mock
+Requires-Dist: pytest-cov
+Requires-Dist: openai
+Requires-Dist: flake8
+Requires-Dist: black
+Requires-Dist: setuptools-scm
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+A Flask-based backend API for the Vibe Eats restaurant application, featuring AI-powered meal recommendations, cart management, and restaurant data handling.
