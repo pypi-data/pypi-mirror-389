@@ -1,0 +1,10 @@
+#! /bin/sh
+
+umask 022 &&
+
+git archive --format=tar --prefix=m_lib_full/ "${1:-HEAD}" |
+   (cd "$HOME/tmp" && exec tar xf -) &&
+
+cd "$HOME/tmp/m_lib_full" &&
+python setup.py sdist --formats=bztar &&
+cd dist && mv m_lib_full-*.tar.bz2 ../.. && cd ../.. && exec rm -rf m_lib_full
