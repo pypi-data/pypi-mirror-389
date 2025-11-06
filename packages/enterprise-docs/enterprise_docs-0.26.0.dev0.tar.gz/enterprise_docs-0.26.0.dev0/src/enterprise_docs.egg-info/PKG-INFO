@@ -1,0 +1,30 @@
+Metadata-Version: 2.4
+Name: enterprise-docs
+Version: 0.26.0.dev0
+Summary: Unified enterprise documentation suite for Dhruv13x organization
+Author-email: Dhruv <dhruv13x@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/dhruv13x/enterprise-docs
+Project-URL: Repository, https://github.com/dhruv13x/enterprise-docs.git
+Project-URL: Documentation, https://github.com/dhruv13x/enterprise-docs/tree/main/docs
+Keywords: documentation,policy,templates,enterprise,compliance
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# 🧱 Enterprise Docs
+
+A unified collection of professional, enterprise-grade documentation templates for Dhruv13x projects — enabling consistent governance, security, and compliance across all repositories.
+
+## 🚀 Features
+- Single source of truth for organizational policies
+- Standard templates for CODE_OF_CONDUCT, SECURITY, GOVERNANCE, etc.
+- Compatible with automation tools (CLI-based sync)
+
+## 🧰 Usage
+
+```bash
+pip install enterprise-docs
+enterprise-docs list
+enterprise-docs sync --to ./docs
