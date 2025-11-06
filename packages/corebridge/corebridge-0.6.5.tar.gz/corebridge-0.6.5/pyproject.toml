@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "corebridge"
+version = "0.6.5"
+authors = [
+  { name="Fenke Meijer", email="fenkemeijer@gmail.com" },
+]
+description = "Corebridge"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+  "numpy",
+  "pandas",
+  "scipy",
+  "scikit-learn",
+  "fastcore",
+  "python-dateutil",
+  "pytz"
+]
+[project.urls]
+Homepage = "https://github.com/fenke/corebridge"
+Issues = "https://github.com/fenke/corebridge/issues"
