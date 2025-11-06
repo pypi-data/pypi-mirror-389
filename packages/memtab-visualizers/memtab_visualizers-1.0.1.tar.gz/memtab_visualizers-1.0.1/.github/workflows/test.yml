@@ -1,0 +1,47 @@
+---
+name: 'pytest'
+
+on:
+    pull_request:
+    push:
+      branches:
+        - main
+jobs:
+  test:
+    name: continuous-integration
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Install the Arm Crosscompiler Toolchain
+        run: |
+          wget https://developer.arm.com/-/media/Files/downloads/gnu/14.2.rel1/binrel/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz
+          tar xf arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz
+
+      - name: Run tests
+        run: |
+          export PATH=$PWD/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin:$PATH
+          uv run coverage run -m pytest tests --cucumberjson=cucumber.json
+      - name: Publish Results
+        uses: ./.github/actions/publish_test_results
+        if: matrix.python-version == '3.13'
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+...

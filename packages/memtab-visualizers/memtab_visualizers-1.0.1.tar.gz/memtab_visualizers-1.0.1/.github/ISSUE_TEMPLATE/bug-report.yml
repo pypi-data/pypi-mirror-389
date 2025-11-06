@@ -1,0 +1,24 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+projects: ["etn-corp/memtab-visualizers"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: checkboxes
+    id: OS
+    attributes:
+      label: What operating system(s) are you seeing the problem on?
+      options:
+        - label: Windows
+        - label: Linux
+        - label: Mac OSX
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
