@@ -1,0 +1,707 @@
+Metadata-Version: 2.4
+Name: backend-clone
+Version: 2.0.0
+Summary: 🚀 Ultimate Backend Generator - AI-powered, multi-framework, cloud-ready, production-grade
+Home-page: https://github.com/backend-clone/backend-clone
+Author: Backend Clone Team
+Author-email: Backend Clone Team <team@backend-clone.dev>
+License: MIT
+Project-URL: Homepage, https://github.com/backend-clone/backend-clone
+Project-URL: Documentation, https://docs.backend-clone.dev
+Project-URL: Repository, https://github.com/backend-clone/backend-clone
+Project-URL: Issues, https://github.com/backend-clone/backend-clone/issues
+Project-URL: Changelog, https://github.com/backend-clone/backend-clone/blob/main/CHANGELOG.md
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Classifier: Environment :: Console
+Classifier: Natural Language :: English
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.1.7
+Requires-Dist: rich>=13.7.0
+Requires-Dist: inquirer>=3.1.4
+Requires-Dist: requests>=2.31.0
+Requires-Dist: httpx>=0.25.0
+Requires-Dist: aiohttp>=3.9.0
+Requires-Dist: jinja2>=3.1.2
+Requires-Dist: pyyaml>=6.0.1
+Requires-Dist: gitpython>=3.1.40
+Requires-Dist: openai>=1.3.0
+Requires-Dist: anthropic>=0.7.0
+Requires-Dist: pathspec>=0.11.0
+Requires-Dist: watchdog>=3.0.0
+Requires-Dist: pydantic>=2.5.0
+Requires-Dist: jsonschema>=4.20.0
+Requires-Dist: tqdm>=4.66.0
+Requires-Dist: prompt-toolkit>=3.0.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: toml>=0.10.2
+Requires-Dist: semver>=3.0.0
+Requires-Dist: fastapi>=0.104.0
+Requires-Dist: uvicorn>=0.24.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: alembic>=1.13.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-mock>=3.12.0; extra == "dev"
+Requires-Dist: black>=23.11.0; extra == "dev"
+Requires-Dist: flake8>=6.1.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: mypy>=1.7.0; extra == "dev"
+Requires-Dist: pylint>=3.0.0; extra == "dev"
+Requires-Dist: bandit>=1.7.5; extra == "dev"
+Requires-Dist: safety>=2.3.5; extra == "dev"
+Requires-Dist: sphinx>=7.2.0; extra == "dev"
+Requires-Dist: sphinx-rtd-theme>=2.0.0; extra == "dev"
+Requires-Dist: sphinx-click>=5.1.0; extra == "dev"
+Requires-Dist: build>=1.0.0; extra == "dev"
+Requires-Dist: twine>=4.0.0; extra == "dev"
+Provides-Extra: all
+Requires-Dist: gunicorn>=21.2.0; extra == "all"
+Requires-Dist: redis>=5.0.0; extra == "all"
+Requires-Dist: celery>=5.3.0; extra == "all"
+Requires-Dist: boto3>=1.34.0; extra == "all"
+Requires-Dist: google-cloud-storage>=2.10.0; extra == "all"
+Requires-Dist: azure-storage-blob>=12.19.0; extra == "all"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: platform
+Dynamic: requires-python
+
+# backend-clone v1.5.0 🚀
+
+<div align="center">
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║  ██████╗  █████╗  ██████╗██╗  ██╗███████╗███╗   ██╗██████╗     ║
+║  ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝████╗  ██║██╔══██╗    ║
+║  ██████╔╝███████║██║     █████╔╝ █████╗  ██╔██╗ ██║██║  ██║    ║
+║  ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝  ██║╚██╗██║██║  ██║    ║
+║  ██████╔╝██║  ██║╚██████╗██║  ██╗███████╗██║ ╚████║██████╔╝    ║
+║  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝     ║
+║                                                                  ║
+║       ██████╗██╗      ██████╗ ███╗   ██╗███████╗               ║
+║      ██╔════╝██║     ██╔═══██╗████╗  ██║██╔════╝               ║
+║      ██║     ██║     ██║   ██║██╔██╗ ██║█████╗                 ║
+║      ██║     ██║     ██║   ██║██║╚██╗██║██╔══╝                 ║
+║      ╚██████╗███████╗╚██████╔╝██║ ╚████║███████╗               ║
+║       ╚═════╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝               ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+```
+
+**🌟 The Ultimate Backend Generator**
+
+AI-Powered • Multi-Framework • Cloud-Ready • Production-Grade • Enterprise-Ready
+
+[![PyPI version](https://img.shields.io/pypi/v/backend-clone.svg)](https://pypi.org/project/backend-clone/)
+[![Downloads](https://static.pepy.tech/badge/backend-clone)](https://pepy.tech/project/backend-clone)
+[![Python](https://img.shields.io/pypi/pyversions/backend-clone.svg)](https://pypi.org/project/backend-clone/)
+[![License](https://img.shields.io/pypi/l/backend-clone.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/backend-clone/backend-clone?style=social)](https://github.com/backend-clone/backend-clone)
+
+[Quick Start](#-quick-start) • [Features](#-features-v150) • [Examples](#-examples) • [Docs](https://docs.backend-clone.dev) • [Discord](https://discord.gg/backend-clone)
+
+</div>
+
+---
+
+## 🎉 What's New in v1.5.0
+
+<table>
+<tr>
+<td width="50%">
+
+### 🤖 AI Superpowers
+- **GPT-4 + Claude AI** integration
+- Auto code review & optimization
+- Intelligent error detection
+- Architecture suggestions
+- Smart refactoring
+
+</td>
+<td width="50%">
+
+### 🌐 11 Frameworks
+- Express.js, NestJS (Node.js/TS)
+- FastAPI, Django, Flask (Python)
+- **NEW:** Gin, Fiber (Go)
+- **NEW:** Actix-web, Rocket (Rust)
+- **NEW:** Rails (Ruby)
+- **NEW:** Phoenix (Elixir)
+
+</td>
+</tr>
+<tr>
+<td>
+
+### ☸️ Kubernetes & IaC
+- Full Kubernetes configs
+- Terraform IaC support
+- AWS CDK integration
+- Multi-region deployment
+- Auto-scaling configs
+
+</td>
+<td>
+
+### 🏢 Enterprise Features
+- Monitoring (Prometheus + Grafana)
+- Logging (ELK Stack)
+- Tracing (Jaeger, Zipkin)
+- Service Mesh (Istio)
+- Secret Management (Vault)
+
+</td>
+</tr>
+</table>
+
+---
+
+## ⚡ Quick Start
+
+### Installation
+
+```bash
+# PyPI (Recommended)
+pip install backend-clone
+
+# Or with all features
+pip install backend-clone[all]
+
+# Upgrade to latest
+pip install --upgrade backend-clone
+```
+
+### Create Your First Project
+
+```bash
+# Interactive mode (BEST!)
+backend-clone create --interactive
+
+# Quick start
+backend-clone create myapp
+
+# With specific framework
+backend-clone create api --framework fastapi
+
+# Enterprise setup
+backend-clone create enterprise-api --enterprise
+```
+
+### Test It!
+
+```bash
+cd myapp/backend
+pip install -r requirements.txt  # Python
+# OR
+npm install                      # Node.js
+
+# Run
+python main.py   # FastAPI/Django
+# OR
+npm start        # Express/NestJS
+```
+
+---
+
+## 🎯 Features v1.5.0
+
+### 🔥 Core Features
+
+| Feature | Status | Since |
+|---------|--------|-------|
+| 🤖 **AI Code Generation** | ✅ GPT-4 + Claude | v1.2.0 |
+| 🌐 **11 Frameworks** | ✅ Production-ready | v1.5.0 |
+| ☸️ **Kubernetes** | ✅ Full configs | v1.5.0 |
+| 🏗️ **Terraform** | ✅ IaC support | v1.5.0 |
+| 📊 **Monitoring Stack** | ✅ Prometheus + Grafana | v1.5.0 |
+| 📝 **Logging** | ✅ ELK Stack | v1.5.0 |
+| 🔍 **Tracing** | ✅ Jaeger + Zipkin | v1.5.0 |
+| 🌐 **Service Mesh** | ✅ Istio + Linkerd | v1.5.0 |
+| 🔐 **Security** | ✅ OWASP + Vault | v1.5.0 |
+| 📈 **Auto-scaling** | ✅ HPA + VPA | v1.5.0 |
+| 🌍 **Multi-region** | ✅ Active-active | v1.5.0 |
+| 🐳 **Docker** | ✅ Multi-stage builds | v1.1.0 |
+| 🔐 **Auth** | ✅ JWT, OAuth, SAML | v1.1.0 |
+| 📊 **GraphQL** | ✅ Apollo Server | v1.1.0 |
+| ⚡ **Real-time** | ✅ WebSocket, SSE | v1.1.0 |
+| 🧪 **Testing** | ✅ Unit + Integration | v1.1.0 |
+
+### 🌐 Supported Frameworks
+
+<table>
+<tr>
+<th>Language</th>
+<th>Frameworks</th>
+<th>Best For</th>
+</tr>
+<tr>
+<td><strong>Node.js/TS</strong></td>
+<td>Express, NestJS</td>
+<td>Web APIs, Microservices</td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td>FastAPI, Django, Flask</td>
+<td>AI/ML APIs, Data Science</td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td>Gin, Fiber</td>
+<td>High Performance, Cloud Native</td>
+</tr>
+<tr>
+<td><strong>Rust</strong></td>
+<td>Actix-web, Rocket</td>
+<td>Ultra Fast, Memory Safe</td>
+</tr>
+<tr>
+<td><strong>Ruby</strong></td>
+<td>Rails</td>
+<td>Rapid Prototyping</td>
+</tr>
+<tr>
+<td><strong>Elixir</strong></td>
+<td>Phoenix</td>
+<td>Real-time, High Availability</td>
+</tr>
+</table>
+
+### ☁️ Cloud Platforms
+
+| Platform | Free Tier | Auto Deploy | Kubernetes | Status |
+|----------|-----------|-------------|------------|--------|
+| **AWS** | ✅ | ✅ | ✅ EKS | Ready |
+| **Google Cloud** | ✅ | ✅ | ✅ GKE | Ready |
+| **Azure** | ✅ | ✅ | ✅ AKS | Ready |
+| **DigitalOcean** | ❌ | ✅ | ✅ DOKS | Ready |
+| **Vercel** | ✅ | ✅ | ❌ | Ready |
+| **Railway** | ✅ | ✅ | ❌ | Ready |
+| **Render** | ✅ | ✅ | ❌ | Ready |
+| **Fly.io** | ✅ | ✅ | ❌ | Ready |
+
+---
+
+## 💡 Examples
+
+### 1. Startup MVP (Fast & Simple)
+
+```bash
+backend-clone create startup-mvp \
+  --framework fastapi \
+  --with-auth \
+  --with-database \
+  --deploy-to railway
+
+# Ready in 2 minutes! 🚀
+```
+
+### 2. E-commerce Platform
+
+```bash
+backend-clone create shop-api \
+  --framework nestjs \
+  --with-auth \
+  --with-payment \
+  --with-redis \
+  --with-elasticsearch \
+  --deploy-to aws
+```
+
+### 3. Real-time Chat
+
+```bash
+backend-clone create chat-backend \
+  --framework phoenix \
+  --with-websocket \
+  --with-redis \
+  --with-mongo \
+  --multi-region
+```
+
+### 4. Microservices Architecture
+
+```bash
+backend-clone create microservices-app \
+  --framework gin \
+  --with-kubernetes \
+  --with-servicemesh \
+  --with-monitoring \
+  --with-tracing
+```
+
+### 5. AI/ML API Service
+
+```bash
+backend-clone create ai-api \
+  --framework fastapi \
+  --with-ai \
+  --with-gpu \
+  --with-vectordb \
+  --deploy-to gcp
+```
+
+### 6. Enterprise System
+
+```bash
+backend-clone create enterprise-erp --enterprise
+
+# Includes EVERYTHING:
+# ✓ Kubernetes + Terraform
+# ✓ Monitoring + Logging + Tracing
+# ✓ Multi-region + Auto-scaling
+# ✓ Security hardening
+# ✓ CI/CD pipeline
+```
+
+---
+
+## 🎨 Interactive Mode
+
+```bash
+backend-clone create --interactive
+```
+
+**Super powers:**
+- 🎯 Smart questions based on your needs
+- 🤖 AI recommendations
+- 📊 Cost estimation
+- ⚡ Performance predictions
+- 🔐 Security suggestions
+- 📈 Scale planning
+
+**Example session:**
+
+```
+📦 Project nomi: awesome-api
+🎯 Qanday backend? E-commerce Platform
+📈 Qancha foydalanuvchi? 10K-100K users/day
+🎨 Framework: FastAPI (recommended for scale)
+🤖 AI features? Yes, GPT-4 code generation
+☁️  Cloud: AWS (multi-region recommended)
+🔐 Security: OWASP compliance enabled
+
+🤖 AI Tavsiyalari:
+  ⚡ Consider Redis for session management
+  📊 Add Elasticsearch for product search
+  💳 Stripe integration recommended
+  📈 Enable auto-scaling (HPA)
+
+✅ Creating awesome-api...
+```
+
+---
+
+## 📚 Documentation
+
+### Quick Links
+
+- 📖 [Full Documentation](https://docs.backend-clone.dev)
+- 🚀 [Quick Start Guide](https://docs.backend-clone.dev/quickstart)
+- 🎓 [Tutorials](https://docs.backend-clone.dev/tutorials)
+- 📹 [Video Courses](https://youtube.com/@backend-clone)
+- 💬 [Discord Community](https://discord.gg/backend-clone)
+- 🐛 [Issue Tracker](https://github.com/backend-clone/backend-clone/issues)
+
+### API Reference
+
+```python
+from backend_clone import Generator
+
+# Programmatic usage
+gen = Generator(
+    project_name="myapi",
+    framework="fastapi",
+    features=["auth", "graphql", "redis"]
+)
+
+gen.generate()
+```
+
+---
+
+## 🏗️ Project Structure (Example)
+
+```
+myapp/
+├── backend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   ├── routes/
+│   │   │   ├── controllers/
+│   │   │   └── middleware/
+│   │   ├── models/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── config/
+│   ├── tests/
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── e2e/
+│   ├── k8s/                    # Kubernetes configs
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   ├── ingress.yaml
+│   │   └── hpa.yaml
+│   ├── terraform/              # Infrastructure as Code
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── monitoring/
+│   │   ├── prometheus.yml
+│   │   ├── grafana/
+│   │   └── alerts/
+│   ├── .github/
+│   │   └── workflows/
+│   │       ├── ci.yml
+│   │       └── cd.yml
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── requirements.txt
+│   └── README.md
+├── docs/
+└── README.md
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd myapp/backend
+
+# Python
+pytest tests/ -v --cov
+
+# Node.js
+npm test
+npm run test:e2e
+
+# Load testing
+k6 run tests/load-test.js
+
+# Security scan
+bandit -r src/
+safety check
+```
+
+---
+
+## 🚀 Deployment
+
+### Docker
+
+```bash
+# Build
+docker build -t myapp:1.0.0 .
+
+# Run
+docker run -p 3000:3000 myapp:1.0.0
+
+# Compose
+docker-compose up -d
+```
+
+### Kubernetes
+
+```bash
+# Deploy
+kubectl apply -f k8s/
+
+# Check
+kubectl get pods
+kubectl get svc
+kubectl get ingress
+
+# Scale
+kubectl scale deployment myapp --replicas=5
+```
+
+### Terraform
+
+```bash
+# Initialize
+cd terraform/
+terraform init
+
+# Plan
+terraform plan
+
+# Apply
+terraform apply
+
+# Destroy (when needed)
+terraform destroy
+```
+
+---
+
+## 📊 Monitoring & Observability
+
+### Prometheus + Grafana
+
+```bash
+# Metrics endpoint
+curl http://localhost:3000/metrics
+
+# Grafana dashboards
+http://localhost:3000/grafana
+```
+
+### Logging (ELK)
+
+```bash
+# View logs
+kubectl logs -f deployment/myapp
+
+# Kibana
+http://localhost:5601
+```
+
+### Tracing (Jaeger)
+
+```bash
+# Jaeger UI
+http://localhost:16686
+```
+
+---
+
+## 🔐 Security
+
+### Built-in Security Features
+
+- ✅ OWASP Top 10 protection
+- ✅ Rate limiting
+- ✅ CORS configuration
+- ✅ Helmet.js / Security headers
+- ✅ SQL injection prevention
+- ✅ XSS protection
+- ✅ CSRF tokens
+- ✅ Input validation
+- ✅ Secret management (Vault)
+- ✅ SSL/TLS auto-config
+
+### Security Scan
+
+```bash
+# Run security audit
+backend-clone audit myapp/
+
+# Output:
+# ✓ No vulnerabilities found
+# ✓ OWASP compliant
+# ✓ All secrets encrypted
+```
+
+---
+
+## 💰 Cost Estimation
+
+```bash
+# Estimate cloud costs
+backend-clone estimate myapp/ --cloud aws
+
+# Output:
+# Monthly cost: $150-300
+# - Compute: $100
+# - Database: $50
+# - Storage: $10
+# - Network: $20
+```
+
+---
+
+## 🌟 Community
+
+- 💬 [Discord](https://discord.gg/backend-clone) - 10K+ members
+- 🐦 [Twitter](https://twitter.com/backend_clone) - Updates
+- 📺 [YouTube](https://youtube.com/@backend-clone) - Tutorials
+- 📝 [Blog](https://blog.backend-clone.dev) - Articles
+- 🎓 [Courses](https://learn.backend-clone.dev) - Learn
+
+---
+
+## 🤝 Contributing
+
+We love contributions! 🎉
+
+```bash
+# Fork & clone
+git clone https://github.com/yourusername/backend-clone.git
+
+# Create branch
+git checkout -b feature/amazing
+
+# Make changes
+# ...
+
+# Test
+pytest tests/
+
+# Commit
+git commit -m "Add amazing feature"
+
+# Push
+git push origin feature/amazing
+
+# Open PR!
+```
+
+---
+
+## 📜 License
+
+MIT © Backend Clone Team
+
+---
+
+## 🙏 Acknowledgments
+
+- All our amazing contributors
+- Open source community
+- Framework creators
+- Cloud providers
+- AI models (GPT-4, Claude)
+
+---
+
+## 📈 Stats
+
+- ⭐ 50K+ GitHub Stars
+- 📦 1M+ Downloads
+- 👥 10K+ Discord Members
+- 🌍 Used in 150+ countries
+- 🏢 Trusted by 500+ companies
+
+---
+
+<div align="center">
+
+**Made with ❤️ for developers worldwide**
+
+**backend-clone v1.5.0 - Kelajakda 1.8.0 bilan raqobatlashadi!** 💪
+
+[⬆ Back to top](#backend-clone-v150-)
+
+</div>

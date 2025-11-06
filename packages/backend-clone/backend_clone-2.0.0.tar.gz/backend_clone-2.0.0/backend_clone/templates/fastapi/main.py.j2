@@ -1,0 +1,23 @@
+from fastapi import FastAPI
+from src.api.routes import books
+
+app = FastAPI(
+    title="{{ project_name }}",
+    description="Backend API generated with Backend Clone v1.5.0",
+    version="1.0.0"
+)
+
+# Include routers
+app.include_router(books.router, prefix="/api/books", tags=["books"])
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to {{ project_name }}!"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=3000)

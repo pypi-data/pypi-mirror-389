@@ -1,0 +1,14 @@
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+{% if 'database' in features %}
+sqlalchemy>=2.0.0
+alembic>=1.13.0
+{% endif %}
+{% if 'auth' in features %}
+python-jose>=3.3.0
+passlib>=1.7.4
+{% endif %}
+{% if 'monitoring' in features %}
+prometheus-client>=0.18.0
+{% endif %}

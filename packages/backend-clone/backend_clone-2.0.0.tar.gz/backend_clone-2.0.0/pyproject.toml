@@ -1,0 +1,141 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "backend-clone"
+description = "🚀 Ultimate Backend Generator - AI-powered, multi-framework, cloud-ready, production-grade"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Backend Clone Team", email = "team@backend-clone.dev"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Natural Language :: English",
+]
+dependencies = [
+    # Core
+    "click>=8.1.7",
+    "rich>=13.7.0",
+    "inquirer>=3.1.4",
+    
+    # HTTP & API
+    "requests>=2.31.0",
+    "httpx>=0.25.0",
+    "aiohttp>=3.9.0",
+    
+    # Templates
+    "jinja2>=3.1.2",
+    "pyyaml>=6.0.1",
+    
+    # Git operations
+    "gitpython>=3.1.40",
+    
+    # AI (optional but included)
+    "openai>=1.3.0",
+    "anthropic>=0.7.0",
+    
+    # File operations
+    "pathspec>=0.11.0",
+    "watchdog>=3.0.0",
+    
+    # Validation
+    "pydantic>=2.5.0",
+    "jsonschema>=4.20.0",
+    
+    # Progress & UI
+    "tqdm>=4.66.0",
+    "prompt-toolkit>=3.0.0",
+    
+    # Utilities
+    "python-dotenv>=1.0.0",
+    "toml>=0.10.2",
+    "semver>=3.0.0",
+    
+    # Framework-specific dependencies
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.13.0",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.12.0",
+    
+    # Code Quality
+    "black>=23.11.0",
+    "flake8>=6.1.0",
+    "isort>=5.12.0",
+    "mypy>=1.7.0",
+    "pylint>=3.0.0",
+    
+    # Security
+    "bandit>=1.7.5",
+    "safety>=2.3.5",
+    
+    # Documentation
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-click>=5.1.0",
+    
+    # Build
+    "build>=1.0.0",
+    "twine>=4.0.0",
+]
+all = [
+    # All optional dependencies
+    "gunicorn>=21.2.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "boto3>=1.34.0",
+    "google-cloud-storage>=2.10.0",
+    "azure-storage-blob>=12.19.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/backend-clone/backend-clone"
+Documentation = "https://docs.backend-clone.dev"
+Repository = "https://github.com/backend-clone/backend-clone"
+Issues = "https://github.com/backend-clone/backend-clone/issues"
+Changelog = "https://github.com/backend-clone/backend-clone/blob/main/CHANGELOG.md"
+
+[project.scripts]
+backend-clone = "backend_clone.cli:main"
+bc = "backend_clone.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["backend_clone*"]
+
+[tool.setuptools.package-data]
+backend_clone = [
+    "templates/**/*",
+    "templates/**/**/*",
+    "templates/**/**/**/*",
+    "config/*.yaml",
+    "config/*.json",
+    "schemas/*.json",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "backend_clone.__version__"}
