@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools-scm", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "runregistry"
+dynamic = ["version"]
+description = "CMS Run Registry client."
+readme = "README.md"
+authors=[{name = "Fabio Espinosa", email = "f.e@cern.ch"}]
+maintainers = [{name = "CMS PPD Technical Support", email = "cms-PPD-technical-support@cern.ch"}]
+license-files = [ "LICENSE" ]
+classifiers=[
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Development Status :: 5 - Production/Stable"
+]
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.18.0,<3.0",
+    "cernrequests>=0.4.1",
+    "python-dotenv>=1.0.0,<2.0"
+]
+
+[dependency-groups]
+lint = [
+    "pre-commit>=4.2.0",
+    "ruff==0.11.4",
+]
+test = [
+    "codecov>=2.1.13",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
+    "pytest-retry>=1.7.0",
+]
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+version_file = "runregistry/_version.py"
