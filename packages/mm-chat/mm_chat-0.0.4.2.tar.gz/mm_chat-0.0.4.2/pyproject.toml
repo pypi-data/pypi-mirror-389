@@ -1,0 +1,21 @@
+[project]
+name = "mm-chat"
+version = "0.0.4.2"
+description = "Chat utilities for personal use"
+requires-python = ">=3.12"
+dependencies = [
+    "hmr~=0.7.5",
+    "promplate[openai]>=0.3.4.10,<0.3.6.0",
+    "prompt-toolkit~=3.0.48",
+]
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+includes = [
+    "m",
+]
