@@ -1,0 +1,37 @@
+name: Run Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Run all of our static code checks here
+  code_checking:
+    name: Run static code checks
+    runs-on: mdb-dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull MindsDB Github Actions
+        uses: actions/checkout@v4
+        with:
+          repository: mindsdb/github-actions
+          path: github-actions
+        
+      - uses: ./github-actions/common-checks
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+  
+      - name: Set up Python ${{ vars.CI_PYTHON_VERSION }}
+        run: uv python install ${{ vars.CI_PYTHON_VERSION }}
+
+      - name: Run unit tests
+        run: |
+            uv run --frozen pytest -v
+
