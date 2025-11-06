@@ -1,0 +1,17 @@
+meds-transforms<0.4
+requests
+beautifulsoup4
+hydra-core
+
+[dev]
+pre-commit<4
+
+[local_parallelism]
+hydra-joblib-launcher
+
+[slurm_parallelism]
+hydra-submitit-launcher
+
+[tests]
+pytest
+pytest-cov

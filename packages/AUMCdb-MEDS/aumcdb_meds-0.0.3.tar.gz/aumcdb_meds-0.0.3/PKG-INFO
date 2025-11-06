@@ -1,0 +1,52 @@
+Metadata-Version: 2.4
+Name: AUMCdb-MEDS
+Version: 0.0.3
+Summary: A template ETL pipeline to extract AUMCdb data into the MEDS format.
+Author-email: Patrick Rockenschaub <rockenschaub.patrick@gmail.com>
+Project-URL: Homepage, https://github.com/prockenschaub/AUMCdb_MEDS
+Project-URL: Issues, https://github.com/prockenschaub/AUMCdb_MEDS/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: meds-transforms<0.4
+Requires-Dist: requests
+Requires-Dist: beautifulsoup4
+Requires-Dist: hydra-core
+Provides-Extra: dev
+Requires-Dist: pre-commit<4; extra == "dev"
+Provides-Extra: tests
+Requires-Dist: pytest; extra == "tests"
+Requires-Dist: pytest-cov; extra == "tests"
+Provides-Extra: local-parallelism
+Requires-Dist: hydra-joblib-launcher; extra == "local-parallelism"
+Provides-Extra: slurm-parallelism
+Requires-Dist: hydra-submitit-launcher; extra == "slurm-parallelism"
+Dynamic: license-file
+
+# AUMCdb MEDS Extraction ETL
+
+This pipeline extracts the AUMCdb dataset into MEDS format. The AUMCdb dataset is a publicly available dataset from the
+Amsterdam University Medical Centers (AUMC) that contains clinical data from the hospital. You first need to request
+access [here](https://lifesciences.datastations.nl/dataset.xhtml?persistentId=doi:10.17026/dans-22u-f8vd).
+
+## Usage:
+
+```
+pip install AUMCdb_MEDS
+MEDS_extract-AUMCdb input_dir=$RAW_DATA_DIR output_dir=$MEDS_DIR
+```
+
+If you want, you can also use the `do_download` flag to download the data directly from the AUMCdb repository.
+You need to set the `AUMCDB_API_KEY` environment variable to your API key.
+Please get it from
+here: [AUMCdb API Key](https://lifesciences.datastations.nl/dataverseuser.xhtml?selectTab=dataRelatedToMe)
+
+```
+export AUMCDB_API_KEY=your_api_key
+MEDS_extract-AUMCdb input_dir=$RAW_DATA_DIR output_dir=$MEDS_DIR
+```
+
+This will download the dataset automatically for you.
