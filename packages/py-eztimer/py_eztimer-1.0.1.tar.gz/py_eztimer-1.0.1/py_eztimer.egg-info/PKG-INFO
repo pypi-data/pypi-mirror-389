@@ -1,0 +1,118 @@
+Metadata-Version: 2.4
+Name: py-eztimer
+Version: 1.0.1
+Summary: A simple and intuitive timer library for measuring elapsed time
+Author: drilegems
+Author-email: fugugamesyt@gmail.com
+Keywords: timer,timing,benchmark,performance,elapsed-time
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: requires-python
+Dynamic: summary
+
+EZTimer
+A simple and intuitive Python timer library for measuring elapsed time with comprehensive pause/resume functionality.
+
+Installation
+pip install py-eztimer
+
+## Quick Start
+
+from eztimer import EZTimer
+import time
+
+# Basic usage
+timer = EZTimer()
+timer.start()
+
+# Do some work...
+time.sleep(1.5)
+
+print(f"Elapsed time: {timer.get_elapsed_time():.2f} seconds")
+
+# Pause/resume functionality
+timer.pause()
+time.sleep(1)  # This won't be counted
+timer.resume()
+time.sleep(0.5)
+
+print(f"Total time: {timer.get_elapsed_time():.2f} seconds")
+
+# Reset and restart
+timer.restart()
+
+## API Reference
+
+start()
+Start the timer. If already running, has no effect.
+
+pause()
+Pause the timer, freezing the current elapsed time.
+
+resume()
+Resume a paused timer, continuing from where it left off.
+
+get_elapsed_time() -> float
+Get the total elapsed time in seconds.
+
+reset()
+Completely reset the timer to zero.
+
+restart()
+Reset the timer and immediately start counting again.
+
+## Examples
+
+Benchmarking Code Execution
+
+from eztimer import EZTimer
+
+timer = EZTimer()
+timer.start()
+
+# Your code to benchmark
+result = sum(i*i for i in range(1000000))
+
+elapsed = timer.get_elapsed_time()
+print(f"Computation took {elapsed:.4f} seconds")
+
+Timing with Pauses
+
+from eztimer import EZTimer
+import time
+
+timer = EZTimer()
+timer.start()
+
+# First operation
+time.sleep(0.5)
+timer.pause()
+
+# User interaction (not timed)
+input("Press Enter to continue...")
+
+timer.resume()
+# Second operation
+time.sleep(0.3)
+
+print(f"Active time: {timer.get_elapsed_time():.2f} seconds")
+
+## License
+MIT
