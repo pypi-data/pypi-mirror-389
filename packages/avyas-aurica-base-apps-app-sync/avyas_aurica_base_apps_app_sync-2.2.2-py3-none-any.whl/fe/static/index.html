@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Sync - Package Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .actions { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; transform: translateY(-2px); }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-success:hover { background: #38a169; transform: translateY(-2px); }
+        .btn-warning { background: #ed8936; color: white; }
+        .btn-warning:hover { background: #dd6b20; transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .apps-table { width: 100%; border-collapse: collapse; }
+        .apps-table th, .apps-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .apps-table th { background: #f7fafc; font-weight: 600; color: #2d3748; }
+        .apps-table tr:hover { background: #f7fafc; }
+        .version { font-family: 'Courier New', monospace; background: #edf2f7; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+        .loading { text-align: center; padding: 40px; color: #718096; }
+        .error { background: #fed7d7; color: #742a2a; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .success { background: #c6f6d5; color: #22543d; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .info { background: #bee3f8; color: #1a365d; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .summary-item { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; }
+        .summary-item .number { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
+        .summary-item .label { font-size: 0.9em; opacity: 0.9; }
+        .app-actions { display: flex; gap: 8px; }
+        .btn-small { padding: 6px 12px; font-size: 14px; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .badge-installed { background: #c6f6d5; color: #22543d; }
+        .badge-local { background: #bee3f8; color: #1a365d; }
+        .badge-available { background: #faf089; color: #744210; }
+        .status-cell { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 App Sync</h1>
+            <p>Develop Local → Publish to GitHub → PyPI → Install/Update</p>
+        </div>
+        
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">🌐 Quick Access to Apps</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+                <a href="/app-manager/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">📱 App Manager</a>
+                <a href="/app-sync/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">📦 App Sync</a>
+                <a href="/auth-app/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">🔐 Auth App</a>
+                <a href="/chat-app/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">💬 Chat App</a>
+                <a href="/dashboard-app/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">📊 Dashboard</a>
+                <a href="/nl-generator/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">🤖 NL Generator</a>
+                <a href="/weather-app/static/" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">🌤️ Weather App</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">Actions</h2>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="loadApps()">🔄 Refresh</button>
+                <button class="btn btn-success" onclick="publishSelectedApps()">📤 Publish Selected</button>
+                <button class="btn btn-warning" onclick="selectAll()">☑️ Select All</button>
+                <button class="btn btn-warning" onclick="deselectAll()">☐ Deselect All</button>
+            </div>
+            <div id="sync-progress" style="display: none; margin-top: 15px;">
+                <div style="background: #edf2f7; padding: 12px; border-radius: 6px;">
+                    <strong>Publishing:</strong> <span id="sync-current">-</span> / <span id="sync-total">-</span>
+                    <div style="margin-top: 8px; background: white; border-radius: 4px; height: 24px; overflow: hidden;">
+                        <div id="sync-progress-bar" style="background: #667eea; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="message-area"></div>
+        
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">Apps Management</h2>
+            <div id="summary" class="summary" style="display: none;"></div>
+            <div id="apps-list"><div class="loading">Click "Refresh" to view apps</div></div>
+        </div>
+    </div>
+    <script>
+        let allAppsData = [];
+        let installedAppsData = {};
+        let localAppsData = {};
+        let selectedApps = new Set();
+
+        // Auth token handling
+        function getAuthToken() {
+            // Check URL for token (first time)
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenFromURL = urlParams.get('token');
+            
+            if (tokenFromURL) {
+                // Store token for future use
+                localStorage.setItem('auth_token', tokenFromURL);
+                
+                // Clean URL by removing token parameter
+                urlParams.delete('token');
+                const newSearch = urlParams.toString();
+                const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
+                window.history.replaceState({}, '', newUrl);
+                
+                return tokenFromURL;
+            }
+            
+            // Get token from localStorage
+            return localStorage.getItem('auth_token');
+        }
+
+        // Helper function to make authenticated fetch requests
+        async function authFetch(url, options = {}) {
+            const token = getAuthToken();
+            if (token) {
+                options.headers = {
+                    ...options.headers,
+                    'Authorization': `Bearer ${token}`
+                };
+            }
+            options.credentials = 'include';  // Include cookies
+            return fetch(url, options);
+        }
+
+        async function loadApps() {
+            const msg = document.getElementById('message-area');
+            const list = document.getElementById('apps-list');
+            msg.innerHTML = '<div class="info">🔄 Loading...</div>';
+            list.innerHTML = '<div class="loading">Loading...</div>';
+            
+            try {
+                // Load registry apps (available from PyPI)
+                const registryRes = await authFetch('/app-sync/api/install/registry');
+                const registryData = await registryRes.json();
+                const registryApps = registryData.apps || {};
+                
+                // Load installed apps metadata
+                installedAppsData = {};
+                try {
+                    const installedRes = await authFetch('/app-sync/api/install/installed');
+                    const installedData = await installedRes.json();
+                    installedData.apps.forEach(app => {
+                        installedAppsData[app.name] = app;
+                    });
+                } catch (e) {
+                    console.error('Failed to load installed apps:', e);
+                }
+                
+                // Load local apps (running in system)
+                localAppsData = {};
+                const res = await authFetch('/apps');
+                const data = await res.json();
+                if (data.apps) {
+                    Object.entries(data.apps).forEach(([name, info]) => {
+                        localAppsData[name] = {
+                            name,
+                            path: info.path,
+                            has_static: info.has_static,
+                            api_count: (info.api_endpoints || []).length,
+                            api_endpoints: info.api_endpoints || [],
+                            version: info.metadata?.version || null
+                        };
+                    });
+                }
+                
+                // Merge all data: registry apps as base, enrich with local/installed info
+                allAppsData = Object.entries(registryApps).map(([name, info]) => {
+                    const isLocal = name in localAppsData;
+                    const isInstalled = name in installedAppsData;
+                    const local = localAppsData[name] || {};
+                    const installed = installedAppsData[name] || {};
+                    
+                    return {
+                        name,
+                        package_ref: info.package_ref,
+                        registry: info.registry,
+                        description: info.description || '',
+                        repo: info.repo || '',
+                        // Status flags
+                        isLocal,
+                        isInstalled,
+                        installedVersion: installed.installed_version,
+                        localVersion: local.version,
+                        latestVersion: info.latest_version,  // Latest version on PyPI
+                        // Local info
+                        api_count: local.api_count || 0,
+                        has_static: local.has_static || false,
+                        api_endpoints: local.api_endpoints || []
+                    };
+                });
+                
+                // Add local-only apps (not in registry)
+                Object.keys(localAppsData).forEach(name => {
+                    if (!registryApps[name]) {
+                        const local = localAppsData[name];
+                        allAppsData.push({
+                            name,
+                            package_ref: null,
+                            registry: 'local',
+                            description: local.has_static ? 'Has frontend' : 'Backend only',
+                            repo: 'local',
+                            isLocal: true,
+                            isInstalled: false,
+                            installedVersion: null,
+                            localVersion: local.version,
+                            api_count: local.api_count || 0,
+                            has_static: local.has_static || false,
+                            api_endpoints: local.api_endpoints || []
+                        });
+                    }
+                });
+                
+                renderMergedTable();
+                renderSummary();
+                
+                const totalRegistry = Object.keys(registryApps).length;
+                const totalLocal = Object.keys(localAppsData).length;
+                const totalInstalled = Object.keys(installedAppsData).length;
+                const needInstall = totalRegistry - totalInstalled;
+                msg.innerHTML = `<div class="success">✅ ${totalLocal} local (dev), ${totalInstalled} installed from PyPI, ${needInstall} available to install</div>`;
+            } catch (error) {
+                msg.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('Load error:', error);
+            }
+        }
+        
+        function renderMergedTable() {
+            let html = '<table class="apps-table">';
+            html += '<thead><tr>';
+            html += '<th style="width: 40px;"><input type="checkbox" id="select-all" onchange="toggleAll(this.checked)"></th>';
+            html += '<th>App Name</th>';
+            html += '<th>Local Version</th>';
+            html += '<th>PyPI Latest</th>';
+            html += '<th>Installed Version</th>';
+            html += '<th>PyPI Package</th>';
+            html += '<th>APIs / Frontend</th>';
+            html += '<th>Description</th>';
+            html += '<th>App Link</th>';
+            html += '<th>Actions</th>';
+            html += '</tr></thead><tbody>';
+            
+            allAppsData.forEach(app => {
+                const checked = selectedApps.has(app.name) ? 'checked' : '';
+                const canPublish = app.isLocal;
+                const canInstall = app.package_ref;
+                
+                // Local version status
+                let localStatus = '';
+                if (app.isLocal) {
+                    if (app.localVersion) {
+                        localStatus = `<span class="badge badge-local">🟢 v${app.localVersion}</span>`;
+                    } else {
+                        localStatus = '<span class="badge badge-local">🟢 Running</span>';
+                    }
+                } else {
+                    localStatus = '<span style="color: #a0aec0;">Not running</span>';
+                }
+                
+                // PyPI latest version
+                let pypiLatestStatus = '';
+                if (app.latestVersion) {
+                    pypiLatestStatus = `<span class="version" style="background: #edf2f7; color: #2d3748; font-weight: 600;">v${app.latestVersion}</span>`;
+                    // Show indicator if local is newer/older than PyPI
+                    if (app.localVersion && app.localVersion !== app.latestVersion) {
+                        const localParts = app.localVersion.split('.').map(Number);
+                        const latestParts = app.latestVersion.split('.').map(Number);
+                        let isNewer = false;
+                        for (let i = 0; i < 3; i++) {
+                            if (localParts[i] > latestParts[i]) { isNewer = true; break; }
+                            if (localParts[i] < latestParts[i]) { break; }
+                        }
+                        if (isNewer) {
+                            pypiLatestStatus += '<div style="font-size: 11px; color: #d69e2e; margin-top: 2px;">⚠️ Local is newer</div>';
+                        } else {
+                            pypiLatestStatus += '<div style="font-size: 11px; color: #3182ce; margin-top: 2px;">📥 Update available</div>';
+                        }
+                    } else if (app.localVersion === app.latestVersion) {
+                        pypiLatestStatus += '<div style="font-size: 11px; color: #48bb78; margin-top: 2px;">✓ Up to date</div>';
+                    }
+                } else if (app.package_ref) {
+                    pypiLatestStatus = '<span style="color: #a0aec0; font-size: 12px;">Loading...</span>';
+                } else {
+                    pypiLatestStatus = '<span style="color: #a0aec0;">—</span>';
+                }
+                
+                // Installed version from PyPI
+                let installedStatus = '';
+                if (app.isInstalled && app.installedVersion) {
+                    installedStatus = `<span class="badge badge-installed">v${app.installedVersion}</span>`;
+                    installedStatus += '<div style="font-size: 11px; color: #48bb78; margin-top: 2px;">✓ Installed</div>';
+                } else if (app.isInstalled) {
+                    installedStatus = '<span class="badge badge-installed">Installed</span>';
+                    installedStatus += '<div style="font-size: 11px; color: #718096; margin-top: 2px;">version unknown</div>';
+                } else if (app.package_ref) {
+                    installedStatus = '<span style="color: #a0aec0;">Not installed</span>';
+                } else {
+                    installedStatus = '<span style="color: #a0aec0;">—</span>';
+                }
+                
+                // API/Frontend info
+                let apiInfo = '';
+                if (app.isLocal) {
+                    const apiText = `${app.api_count} API${app.api_count !== 1 ? 's' : ''}`;
+                    const feText = app.has_static ? ' + Frontend' : '';
+                    apiInfo = `<span class="version">${apiText}${feText}</span>`;
+                } else {
+                    apiInfo = '<span style="color: #a0aec0;">—</span>';
+                }
+                
+                // PyPI Package Link
+                let pypiLink = '';
+                if (app.package_ref && app.package_ref.startsWith('pypi:')) {
+                    const packageName = app.package_ref.replace('pypi:', '').split('@')[0];
+                    pypiLink = `<a href="https://pypi.org/project/${packageName}/" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">📦 ${packageName}</a>`;
+                    pypiLink += '<div style="font-size: 11px; color: #718096; margin-top: 2px;"><a href="https://pypi.org/project/${packageName}/" target="_blank" style="color: #667eea; text-decoration: none;">View on PyPI →</a></div>';
+                } else if (app.registry === 'npm' && app.package_ref) {
+                    const packageName = app.package_ref.replace('npm:', '').split('@')[0];
+                    pypiLink = `<a href="https://www.npmjs.com/package/${packageName}" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">📦 ${packageName}</a>`;
+                } else if (app.package_ref) {
+                    pypiLink = '<span style="color: #718096; font-size: 12px;">Available</span>';
+                } else {
+                    pypiLink = '<span style="color: #a0aec0;">Not published</span>';
+                }
+                
+                // Actions - focused on publish/install workflow
+                let actions = '<div class="app-actions">';
+                
+                if (canPublish) {
+                    // Local apps can be published to PyPI
+                    actions += `<button class="btn btn-warning btn-small" onclick="publish('${app.name}')" title="Publish to GitHub → PyPI">📤 Publish</button>`;
+                }
+                
+                if (canInstall) {
+                    // Apps available on PyPI can be installed/updated
+                    if (app.isInstalled) {
+                        actions += `<button class="btn btn-success btn-small" onclick="installApp('${app.package_ref}', '${app.name}')" title="Update from PyPI (get latest)">🔄 Update from PyPI</button>`;
+                    } else {
+                        actions += `<button class="btn btn-primary btn-small" onclick="installApp('${app.package_ref}', '${app.name}')" title="Install from PyPI">📥 Install from PyPI</button>`;
+                    }
+                }
+                
+                if (!canPublish && !canInstall) {
+                    actions += '<span style="color: #a0aec0; font-size: 12px;">No actions</span>';
+                }
+                
+                actions += '</div>';
+                
+                // App link to frontend
+                let appLink = '';
+                if (app.has_static || app.isLocal) {
+                    const appUrl = `/${app.name}/static/`;
+                    appLink = `<a href="${appUrl}" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">🌐 Open App</a>`;
+                } else {
+                    appLink = '<span style="color: #a0aec0; font-size: 12px;">No frontend</span>';
+                }
+                
+                html += `<tr>
+                    <td><input type="checkbox" class="app-checkbox" data-app="${app.name}" ${checked} ${!canPublish ? 'disabled' : ''} onchange="toggle('${app.name}', this.checked)"></td>
+                    <td><strong>${app.name}</strong><div class="package-ref">${app.repo || app.registry}</div></td>
+                    <td>${localStatus}</td>
+                    <td>${pypiLatestStatus}</td>
+                    <td>${installedStatus}</td>
+                    <td>${pypiLink}</td>
+                    <td>${apiInfo}</td>
+                    <td style="max-width: 250px;">${app.description}</td>
+                    <td>${appLink}</td>
+                    <td>${actions}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('apps-list').innerHTML = html;
+        }
+
+        function renderSummary() {
+            const total = allAppsData.length;
+            const localCount = allAppsData.filter(a => a.isLocal).length;
+            const installedCount = allAppsData.filter(a => a.isInstalled).length;
+            const notInstalledCount = allAppsData.filter(a => a.package_ref && !a.isInstalled).length;
+            const selectedCount = selectedApps.size;
+            
+            const sum = document.getElementById('summary');
+            sum.innerHTML = `
+                <div class="summary-item"><div class="number">${total}</div><div class="label">Total Apps</div></div>
+                <div class="summary-item"><div class="number">${localCount}</div><div class="label">Running Local (Dev)</div></div>
+                <div class="summary-item"><div class="number">${installedCount}</div><div class="label">Installed from PyPI</div></div>
+                <div class="summary-item"><div class="number">${notInstalledCount}</div><div class="label">Need Install</div></div>
+                <div class="summary-item"><div class="number">${selectedCount}</div><div class="label">Selected to Publish</div></div>
+            `;
+            sum.style.display = 'grid';
+        }
+
+        function toggle(name, checked) {
+            if (checked) selectedApps.add(name); else selectedApps.delete(name);
+            renderSummary();
+        }
+
+        function toggleAll(checked) {
+            selectedApps.clear();
+            document.querySelectorAll('.app-checkbox').forEach(cb => {
+                cb.checked = checked;
+                if (checked) selectedApps.add(cb.dataset.app);
+            });
+            renderSummary();
+        }
+
+        function selectAll() { document.getElementById('select-all').checked = true; toggleAll(true); }
+        function deselectAll() { document.getElementById('select-all').checked = false; toggleAll(false); }
+
+        async function publishSelectedApps() {
+            if (selectedApps.size === 0) {
+                document.getElementById('message-area').innerHTML = '<div class="error">❌ No apps selected</div>';
+                return;
+            }
+            const apps = Array.from(selectedApps);
+            const msg = document.getElementById('message-area');
+            const progress = document.getElementById('sync-progress');
+            const bar = document.getElementById('sync-progress-bar');
+            const current = document.getElementById('sync-current');
+            const total = document.getElementById('sync-total');
+            
+            msg.innerHTML = '<div class="info">📤 Publishing (auto-incrementing versions)...</div>';
+            progress.style.display = 'block';
+            total.textContent = apps.length;
+            
+            let success = 0, failed = [], versions = [];
+            for (let i = 0; i < apps.length; i++) {
+                current.textContent = i + 1;
+                bar.style.width = `${((i + 1) / apps.length) * 100}%`;
+                try {
+                    const res = await authFetch('/app-sync/api/publish', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({app_name: apps[i]})
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        success++;
+                        if (data.version) versions.push(`${apps[i]} v${data.version}`);
+                    } else {
+                        failed.push(apps[i]);
+                    }
+                } catch (e) { failed.push(apps[i]); }
+                await new Promise(r => setTimeout(r, 300));
+            }
+            progress.style.display = 'none';
+            if (failed.length === 0) {
+                const versionList = versions.length > 0 ? `<br><small>${versions.join(', ')}</small>` : '';
+                msg.innerHTML = `<div class="success">✅ Published ${success} app(s) to GitHub → PyPI${versionList}</div>`;
+            } else {
+                msg.innerHTML = `<div class="error">⚠️ Published ${success}, failed: ${failed.join(', ')}</div>`;
+            }
+            setTimeout(loadApps, 1000);
+        }
+
+        async function publish(name) {
+            const msg = document.getElementById('message-area');
+            msg.innerHTML = `<div class="info">📤 Publishing ${name} (auto-incrementing version)...</div>`;
+            try {
+                const res = await authFetch('/app-sync/api/publish', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({app_name: name})
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const versionMsg = data.version ? ` v${data.version}` : '';
+                    msg.innerHTML = `<div class="success">✅ Published ${name}${versionMsg} to GitHub → PyPI</div>`;
+                    setTimeout(loadApps, 1000);
+                } else {
+                    msg.innerHTML = `<div class="error">❌ Error: ${data.detail || 'Failed'}</div>`;
+                }
+            } catch (error) {
+                msg.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function installApp(package_ref, app_name) {
+            const msg = document.getElementById('message-area');
+            const isUpdate = installedAppsData[app_name];
+            const action = isUpdate ? 'Updating' : 'Installing';
+            msg.innerHTML = `<div class="info">📥 ${action} ${app_name} from PyPI (latest version)...</div>`;
+            try {
+                const res = await authFetch('/app-sync/api/install/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({package_ref: package_ref, force: true})  // Always force to get latest
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const version = data.version || 'latest';
+                    msg.innerHTML = `<div class="success">✅ ${isUpdate ? 'Updated' : 'Installed'} ${app_name} v${version} from PyPI. Restart may be needed.</div>`;
+                    setTimeout(loadApps, 1000);
+                } else {
+                    msg.innerHTML = `<div class="error">❌ Error: ${data.detail || 'Installation failed'}</div>`;
+                }
+            } catch (error) {
+                msg.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadApps);
+    </script>
+</body>
+</html>
