@@ -1,0 +1,48 @@
+Metadata-Version: 2.4
+Name: isuvalidation
+Version: 0.1.0
+Summary: Credential validation helper for any project.
+Author: yannickRafael
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.31
+Requires-Dist: python-dotenv>=1.0
+
+# isuvalidation
+
+`isuvalidation` provides a thin wrapper around the Fenix authentication flow so that applications can verify whether a username/password pair is valid without managing sessions themselves.
+
+## Installation
+
+```bash
+pip install .
+```
+
+## Usage
+
+```python
+from isuvalidation import check_credentials
+
+result = check_credentials("username", "password")
+if result["success"]:
+    print("Credentials are valid.")
+else:
+    print(f"Login failed: {result['code']} - {result['message']}")
+```
+
+## Configuration
+
+Set the following environment variables (or populate a `.env` file) so the library knows where to send requests and how to interpret responses:
+
+- `FENIX_LOGIN_URL`: Full URL of the Fenix login endpoint.
+- `SUCCESS_LOGIN_STATUS`: Optional HTTP status code that represents a successful login (defaults to `200` if omitted).
+
+## Development
+
+Install the project in editable mode and run your preferred tooling.
+
+```bash
+pip install -e .
+```
+
+Feel free to extend the `error_codes` mapping in `isuvalidation/config.py` if new failure scenarios need to be reported.
