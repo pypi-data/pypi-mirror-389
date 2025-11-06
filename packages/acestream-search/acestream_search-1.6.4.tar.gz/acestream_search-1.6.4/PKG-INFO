@@ -1,0 +1,58 @@
+Metadata-Version: 2.4
+Name: acestream_search
+Version: 1.6.4
+Summary: Produces acestream m3u playlist, xml epg or json data.
+Home-page: https://github.com/vstavrinov/acestream_search
+Author: Vladimir Stavrinov
+Author-email: vstavrinov@gmail.com
+License: GNU General Public License v3 (GPLv3)
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Multimedia :: Video
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: lxml
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+# acestream-search
+Produces acestream m3u playlist, xml epg or json data. 
+You need acestream engine to get it working. If You have no acestream and don't want to install, you can use https://github.com/vstavrinov/acestream-service instead of acestream-search.
+
+## Installation:
+
+```
+pip install acestream-search
+```
+
+## Usage:
+
+```
+acestream_search
+```
+
+By default You will get long m3u playlist.
+See help for for more options:
+
+```
+acestream_search -h
+```
