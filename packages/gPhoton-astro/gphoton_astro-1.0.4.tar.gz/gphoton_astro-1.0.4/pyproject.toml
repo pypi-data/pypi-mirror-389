@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gPhoton-astro"
+version = "1.0.4"
+description = "A modified version of gPhoton for astrophysical data analysis"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+
+authors = [
+  { name = "Joysankar Majumdar", email = "j.majumdar@uw.edu.pl" }
+]
+
+dependencies = [
+  "numpy",
+  "pandas",
+  "astropy",
+  "requests",
+  "scipy"
+]
+
+[project.urls]
+Homepage = "https://github.com/joysankar-astro/gPhoton"
+Issues = "https://github.com/joysankar-astro/gPhoton/issues"
