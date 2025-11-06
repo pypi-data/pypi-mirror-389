@@ -1,0 +1,66 @@
+Metadata-Version: 2.1
+Name: astro-pyvista
+Version: 0.4.2
+Summary: Astronomical image processing
+Author-email: Jon Holtzman <holtzmanjon@gmail.com>
+Project-URL: Homepage, https://github.com/holtzmanjon/pyvista
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ipython
+Requires-Dist: jupyter
+Requires-Dist: holtz-tools
+Requires-Dist: astropy
+Requires-Dist: astroscrappy
+Requires-Dist: gaiaxpy
+Requires-Dist: photutils
+Requires-Dist: astroplan
+Requires-Dist: pyyaml
+Requires-Dist: pyautogui
+Requires-Dist: pydl
+Requires-Dist: astroquery
+Requires-Dist: importlib-resources
+Requires-Dist: sphinx
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: scipy
+Requires-Dist: scikit-learn
+Requires-Dist: scikit-image
+Requires-Dist: esutil
+Requires-Dist: imageio
+Requires-Dist: imageio-ffmpeg
+
+## pyvista
+
+pyvista is a package for the inspection, reduction, and analysis
+of astronomical data. It includes a native Python display tool, tv,
+that is modeled after the original xvista display tool. 
+
+Much of the package is under some level of development, but includes
+modules for:
+
+- image display (tv)
+- image reduction (imred)
+- spectral analysis (spectra) : tracing, wavelength calibration, fluxing
+- observation planning (skycalc) : wrappers around astroplan
+- exposure time calculation tools (etc) 
+- stellar photometry (stars) : wrappers around photutils)
+- image manipulation (image) : functions for basic image manipulation, including boxes
+- image simulation (simulate)
+
+Help can be found at https://pyvista.readthedocs.org
+
+Some examples, in the form of jupyter notebooks, can be found
+in the docs/notebooks subdirectory of the distribution, see
+https://github.com/holtzmanjon/pyvista/tree/main/doc/notebooks
+
+Questions, requests, etc. can  be directed to Jon Holtzman at
+holtz@nmsu.edu 
+
+
+

@@ -1,0 +1,19 @@
+---
+channels  : ['']
+formstr   : ['{:04d}.f*']
+gain      : [2.0]
+rn        : [3.7]
+scale     : .228
+saturation : [60000]
+flip      : False
+biastype  : 1
+crbox     : 'lacosmic'
+biasregion   : 
+   - [[0,2099],[0,2047]]
+biasbox   : 
+   - [[2055,2095],[20,2028]]
+trimbox   : 
+   - [[2,2049],[0,2047]]
+normbox   : 
+   - [[800,1200],[800,1200]]
+
