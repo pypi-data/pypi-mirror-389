@@ -1,0 +1,114 @@
+# sparq Client
+
+Python client library for the sparq API - automated degree planning for SJSU students.
+
+## Installation
+
+```bash
+pip install sparq
+```
+
+## Quick Start
+
+### 1. Get Your API Key
+
+First, register and get your API key:
+
+```bash
+sparq auth
+```
+
+This will:
+- Send a verification code to your email
+- Generate your API key after verification
+- Save it to `~/.sparq/config.txt`
+
+### 2. Generate a Degree Plan
+
+Use the example script to test the API:
+
+```bash
+python sparq.py
+```
+
+Or use it in your own code:
+
+```python
+from sparq import Sparq
+
+# Initialize with your API key (automatically loaded from config)
+client = Sparq()
+
+# Generate a degree plan
+plan = client.plan(
+	major="Computer Science",
+	cc_courses=[{"code": "COMSC 075", "title": "Computer Science I", "grade": "A", "institution": "Evergreen Valley College"}],
+	units_per_semester=15,
+	schedule_preferences={"avoid_hours": ["8:00 AM", "8:00 PM"]}
+)
+
+print(plan)
+
+# Get available class sections (no API key required)
+sections = client.classes("CS 49J")
+print(f"Found {len(sections['CS 49J'])} sections for CS 49J")
+
+# Get sections for multiple courses
+sections = client.classes(["CS 49J", "MATH 42", "CS 146"])
+for course_id, course_sections in sections.items():
+	print(f"{course_id}: {len(course_sections)} sections")
+	for section in course_sections:
+		print(f"  - {section['Section']}: {section['Instructor']}, {section['Days']} {section['Times']}")
+```
+
+### 3. Check Your API Usage
+
+View your API usage statistics:
+
+```bash
+sparq usage
+```
+
+### 4. Recover Lost API Key
+
+If you lose your API key:
+
+```bash
+sparq recover
+```
+
+### 5. Get Class Sections
+
+Search for available class sections for any SJSU course (no API key required):
+
+```bash
+sparq classes
+```
+
+This will prompt you to enter course ID(s) and display all available sections with details like:
+- Instructor
+- Days and times
+- Location
+- Open seats
+- And more
+
+## CLI Commands
+
+- `sparq auth` - Register and get your API key
+- `sparq usage` - View API usage statistics
+- `sparq recover` - Recover your API key via email
+- `sparq classes` - Get available class sections for courses (no API key required)
+
+## Features
+
+- **Degree Planning**: Generate semester-by-semester plans for SJSU majors
+- **Transfer Credit**: Support for community college and AP credits  
+- **Usage Tracking**: Monitor your API calls and history
+- **API Key Recovery**: Recover lost API keys via email verification
+
+## Updates
+For updates please visit: https://github.com/shiventi/sparq/blob/main/docs/documentation.md
+
+## Support
+
+For issues or questions, visit: https://github.com/shiventi/sparq
