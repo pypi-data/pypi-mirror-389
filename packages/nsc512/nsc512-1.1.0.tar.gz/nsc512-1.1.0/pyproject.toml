@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nsc512"
+version = "1.1.0"
+description = "Nsc410 增强版表达式处理器"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+dependencies = [
+    "Nsc371",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+]
+
+[project.scripts]
+nsc410 = "nsc410.main:main"
