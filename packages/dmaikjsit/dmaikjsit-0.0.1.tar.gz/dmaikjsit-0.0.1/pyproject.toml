@@ -1,0 +1,45 @@
+# This is the main configuration file for your project.
+# It tells Python's build tools everything they need to know.
+# This replaces the older 'setup.py' and 'setup.cfg' files.
+
+[build-system]
+# These are the tools needed to build your package
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# This is all the metadata about your package
+name = "dmaikjsit" # IMPORTANT: This MUST be unique on PyPI
+version = "0.0.1"
+authors = [
+  { name="Neel Parekh", email="neeluparekh001@gmail.com" },
+]
+description = "It has all the Dmai codes"
+readme = "README.md" # It will use your README file
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools]
+# This section tells the build tool where to find your code
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+# This automatically finds all packages in the 'src' directory
+where = ["src"]
+
+[project.scripts]
+# THIS IS THE MAGIC!
+# It creates a new command "get-dmai-codes" in the user's shell
+# that runs the "main" function from your "core.py" file.
+get-dmai-codes = "my_cool_library.core:main"
+
+[tool.setuptools.package-data]
+# This is the CRITICAL part for your "add-on" request.
+# It tells setuptools to include all files
+# it finds inside the 'my_cool_library.data' package.
+"my_cool_library.data" = ["*.*"]
