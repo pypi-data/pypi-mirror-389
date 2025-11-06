@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: fastapi-initializr
+Version: 1.0.3
+Summary: A modern CLI tool that instantly scaffolds production-ready FastAPI project structures with best practices, interactive prompts, and optional configurations.
+Author-email: Saad Sabahuddin <saadmdsabahuddin@gmail.com>
+License: MIT
+Project-URL: Repository, https://github.com/saadmdsabah/fastapi-initializr.git
+Project-URL: Issues, https://github.com/saadmdsabah/fastapi-initializr/issues
+Project-URL: DOWNLOAD, https://github.com/saadmdsabah/fastapi-initializr/archive/refs/heads/main.zip
+Keywords: fastapi,initializr,cli,project-generator,scaffold,template,web-development,python-cli,api,boilerplate,framework,starter-project
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: questionary
+Requires-Dist: colorama
+Requires-Dist: requests
+Requires-Dist: yaspin
+Dynamic: requires-python
+
+# ⚡ fastapi-initializr
+
+[![PyPI version](https://img.shields.io/pypi/v/fastapi-initializr.svg)](https://pypi.org/project/fastapi-initializr/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/fastapi-initializr.svg)](https://pypi.org/project/fastapi-initializr/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+> A modern CLI tool that instantly scaffolds **production-ready FastAPI** project structures with best practices, interactive prompts, and customizable templates.
+
+---
+
+## Overview
+
+`fastapi-initializr` helps you bootstrap **FastAPI** projects in seconds — similar to how `create-react-app` or `spring initializr` works.  
+It provides a simple, interactive CLI that sets up a clean, well-structured FastAPI project with everything you need to start coding right away.
+
+---
+
+## Features
+
+✅ Interactive CLI prompts using [Questionary](https://github.com/tmbo/questionary)  
+✅ Beautiful, colorized terminal experience with [Colorama](https://pypi.org/project/colorama/)  
+✅ Built-in spinner and progress indicators with [Yaspin](https://pypi.org/project/yaspin/)  
+✅ Instantly generates recommended folder structures for **FastAPI**  
+✅ Cross-platform — works on Linux, macOS, and Windows  
+
+---
+
+## 📦 Installation
+
+You can install it globally using **pip**:
+
+```bash
+pip install fastapi-initializr
