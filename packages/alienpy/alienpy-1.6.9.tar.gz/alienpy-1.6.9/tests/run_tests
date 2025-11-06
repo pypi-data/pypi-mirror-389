@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+ARG="${1}"
+shift
+
+[[ "${ARG}" == "ci-tests" ]] && IS_CI="1"
+
+SCRIPT_DIR="$(realpath --canonicalize-existing $( cd -- $( dirname -- ${BASH_SOURCE[0]} ) &> /dev/null && pwd ))"
+
+test_dirlist=$(find "${SCRIPT_DIR}" -type d -name "*.test" | sort)
+
+FAILED_TESTS="0"
+
+for t in ${test_dirlist}; do
+    TEST_NAME="$(basename ${t})"
+    [[ -n "${IS_CI}" && "${TEST_NAME}" == "002_env_tokens.test" ]] && continue;
+
+    echo "Running test : ${TEST_NAME} ... "
+    pushd "${t}" &> /dev/null
+    ./test.sh
+    EXITCODE="${?}"
+    if [[ ${EXITCODE} == "0" ]]; then
+        echo -e "OK\n"
+    else
+        (( FAILED_TESTS++ ))
+        echo -e "Failed test!!! Exitcode == ${EXITCODE}\n"
+        [[ -z "${IS_CI}" ]] && break;
+    fi
+    popd &> /dev/null
+done
+
+exit "${FAILED_TESTS}"

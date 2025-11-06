@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+REPO="$(git rev-parse --show-toplevel)"
+
+if [[ -e ${REPO}/.commit_in_progress ]]; then
+    pushd "${REPO}" &> /dev/null
+    rm -f ${REPO}/.commit_in_progress
+    ${REPO}/update_version
+    git add "$(git ls-files -m)"
+    git commit --amend -C HEAD --no-verify
+    popd &> /dev/null
+fi
+
+exit 0

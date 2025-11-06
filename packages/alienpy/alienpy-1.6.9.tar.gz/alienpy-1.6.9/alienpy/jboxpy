@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import re
+import signal
+import logging
+import traceback
+from datetime import datetime
+from pathlib import Path
+import asyncio
+import async_stagger
+import websockets
+from websockets.extensions import permessage_deflate
+import xjalienfs.alien
+import daemon
+import lockfile
+
+DEBUG = os.getenv('JBOXPY_DEBUG', '')
+DEBUG_FILE = os.getenv('JBOXPY_DEBUG_FILE', Path.home().as_posix() + '/jboxpy.log')
+socket_fn = os.getenv('TMPDIR', '/tmp') + '/jboxpy_' + str(os.getuid()) + '.sock'
+pid_fn = os.getenv('TMPDIR', '/tmp') + '/jboxpy_' + str(os.getuid()) + '.pid'
+lock_fn = os.getenv('TMPDIR', '/tmp') + '/jboxpy_' + str(os.getuid())
+
+UMASK = 0  # File mode creation mask of the daemon.
+WORKDIR = os.getenv('TMPDIR', '/tmp')  # Default working directory for the daemon.
+MAXFD = 1024  # Default maximum for the number of available file descriptors.
+
+context = daemon.DaemonContext(
+    working_directory=WORKDIR,
+    umask=UMASK,
+    pidfile=lockfile.FileLock(lock_fn),
+    files_preserve = [DEBUG_FILE, ],
+    )
+
+context.signal_map = {
+    signal.SIGTERM: 'terminate',
+    # signal.SIGHUP: 'terminate',
+    }
+
+
+def main():
+    MSG_LVL = logging.INFO
+    if DEBUG: MSG_LVL = logging.DEBUG
+    log = logging.basicConfig(filename = DEBUG_FILE, filemode = 'w', level = MSG_LVL)
+
+    logger_wb = logging.getLogger('websockets')
+    logger_wb.setLevel(MSG_LVL)
+
+    my_pid = os.getpid()
+    with open(pid_fn, "w") as f: print(f"{my_pid}", file = f)
+    start_server = websockets.unix_serve(alien.msg_proxy, socket_fn)
+
+    try:
+        asyncio.get_event_loop().run_until_complete(start_server)
+    except KeyboardInterrupt:
+        print("Received keyboard interrupt, exiting..")
+        sys.exit(0)
+    except Exception as e:
+        print(f"Exception encountered, it will be logged to {DEBUG_FILE}", file=sys.stderr, flush = True)
+        logging.error(traceback.format_exc())
+        sys.exit(1)
+
+    asyncio.get_event_loop().run_forever()
+
+
+if __name__ == '__main__':
+    with context:
+        main()

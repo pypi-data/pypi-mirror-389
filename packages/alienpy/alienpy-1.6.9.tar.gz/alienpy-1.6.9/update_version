@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+MYDIR=$(dirname $(realpath -P "${BASH_SOURCE[@]}"))
+pushd "${MYDIR}" &> /dev/null
+HASH="$(git rev-parse --short --verify HEAD^1)"
+
+sed -i "/^ALIENPY_VERSION_DATE = /c\ALIENPY_VERSION_DATE = \'$(date -u +%Y%m%d_%H%M%S)\'" alienpy/version.py
+sed -i "/^ALIENPY_VERSION_HASH = /c\ALIENPY_VERSION_HASH = \'${HASH}\'" alienpy/version.py
+
+popd &> /dev/null
+

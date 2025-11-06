@@ -1,0 +1,21 @@
+version = 1
+
+test_patterns = ["alienpy/*.py"]
+
+exclude_patterns = [ "/examples/*" ]
+
+
+
+[[analyzers]]
+name = "shell"
+enabled = true
+
+[[analyzers]]
+name = "python"
+enabled = true
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"
+  skip_doc_coverage = ["module", "magic", "init", "class", "nonpublic"]
+  cyclomatic_complexity_threshold = "critical"
+
