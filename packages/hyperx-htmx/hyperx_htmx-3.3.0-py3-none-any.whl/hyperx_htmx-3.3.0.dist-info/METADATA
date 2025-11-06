@@ -1,0 +1,98 @@
+Metadata-Version: 2.4
+Name: hyperx-htmx
+Version: 3.3.0
+Summary: Declarative HTMX + Element framework for server-side rendering
+Home-page: https://github.com/faroncoder/hyperx-htmx
+Author: Jeff Panasuik
+Author-email: jeff.panasuik@gmail.com
+License: MIT
+Project-URL: Documentation, https://github.com/faroncoder/hyperx-htmx/wiki
+Project-URL: Source, https://github.com/faroncoder/hyperx-htmx
+Project-URL: Tracker, https://github.com/faroncoder/hyperx-htmx/issues
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 4.2
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp
+Requires-Dist: asgiref
+Requires-Dist: attrs
+Requires-Dist: beautifulsoup4
+Requires-Dist: bs4
+Requires-Dist: celery
+Requires-Dist: celery[redis]
+Requires-Dist: channels
+Requires-Dist: channels-redis
+Requires-Dist: click-didyoumean
+Requires-Dist: click-plugins
+Requires-Dist: colorama
+Requires-Dist: daphne
+Requires-Dist: django
+Requires-Dist: Django
+Requires-Dist: django-bootstrap5
+Requires-Dist: django-celery-beat
+Requires-Dist: django-csp
+Requires-Dist: django-extensions
+Requires-Dist: django-htmx
+Requires-Dist: django-redis
+Requires-Dist: flower
+Requires-Dist: http2[twisted]
+Requires-Dist: httpx
+Requires-Dist: hyperlink
+Requires-Dist: jq
+Requires-Dist: openai
+Requires-Dist: Pillow
+Requires-Dist: platformdirs
+Requires-Dist: playwright
+Requires-Dist: psutil
+Requires-Dist: Pygments
+Requires-Dist: pyparser
+Requires-Dist: pyparsing
+Requires-Dist: pytest
+Requires-Dist: pytest-django
+Requires-Dist: pytest-playwright
+Requires-Dist: python-decouple
+Requires-Dist: python-dotenv
+Requires-Dist: python-json-logger
+Requires-Dist: pythonjsonlogger
+Requires-Dist: python-slugify
+Requires-Dist: PyYAML
+Requires-Dist: redis
+Requires-Dist: requests
+Requires-Dist: responses
+Requires-Dist: rich
+Requires-Dist: typing-extensions
+Requires-Dist: tzdata
+Requires-Dist: urllib3
+Requires-Dist: uuid
+Requires-Dist: watchdog
+Requires-Dist: websockets
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# HyperX HTMX
+Declarative HTMX + Elementy framework for Django.
+
+HyperX provides a declarative syntax for building HTMX-driven Django components using `<hx:*>` tags.
+This package includes:
+- Modular loaders for elements, libraries, and runtime compilers.
+- Django template tag integration.
+- Auto-generated HTMX dashboards and CRUD views.
+
+## Installation
+```bash
+pip install hyperx-htmx
