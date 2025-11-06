@@ -1,0 +1,50 @@
+typing-extensions>=4.14.0
+
+[all]
+Logbook[brotli,execnet,jinja,nteventlog,redis,sqlalchemy,zmq]
+
+[brotli]
+
+[brotli:platform_python_implementation != "CPython"]
+brotlicffi>=1.1.0.0
+
+[brotli:platform_python_implementation == "CPython"]
+brotli>=1.1.0
+
+[compression]
+Logbook[brotli]
+
+[execnet]
+execnet>=1.5
+
+[jinja]
+Jinja2>=2.11.3
+
+[nteventlog]
+
+[nteventlog:sys_platform == "win32" and python_version == "3.10"]
+pywin32>=302
+
+[nteventlog:sys_platform == "win32" and python_version == "3.11"]
+pywin32>=303
+
+[nteventlog:sys_platform == "win32" and python_version == "3.12"]
+pywin32>=306
+
+[nteventlog:sys_platform == "win32" and python_version == "3.13"]
+pywin32>=307
+
+[nteventlog:sys_platform == "win32" and python_version == "3.9"]
+pywin32>=227
+
+[nteventlog:sys_platform == "win32" and python_version >= "3.14"]
+pywin32>=311
+
+[redis]
+redis>=4.6.0
+
+[sqlalchemy]
+sqlalchemy>=1.4
+
+[zmq]
+pyzmq>=27.0.2
