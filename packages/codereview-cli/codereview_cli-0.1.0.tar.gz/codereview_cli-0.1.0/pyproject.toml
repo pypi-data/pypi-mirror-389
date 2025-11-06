@@ -1,0 +1,22 @@
+[project]
+name = "codereview-cli"            # must be globally unique on PyPI
+version = "0.1.0"                  # bump every release
+description = "LLM-powered code review from your terminal"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = [{name = "Satyam Gijare", email = "sat.gij@gmail.com"}]
+keywords = ["code-review", "cli", "openai"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Environment :: Console"
+]
+dependencies = ["click>=8.0", "tiktoken>=0.5.0", "openai>=1.45.0"]
+
+[project.scripts]
+codereview = "codereview_cli.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
