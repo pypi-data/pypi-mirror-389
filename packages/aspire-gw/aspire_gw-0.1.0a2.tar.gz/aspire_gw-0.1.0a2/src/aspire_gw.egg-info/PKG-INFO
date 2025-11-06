@@ -1,0 +1,53 @@
+Metadata-Version: 2.4
+Name: aspire-gw
+Version: 0.1.0a2
+Summary: Gravitational-wave extensions to aspire
+Author-email: "Michael J. Williams" <michaeljw1@googlemail.com>
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+Requires-Dist: aspire-inference
+Provides-Extra: jax
+Requires-Dist: jax; extra == "jax"
+Requires-Dist: jaxlib; extra == "jax"
+Requires-Dist: flowjax; extra == "jax"
+Provides-Extra: gwflow
+Requires-Dist: gwflow; extra == "gwflow"
+Requires-Dist: zuko; extra == "gwflow"
+Requires-Dist: matplotlib; extra == "gwflow"
+Requires-Dist: aspire-inference[torch]; extra == "gwflow"
+Provides-Extra: bilby
+Requires-Dist: aspire-bilby; extra == "bilby"
+Requires-Dist: bilby>=2.3.0; extra == "bilby"
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Dynamic: license-file
+
+# aspire-gw
+
+Gravitational-wave extensions to `aspire`.
+
+## Installation
+
+`aspire-gw` is available to install from PyPI:
+
+```
+pip install aspire-gw
+```
+
+## GWAspire
+
+`aspire-gw` provides `GWAspire` a subclass of `Aspire` that has additional functionality
+to enable training from, for example, `bibly` result files.
+
+See the class for more details.
+
+## Normalizing flows
+
+`aspire-gw` provides an interface to the [`gwflow` package](https://github.com/mj-will/gwflow)
+which implements GW-specific normalizing flows.
+These can be used with `aspire` by specifying `flow_backend='gwflow'`.
+
+**Note:** this requires have `gwflow` installed.
