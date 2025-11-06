@@ -1,0 +1,81 @@
+Metadata-Version: 2.4
+Name: flex-uuid-python
+Version: 0.1.1
+Summary: Flexible UUID parsing, normalization, and SQLAlchemy integration
+Project-URL: Homepage, https://github.com/your/repo
+Author-email: Dehkartes <dehkartes@gmail.com>
+License: MIT
+License-File: LICENSE
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Typing :: Typed
+Requires-Python: >=3.8
+Requires-Dist: build>=1.2.2.post1
+Requires-Dist: hypothesis>=6.113.0
+Requires-Dist: pytest>=8.3.5
+Requires-Dist: sqlalchemy>=2.0
+Requires-Dist: twine>=6.1.0
+Description-Content-Type: text/markdown
+
+# flex-uuid
+
+Flexible and safe UUID parsing and normalization utility. Whether the input is a string, 16-byte binary, or a `uuid.UUID`, it is processed through a single consistent flow. SQLAlchemy type integration is also provided.
+
+## Installation
+
+```bash
+pip install flex-uuid
+```
+
+## Quick Start
+
+```python
+from flex_uuid import UUIDStorage
+
+# Accepts any input form
+s1 = UUIDStorage("8b1a9953-c461-4af7-9bdf-66e2c0f3e2f1")
+s2 = UUIDStorage("8b1a9953c4614af79bdf66e2c0f3e2f1")  # 32-hex without hyphens
+s3 = UUIDStorage(s1.bytes)  # 16 bytes
+
+assert s1.bytes == s2.bytes == s3.bytes
+assert s1.uuid == s2.uuid
+
+# Retrieve in the shape you want
+print(s1.to_str())      # 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+print(s1.bytes)         # b"\x.." * 16
+```
+
+## SQLAlchemy Integration
+
+```python
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from flex_uuid import UUIDFlexType
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[str] = mapped_column(UUIDFlexType(store_as_bytes=True), primary_key=True)
+
+# When binding, str/bytes/uuid.UUID are all accepted.
+# The database stores 16-byte binary. By default, reads return a string.
+```
+
+Options
+- `store_as_bytes`: If True, stores in DB as 16 bytes; if False, stores as string
+- `return_uuid_object`: If True, returns a `uuid.UUID` object on read
+
+## Why flex-uuid
+- Automatically detects various input formats: with/without hyphens, case, bytes(16), uuid.UUID
+- Consistent internal representation: always normalize to 16 bytes, then convert as needed
+- SQLAlchemy type provided: safely maps to `BINARY(16)`/`BYTEA`, etc.
+- Complete type hints, clear exception messages
+
+## License
+MIT
+
