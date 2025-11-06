@@ -1,0 +1,90 @@
+Metadata-Version: 2.4
+Name: streamlit-kpi-card
+Version: 0.1.0
+Summary: A beautiful, interactive KPI card component for Streamlit with time series visualization
+Author: pjoachims
+License: MIT
+Project-URL: Homepage, https://github.com/pjoachims/streamlit-kpi-card
+Project-URL: Repository, https://github.com/pjoachims/streamlit-kpi-card
+Project-URL: Issues, https://github.com/pjoachims/streamlit-kpi-card/issues
+Keywords: streamlit,kpi,card,metrics,dashboard,visualization
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: streamlit>=1.0.0
+Requires-Dist: pandas>=1.0.0
+Dynamic: license-file
+
+# Streamlit KPI Card
+
+KPI card component for Streamlit with time series charts and delta indicators.
+
+![Example KPI Cards](example.png)
+
+## Usage
+
+```python
+import streamlit as st
+import pandas as pd
+from streamlit_kpi_card import kpi_card
+
+# Create sample time series data
+time_series = pd.Series([100, 105, 103, 108, 110, 115, 120])
+
+# Minimal usage - format auto-detected from value type
+kpi_card(
+    name='Active Users',
+    value=1250,
+    value_before=1100
+)
+
+# With currency formatting
+kpi_card(
+    name='Revenue',
+    value=14500.00,
+    value_before=12000.00,
+    time_series=time_series,
+    format="currency"
+)
+
+# Custom currency
+kpi_card(
+    name='Revenue (USD)',
+    value=14500.00,
+    value_before=12000.00,
+    format={"type": "currency", "decimals": 2, "currency": "$"}
+)
+```
+
+## Parameters
+
+**Required:**
+- `name` - KPI label
+- `value` - Current value
+- `value_before` - Previous value for delta calculation
+
+**Optional:**
+- `relative_change` - Show percentage vs absolute change (default: False)
+- `time_series` - pd.Series for chart display
+- `format` - String ('number', 'percentage', 'currency', 'integer') or dict. Auto-detects integer vs number if omitted. Defaults: 2 decimals, € for currency
+- `chart_type` - 'line', 'bar', or 'area' (default: 'line')
+- `line_color` - Chart line color
+- `show_average` - Show average line on chart
+- `info_text` - Hover text for info icon
+- `is_inverse` - Invert colors for "lower is better" metrics
+- `background_color`, `border`, `shadow`, `border_radius`, `height` - Styling options
+
+## License
+
+MIT
