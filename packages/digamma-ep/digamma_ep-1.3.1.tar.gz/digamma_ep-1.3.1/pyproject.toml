@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["epe_maria"]
+
+[project]
+name = "digamma-ep"
+version = "1.3.1"
+description = "Symbolic audit framework with CZVS, curvature zones, and compliance logic"
+authors = [{ name = "Cesar", email = "your@email.com" }]
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["symbolic audit", "CZVS", "compliance", "curvature", "semantic drift", "badge logic"]
+dependencies = [
+    "numpy",
+    "sympy",
+    "matplotlib",
+    "scipy",
+    "fastapi",
+    "streamlit",
+    "psycopg2-binary"
+]
+
+[project.urls]
+Homepage = "https://github.com/Cerene-Salt/Digamma-Prime-Framework"
+Documentation = "https://github.com/Cerene-Salt/Digamma-Prime-Framework/wiki"
+Source = "https://github.com/Cerene-Salt/Digamma-Prime-Framework"
