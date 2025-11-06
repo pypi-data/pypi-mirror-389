@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideas & Improvements - Aurica</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary-color: #10a37f;
+            --primary-hover: #0d8968;
+            --background: #ffffff;
+            --sidebar-bg: #f7f7f8;
+            --card-bg: #f7f7f8;
+            --border-color: #e5e5e5;
+            --text-primary: #353740;
+            --text-secondary: #6e6e80;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #343541;
+                --sidebar-bg: #202123;
+                --card-bg: #444654;
+                --border-color: #4d4d4f;
+                --text-primary: #ececf1;
+                --text-secondary: #c5c5d2;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .back-btn:hover {
+            background: var(--card-bg);
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .app-selector {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .ideas-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .idea-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .idea-item:hover {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .idea-item.active {
+            background: var(--card-bg);
+            border-color: var(--primary-color);
+        }
+
+        .idea-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .idea-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .markdown-content {
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        .markdown-content h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content h2 {
+            font-size: 22px;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .markdown-content h3 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .markdown-content p {
+            margin-bottom: 12px;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin-bottom: 12px;
+            padding-left: 24px;
+        }
+
+        .markdown-content li {
+            margin-bottom: 6px;
+        }
+
+        .markdown-content code {
+            background: var(--card-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .markdown-content pre {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 12px;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 16px;
+            margin: 16px 0;
+            color: var(--text-secondary);
+        }
+
+        .markdown-content hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 24px 0;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 150px;
+            font-family: inherit;
+        }
+
+        .update-history {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .update-item {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .update-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .update-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="back-btn" onclick="window.location.href='/chat-app/static/launcher.html'">
+                    <i class="bi bi-arrow-left"></i> Back to Launcher
+                </button>
+                <h2><i class="bi bi-lightbulb"></i> Ideas</h2>
+                <select class="app-selector" id="appSelector" onchange="loadAppIdeas()">
+                    <option value="">All Apps</option>
+                </select>
+            </div>
+            <div class="ideas-list" id="ideasList"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1 id="ideaTitle">Select an idea</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="showCreateIdeaModal()">
+                        <i class="bi bi-plus-lg"></i> New Idea
+                    </button>
+                    <button class="btn btn-primary" onclick="showUpdateModal()" id="updateBtn" style="display: none;">
+                        <i class="bi bi-pencil"></i> Add Update
+                    </button>
+                </div>
+            </div>
+            <div class="content-body" id="contentBody">
+                <div class="empty-state">
+                    <i class="bi bi-lightbulb"></i>
+                    <h3>No idea selected</h3>
+                    <p>Select an idea from the sidebar to view details</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Update to Idea</h2>
+                <button class="close-btn" onclick="hideUpdateModal()">×</button>
+            </div>
+            <form onsubmit="submitUpdate(event)">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" class="form-input" id="authorName" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Update Content *</label>
+                    <textarea class="form-input" id="updateContent" required placeholder="Describe your improvement or thoughts..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="bi bi-check-lg"></i> Save Update
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Idea Modal -->
+    <div id="createIdeaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Idea</h2>
+                <button class="close-btn" onclick="hideCreateIdeaModal()">×</button>
+            </div>
+            <form onsubmit="createIdea(event)">
+                <div class="form-group">
+                    <label class="form-label">App *</label>
+                    <select class="form-input" id="createAppSelect" required>
+                        <option value="">Select an app</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="ideaTitleInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" class="form-input" id="ideaAuthor" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content *</label>
+                    <textarea class="form-input" id="ideaContent" required placeholder="Describe your idea..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="bi bi-plus-lg"></i> Create Idea
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentApp = '';
+        let currentIdea = null;
+        let allApps = ['chat-app', 'digital-twin', 'drive', 'agent-cli', 'demand-supply', 'auth-app', 'app-sync', 'node-connection'];
+
+        async function loadApps() {
+            const selector = document.getElementById('appSelector');
+            const createSelector = document.getElementById('createAppSelect');
+            
+            allApps.forEach(app => {
+                selector.innerHTML += `<option value="${app}">${app}</option>`;
+                createSelector.innerHTML += `<option value="${app}">${app}</option>`;
+            });
+
+            // Check URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const appParam = urlParams.get('app');
+            if (appParam) {
+                selector.value = appParam;
+                currentApp = appParam;
+            }
+
+            loadAppIdeas();
+        }
+
+        async function loadAppIdeas() {
+            const selector = document.getElementById('appSelector');
+            currentApp = selector.value;
+
+            try {
+                let url = currentApp ? `/chat-app/api/ideas/${currentApp}` : '/chat-app/api/ideas';
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.success) {
+                    renderIdeas(data.ideas);
+                }
+            } catch (error) {
+                console.error('Failed to load ideas:', error);
+            }
+        }
+
+        function renderIdeas(ideas) {
+            const list = document.getElementById('ideasList');
+            
+            if (ideas.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <p>No ideas yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = ideas.map(idea => `
+                <div class="idea-item ${currentIdea && currentIdea.filename === idea.filename ? 'active' : ''}" 
+                     onclick="selectIdea('${idea.app || currentApp}', '${idea.filename}')">
+                    <div class="idea-title">${idea.title}</div>
+                    <div class="idea-meta">
+                        ${idea.app ? `<span>${idea.app}</span> • ` : ''}
+                        <span>${formatDate(idea.modified)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function selectIdea(app, filename) {
+            try {
+                const response = await fetch(`/chat-app/api/ideas/${app}/${filename}`);
+                const data = await response.json();
+                if (data.success) {
+                    currentIdea = data.idea;
+                    currentIdea.app = app;
+                    renderIdeaContent(data.idea);
+                    document.getElementById('updateBtn').style.display = 'flex';
+                    
+                    // Update active state
+                    document.querySelectorAll('.idea-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    event.target.closest('.idea-item').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Failed to load idea:', error);
+            }
+        }
+
+        function renderIdeaContent(idea) {
+            document.getElementById('ideaTitle').textContent = idea.filename.replace('.md', '').replace(/_/g, ' ');
+            
+            const contentBody = document.getElementById('contentBody');
+            contentBody.innerHTML = `
+                <div class="markdown-content">
+                    ${markdownToHtml(idea.content)}
+                </div>
+            `;
+        }
+
+        function markdownToHtml(markdown) {
+            // Simple markdown parser (you might want to use a library like marked.js for production)
+            return markdown
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/^---$/gim, '<hr>')
+                .replace(/^\- (.*$)/gim, '<li>$1</li>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^(.+)$/gim, '<p>$1</p>')
+                .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        }
+
+        function showUpdateModal() {
+            if (!currentIdea) return;
+            document.getElementById('updateModal').classList.add('active');
+        }
+
+        function hideUpdateModal() {
+            document.getElementById('updateModal').classList.remove('active');
+            document.getElementById('authorName').value = '';
+            document.getElementById('updateContent').value = '';
+        }
+
+        async function submitUpdate(event) {
+            event.preventDefault();
+            if (!currentIdea) return;
+
+            const author = document.getElementById('authorName').value;
+            const content = document.getElementById('updateContent').value;
+
+            try {
+                const response = await fetch(`/chat-app/api/ideas/${currentIdea.app}/${currentIdea.filename}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content, author })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    hideUpdateModal();
+                    await selectIdea(currentIdea.app, currentIdea.filename);
+                    alert('Update saved successfully!');
+                }
+            } catch (error) {
+                console.error('Failed to save update:', error);
+                alert('Failed to save update');
+            }
+        }
+
+        function showCreateIdeaModal() {
+            document.getElementById('createIdeaModal').classList.add('active');
+            if (currentApp) {
+                document.getElementById('createAppSelect').value = currentApp;
+            }
+        }
+
+        function hideCreateIdeaModal() {
+            document.getElementById('createIdeaModal').classList.remove('active');
+            document.getElementById('ideaTitleInput').value = '';
+            document.getElementById('ideaAuthor').value = '';
+            document.getElementById('ideaContent').value = '';
+        }
+
+        async function createIdea(event) {
+            event.preventDefault();
+
+            const app = document.getElementById('createAppSelect').value;
+            const title = document.getElementById('ideaTitleInput').value;
+            const author = document.getElementById('ideaAuthor').value;
+            const content = document.getElementById('ideaContent').value;
+
+            try {
+                const response = await fetch(`/chat-app/api/ideas/${app}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content, author })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    hideCreateIdeaModal();
+                    currentApp = app;
+                    document.getElementById('appSelector').value = app;
+                    await loadAppIdeas();
+                    alert('Idea created successfully!');
+                }
+            } catch (error) {
+                console.error('Failed to create idea:', error);
+                alert('Failed to create idea');
+            }
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // Initialize
+        loadApps();
+    </script>
+</body>
+</html>
