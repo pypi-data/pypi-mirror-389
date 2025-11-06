@@ -1,0 +1,196 @@
+%YAML 1.1
+---
+# yaml-language-server: $schema=https://harp-tech.org/draft-02/schema/device.json
+device: LaserDriverController
+whoAmI: 1298
+firmwareVersion: "1.0"
+hardwareTargets: "1.0"
+registers:
+  SpadSwitch:
+    address: 32
+    access: [Event, Write]
+    type: U8
+    description: Turns ON/OFF the relay to switch SPADs supply
+  LaserState:
+    address: 33
+    access: [Event, Write]
+    type: U8
+    description: State of the laser, ON/OFF  
+  Reserved0: &reserved
+    address: 34
+    type: U8
+    access: Write
+    description: Reserved for future use
+    visibility: private
+  Reserved1: 
+    <<: *reserved
+    address: 35
+    description: Reserved for future use
+    visibility: private
+  Reserved2:
+    <<: *reserved
+    address: 36
+    description: Reserved for future use
+    visibility: private
+  Reserved13:
+    <<: *reserved
+    address: 37
+    description: Reserved for future use
+    visibility: private
+  LaserFrequencySelect:
+    address: 38
+    access: Write
+    type: U8
+    maskType: FrequencySelect
+    description: Set the laser frequency
+  LaserIntensity:
+    address: 39
+    access: Write
+    type: U8
+    description: Laser intensity value [0:255]
+  OutputSet: &output
+    address: 40
+    type: U8
+    access: Write
+    maskType: DigitalOutputs
+    description: Set the specified digital output lines
+  OutputClear:
+    <<: *output
+    address: 41
+    description: Clear the specified digital output lines
+  OutputToggle:
+    <<: *output
+    address: 42
+    description: Toggle the specified digital output lines
+  OutputState:
+    <<: *output
+    address: 43
+    description: Write the state of all digital output lines
+  BncsState:
+    address: 44
+    type: U8
+    access: Write
+    maskType: Bncs
+    description: Configure BNCs to start
+  SignalState:
+    address: 45
+    type: U8
+    access: Write
+    maskType: Signals
+    description: Configure Signals to start
+  Bnc1On:
+    address: 46
+    type: U16
+    access: Write
+    description: Time ON of BNC1 (milliseconds) [1:65535]
+  Bnc1Off:
+    address: 47
+    type: U16
+    access: Write
+    description: Time OFF of BNC1 (milliseconds) [1:65535]
+  Bnc1Pulses:
+    address: 48
+    type: U16
+    access: Write
+    description: Number of pulses (BNC1) [0;65535], 0-> infinite repeat
+  Bnc1Tail:
+    address: 49
+    type: U16
+    access: Write
+    description: Wait time to start (milliseconds) (BNC1) [1;65535]
+  Bnc2On:
+    address: 50
+    type: U16
+    access: Write
+    description: Time ON of BNC2 (milliseconds) [1:65535]
+  Bnc2Off:
+    address: 51
+    type: U16
+    access: Write
+    description: Time OFF of BNC2 (milliseconds) [1:65535]
+  Bnc2Pulses:
+    address: 52
+    type: U16
+    access: Write
+    description: Number of pulses (BNC2) [0;65535], 0-> infinite repeat
+  Bnc2Tail:
+    address: 53
+    type: U16
+    access: Write
+    description: Wait time to start (milliseconds) (BNC2) [1;65535]
+  SignalAOn:
+    address: 54
+    type: U16
+    access: Write
+    description: Time ON of SignalA (milliseconds) [1:65535]
+  SignalAOff:
+    address: 55
+    type: U16
+    access: Write
+    description: Time OFF of SignalA (milliseconds) [1:65535]
+  SignalAPulses:
+    address: 56
+    type: U16
+    access: Write
+    description: Number of pulses (SignalA) [0;65535], 0-> infinite repeat
+  SignalATail:
+    address: 57
+    type: U16
+    access: Write
+    description: Wait time to start (milliseconds) (SignalA) [1;65535]
+  SignalBOn:
+    address: 58
+    type: U16
+    access: Write
+    description: Time ON of SignalB (milliseconds) [1:65535]
+  SignalBOff:
+    address: 59
+    type: U16
+    access: Write
+    description: Time OFF of SignalB (milliseconds) [1:65535]
+  SignalBPulses:
+    address: 60
+    type: U16
+    access: Write
+    description: Number of pulses (SignalB) [0;65535], 0-> infinite repeat
+  SignalBTail:
+    address: 61
+    type: U16
+    access: Write
+    description: Wait time to start (milliseconds) (SignalB) [1;65535]
+  EventEnable:
+    address: 62
+    type: U8
+    access: Write
+    maskType: LaserDriverControllerEvents
+    description: Specifies the active events in the device
+bitMasks:
+  DigitalOutputs:
+    description: Specifies the state of port digital output lines.
+    bits:
+      DO1: 0x1
+      DO2: 0x2
+  Bncs:
+    description: Specifies the state of BNCs
+    bits:
+      Bnc1: 0x1
+      Bnc2: 0x2
+  Signals:
+    description: Specifies the state of Signals
+    bits:
+      SignalA: 0x1
+      SignalB: 0x2
+  LaserDriverControllerEvents:
+    description: Specifies the active events in the device
+    bits:
+      EventSpadSwitch: 0x1
+      EventLaserState: 0x2
+groupMasks:
+  FrequencySelect:
+    description: Selects laser frequency mode
+    values:
+      None: 0
+      F1: 0x1
+      F2: 0x2
+      F3: 0x4
+      CW: 0x8
