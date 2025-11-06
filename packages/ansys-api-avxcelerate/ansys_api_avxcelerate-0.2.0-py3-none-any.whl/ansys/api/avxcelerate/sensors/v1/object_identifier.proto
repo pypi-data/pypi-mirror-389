@@ -1,0 +1,35 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the message used to identify an object.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1;
+
+// Unique identifier of a simulation object.
+// 
+// It applies to vehicles, pedestrians, static objects (e.g. road signs) or 
+// Lighting Systems.
+//
+message ObjectIdentifier {
+  // Unique identifier of the associated object.
+  //
+  // Note: The identifier is case-sensitive.
+  //
+  string id = 1;
+}

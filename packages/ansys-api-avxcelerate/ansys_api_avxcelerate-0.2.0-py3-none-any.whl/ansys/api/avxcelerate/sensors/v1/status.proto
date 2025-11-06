@@ -1,0 +1,46 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the AVX status and status code messages.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1;
+
+// The status message returned by AVX for any procedure call.
+//
+message Status {
+  // The status of the procedure call.
+  //
+  StatusCode code = 1;
+  
+  // A status message as a text string.
+  //
+  string message = 2;
+}
+
+// The possible status code values.
+//
+enum StatusCode {
+  // The code returned when successful.
+  //
+  SUCCESS = 0;
+  
+  // The code returned when there is an error on AVX side.
+  //
+  UNKNOWN_FAILURE = 1;  
+}

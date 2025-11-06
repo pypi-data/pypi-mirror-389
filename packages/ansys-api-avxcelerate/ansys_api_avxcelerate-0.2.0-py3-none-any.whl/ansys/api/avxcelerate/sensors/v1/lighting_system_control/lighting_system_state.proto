@@ -1,0 +1,209 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to retrieve and control 
+* Lighting System parameters during the simulation execution.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.lighting_system_control;
+
+import "ansys/api/avxcelerate/sensors/v1/geometry.proto";
+import "google/protobuf/duration.proto";
+
+// State of a Lighting System at a specific simulation time.
+// 
+// Note: This message is the return of the `Get` procedure 
+// of the Lighting System Control service.
+//
+message TimeStampedLightingSystemState {
+  // The state of the Lighting System.
+  //
+  LightingSystemState lighting_system_state = 1;
+
+  // The simulation time.
+  //
+  google.protobuf.Duration simulation_time = 2; 
+}
+
+// This message contains lighting system parameters.
+//
+// Note: When this message is returned by the `Get` procedure, it includes 
+// all the current properties of the Lighting System. 
+// When this message is used as input of the `Set` procedure, it should 
+// include the name to identify the Lighting System to update as well 
+// as the parameter(s) to be updated.
+//
+message LightingSystemState {
+  // Name of the Lighting System.
+  //
+  LightingSystemName lighting_system_name = 1;
+  
+  // List of projectors contained in the Lighting System.
+  //
+  repeated ProjectorState projectors_state = 2;
+}
+
+// Name of the Lighting System.
+//
+message LightingSystemName {
+  // Unique user-defined name of the Lighting System in the simulation.
+  //
+  string name= 1;
+}
+
+// Message containing the state of a projector.
+//
+message ProjectorState {
+  // Unique user-defined name of the projector in the Lighting System.
+  //
+  string projector_name = 1;
+  
+  // List of modules contained in this projector.
+  //
+  repeated ModuleState modules_state = 2;
+  
+  // Position of the projector relative to the Lighting System origin.
+  //
+  // Unit: meters (m)
+  //
+  Vector3D position = 3;
+
+  // Orientation of the projector relative to the Lighting System origin.
+  //
+  // Unit: degrees
+  //
+  EulerAngles orientation = 4;
+}
+
+// Message containing the state of a module.
+//
+message ModuleState {
+  // Unique user-defined name of the module in the projector.
+  //
+  string module_name = 1;
+  
+  // List of lamps contained in this module.
+  //
+  repeated LampState lamps_state = 2;
+  
+  // Position of the module relative to the projector.
+  //
+  // Unit: meters (m)
+  //
+  Vector3D position = 3;
+
+  // Orientation of the module relative to the projector.
+  //
+  // Unit: degrees
+  //
+  EulerAngles orientation = 4;
+
+  // Definition of the pixel beam.
+  //
+  PixelBeamState pixel_beam_state = 5;
+}
+
+// Message containing the state of the pixel beam 
+// associated with the module.
+//
+message PixelBeamState {
+
+  // The float array representing the pixel beam mask, each entry representing 
+  // a pixel light intensity multiplier. 
+  // An empty mask means the pixel beam is set to 0. 
+  // The size of the mask must be aligned with the mask resolution 
+  // (width x height).
+  //
+  // Range: [0, float max]
+  //
+  repeated float mask = 1;
+
+  // Minimal horizontal angle corresponding to the bottom border of the pixel 
+  // beam area.
+  //
+  // Unit: degrees
+  //
+  // Range: [-180, `hmax`[
+  //
+  optional float hmin = 2;
+
+  // Maximal horizontal angle corresponding to the top border of the pixel beam 
+  // area.
+  //
+  // Unit: degrees
+  //
+  // Range: ]`hmin`, 180]
+  //
+  optional float hmax = 3;
+
+  // Minimal vertical angle corresponding to the left border of the pixel beam 
+  // area.
+  //
+  // Unit: degrees
+  //
+  // Range: [-90, `vmax`[
+  //
+  optional float vmin = 4;
+
+  // Maximal vertical angle corresponding to the right border of the pixel beam 
+  // area.
+  //
+  // Unit: degrees
+  //
+  // Range: ]`vmin`, 90]
+  //
+  optional float vmax = 5;
+
+  // Horizontal resolution expressed in pixels.
+  //
+  // Range: ]0, 3840]
+  //
+  optional int32 width = 6;
+
+  // Vertical resolution expressed in pixels.
+  //
+  // Range: ]0, 2160]
+  //
+  optional int32 height = 7;
+}
+
+// Message containing the state of a lamp.
+//
+message LampState {
+  // Unique user-defined name of the lamp in the module.
+  //
+  string lamp_name = 1;
+  
+  // Flux of the lamp.
+  //
+  // Unit: lumens (lm)
+  //
+  optional double flux = 2;
+  
+  // Light functions tags.
+  //
+  LightFunctionTags light_functions_tags = 3;
+}
+
+// Message containing the light function tag(s) of a lamp.
+//
+message LightFunctionTags {
+    // Light functions.
+    //
+    repeated string light_functions = 1;
+}

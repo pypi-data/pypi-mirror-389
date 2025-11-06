@@ -1,0 +1,429 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to alter lidar parameters 
+* during the simulation execution.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.feedback_control;
+
+import "google/protobuf/wrappers.proto";
+import "ansys/api/avxcelerate/sensors/v1/feedback_control/brown_distortion.proto";
+
+// Update to apply to one or several parameters of a lidar sensor during the 
+// simulation.
+//
+// This messages contains the type of lidar and the parameter(s) to be updated.
+//
+// Note: At least one parameter must be provided at each call.
+//
+// Note: The changes are not directly applied to the lidar. First, the update 
+// will be sent to the lidar at the next world update (requested using 
+// the `Update` method of the Simulation service). Then, the lidar will be 
+// reloaded so that the updated parameter(s) are used for the next output 
+// calculation. However, a lidar cannot be reloaded during an ongoing output 
+// calculation, it can be reloaded only after the computation is completed.
+//
+message FeedbackControlLidarParameters {
+  oneof model {
+    // RotatingLidar.
+    //
+    RotatingLidar rotating_lidar = 1;
+    
+    // FlashLidar.
+    //
+    FlashLidar flash_lidar = 2;
+  }
+}
+
+// Parameters for a rotating lidar.
+//
+message RotatingLidar {
+  // Rotation speed of the rotating lidar.
+  //
+  // Unit: number of rotations per second.
+  //
+  google.protobuf.DoubleValue rotation_speed = 1;
+  
+  // RotatingLidarEmitter.
+  //
+  RotatingLidarEmitter emitter = 2;
+  
+  // RotatingLidarReceiver.
+  //
+  RotatingLidarReceiver receiver = 3;
+}
+
+// Parameters for a flashing lidar.
+//
+message FlashLidar {
+  // FlashLidarEmitter.
+  //
+  FlashLidarEmitter emitter = 1;
+  
+  // FlashLidarReceiver. 
+  //
+  FlashLidarReceiver receiver = 2;
+}
+
+// Emitter parameters of the rotating lidar.
+//
+message RotatingLidarEmitter {
+  // Frequency of the laser fan shots.
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue frequency = 1;
+  
+  // Pulse.
+  //
+  Pulse laser_pulse = 2;
+  
+  // GaussianBeamShape.
+  //
+  GaussianBeamShape beam_shape = 3;
+  
+  // FiringSequence.
+  //
+  FiringSequence firing_sequence = 4;
+}
+
+// Description of the firing sequence.
+//
+message FiringSequence {
+  // Describes the firing sequence.
+  //
+  // Note: When adjusting the firing sequence via the feedback control, make 
+  // sure to update every parameter of the sequence to keep it consistent. 
+  // Sending a partial update (updating only one of the parameters) will 
+  // cause other parameters to use default values.
+  //
+  repeated Firing firings = 1;
+}
+
+// Parameters of a lidar firing sequence.
+//
+message Firing {
+  // Time offset of the firing.
+  //
+  // Unit: seconds (s)
+  //
+  google.protobuf.DoubleValue time = 1;
+  
+  // Rotation offset of the firing.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue azimuth = 2;
+  
+  // Elevation offset of the firing.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue elevation = 3;
+
+  // Peak power of the firing.
+  //
+  // Note: The peak power (in Watts) is calculated based on the firing energy 
+  // (in Joules), the pulse shape and the pulse duration (in seconds). 
+  // This calculation should be considered when applying an update 
+  // that modifies the firings through the Feedback Control message. 
+  // For more information about how to calculate the peak power from the 
+  // pulse energy, refer to AVxcelerate Sensors Simulator User's Guide.
+  //
+  // Unit: watts (W)
+  //
+  google.protobuf.DoubleValue peak_power = 4;
+}
+
+// Receiver parameters of the rotating lidar.
+//
+message RotatingLidarReceiver {
+  // Aperture area of the receiver.
+  //
+  // Unit: square meters (m^2)
+  //
+  google.protobuf.DoubleValue aperture_area = 1;
+  
+  // PhotoDetector.
+  //
+  PhotoDetector photo_detector = 2;
+  
+  // LidarProcessor.
+  //
+  LidarProcessor processor = 3;
+}
+
+// Emitter parameters of the flashing lidar.
+//
+message FlashLidarEmitter {
+  // Frequency of the laser fan shots.
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue frequency = 1;
+  
+  // Pulse
+  //
+  Pulse laser_pulse = 2;
+  
+  oneof beam_shape {
+    // Parametric Gaussian beam shape.
+    //
+    GaussianBeamShape gaussian_beam_shape = 3;
+    
+    // Intensity file describing the beam shape.
+    //
+    BeamShapeIntensityFile beam_shape_intensity_file = 4;
+  }
+
+  // Maximum power emitted by the laser pulse.
+  //
+  // Unit: watts (W)
+  //
+  google.protobuf.DoubleValue peak_power = 5;
+}
+
+// Intensity of the beam.
+//
+message BeamShapeIntensityFile {
+  // Byte array representing the beam spatial shape's 
+  // pattern table.
+  //
+  bytes intensity_file = 1;
+
+  // Type of the intensity file.
+  //
+  // Note: If no file type is provided, the default value will be considered 
+  // as the type of the intensity file.
+  //
+  IntensityFileType file_type = 2;
+}
+
+// The available types of intensity file.
+//
+enum IntensityFileType {
+  // Ies file (default type).
+  //
+  IES = 0;
+
+  // Intensity file. 
+  // 
+  INTENSITY = 1;
+
+  // XMP file
+  //
+  XMP = 2;
+}
+
+// Receiver parameters of the flashing lidar.
+//
+message FlashLidarReceiver {
+  // LensSystem.
+  //
+  LensSystem lens_system = 1;
+  
+  // Resolution.
+  //
+  Resolution resolution_in_pixels = 2;
+  
+  // PhotoDetector.
+  //
+  PhotoDetector photo_detector = 3;
+  
+  // LidarProcessor.
+  //
+  LidarProcessor processor = 4;
+}
+
+// Lens system definition.
+//
+message LensSystem {
+  // Aperture area of the receiver.
+  //
+  // Unit: square meters (m^2)
+  //
+  google.protobuf.DoubleValue aperture_area = 1;
+  
+  // FieldOfView.
+  //
+  FieldOfView field_of_view = 2;
+  
+  // LensDistortion.
+  //
+  LensDistortion lens_distortion = 3;
+}
+
+// Resolution of the detector, in pixels.
+//
+message Resolution {
+  // Number of horizontal pixels.
+  //
+  google.protobuf.Int32Value horizontal = 1;
+  
+  // Number of vertical pixels.
+  //
+  google.protobuf.Int32Value vertical = 2;
+}
+
+// Shape of the gaussian beam.
+//
+message GaussianBeamShape {
+  // BeamDivergence.
+  //
+  BeamDivergence divergence = 1;
+}
+
+// Divergence of the gaussian beam.
+//
+message BeamDivergence {
+  // Horizontal divergence of the gaussian beam.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue horizontal = 1;
+  
+  // Vertical divergence of the gaussian beam.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue vertical = 2;
+}
+
+// Field of view definition.
+//
+message FieldOfView {
+  // Horizontal field of view of the receiver.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue horizontal = 1;
+  
+  // Vertical field of view of the receiver.
+  //
+  // Unit: radians (rad)
+  //
+  google.protobuf.DoubleValue vertical = 2;
+}
+
+// Lens distortion definition.
+//
+// Definition of the lens distortion of the flashing Lidar receiver.
+//
+message LensDistortion {
+  oneof distortion {
+    // Definition of the brown distortion.
+    //
+    BrownDistortion brown_distortion = 1;
+  }
+}
+
+// Photo detector definition.
+//
+message PhotoDetector {
+  // Number of bits used for the waveform amplitude in the analog-to-digital 
+  // converter.
+  //
+  // Unit: A/W
+  //
+  // Range: [0, 1]
+  //
+  //
+  google.protobuf.DoubleValue responsivity = 1;
+  
+  // Saturation generated by the photo-detector.
+  //
+  // Unit: amperes (A)
+  //
+  google.protobuf.DoubleValue max_current = 2;
+  
+  // Current standard deviation of noise.
+  //
+  // Unit: amperes (A)
+  //
+  google.protobuf.DoubleValue noise_standard_deviation = 3;
+}
+
+// Lidar processor definition.
+//
+message LidarProcessor {
+  // AnalogToDigitalConverter.
+  //
+  AnalogToDigitalConverter analog_to_digital_converter = 1;
+  
+  // Maximum number of returns in the output.
+  //
+  google.protobuf.Int32Value max_returns = 2;
+  
+  // Maximum range of the lidar.
+  //
+  // Unit: meters (m)
+  //
+  google.protobuf.DoubleValue max_range = 3;
+}
+
+// Definition of the analog-to-digital converter.
+//
+message AnalogToDigitalConverter {
+  // Sampling Frequency of the analog-to-digital converter defining the 
+  // temporal resolution, i.e. the spatial accuracy (a = c / f).
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue sampling_frequency = 1;
+  
+  // Number of bits used for the waveform amplitude in the analog-to-digital 
+  // converter.
+  //
+  google.protobuf.Int32Value bit_resolution = 2;
+}
+
+// Pulse of the laser.
+//
+message Pulse {
+  // Wavelength of the laser beam.
+  //
+  // Unit: meters (m)
+  //
+  google.protobuf.DoubleValue wavelength = 1;
+  
+  // PulseShape.
+  //
+  PulseShape shape = 2;
+  
+  // Duration of the emitted laser pulse.
+  //
+  // Unit: seconds (s)
+  //
+  google.protobuf.DoubleValue duration = 3;
+  
+  // Atmospheric attenuation coefficient.
+  //
+  // Unit: m^-1
+  //
+  google.protobuf.DoubleValue extinction_coefficient = 4;
+}
+
+// The possible shapes of the emitted laser pulse.
+//
+enum PulseShape {
+  NONE_PULSE_SHAPE = 0;
+  GAUSSIAN = 1;
+  RECTANGULAR = 2;
+  TRIANGULAR = 3;
+}

@@ -1,0 +1,47 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the service used to implement a feedback control for 
+* sensors.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.feedback_control;
+
+import "ansys/api/avxcelerate/sensors/v1/feedback_control/feedback_control_description.proto";
+import "ansys/api/avxcelerate/sensors/v1/status.proto";
+
+// Feedback Control Service
+// 
+// This service provides the procedures to update specific parameters of 
+// sensors during the simulation. It could be used to implement an 
+// auto adaptive algorithm.
+//
+// Note: The changes are not directly applied to the sensor. First, the update 
+// will be sent to the sensor at the next world update (requested using 
+// the `Update` method of the Simulation service). Then, the sensor will be 
+// reloaded so that the updated parameter(s) are used for the next output 
+// calculation. However, a sensor cannot be reloaded during an ongoing output 
+// calculation, it can be reloaded only after the computation is completed.
+//
+service FeedbackControl {
+  // Sends a sensor (camera, lidar, radar) feedback control.
+  //
+  // Returns a processing Status.
+  //
+  rpc Send(FeedbackControlDescription) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+}

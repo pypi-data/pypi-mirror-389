@@ -1,0 +1,376 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used for the radar output data.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.sensor_data;
+
+// Radar output data for all the modes.
+//
+message RadarOutputData {
+
+  // An array of ModeOutputData.
+  //
+  repeated ModeOutputData modes = 1;
+}
+
+// Radar output data for a given mode.
+//
+message ModeOutputData {
+  // Range Doppler Map data.
+  //
+  RangeDopplerResponseData range_doppler_response = 1;
+  
+  // Pulse Frequency Response data.
+  //
+  FrequencyPulseResponseData frequency_pulse_response = 2;
+  
+  // Analog-To-Digital Converter Samples data.
+  //
+  AnalogToDigitalConverterSamplesData analog_to_digital_converter_samples = 3;
+  
+  // Identifier of the radar mode.
+  int32 mode_identifier = 4;
+
+  // Tx Waveform Data.
+  //
+  TxWaveformData tx_waveform = 5;
+
+  // Pulse Frequency Response data produced by a radar mode configured with 
+  // the "Arbitrary Pulse Doppler" waveform.
+  //
+  ArbitraryFrequencyPulseResponseData  arbitrary_frequency_pulse_response = 6;
+
+  // Analog-To-Digital Converter Samples data produced by a radar mode 
+  // configured with the "Arbitrary FMCW" waveform.
+  //
+  ArbitraryAnalogToDigitalConverterSamplesData 
+    arbitrary_analog_to_digital_converter_samples = 7;
+
+  // Response to Tx waveform map.
+  //
+  // List of indexes mapping the response data to the Tx waveform data. 
+  //     - The position in the list represents the sample index in the 
+  //     response data. 
+  //     - The value in the list represents the sample index in the Tx  
+  //     waveform data.
+  //
+  repeated uint32 response_to_tx_waveform_map = 8;
+}
+
+// The radar range doppler output data.
+//
+// Data are stored as multi-dimensional array of complex values, with 
+// interleaved real and imaginary parts: real1, imag1, real2, imag2 etc. 
+// The physical dimensions are [TX, RX, velocity, range], therefore 
+// the data contains:
+//
+//     numTX x numRX x numVelocities x numRanges complex numbers
+//
+//  or equivalently
+//
+//     2 x numTX x numRX x numVelocities x numRanges real numbers
+//
+// If the complex data is read sequentially, the outermost loop corresponds to 
+// the TX dimension, then RX, then velocity, and then range which is the 
+// innermost.
+//
+message RangeDopplerResponseData {
+  // The multi-dimensional array.
+  //
+  repeated float data = 1;
+  
+  // The number of range samples and the min/max values in the samples.
+  //
+  Domain range_domain = 2;
+  
+  // The number of velocity samples and the min/max values in the samples.
+  //
+  Domain velocity_domain = 3;
+  
+  // The identifier of each receiver antenna.
+  //
+  repeated int32 rx_identifiers = 4;
+  
+  // The identifier of each transmitter antenna.
+  //
+  repeated int32 tx_identifiers = 5;
+
+  // The type of multiplexing.
+  //
+  Multiplexing multiplexing = 6;
+}
+
+// The radar output data for pulse frequency response. 
+//
+// Data are stored as multi-dimensional array of complex values, with 
+// interleaved real and imaginary parts: real1, imag1, real2, imag2 etc. 
+// The physical dimensions are [TX, RX, pulse time, frequency], therefore  
+// the data contains:
+//
+//     numTX x numRX x numPulseTime x numFrequencies complex numbers
+//
+// or equivalently
+//
+//     2 x numTX x numRX x numPulseTime x numFrequencies real numbers
+//
+// If the complex data is read sequentially, the outermost loop corresponds to 
+// the TX dimension, then RX, then pulse time, and then frequencies which is 
+// the innermost.
+//
+message FrequencyPulseResponseData {
+  // The multi-dimensional array.
+  //
+  repeated float data = 1;
+  
+  // The number of frequency samples and the min/max values in the samples.
+  //
+  Domain frequency_domain = 2;
+  
+  // The number of pulse time samples and the min/max values in the samples.
+  //
+  Domain pulse_time_domain = 3;
+  
+  // The identifier of each receiver antenna.
+  //
+  repeated int32 rx_identifiers = 4;
+  
+  // The identifier of each transmitter antenna.
+  //
+  repeated int32 tx_identifiers = 5;
+
+  // The type of multiplexing.
+  //
+  Multiplexing multiplexing = 6;
+}
+
+// The radar output data for analog-to-digital converter samples. 
+//
+// Data are stored as multi-dimensional array of complex values or real 
+// values, depending on the `is_complex_valued` flag in the message. 
+// The physical dimensions are [TX, RX, chirp time, sample time], therefore  
+// the data contains:
+//
+//     numTX x numRX x numChirpTime x numSampleTime complex numbers
+//
+// or equivalently
+//
+//     2 x numTX x numRX x numChirpTime x numSampleTime real numbers
+//
+// If the complex data is read sequentially, the outermost loop corresponds 
+// to the TX dimension, then RX, then chirp time, and then sample 
+// time which is the innermost.
+//
+message AnalogToDigitalConverterSamplesData {
+  // The multi-dimensional array.
+  //
+  repeated float data = 1;
+  
+  // The number of time samples and the min/max values in the samples.
+  //
+  Domain sample_time_domain = 2;
+  
+  // The number of chirp time samples and the min/max values in the samples.
+  //
+  Domain chirp_time_domain = 3;
+  
+  // The identifier of each receiver antenna.
+  //
+  repeated int32 rx_identifiers = 4;
+  
+  // The identifier of each transmitter antenna.
+  //
+  repeated int32 tx_identifiers = 5;
+  
+  // Flag indicating whether or not the values are defined as complex numbers.
+  //
+  bool is_complex_valued = 6;
+
+  // The type of multiplexing.
+  //
+  Multiplexing multiplexing = 7;
+}
+
+// A radar data domain. 
+//
+// Indicates how to retrieve information from the float array of 
+// the containing data message.
+//
+message Domain {
+  // The number of samples for this domain.
+  //
+  int32  size = 1;
+  
+  // The minimal value in the samples.
+  //
+  double min_value = 2;
+  
+  // The maximal value in the samples.
+  //
+  double max_value = 3;
+}
+
+// The radar output data for the transmitted waveform.
+//
+// Data are stored as a multi-dimensional array of values. 
+// The physical dimensions are [pulses or chirps, samples, values per sample], 
+// therefore the data contains:
+//
+//     numPulsesOrChirps x numSamples x  numValuesPerSample numbers
+//
+message TxWaveformData {
+  // The multi-dimensional array.
+  //
+  repeated double data = 1;
+
+  // The identifier of each transmitter antenna.
+  //
+  repeated int32 tx_identifiers = 2;
+
+  // The number of values for a single waveform sample.
+  //
+  // Current implementation will provide nine values for each sample, 
+  // organized as follows: 
+  //     - Pulse or chirp index (0-based): the pulse/chirp position within  
+  //       the pulse/chirp sequence. 
+  //     - Sample index (0-based): the sample position within a pulse/chirp. 
+  //     - Transmitter index (0-based position): the transmitter position in 
+  //       the tx_identifiers list. 
+  //     - Simulation sample time: the sample time relative to the simulation 
+  //       update time. Expressed in seconds (s). 
+  //     - CPI sample time: the sample time relative to the center of CPI. 
+  //       Expressed in seconds (s). 
+  //     - Chirp sample time: the sample time relative to the center of chirp. 
+  //       Expressed in seconds (s). Always zero for a pulse-Doppler waveform. 
+  //     - Sample frequency: the frequency of sample in hertz (Hz). 
+  //     - Amplitude: the relative broadcast amplitude of the sample, 
+  //       currently always unity (1). 
+  //     - Phase: the phase of the broadcast sample relative to the signal fed 
+  //       to rx mixer, currently always zero (0).
+  //
+  // All values are double-precision, including notionally integer values  
+  // (i.e. indices).
+  // 
+  // Note: The number of values per sample might increase in future versions.
+  //
+  int32 number_of_values_per_sample = 3;
+
+  // The number of samples for a single pulse or chirp.
+  //
+  int32 number_of_samples = 4;
+
+  // The number of pulses or chirps in the waveform.
+  //
+  int32 number_of_pulses_or_chirps = 5;
+}
+
+// The possible ways a radar can use its TX antennas.
+//
+enum Multiplexing {
+  // Interleaved multiplexing.
+  //
+  INTERLEAVED = 0;
+   
+  // Simultaneous multiplexing.
+  //
+  SIMULTANEOUS = 1;
+}
+
+// The radar output data for Arbitrary pulse frequency response.
+//
+// Data are stored as multi-dimensional array of complex values, with 
+// interleaved real and imaginary parts: real1, imag1, real2, imag2 etc. 
+// The physical dimensions are [TX, RX, Sample], therefore the data 
+// contains:
+//
+//     numberOfTX x numberOfRX x numberOfSamples complex numbers
+//
+//  or equivalently
+//
+//     2 x numberOfTX x numberOfRX x numberOfSamples real numbers
+//
+// If the complex data is read sequentially, the outermost loop corresponds to 
+// the TX dimension, then RX dimension, then Sample dimension which is 
+// the innermost.
+//
+message ArbitraryFrequencyPulseResponseData {
+  // The multi-dimensional array.
+  //
+  repeated float data = 1;
+
+  // The number of samples.
+  //
+  int32 number_of_samples = 2;
+ 
+  // The identifier of each receiver antenna.
+  //
+  repeated int32 rx_identifiers = 3;
+ 
+  // The identifier of each transmitter antenna.
+  //
+  repeated int32 tx_identifiers = 4;
+
+  // The type of multiplexing.
+  //
+  Multiplexing multiplexing = 5;
+}
+
+// The radar output data for Arbitrary analog-to-digital converter 
+// samples.
+//
+// Data are stored as multi-dimensional array of complex values or real 
+// values, depending of the is_complex_valued flag of the message.
+// The physical dimensions are [TX, RX, Sample] and
+// so the data contains:
+//
+//     numberOfTX x numberOfRX x numberOfSamples complex numbers
+//
+//  or equivalently
+//
+//     2 x numberOfTX x numberOfRX x numberOfSamples real numbers
+//
+// If the complex data is read sequentially, the outermost loop corresponds
+// to the TX dimension, then RX dimension, then Sample dimension which is the
+// innermost.
+//
+message ArbitraryAnalogToDigitalConverterSamplesData {
+  // The multi-dimensional array.
+  //
+  repeated float data = 1;
+
+  // The number of samples.
+  //
+  int32 number_of_samples = 2;
+
+  // The identifier of each receiver antenna.
+  //
+  repeated int32 rx_identifiers = 3;
+ 
+  // The identifier of each transmitter antenna.
+  //
+  repeated int32 tx_identifiers = 4;
+ 
+  // Flag indicating whether or not the values are defined as complex numbers.
+  //
+  bool is_complex_valued = 5;
+
+  // Type of multiplexing.
+  //
+  Multiplexing multiplexing = 6;
+}

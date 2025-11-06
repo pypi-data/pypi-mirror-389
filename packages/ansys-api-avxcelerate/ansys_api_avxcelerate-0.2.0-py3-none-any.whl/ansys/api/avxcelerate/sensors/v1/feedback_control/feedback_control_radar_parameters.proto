@@ -1,0 +1,678 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to alter some radar parameters 
+* during the simulation execution.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.feedback_control;
+
+import "ansys/api/avxcelerate/sensors/v1/geometry.proto";
+import "google/protobuf/wrappers.proto";
+
+// Update to one or several parameters of a radar sensor during the simulation.
+//
+// This messages contains the parameter(s) to be updated.
+//
+// Note: At least one parameter must be provided at each call.
+//
+// Note: The changes are not directly applied to the radar. First, the update 
+// will be sent to the radar at the next world update (requested using 
+// the `Update` method of the Simulation service). Then, the radar will be 
+// reloaded so that the updated parameter(s) are used for the next output 
+// calculation. However, a radar cannot be reloaded during an ongoing output 
+// calculation, it can be reloaded only after the computation is completed.
+//
+message FeedbackControlRadarParameters {
+  // List of Tx antennas to be updated.
+  //
+  repeated DeviceAntenna tx_antennas = 1;
+  
+  // List of Rx antennas to be updated.
+  //
+  repeated DeviceAntenna rx_antennas = 2;
+  
+  // List of the modes to be updated.
+  //
+  repeated Mode modes = 3;
+}
+
+// Parameters to be updated for a radar antenna.
+//
+message DeviceAntenna {
+  // Identifier of the antenna. 
+  // To be considered as a key to modify an existing antenna.
+  //
+  // Note: Adding or removing antennas through feedback control is not allowed.
+  //
+  google.protobuf.Int32Value identifier = 1;
+  
+  // Position of the antenna relative to the radar device's position.
+  //
+  // Unit: meters (m)
+  //
+  Vector3D position = 2;
+  
+  // Orientation of the antenna relative to the radar device's orientation.
+  //
+  // Unit: radians (rad)
+  //
+  EulerAngles orientation = 3;
+}
+
+// Parameters to be updated for a radar mode.
+//
+message Mode {
+  // Identifier of the mode. 
+  // To be considered as a key to modify an existing mode.
+  //
+  // Note: Adding or removing mode through feedback control is not allowed.
+  //
+  google.protobuf.Int32Value identifier = 1;
+  
+  // Waveform.
+  //
+  Waveform waveform = 2;
+  
+  // RadarProcessor.
+  //
+  RadarProcessor range_doppler_processor = 3;
+  
+  // Latency between the start of the frame and the first pulse or chirp sent 
+  // by the mode's CPI.
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.DoubleValue start_delay = 4;
+  
+  // List of the transmitting antenna IDs to use in this mode.
+  //
+  repeated int32 tx_antenna_ids = 5;
+  
+  // List of the receiving antenna IDs to use in this mode.
+  //
+  repeated int32 rx_antenna_ids = 6;
+
+  // Activation or deactivation of the mode.
+  //
+  google.protobuf.BoolValue activate_mode = 7;
+
+  // Gain. 
+  // Negative values correspond to a loss and positive values 
+  // correspond to an amplification, 0 being neutral.
+  //
+  // Unit: dB
+  //
+  // Note: If no value is set, previous gain type and value are kept. 
+  // If a value is set, the new value is applied in Manual type whatever 
+  // the previous type (Automatic or Manual).
+  //
+  google.protobuf.DoubleValue Gain = 8;
+  
+  // Noise standard deviation.
+  //
+  // Unit: dBW
+  //
+  // Note: If a value is set, noise is activated and value is applied.
+  //
+  google.protobuf.DoubleValue Noise = 9;
+
+  // TxWeighting.
+  //
+  TxWeighting tx_weighting = 10;
+
+  // Phase noise definition.
+  //
+  // Note: Phase noise is only supported in modes with System or 
+  // Performance FMCW.
+  //
+  oneof phase_noise {
+    // Phase noise defined as a pedestal parametric model.
+    //
+    PedestalParametricPhaseNoise pedestal_parametric_phase_noise = 11;
+
+    // Phase noise defined as a piecewise linear model, using a sequence of 
+    // power spectral densities.
+    //
+    PiecewiseLinearPhaseNoise piecewise_linear_phase_noise = 12;
+  }
+
+  // The parameters of the first range filter. 
+  //
+  // Note: This parameter only applies to radars with a range filter.
+  //
+  RangeFilter range_filter_1 = 13;
+
+  // The parameters of the second range filter.
+  //
+  // Note: This parameter only applies to radars with two range filters.
+  //
+  RangeFilter range_filter_2 = 14;
+}
+
+// Parameters of the phase noise when it is defined by a linear function.
+//
+message PedestalParametricPhaseNoise {
+  // Pedestal peak.
+  //
+  // Unit: dBc/Hz (decibels relative to the carrier)
+  //
+  // Range: [-double max, 0]
+  //
+  double pedestal_power = 1;
+
+  // Pedestal width.
+  //
+  // Unit: hertz (Hz)
+  //
+  // Range: strictly positive
+  //
+  double pedestal_width = 2;
+
+  // Roll-off order.
+  //
+  // Unit: No unit
+  //
+  // Range: ]1, double max] (generally between 2 and 4)
+  //
+  double roll_off_order = 3;
+}
+
+// Parameters of the phase noise when it is defined as a sequence of 
+// power spectral densities.
+//
+message PiecewiseLinearPhaseNoise {
+  // List of power spectral density entries.
+  //
+  // A power spectral density entry consists of one frequency offset and 
+  // one power spectral density.
+  //
+  // Note: The list must contain at least two entries.
+  //
+  // Note: The frequency offsets should be unique and in ascending order.
+  //
+  repeated PowerSpectralDensityEntry power_spectral_densities = 1;
+}
+
+// Power spectral densities at given frequency offsets.
+//
+message PowerSpectralDensityEntry {
+  // The frequency offset.
+  //
+  // Unit: hertz (Hz)
+  //
+  // Range: strictly positive
+  //
+  double frequency_offset = 1;
+
+  // The power spectral density.
+  //
+  // Unit: decibel (dB)
+  //
+  // Range: [-double max, 0]
+  //
+  double power_spectral_density = 2;
+}
+
+// Radar processor parameters.
+//
+message RadarProcessor {
+  // Range resolution of the output range doppler map image.
+  //
+  google.protobuf.Int32Value range_pixels = 1;
+  
+  // Velocity resolution of the output range doppler map image.
+  //
+  google.protobuf.Int32Value velocity_pixels = 2;
+  
+  // Range window of the output range doppler map image.
+  //
+  Window range_window = 3; 
+  
+  // Velocity window of the output range doppler map image.
+  //
+  Window velocity_window = 4; 
+  
+  // Center value of the velocity range.
+  //
+  google.protobuf.DoubleValue center_velocity = 5;
+}
+
+// Window.
+//
+// Indicates which window model is chosen.
+//
+message Window {
+  oneof model {
+    // FlatWindow.
+    //
+    FlatWindow flat_window = 1; 
+    
+    // HammingWindow.
+    //
+    HammingWindow hamming_window = 2; 
+    
+    // HannWindow.
+    //
+    HannWindow hann_window = 3; 
+    
+    // TaylorWindow.
+    //
+    TaylorWindow taylor_window = 4;
+  }
+}
+
+// Flat window model.
+//
+message FlatWindow {}
+
+// Hamming window model.
+//
+message HammingWindow {}
+
+// Hann window model.
+//
+message HannWindow {}
+
+// Taylor window model.
+//
+message TaylorWindow {
+  // Ratio of the main peak value to the side-lobe peak.
+  //
+  double side_lobe_level = 1;
+}
+
+// Waveform model.
+//
+// Indicates which waveform model is chosen.
+//
+// Note: Changing the waveform model during the simulation is not allowed. 
+// If you do so, the message will be rejected.
+//
+message Waveform {
+  oneof model {
+    // PulseDopplerWaveform.
+    //
+    PulseDopplerWaveform pulse_doppler_waveform = 1;
+    
+    // FrequencyModulatedContinuousWaveform.
+    //
+    FrequencyModulatedContinuousWaveform
+      frequency_modulated_continuous_waveform = 2;
+  }
+}
+
+// Pulse doppler waveform.
+//
+// Indicates which pulse doppler waveform model is chosen.
+//
+message PulseDopplerWaveform {
+  oneof model {
+    // SystemPulseDopplerWaveform.
+    //
+    SystemPulseDopplerWaveform system_pulse_doppler_waveform = 1;
+    
+    // PerformancePulseDopplerWaveform.
+    //
+    PerformancePulseDopplerWaveform performance_pulse_doppler_waveform = 2;
+
+    // ArbitrarySystemPulseDopplerWaveform
+    //
+    ArbitrarySystemPulseDopplerWaveform
+      arbitrary_system_pulse_doppler_waveform = 3;
+  }
+}
+
+// System pulse doppler waveform.
+//
+message SystemPulseDopplerWaveform {
+  // Frequency bandwidth of the waveform.
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue bandwidth = 1;
+  
+  // Number of frequency samples.
+  //
+  google.protobuf.Int32Value number_of_frequency_samples = 2;
+  
+  // Time interval between two subsequent pulses, equal to the inverse of the 
+  // pulse frequency.
+  //
+  // Unit: seconds (s)
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.DoubleValue pulse_interval = 3;
+  
+  // Number of pulses in one coherent processing interval (CPI).
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.Int32Value
+    number_of_pulses_in_coherent_processing_interval = 4;
+}
+
+// Arbitrary system pulse doppler waveform.
+//
+message ArbitrarySystemPulseDopplerWaveform {
+  // List of pulse definitions.
+  //
+  repeated ArbitraryPulse pulse_sequence = 1;
+}
+
+// Arbitrary pulse.
+//
+message ArbitraryPulse {
+  // Center frequency of the analog-to-digital converter.
+  //
+  // Unit: hertz (Hz)
+  //
+  double center_frequency = 1;
+ 
+  // Bandwidth.
+  //
+  // Unit: hertz (Hz)
+  //
+  double bandwidth = 2;
+ 
+  // Number of frequency samples per pulse.
+  //
+  int32 number_of_frequency_samples_per_pulse = 3;
+ 
+  // Time interval between two subsequent pulses.
+  //
+  // Unit: seconds (s)
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  double pulse_interval = 4;
+}
+
+// Performance pulse doppler waveform.
+//
+message PerformancePulseDopplerWaveform {
+  // Performance.
+  //
+  Performance performance = 1;
+}
+
+// Parameters of the performance pulse doppler waveform.
+//
+message Performance {
+  // Target range resolution of the output frame. 
+  //
+  // Unit: meters (m)
+  //
+  google.protobuf.DoubleValue range_resolution = 1;
+  
+  // Target velocity resolution of the output frame.
+  //
+  // Unit: meters per seconds (m/s)
+  // 
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.DoubleValue velocity_resolution = 2;
+  
+  // Maximum unambiguous range or range period.
+  //
+  // Unit: meters (m)
+  //
+  google.protobuf.DoubleValue range_ambiguity = 3;
+  
+  // Maximum unambiguous velocity or velocity period.
+  //
+  // Unit: meters per seconds (m/s)
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.DoubleValue velocity_ambiguity = 4;
+}
+
+// Frequency modulated continuous waveform.
+//
+// Indicates which frequency modulated continuous waveform model is chosen.
+//
+message FrequencyModulatedContinuousWaveform {
+  oneof model {
+    // SystemFrequencyModulatedContinuousWaveform.
+    //
+    SystemFrequencyModulatedContinuousWaveform
+      system_frequency_modulated_continuous_waveform = 1;
+    
+    // PerformanceFrequencyModulatedContinuousWaveform.
+    //
+    PerformanceFrequencyModulatedContinuousWaveform
+      performance_frequency_modulated_continuous_waveform = 2;
+
+    // ArbitraryFrequencyModulatedContinuousWaveform.
+    //
+    ArbitrarySystemFrequencyModulatedContinuousWaveform 
+      arbitrary_system_frequency_modulated_continuous_waveform = 3;
+  }
+}
+
+// System frequency modulated continuous waveform.
+//
+message SystemFrequencyModulatedContinuousWaveform {
+  // Frequency bandwidth of the waveform.
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue bandwidth = 1;
+  
+  // Sampling frequency of the analog-to-digital converter.
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue sampling_rate = 2;
+  
+  // Number of samples per chirp.
+  //
+  google.protobuf.Int32Value number_of_samples_per_chirp = 3;
+  
+  // Time interval between subsequent chirps, equal to the inverse of the 
+  // chirp repetition frequency.
+  //
+  // Unit: seconds (s)
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.DoubleValue chirp_interval = 4;
+  
+  // Number of chirps in one coherent processing interval (CPI).
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  google.protobuf.Int32Value
+    number_of_chirps_in_coherent_processing_interval = 5;
+  
+  // RxComponents.
+  //
+  RxComponents rx_components = 6;
+}
+
+// Performance frequency modulated continuous waveform.
+//
+message PerformanceFrequencyModulatedContinuousWaveform {
+  // Sampling frequency of the analog-to-digital converter.
+  //
+  // Unit: hertz (Hz)
+  //
+  google.protobuf.DoubleValue sampling_rate = 1;
+  
+  // Performance.
+  //
+  Performance performance = 2;
+  
+  // RxComponents.
+  //
+  RxComponents rx_components = 3;
+}
+
+// Arbitrary system frequency modulated continuous waveform.
+//
+message ArbitrarySystemFrequencyModulatedContinuousWaveform {
+
+  // List of chirp definitions.
+  //
+  repeated ArbitraryChirp chirp_sequence = 1;
+ 
+  // Ramp rate.
+  //
+  google.protobuf.DoubleValue ramp_rate = 2;
+ 
+  // RxComponents.
+  //
+  RxComponents rx_components = 3;
+}
+
+// Arbitrary Chirp.
+//
+message ArbitraryChirp{
+  // Center frequency of the analog-to-digital converter.
+  //
+  // Unit: hertz (Hz).
+  //
+  double center_frequency = 1;
+ 
+  // Sampling frequency of the analog-to-digital converter.
+  //
+  // Unit: hertz (Hz).
+  //
+  double sampling_rate = 2;
+ 
+  // Number of samples per chirp.
+  //
+  int32 number_of_samples_per_chirp = 3;
+ 
+  // Time interval between subsequent chirps.
+  //
+  // Unit: seconds (s).
+  //
+  // Note: This parameter impacts the frame rate.
+  //
+  double chirp_interval = 4;
+}
+
+// The possible types of mixing for the comparison of emitted signal vs 
+// received signal.
+//
+enum RxComponents {
+  NONE_RXCOMPONENTS = 0;
+  IN_PHASE = 1;
+  IN_PHASE_AND_QUADRATURE = 2;
+}
+
+// Represents radar weighting sequences.
+//
+// Note: When adjusting the weighting sequence via the feedback control, be 
+// sure to update each parameter of the sequence to keep it consistent.
+//
+message TxWeighting {
+  oneof txWeightings {
+    // WeightingByTransmitter.
+    //
+    WeightingByTransmitter weightings_by_transmitter = 1;
+
+    // WeightingByPulsesOrChirps.
+    //
+    WeightingByPulsesOrChirps weightings_by_pulses_or_chirps = 2;
+  }
+}
+
+// Represents weightings described by the transmitter.
+//
+message WeightingByTransmitter {
+    // List of weightings for each antenna or transmitter.
+    //
+    repeated Weighting weightings  = 1;
+}
+
+// Represents weightings described by pulses or chirps.
+//
+message WeightingByPulsesOrChirps {
+  // List of weightings by transmitter for each pulse or chirp.
+  //
+  repeated WeightingByTransmitter weightings_by_transmitter = 1;
+}
+
+// Represents a single weighting value with real and imaginary parts.
+//
+message Weighting {
+
+  // Real part of the complex weighting.
+  //
+  double real_part = 1;
+
+  // Imaginary part of the complex weighting.
+  //
+  double imaginary_part = 2;
+}
+
+// Range filter parameters.
+//
+message RangeFilter  {
+  // The range cutoff. Defines the range where the magnitude of the filter 
+  // transfer function is 1/sqrt(2) or -3 dB.
+  //
+  // Unit: meter (m)
+  //
+  // Range: strictly positive
+  //
+  double range_cutoff = 1;
+
+  // The roll-off parameters set either as Order or as Set Point, 
+  // according to roll-off type of the filter.
+  //
+  oneof roll_off {
+    // The roll-off order, associated to the Order type.
+    //
+    // Range: [1, 50]
+    //
+    int32 roll_off_order = 2;
+  
+    // The roll-off definition, associated to the Set Point type.
+    //
+    RollOffPoint roll_off_point = 3;
+  }
+}
+ 
+// The parameters of a roll-off whose type is Set Point.
+//
+message RollOffPoint {
+  // The range stop. Range beyond which Stop Level attenuation must be met or 
+  // exceeded.
+  //
+  // Unit: meter (m)
+  //
+  // Range: strictly positive. For low-pass filters, it must be greater than 
+  // the value set for the `range_cutoff`. For high-pass filters, it must be 
+  // less than the value set for the `range_cutoff`.
+  //
+  double range_stop = 1;
+  
+  // The stop level. Attenuation level that must be met or exceeded for ranges 
+  // further into the stop band beyond the stop range.
+  //
+  // Unit: decibel (dB)
+  //
+  // Range: strictly negative
+  //
+  double stop_level = 2;
+}

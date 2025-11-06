@@ -1,0 +1,189 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used for the camera output data.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.sensor_data;
+
+import "ansys/api/avxcelerate/sensors/v1/geometry.proto";
+import "ansys/api/avxcelerate/sensors/v1/sensor_data_format.proto";
+
+// Camera data for image output.
+//
+message CameraImageData {
+  // Type of image produced by the camera.
+  // Can be one of the following: `RAW`, `TEMPERATURE_MAP`, 
+  // `SPECTRAL_IRRADIANCE_MAP` or `CUSTOM_DATA`.
+  //
+  CameraDataFormat camera_format = 1;
+  
+  // Byte array containing the image.
+  //
+  // Note: For the special case of `TEMPERATURE_MAP`, the `camera_data` 
+  // message contains the temperature map as a string organized with 
+  // one float value per pixel and one line of text per line in the image.
+  //
+  bytes camera_data = 2;
+}
+
+// Camera data for ground truth output.
+//
+message CameraGroundTruthData {
+  // Format of the ground truth data.
+  //
+  CameraGroundTruthDataFormat camera_format = 1;
+  
+  // Byte array containing the ground truth data.
+  //
+  bytes camera_data = 2;
+}
+
+// 2D bounding box data including coordinates defining its position in the 
+// image frame and the tag and label associated with the object.
+//
+// A 2D bounding box corresponds to the projection of 3D bounding box on the 
+// camera image plane.
+//
+message BoundingBox2D {
+  // x min pixel coordinates. 
+  //
+  int32 x_min = 1;
+  
+  // y min pixel coordinates. 
+  //
+  int32 y_min = 2;
+  
+  // x max pixel coordinates. 
+  //
+  int32 x_max = 3;
+  
+  // y max pixel coordinates. 
+  //
+  int32 y_max = 4;
+  
+  // Tag associated with the object during the data preparation.
+  // 
+  string tag_name = 5;
+  
+  // Label associated with the object during the data preparation.
+  //
+  string label = 6;
+
+  // Position of the bounding box center on the x axis.
+  // 
+  int32 x_center = 7;
+
+  // Position of the bounding box center on the y axis.
+  // 
+  int32 y_center = 8;
+
+  // Normalized depth of the bounding box center.
+  // 
+  float z_center = 9;
+}
+
+// Spectral irradiance map produced by the lens of the camera sensor and 
+// associated auxiliary information.
+//
+message CameraLensOutput {
+  // Resolution of the imager.
+  //
+  CameraResolution resolution = 1;
+
+  // Spectral sampling.
+  //
+  SpectralSampling spectral_sampling = 2;
+
+  // Float array containing the spectral irradiance data.
+  //
+  // The number of irradiance values is equal to the product of 
+  // the number of wavelengths times the number of pixels in the imager: 
+  // Nb_E = [nb_spectral_samples * nb_vertical_pixels * nb_horizontal_pixels]
+  //
+  // The received data consists of 8 spectral values per pixel, 
+  // starting from the upper left corner of the image, line per line.
+  //
+  // 8 spectral values for pixel0 (vertical_coordinate0;horizontal_coordinate0) 
+  // 8 spectral values for pixel1 (vertical_coordinate0;horizontal_coordinate1)
+  // ...
+  // 
+  // Unit: watts per square meter per nanometer (W/m^2/nm).
+  //
+  repeated float camera_data = 3;
+}
+
+// Resolution of the imager in number of pixels.
+//
+message CameraResolution {
+  // Width of the imager sensor in number of pixels.
+  //
+  int32 width = 1;
+
+  // Height of the imager sensor in number of pixels.
+  //
+  int32 height = 2;
+}
+
+// The spectral sampling.
+//
+message SpectralSampling {
+  // The list of wavelengths constituting the spectral sampling.
+  //
+  // The list contains at least one wavelength. If it includes 
+  // several wavelengths, they are provided in ascending order.
+  //
+  repeated Wavelength wavelength = 1;
+}
+
+// The wavelength representation.
+//
+message Wavelength {
+  // The value of the wavelength.
+  //
+  // Unit: meters (m).
+  double value = 1;
+}
+
+// 3D bounding box data including coordinates in the world reference frame.
+//
+// Note: The 3D Bounding Box is delivered as a beta feature in the current release.
+//
+message BoundingBox3D {
+  // Isobarycenter coordinates in the camera reference frame.
+  //
+  // Unit: meters (m)
+  //
+  Vector3D isobarycenter = 1;
+
+  // Dimension of the object in the world reference frame.
+  //
+  // Unit: meters (m)
+  //
+  Vector3D dimensions = 2;
+
+  // Orientation of the object in the camera reference frame.
+  //
+  // Unit: radians (rad)
+  //
+  EulerAngles orientation = 3;
+
+  // Tag associated with the object during the data preparation.
+  // 
+  string tag_name = 4;
+}

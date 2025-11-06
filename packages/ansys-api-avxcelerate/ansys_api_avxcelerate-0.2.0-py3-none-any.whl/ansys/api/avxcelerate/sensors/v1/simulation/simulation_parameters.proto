@@ -1,0 +1,1245 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to define the simulation parameters.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.simulation;
+
+import "ansys/api/avxcelerate/sensors/v1/sensor_data_format.proto";
+import "ansys/api/avxcelerate/sensors/v1/tag_colors.proto";
+import "google/protobuf/wrappers.proto";
+
+// Contains the general simulation parameters and simulation parameters 
+// per sensor.
+//
+// These parameters define the accuracy of the simulation, the types of output 
+// each sensor generates, as well as the output data generation and storage 
+// methods.
+//
+// Note: Simulation parameters may have an impact on the performance.
+//
+message SimulationParameters {
+  // List of simulation parameters per sensor.
+  //
+  repeated SensorParameters sensor_simulation_parameters = 1;
+
+  // Lighting system parameters.
+  //
+  // Note: The Lighting System parameters apply to all the Lighting Systems 
+  // associated to the the ego vehicle.
+  //
+  LightingSystemParameters lighting_system_parameters = 2;
+
+  // Configuration of the tag-color mapping used for the pixel segmentation 
+  // camera ground truth data.
+  //
+  ansys.api.avxcelerate.sensors.v1.PixelSegmentationMapping pixel_segmentation_mapping = 3;
+}
+
+// Contains the simulation parameters for a given sensor defined by its identifier.
+//
+// Note: If the type of sensor is not consistent with the sensor 
+// configuration, it will cause an error.
+//
+message SensorParameters {
+  // The unique identifier of the sensor as defined in the sensor 
+  // configuration.
+  //
+  string identifier = 1;
+  
+  
+  // Field indicating whether or not the camera sensor's outputs are displayed 
+  // on screen in a dedicated rendering window.
+  //
+  // The resolution of the rendering window is the Native Resolution defined 
+  // in the Imager parameters of the camera sensor model.
+  //
+  // Note: Optional field. If not set, the camera outputs 
+  // are not displayed on the screen.
+  //
+  // Note: This parameter applies to physics-based camera sensors only.
+  // If it is set for any other type of sensors, it is ignored.
+  //
+  // Note: Lens output without custom post-processing, as well as any output 
+  // with custom post-processing whose encoding format is different than 
+  // Gray8 or RGB24 are not supported for display. For those unsupported 
+  // formats, a black image is displayed in the rendering window and a warning 
+  // is raised in the logs.
+  //
+  // Note: If the fragment shared used for custom post-processing is 
+  // configured to produce multiple outputs, the Display takes into account 
+  // only the first output defined in the fragment shader.
+  //
+  DisplayInformation display = 3;
+  
+  oneof sensor_parameter {
+    // Specific parameters for a radar sensor.
+    //
+    RadarSimulation radar_simulation = 4;
+    
+    // Specific parameters for a lidar sensor.
+    //
+    LidarSimulation lidar_simulation = 5;
+    
+    // Specific parameters for a physics-based camera sensor.
+    //
+    PbCameraSimulation pb_cam_simulation = 6;
+    
+    // Specific parameters for a thermal camera sensor.
+    //
+    ThermalCameraSimulation thermal_cam_simulation = 7;
+  }
+
+  // Sensor's output data splitting configuration.
+  //
+  // Note: This parameter only applies to radar sensor data. 
+  //
+  // Note: Optional field. If not set, the output data is not split.
+  //
+  OutputSplitting output_splitting = 8;
+  
+  // Activation of serialization of the output data in shared memory.
+  //
+  // When this parameter is set to `true`, the data is serialized. 
+  // When this parameter is set to `false`, the data is unserialized.
+  //
+  // Note: Only Camera Output (Image) and Imager Output (Injection) data of 
+  // physics-based camera sensors can be unserialized. 
+  // Camera Lens Output (Light), thermal camera, lidar and radar output data 
+  // are always serialized.
+  //
+  // Default value: true
+  //
+  google.protobuf.BoolValue serialize_data = 9;
+
+  // The identifier of the deploy node on which the sensor is spawned, 
+  // as defined in the deploy configuration.
+  //
+  // Note: Optional field. If not set, the sensor process is executed 
+  // on the local host.
+  //
+  string deploy_node_id = 10;
+
+  // Configuration of the output data generation and storage 
+  // methods.
+  //
+  DataAccessSettings data_access_settings = 11;
+
+  // Delay between the start of the simulation and the 
+  // sensor's frame cycle.
+  //
+  // Unit: millisecond (ms)
+  //
+  // Range: Positive
+  //
+  double start_offset = 12;
+}
+
+// Settings for the Display of a camera sensor.
+//
+message DisplayInformation {
+  // Position of the top left corner of the rendering window.
+  //
+  TopLeftCornerPosition top_left_corner_position = 1;
+
+  // Activation of the Display Only mode.
+  //
+  // When the Display Only mode is activated (value set to `true`), 
+  // the camera output is only displayed in the rendering window. No data 
+  // is recorded (neither in the shared memory nor dumped on disk) 
+  // and the `recording_format` parameter is ignored.
+  //
+  // When the Display Only mode is deactivated (value set to `false`, which is 
+  // the default value), the camera output data are both generated in 
+  // shared memory and displayed in the rendering window.
+  //
+  // Default value: false
+  //
+  bool display_only = 2;
+}
+
+// Selection of the output data generation method.
+// Only one data generation method should be set.
+// 
+// Note: If no data generation method is set, the default 
+// behavior is to activate output data production in shared memory.
+//
+message DataAccessSettings {
+  oneof data_access_settings
+  {
+    // Activation of output data saving to disk, and 
+    // configuration of the type of data and file format.
+    // Refer to the `RecordingFormat` message for more information.
+    //
+    RecordingFormat recording_format = 1;
+  
+    // Activation of output data production in shared memory.
+    //
+    // The data stored in shared memory can be accessed via a notification-based 
+    // mechanism.
+    //
+    // Default value: true
+    //
+    google.protobuf.BoolValue shared_memory_access = 2;
+
+    // Activation and configuration of output data production for 
+    // Remote Direct Memory Access using the pre-build RDMA sender.
+    //
+    // Note: This parameter only applies to camera output data.
+    //
+    // Note: Data access using Remote Direct Memory Access (RDMA) technology 
+    // is delivered as a beta feature in the current release.
+    //
+    RemoteDirectMemoryAccess remote_direct_memory_access = 3;
+
+    // Configuration of output data production using
+    // Data Direct Memory Access (DDMA).
+    //
+    // Data can be streamed directly from GPU or CPU memory using the
+    // DDMA extension.
+    //
+    // Note: When this field is set, the DDMA extension must be properly configured.
+    //
+    // Note: This feature is only available for camera and radar.
+    // For camera output, DDMA is only supported when using
+    // `LightPropagationEngineSimulationParameters`.
+    //
+    // Note: Data access using Direct Memory Access (DDMA)
+    // is delivered as a beta feature in the current release.
+    //
+    DataDirectMemoryAccess  data_direct_memory_access = 4;
+  }
+}
+
+// Configuration of Remote Direct Memory Access.
+//
+// Note: Data access using Remote Direct Memory Access (RDMA) technology
+// is delivered as a beta feature in the current release.
+//
+message RemoteDirectMemoryAccess {
+  // Size of the RDMA data chunk in bytes.
+  //
+  int32 transfer_chunk_size = 1;
+ 
+  // Sender's IPv4 address.
+  //
+  string sender_address = 2;
+ 
+  // Sender's TCP port.
+  //
+  google.protobuf.Int32Value sender_port = 3;
+
+  // Sender's back-channel port.
+  //
+  google.protobuf.Int32Value sender_backchannel_port = 4;
+
+  // Number of expected post-embedded data lines.
+  //
+  google.protobuf.Int32Value post_embedded_data_line_count = 5;
+
+  // Total size in bytes of the post-embedded data lines.
+  //
+  google.protobuf.Int32Value post_embedded_data_line_payload_size = 6;
+
+  // Number of expected pre-embedded data lines.
+  //
+  google.protobuf.Int32Value pre_embedded_data_line_count = 7;
+
+  // Total size in bytes of the pre-embedded data lines.
+  //
+  google.protobuf.Int32Value pre_embedded_data_line_payload_size = 8;
+}
+
+// Target memory domain for Data Direct Memory Access.
+//
+// Default value: GPU.
+//
+enum DataDirectMemoryAccessTarget {
+  // Stream data from GPU accessible memory (default).
+  //
+  GPU = 0;
+
+  // Stream data from CPU addressable memory.
+  //
+  CPU = 1;
+}
+
+// Configuration of Data Direct Memory Access (DDMA).
+//
+message DataDirectMemoryAccess {
+  // Target memory domain for DDMA.
+  //
+  // Default value: GPU.
+  //
+  DataDirectMemoryAccessTarget target = 1;
+}
+
+// Position of the top left corner of the rendering window relative to
+// the top left corner of the monitor.
+//
+message TopLeftCornerPosition {
+  // The horizontal offset (in pixels) of the rendering window from the 
+  // top left corner of the monitor.
+  //
+  // Default value: 1
+  //
+  int32 x = 1;
+  
+  // The vertical offset (in pixels) of the rendering window from the 
+  // top left corner of the monitor.
+  //
+  // Default value: 1
+  //
+  int32 y = 2;
+}
+
+// Simulation parameters for a physics-based camera.
+//
+message PbCameraSimulation {
+  // The rendering engine parameters.
+  //
+  RenderingParameters rendering_parameters = 1;
+  
+  // The GPU name that must be used for the simulation of this 
+  // camera sensor.
+  //
+  // Note: The GPU name must correspond to an existing name set in 
+  // the GpuIdentifier in a deploy or local host in the deploy configuration.
+  //
+  // Note: Optional field. If not set, the default GPU (whose index is 0) 
+  // will be used.
+  //
+  string gpu_name = 2;
+}
+
+// Types of ground truth output data generated by the 
+// physics-based camera.
+//
+message CameraGroundTruthParameters {
+  // Activation of the depth map production.
+  //
+  // A depth map indicates for each pixel the distance of the associated point 
+  // relative to the camera sensor's mounting position.
+  //
+  // Default value: false
+  //
+  bool generate_depth_map = 1;
+  
+  // Activation of the optical flow production.
+  //
+  // The optical flow indicates for each pixel the linear speed of the 
+  // associated point relative to the camera sensor's mounting position.
+  //
+  // Default value: false
+  //
+  bool generate_optical_flow = 2;
+  
+  // Activation of the pixel segmentation production.
+  //
+  // The pixel segmentation gives a color to each pixel based on the object 
+  // it belongs to.
+  //
+  // Default value: false
+  //
+  bool generate_pixel_segmentation = 3;
+  
+  // Activation of the bounding boxes production.
+  //
+  // This parameter activates the generation of 2D and 3D bounding boxes.
+  //
+  // For more details on the bounding box data generated in shared memory, 
+  // refer to the `BoundingBox2D` and `BoundingBox3D` messages.
+  //
+  // For more details on the file generated on disk, 
+  // refer to AVxcelerate Sensors Simulator User's Guide.
+  //
+  // Default value: false
+  //
+  bool generate_2d_bounding_boxes = 4;
+}
+
+// Simulation parameters for a thermal camera.
+//
+message ThermalCameraSimulation {
+  // The rendering engine parameters.
+  //
+  RenderingParameters rendering_parameters = 1;
+
+  // The GPU name that must be used for the simulation of this 
+  // thermal camera sensor.
+  //
+  // Note: The GPU name must correspond to a GpuIdentifier name specified in 
+  // the deploy parameters.
+  //
+  // Note: Optional field. If not set, the default GPU (whose index is 0) 
+  // will be used.
+  //
+  string gpu_name = 2;
+}
+
+// Rendering engine parameters for the camera sensor.
+//
+message RenderingParameters {
+  // Field indicating whether or not the rendering window is borderless.
+  //
+  // Default value: false
+  //
+  google.protobuf.BoolValue borderless = 1;
+
+  // Activation of the vertical synchronization between the rendering 
+  // frequency of the Display and the frame rate of the screen where the 
+  // rendering window is located.
+  //
+  // Default value: false
+  //
+  google.protobuf.BoolValue vertical_sync = 2;
+
+  // Activation of the alpha channel in the camera output.
+  //
+  // Default value: true
+  //
+  // Note: The values for the alpha channel are not used and are filled with 
+  // default values.
+  //
+  google.protobuf.BoolValue enable_alpha_channel = 3;
+
+  // Activation of the asynchronous GPU readback.
+  //
+  // Default value: false
+  //
+  // Note: Asynchronous GPU readback is delivered 
+  // as a beta feature in the current release.
+  //
+  bool enable_asynchronous_readback = 4;
+
+  oneof specific_parameters {
+    // Camera simulation parameters for real time rendering.
+    // 
+    RealTimeParameters real_time_parameters = 5;
+
+    // Camera simulation parameters for the Light Propagation Engine.
+    //
+    // Note: The Light Propagation Engine is delivered as a beta feature in the
+    // current release.
+    //
+    LightPropagationEngineSimulationParameters lpe_parameters = 6;
+  }
+
+  // Camera simulation parameters for real time rendering.
+  //
+  message RealTimeParameters {  
+      // The camera near plane value.
+      //
+      // Unit: meters (m)
+      //
+      // Range: ]0, `camera_far_plane`[
+      //
+      // Default value:  0.1
+      //
+      google.protobuf.FloatValue camera_near_plane = 1;
+  
+      // The camera far plane.
+      //
+      // Unit: meters (m)
+      //
+      // Range: ]`CameraNearPlane`, float max]
+      //
+      // Default value: 10000.0
+      //
+      google.protobuf.FloatValue camera_far_plane = 2;
+   
+      // The camera shadow quality.
+      //
+      // Default value: EXTREME
+      //
+      Qualities shadow_quality = 3;
+  
+      // The camera texture quality.
+      //
+      // Default value: EXTREME
+      //
+      Qualities texture_quality = 4;
+  
+      // The camera antialiasing factor.
+      //
+      // Range: [1.0, 4.0]
+      //
+      // Default value: 1.0
+      //
+      google.protobuf.FloatValue antialiasing_factor = 5;
+  
+      // Activation of ground truth output production.
+      //
+      // Ground truth output data can be used to test or train a perception 
+      // algorithms.
+      //
+      // Note: Optional field. If not set, no ground truth output is generated.
+      //
+      CameraGroundTruthParameters camera_ground_truth_parameters = 6;
+  }
+}
+
+// The possible values for quality factors.
+//
+enum Qualities {
+  // Undefined value. (The default value will apply.)
+  //
+  UNDEFINED = 0;
+  
+  // Low quality.
+  //
+  LOW = 1;
+  
+  // Medium quality. (Default value for fields in the 
+  // `LightPropagationEngineSimulationParameters` message.)
+  //
+  MEDIUM = 2;
+  
+  // High quality.
+  //
+  HIGH = 3;
+  
+  // Extreme quality. (Default value for fields in the
+  // `RealTimeParameters` message.)
+  //
+  EXTREME = 4;
+}
+
+// Simulation parameters for a radar and, optionally, 
+// the type of execution batching method.
+//
+message RadarSimulation {
+  // The maximum number of ray bounces (reflections) on the scene's objects 
+  // before the ray is forced to return to the sensor.
+  //
+  // Note: The limit applies to each individual ray.
+  //
+  int32  number_of_ray_reflections = 1;
+  
+  // The maximum number of transmissions on the scene's objects before 
+  // the ray is forced to return to the sensor.
+  //
+  // Note: The limit applies to each individual ray.
+  //
+  int32  number_of_ray_transmissions = 2;
+
+  // The sampling of the grid.
+  //
+  RadarGridSampling grid_sampling = 3;
+
+  oneof batching {
+    // Configuration of the manual batching.
+    //
+    // Note: Optional field. By default, the sensor execution is not batched. 
+    //
+    ManualBatching manual_batching = 4;
+    
+    // Configuration of the automatic batching.
+    //
+    // Note: Optional field. By default, the sensor execution is not batched.
+    //
+    AutomaticBatching automatic_batching = 5;
+  }
+
+  // Activation of the tx waveform output generation by the radar.
+  //
+  // Default value: false
+  //
+  bool tx_waveform_report = 6;
+
+  // Field indicating whether or not the Ego vehicle geometry will be 
+  // considered in calculations upon the emission of the ray's first bounce.
+  //
+  // When this parameter is set to `true`, the ego vehicle geometry 
+  // is considered in calculations upon the emission of the ray's first 
+  // bounce.
+  //
+  // When this parameter is set to `false` (which is the default value), 
+  // the ego vehicle geometry is not considered in calculations upon the 
+  // emission of the ray's first bounce.
+  //
+  // Default value: false
+  //
+  bool ego_vehicle_emission_blockage = 7;
+
+  // Parameters for the generation of debug view images. 
+  //
+  // Optional field. If not set, the debug view images are not generated.
+  //
+  RadarDebugViewParameters debug_view_parameters = 8;
+
+  // The maximal length for the ray path per radar mode.
+  //
+  // Key [int32]: The mode id.
+  //
+  // Value [double]: The maximal length for the ray path.
+  //
+  // Unit: meters (m)
+  //
+  // Range: ]0, 2 * `max_path_length`[
+  //
+  // Default value:  200
+  //
+  // Note: Features with total path length greater than twice the max ray path
+  // length, including the path back to the radar, will be excluded.
+  // 
+  // Note: This parameter only applies to radars with arbitrary waveform.
+  // 
+  map<int32, double> max_ray_path_length_by_mode = 9;
+
+  // The maximal velocity for each radar mode. 
+  //
+  // Key [int32]: The mode id.
+  //
+  // Value [double]: The maximal velocity.
+  //
+  // Unit: meters per second (m/s)
+  //
+  // Range: ]0, double max[
+  //
+  // Default value:  75
+  //
+  // Note: Features with (absolute value of) relative velocity greater than
+  // the maximal velocity will be excluded.
+  //
+  // Note: This parameter only applies to radars with arbitrary waveform.
+  // 
+  map<int32, double> max_velocity_by_mode = 10;
+
+  // Field indicating whether or not to consider the curvature of a surface
+  // for bouncing rays.
+  //
+  // Default value: false
+  //
+  // Note: Curvatures are always considered for the signal construction.
+  //
+  // Note: Curvature consideration is delivered as a beta feature in the
+  // current release.
+  //
+  bool use_curvature = 11;
+}
+
+// Parameters for the radar's debug view images.
+//
+message RadarDebugViewParameters {
+  // The color mode of the debug view images.
+  //
+  ColorMode color_mode = 1;
+
+  // The width of the debug view images.
+  //
+  // Range: ]0, int32 max]
+  //
+  // Default value: 1024
+  //
+  // Note: The debug view image is square (width = height).
+  //
+  google.protobuf.Int32Value image_width = 2;
+    
+  // The gray level of the debug view image's background.
+  //
+  // Range: [0, 255]
+  //
+  // Default value: 128
+  //
+  google.protobuf.Int32Value background_gray_level = 3;
+
+  // Activation of the shading on materials in the output images 
+  // of the debug view with the `COATING` color mode. 
+  // Shading materials eases image interpretation by humans.
+  //
+  // Note: This parameter only applies to debug view images with the `COATING` 
+  // color mode. Its value will not be considered if any other color mode is 
+  // used.
+  // 
+  // Default value: false
+  //
+  google.protobuf.BoolValue enable_material_shading = 4;
+  
+  // The rasterization density when rasterizing the triangles to fill 
+  // image pixels.
+  //
+  // Range: ]0, double max]
+  //
+  // Default value: 1.0
+  //
+  // Note: It is recommended to start with 1.0 and increase as needed to 
+  // achieve the desired image quality.
+  //
+  google.protobuf.DoubleValue oversample = 5;
+}
+
+// Radar grid sampling specifies the global sampling and the adaptive
+// sampling to be applied to the scene.
+//
+message RadarGridSampling {
+  // Global sampling defining the default sampling to be applied to the scene.
+  //
+  RadarGridSamplingParameters global_sampling = 1;
+
+  // The tag-sampling mapping table for adaptive sampling which assigns ray 
+  // spacing values to tagged objects.
+  //
+  // Note: If a tag is not associated with any object in the scene, the simulation
+  // will stop with an error.
+  // 
+  // Key [string]: The name of the tag.
+  //
+  // Note: For pre-defined tags, use the CamelCase form of the tag name in 
+  // AVxcelerate Asset Preparation Editor. For example, 
+  // "RoadSign" for Road Sign, "StreetLight" for Street Light, 
+  // "SteeringWheel" for Steering Wheel. 
+  // Be aware of the following two exceptions: "SimulationObject" should be used 
+  // instead of Object, "Indicator" should be used instead of Turn Indicator. 
+  // For custom tags, the expected text string is the name of the tag as 
+  // it is written in AVxcelerate Asset Preparation Editor.
+  //
+  // Value [`RadarGridSamplingParameters`]: Refer to this message for details.
+  //
+  // Note: For tags belonging to the same hierarchy of objects, the ray 
+  // spacing value assigned to a child-node tag must be less than or equal to 
+  // that of the parent-node tag. If the ray spacing value of 
+  // the child-node tag is greater than that of the parent-node tag, 
+  // it will be be lowered to match the ray spacing value of the parent-node 
+  // tag.
+  //
+  map<string, RadarGridSamplingParameters> adaptive_sampling = 2;
+}
+
+// Radar grid sampling parameters, which consist of the ray spacing 
+// parameter.
+//
+message RadarGridSamplingParameters {
+  // For global sampling, the ray spacing is expressed as the distance between 
+  // adjacent rays measured at 100m from the source.
+  //
+  // For adaptive sampling, the ray spacing is expressed as the distance 
+  // between adjacent rays regardless of the distance of the object from the 
+  // source (the number of rays hitting the object will be kept constant 
+  // all across the simulation).
+  //
+  // Unit: meter (m)
+  //
+  // Range: ]0, double max]
+  //
+  double ray_spacing = 1;
+}
+
+// The available color modes for the radar's debug view output.
+//
+enum ColorMode {
+  // Color in shades of gray by the angle of incidence between the 
+  // surface and viewing direction. (Default value.)
+  //
+  BLACKWHITE = 0;
+  
+  // Color by the dielectric properties of the materials.
+  //
+  // Note: Color assignment is determined by the material indices of each 
+  // radar simulation instance and is not deterministic.
+  //
+  // Optionally shaded (when `enable_material_shading` is set to `true` 
+  // in `RadarDebugViewParameters`).
+  //
+  COATING = 1;
+  
+  // Color by the relative velocities. 
+  //
+  // The R, G and B values correspond respectively to the velocities in the 
+  // X, Y and Z direction.
+  //
+  VELOCITY = 2;
+  
+  // Color by the normal of the surfaces converted to RGB.
+  //
+  NORMAL = 3;
+}
+
+// Manual batching configuration.
+//
+// Note: With the manual batching method, the number of batches for rays and 
+// rx channels must be specified.
+//
+message ManualBatching {
+  // The number of batches on casted rays: applies to all the radar modes.
+  //
+  int32    number_of_ray_batches = 1;
+  
+  // The batching on rx channels.
+  //
+  repeated RxBatching rx_batching = 2;
+
+  // Definition of the GPU to use for the simulation of 
+  // each mode of this radar sensor.
+  // 
+  // Key [int32]: The mode id.
+  //
+  // Value [string]: The GPU name.
+  // 
+  // Note: The GPU names must correspond to the GpuIdentifier names specified 
+  // in the deploy parameters.
+  //
+  map<int32, string> gpu_by_modes = 3;
+}
+
+// Automatic batching configuration.
+//
+// Note: With the automatic batching method, the number of batches on rays and 
+// on rx channels are computed by the system taking into account the 
+// specified two constraints. 
+// There are two possibilities for the second constraint according to your 
+// needs: 
+// To use the default GPU, set the `gpu_memory_quota`. 
+// To use any other GPU or several GPUs, set the `gpu_quotas`.
+//
+message AutomaticBatching {
+  // First constraint: the upper bound on the automatically computed number 
+  // of ray batches.
+  //
+  int32  max_number_of_ray_batches = 1;
+  
+  // Second constraint, option 1: the max fraction (quota) of the total 
+  // GPU memory that can be used. The default GPU (whose index is 0) will be 
+  // used.
+  //
+  double gpu_memory_quota = 2;
+
+  // Second constraint, option 2: the max fraction (quota) of the total memory 
+  // of the specified GPU that can be used.
+  //
+  // Key [string]: The GPU name.
+  //
+  // Note: The GPU names must correspond to the `GpuIdentifier` names specified 
+  // in the deploy parameters.
+  //
+  // Value [double]: The max fraction of the GPU memory that can be used.
+  //
+  map<string, double> gpu_quotas = 3;
+}
+
+// Settings for the batching on rx channels.
+//
+// Note: The number of batches is set, and therefore applies, independently 
+// for each radar mode.
+//
+message RxBatching {
+  // The id of the mode to which rx batching is applied.
+  //
+  int32 mode_id = 1;
+  
+  // The number of batches on rx channels.
+  //
+  int32 number_of_rx_batches = 2;
+}
+
+// Simulation parameters for a Lidar.
+//
+message LidarSimulation {
+  // Activation of the waveform output production by the lidar.
+  //
+  // Default value: false
+  //
+  bool waveform = 1;
+  
+  // Activation of the contribution output production by the lidar.
+  //
+  // Default value: false
+  //
+  bool contribution = 2;
+  
+  // The lidar ray-tracing grid.
+  //
+  Grid grid = 3;
+
+  // The number of batches.
+  //
+  // Default value: 1
+  //
+  // Note: The number of batches must be less than or equal to the lidar 
+  // resolution.
+  //
+  google.protobuf.Int32Value number_of_batches = 4;
+
+  // The GPU name that must be used for the simulation of this 
+  // lidar sensor.
+  //
+  // Note: The GPU name must correspond to a `GpuIdentifier` name specified in 
+  // the deploy parameters.
+  //
+  // Note: Optional field. If not set, the default GPU (whose index is 0)
+  // will be used.
+  //
+  string gpu_name = 5;
+
+  // Use RGB diffuse parameters in the simulation of this lidar sensor. 
+  //
+  // Default value: false
+  //
+  bool use_rgb_diffuse = 6;
+
+  // Enable surface smoothing for time of flight calculation according to the
+  // surface curvature.
+  //
+  // Default value: false
+  //
+  bool enable_surface_smoothing = 7;
+}
+
+// Type of grid for the lidar sensor.
+//
+message Grid {
+  oneof grid {
+    // The Cartesian grid.
+    //
+    // Note: Cartesian grid applies to flashing lidar only.
+    //
+    CartesianGrid cartesian_grid = 1;
+    
+    // The polar grid.
+    //
+    // Note: Polar grid applies to rotating lidar only.
+    //
+    PolarGrid polar_grid = 2;
+  }
+}
+
+// Cartesian grid definition.
+//
+message CartesianGrid {
+  // The number of horizontal squares in the grid.
+  //
+  int32 horizontal_grid_points = 1;
+  
+  // The number of vertical squares in the grid.
+  //
+  int32 vertical_grid_points = 2;
+}
+
+// Polar grid definition.
+//
+message PolarGrid {
+  // The number of radial segments.
+  //
+  int32 radial_grid_points = 1;
+  
+  // The number of angular segments.
+  //
+  int32 angular_grid_points = 2;
+  
+  // Field indicating whether or not an on-axis ray (point of emission) 
+  // must be added to the center of the grid.
+  //
+  // Default value: false
+  //
+  bool has_central_point = 3;
+}
+
+// Format for recording the sensor's outputs.
+//
+message RecordingFormat {
+  oneof sensor_data_format{
+    // Format for saving camera output on disk.
+    //
+    // Possible value:
+    //   - for physics-based camera: RAW, BMP, GIF, JPEG, or PNG,
+    //   - for thermal camera: TEMPERATURE_MAP.
+    //
+    CameraDataFormat camera_recording_format = 1;
+    
+    // Format for recording radar output.
+    //
+    OutputFormat radar_recording_format = 2;
+    
+    // Format for recording lidar output.
+    //
+    OutputFormat lidar_recording_format = 3;
+  }
+}
+
+// Lighting system simulation parameters.
+//
+message LightingSystemParameters {
+  // Angular sampling used when computing the rendering of the light sources 
+  // in the Lighting System.
+  //
+  // Unit: degrees
+  //
+  // Range: [0.05, 57]
+  //
+  // Default value: 0.05
+  //
+  double sampling_rate = 1; 
+}
+
+// Output data splitting configuration.
+//
+message OutputSplitting {
+  // The radar output splitting configuration.
+  //
+  RadarOutputSplitting radar_output_splitting = 1;
+}
+
+// Radar output data splitting configuration.
+//
+message RadarOutputSplitting {
+  // The radar output splitting level.
+  //
+  RadarOutputSplittingLevel radar_output_splitting_level = 1;
+}
+
+// The available radar output splitting levels.
+//
+enum RadarOutputSplittingLevel {
+  
+  // Default value. Output data is not split.
+  //
+  DEFAULT = 0;
+
+  // Split by radar mode.
+  //
+  MODE = 1;
+
+  // Split by transmitter.
+  //
+  TRANSMITTER = 2;  
+}
+
+// Simulation parameters for the Light Propagation Engine.
+//
+message LightPropagationEngineSimulationParameters
+{
+  // Distance at which the camera starts seeing objects.
+  // 
+  // Unit: meters (m) 
+  //
+  // Range: ]0.0, `camera_culling_distance`] or ]0.0, inf[ if `camera_culling_distance` == 0
+  //
+  // Default value: 0.3
+  //
+  optional double camera_near_distance = 1;
+
+  // Distance at which the camera stops seeing objects.
+  //
+  // Unit : meters (m)
+  //
+  // Range: [`camera_near_distance`, inf[ or 0
+  //
+  // Note: Setting the value to 0 means infinite.
+  //
+  // Default value: 1000
+  //
+  optional double camera_culling_distance = 2;
+
+  oneof ambient_occlusion{
+    // Screen-Space Ambient Occlusion.
+    //
+    ScreenSpaceAmbientOcclusion screen_space_ambient_occlusion = 3;
+
+    // Raytraced Ambient Occlusion.
+    //
+    RaytracedAmbientOcclusion raytraced_ambient_occlusion = 9;
+  }
+  
+  // Activation of the Occlusion Culling experimental feature.
+  //
+  // Note: It improves performances, but can lead to unexpected behaviors.
+  //
+  // Default value: true
+  //
+  optional bool occlusion_culling = 4;
+
+  // Activation of the Raytraced Shadows experimental feature.
+  //
+  // Note: It improves the quality of the shadows, 
+  // but can lead to unexpected behaviors.
+  //
+  // Default value: true
+  //
+  optional bool raytraced_shadows = 5;
+
+  // The camera shadow quality.
+  //
+  // Default value: MEDIUM
+  //
+  Qualities shadow_quality = 6;
+  
+  // The camera antialiasing factor.
+  //
+  // Range: [1.0, 4.0]
+  //
+  // Default value: 1.0
+  //
+  optional double antialiasing_factor = 7;
+
+  // Activation of ground truth output production.
+  //
+  // Ground truth output data can be used to test or train a perception 
+  // algorithms.
+  //
+  // Note: Optional field. If not set, no ground truth output is generated.
+  //
+  CameraGroundTruthParameters camera_ground_truth_parameters = 8;
+
+  // Activation of raytraced scene renderer.
+  //
+  // Note: Raytraced scene renderer is delivered
+  // as an experimental feature in the current release.
+  //
+  optional bool raytraced_scene_renderer = 10;
+  
+  // Activation of the Raytraced Reflections.
+  //
+  // Default value: false
+  //
+  optional bool raytraced_reflections = 11;
+
+}
+
+// Parameters for Screen-Space Ambient Occlusion.
+//
+message ScreenSpaceAmbientOcclusion 
+{
+  // Activation of the screen space ambient occlusion feature.
+  // 
+  // Default value: false
+  //
+  bool activation = 1;
+
+  // Linear gain factor of neighbouring occluders.
+  //
+  // Range: [ 1.0, 8.0 ]
+  // Default value: 1.0
+  //
+  optional double amount = 2;
+
+  // Maximal radius to detect occluders.
+  //
+  // Unit: meters (m)
+  //
+  // Range: [0.01, 2.0]
+  //
+  // Default: 0.8
+  //
+  optional double radius = 3;
+
+  // Amplification factor of the occlusion ambient lighting.
+  //
+  // Range: [0.0, 8.0]
+  //
+  // Default: 2
+  //
+  optional double power_exponent = 4;
+
+  // Distance bias to avoid self shadowing.
+  //
+  // Unit: meters (m)
+  //
+  // Range: [0.0, 1.0]
+  //
+  // Default value: 0.01
+  //
+  optional double surface_bias = 5;
+}
+
+// Parameters for raytraced ambient occlusion.
+//
+// Note: Raytraced ambient occlusion is delivered as a beta feature in the
+// current release.
+//
+message RaytracedAmbientOcclusion {
+  // Activation of the raytraced ambient occlusion feature.
+  // 
+  // Default value: false
+  //
+  bool activation = 1;
+
+  // The angle of the cone sampling distribution:
+  //   - 0 for sampling along the normal only.
+  //   - Pi/2 to sample the whole hemisphere.
+  //
+  // Unit: radian
+  //
+  // Range: [0, Pi/2]
+  //
+  // Default: 1.0
+  //
+  optional float sampling_angle = 2;
+
+  // The maximum distance up to which ray-intersections are computed. All
+  // occlusion events beyond this distance are ignored.
+  //
+  // Unit: meter (m)
+  //
+  // Range: [0.01, 1000]
+  //
+  // Default: 5
+  //
+  optional float occlusion_detection_radius = 3;
+
+  // The number of samples used to compute the occlusion map.
+  //
+  // Note: Setting the `Sample_Number` greater than 128 and the 
+  // `Downscale Factor` to `FULL` has a huge impact on performances.
+  //
+  // Range: [1, 512]
+  //
+  // Default: 8
+  //
+  optional int32 sample_number = 4;
+
+  // Exponent applied to the ambient occlusion map.
+  //
+  // Note: The raytraced ambient occlusion feature is no more physically correct when
+  // the `Power Factor` value is set to anything but 1.
+  //
+  // Range: Strictly positive
+  //
+  // Default: 1
+  //
+  optional float power_factor = 5;
+
+  // Activation of denoising on the raytraced ambient occlusion output.
+  //
+  // Default: true
+  //
+  optional bool use_denoiser = 6;
+
+  // Scale for the resolution at which the ambient occlusion is
+  // computed.
+  //
+  optional RtaoDownscaleFactor resolution_scale = 7;
+}
+
+// Scale values for the resolution at which the raytraced ambient
+// occlusion is computed.
+//
+enum RtaoDownscaleFactor {
+  // Default value. No downscale.
+  // The LPE rendering resolution is used.
+  //
+  FULL = 0;
+
+  // Downscale the resolution by a factor of 2.
+  //
+  HALF = 1;
+
+  // Downscale the resolution by a factor of 4.
+  //
+  QUARTER = 2;
+}

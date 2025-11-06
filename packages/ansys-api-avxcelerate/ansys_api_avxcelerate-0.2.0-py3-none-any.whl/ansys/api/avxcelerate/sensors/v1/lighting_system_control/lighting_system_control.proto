@@ -1,0 +1,61 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the service used to implement a lighting system control.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.lighting_system_control;
+
+import "ansys/api/avxcelerate/sensors/v1/lighting_system_control/lighting_system_state.proto";
+import "ansys/api/avxcelerate/sensors/v1/status.proto";
+
+// Lighting System Control Service
+// 
+// This service provides the procedures to retrieve and update the position 
+// and orientation of each projector and module contained in 
+// a Lighting System, as well as the flux and light functions of each lamp 
+// contained in a module.
+//
+// Note: The changes will be applied at the next world update (requested using 
+// the `Update` method of the Simulation service).
+//
+service LightingSystemControl {
+  // Updates some properties of a Lighting System's components, such as 
+  // the position or orientation of projectors or modules, or the flux or 
+  // light functions of lamps.
+  //
+  // Note: Only the components and properties specified in the 
+  // `LightingSystemState` message will be updated.
+  //
+  // Returns an error if any of the names provided in the request 
+  // (in the `LightingSystemState` message) does not exist, or in case of  
+  // errors in the parameters to update (for example when a provided value  
+  // is out of range).
+  //
+  // Returns a success status when the content of the request (in the 
+  // `LightingSystemState` message) is valid. The changes will then be applied 
+  // to the simulation at the next world update.
+  //
+  rpc Set(LightingSystemState) returns (ansys.api.avxcelerate.sensors.v1.Status) {}
+  
+  // Requests the current state of a given Lighting System defined by its name.
+  //
+  // Returns the state of the Lighting System at a specific simulation time.
+  //
+  rpc Get(LightingSystemName) returns (TimeStampedLightingSystemState) {}
+}

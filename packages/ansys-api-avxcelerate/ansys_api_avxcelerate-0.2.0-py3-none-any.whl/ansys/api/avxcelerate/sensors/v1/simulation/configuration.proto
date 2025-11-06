@@ -1,0 +1,135 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+
+******************************************************************************/
+/**
+*
+* This file describes the messages used to configure a simulation.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.simulation;
+
+import "ansys/api/avxcelerate/sensors/v1/simulation/deploy_parameters.proto";
+import "ansys/api/avxcelerate/sensors/v1/simulation/simulation_parameters.proto";
+import "ansys/api/avxcelerate/sensors/v1/resource_identifier.proto";
+import "ansys/api/avxcelerate/sensors/v1/object_identifier.proto";
+
+// Configuration message containing all the parameters needed to 
+// load resources in AVX.
+//
+message Configuration {
+  // Information on the scene in which the simulation takes place.
+  //
+  SceneInfo scene = 1;
+    
+  // The infrastructure deploy parameters.
+  //
+  DeployConfiguration deploy_configuration = 2;
+
+  // The simulation parameters.
+  //
+  SimulationParameters simulation_parameters = 3;
+  
+  // The sensor configuration.
+  //
+  SensorConfig sensors = 4;
+
+  // The Lighting System configuration of the ego vehicle. 
+  //
+  // Note: Multiple Lighting Systems can be associated with the ego vehicle, 
+  // but only one can be set as active. When this parameter 
+  // is not set, the vehicle lighting is based on the tags defined in 
+  // the vehicle asset.
+  //
+  LightingSystemConfiguration lighting_system_configuration = 5;
+  
+  // The unique identifier of the ego vehicle, which is the vehicle instance 
+  // to which the sensor configuration and Lighting System(s) are attached.
+  //
+  ansys.api.avxcelerate.sensors.v1.ObjectIdentifier ego_vehicle_identity = 6;
+}
+
+// Message containing all the components that make up a scene: the assets and 
+// the track.
+//
+message SceneInfo {
+  // The list of all the assets included in the scene.
+  //
+  repeated AssetInfo assets = 1;
+  
+  // The path to the track file or the identifier of the uploaded track.
+  //
+  ansys.api.avxcelerate.sensors.v1.ResourceIdentifier track = 2;
+}
+
+// Description of an asset.
+//
+message AssetInfo {
+  // The unique identifier of the asset.
+  //
+  // Note: The identifier is case-sensitive.
+  //
+  ansys.api.avxcelerate.sensors.v1.ObjectIdentifier vss_identity = 1;
+  
+  // The path to the asset file or the identifier of the uploaded asset.
+  //
+  ansys.api.avxcelerate.sensors.v1.ResourceIdentifier resource = 2;
+}
+
+// Description of the sensor configuration as binary data.
+//
+message SensorConfig {
+  // The encapsulated byte array.
+  //
+  // Note: We chose to have a supertype so that it may evolve in the future 
+  // with lower impact.
+  //
+  bytes sensor_configuration = 1;
+}
+
+// Description of a Lighting System with its identifier and either a 
+// data buffer, or the identifier of an uploaded resource.
+//
+message LightingSystem {
+  // The unique identifier of the Lighting System.
+  //
+  ansys.api.avxcelerate.sensors.v1.ObjectIdentifier identifier = 2;
+  
+  oneof system {
+    // The encapsulated byte array.
+    //
+    bytes lighting_system_data = 1;
+    
+    // The identifier of the uploaded Lighting System.
+    //
+    ansys.api.avxcelerate.sensors.v1.ResourceIdentifier resource = 3;
+  }
+}
+
+// List of all the Lighting Systems associated with the ego vehicle, as well 
+// as the active Lighting System.
+//
+message LightingSystemConfiguration {
+  // The list of all Lighting Systems associated with the ego vehicle.
+  //
+  repeated LightingSystem lighting_systems = 1;
+
+  // The Lighting System that is set as active.
+  //
+  // Note: If this value is not set, the first Lighting System associated with 
+  // the ego vehicle is set as active.
+  //
+  ansys.api.avxcelerate.sensors.v1.ObjectIdentifier active_lighting_system = 2;
+}

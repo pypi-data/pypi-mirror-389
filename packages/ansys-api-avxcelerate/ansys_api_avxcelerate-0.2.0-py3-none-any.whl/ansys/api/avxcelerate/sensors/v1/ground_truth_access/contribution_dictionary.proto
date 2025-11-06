@@ -1,0 +1,119 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+******************************************************************************/
+/**
+*
+* This file describes the messages related to the Contribution dictionary, 
+* a table linking the entity IDs in the contribution output 
+* to the asset information.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.ground_truth_access;
+
+import "ansys/api/avxcelerate/sensors/v1/status.proto";
+
+// The identifier of the sensor as defined in the sensor configuration.
+//
+message SensorIdentifier {
+  // The identifier of the sensor.
+  //
+  string sensor_id = 1;
+}
+
+// Dictionary used to relate each entity ID in the contribution output to the 
+// description of the asset and its nodes.
+//
+message ContributionDictionary {
+  // The collection of items relating the entity ID 
+  // from the contribution output to the asset information.
+  //
+  repeated EntityContributionDescription items = 1;
+
+  // The status of the request.
+  //
+  ansys.api.avxcelerate.sensors.v1.Status status = 2;
+}
+
+// Description of the mesh node, its parent nodes 
+// and the asset linked to the entity ID. 
+//
+message EntityContributionDescription {
+  // The ID of the entity in the simulation.
+  //
+  uint32 EntityID = 1;
+
+  // The description of the asset.
+  //
+  AssetDescription asset_description = 2;
+
+  // The list of descriptions of the mesh node and all its parents.
+  //
+  repeated NodeDescription node_hierarchy = 3;
+
+  // The description of the mesh.
+  //
+  MeshDescription mesh_description = 4;
+}
+
+// Description of the asset linked to the entity ID.
+//
+message AssetDescription {
+  // The name of the simulation instance using the asset.
+  //
+  string instance_name = 1;
+
+  // The path to the asset loaded in the AVX simulation.
+  //
+  string asset_path = 2;
+}
+
+// Description of a node linked to the entity ID.
+//
+message NodeDescription {
+  // The name of the node in the simulation.
+  //
+  string name = 1;
+
+  // The tag(s) associated with the node.
+  //
+  repeated TagDescription tags = 2;
+}
+
+// Description of the tag associated with the entity ID.
+//
+message TagDescription {
+  // The name of the tag applied to the node in the asset.
+  //
+  string tag = 1;
+
+  // The additional tag label applied to the node in the asset.
+  //
+  string label = 2;
+}
+
+// Description of the mesh associated with the entity ID.
+//
+message MeshDescription {
+  // The name of the mesh part associated with the entity ID.
+  //
+  string mesh_part_name = 1;
+
+  // The path to the material part used by the mesh part.
+  //
+  string material_path = 2;
+
+  // The name of the mesh associated with the entity ID.
+  //
+  string mesh_name = 3;
+}

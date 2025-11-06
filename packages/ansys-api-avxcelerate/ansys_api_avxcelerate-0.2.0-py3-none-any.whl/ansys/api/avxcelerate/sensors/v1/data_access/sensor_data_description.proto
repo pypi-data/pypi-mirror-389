@@ -1,0 +1,225 @@
+/******************************************************************************
+© 2012-2025 ANSYS, Inc. All rights reserved. Unauthorized use, distribution, or
+  duplication is prohibited.
+THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION INCLUDE TRADE SECRETS AND
+ARE CONFIDENTIAL AND PROPRIETARY PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR 
+LICENSORS. The software products and documentation are furnished by ANSYS, 
+Inc., its subsidiaries, or affiliates under a software license agreement that 
+contains provisions concerning non-disclosure, copying, length and nature of 
+use, compliance with exporting laws, warranties, disclaimers, limitations of 
+liability, and remedies, and other provisions.  The software products and 
+documentation may be used, disclosed, transferred, or copied only in accordance 
+with the terms and conditions of that software license agreement.
+******************************************************************************/
+/**
+*
+* This file describes the messages used to define the content of user 
+* notifications when new sensor data is produced.
+*/
+syntax = "proto3";
+
+package ansys.api.avxcelerate.sensors.v1.data_access;
+
+import "ansys/api/avxcelerate/sensors/v1/resource_identifier.proto";
+import "ansys/api/avxcelerate/sensors/v1/sensor_data_format.proto";
+import "ansys/api/avxcelerate/sensors/v1/data_access/sensor_data_identifier.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+
+// Content of the notifications sent any time sensor data is produced.
+//
+message SensorDataDescription {
+  // The identifier of the sensor which produced the data.
+  //
+  // Note: The identifier corresponds to the identifier defined in 
+  // the sensor configuration.
+  //
+  ansys.api.avxcelerate.sensors.v1.ResourceIdentifier sensor_id = 1;
+  
+  // The simulation time of the produced data.
+  //
+  google.protobuf.Duration simulation_time = 2;
+
+  // Metadata description for the data produced by one sensor 
+  // at a specific simulation time.
+  //
+  repeated SensorDataInfo data_by_identifiers = 3;
+}
+
+// Metadata associated with the produced data.
+//
+message SensorMetadata {
+  oneof value {
+    // Metadata for data produced by a camera sensor.
+    //
+    CameraMetadata camera_metadata = 1;
+    
+    // Metadata for data produced by a lidar sensor.
+    //
+    LidarMetadata lidar_metadata = 2;
+    
+    // Metadata for data produced by a radar sensor.
+    //
+    RadarMetadata radar_metadata = 3;
+
+    // Metadata for a debug view image produced by a radar sensor.
+    //
+    RadarDebugViewMetadata radar_debug_view_metadata = 8;
+  }
+  
+  oneof feedback {
+    // Current values of some of the camera sensor's parameters that were 
+    // used to produce this data.
+    //
+    CameraFeedback camera_feedback = 4;
+  }
+  
+  // Field indicating whether or not the sensor's output data is 
+  // serialized.
+  //
+  bool data_serialized = 5;
+
+  // Address of the Deploy host where the sensor data was generated.
+  //
+  string deploy_host_address = 6;
+
+  // TCP port used to communicate with the data access server.
+  //
+  // If no value provided, data are available only on the shared memory.
+  //
+  google.protobuf.Int32Value data_access_server_port = 7;
+}
+
+// Metadata associated with a data produced by a camera sensor.
+//
+message CameraMetadata {
+  // The types of data produced by the camera. 
+  // Can be the following: `RAW`, `TEMPERATURE_MAP`, 
+  // `SPECTRAL_IRRADIANCE_MAP` or `CUSTOM_DATA`.
+  //
+  repeated CameraDataFormat formats = 1;
+  
+  // The width of the camera output.
+  //
+  int32 image_width = 2;
+  
+  // The height of the camera output.
+  //
+  int32 image_height = 3;
+  
+  // The pixel format of the image.
+  //
+  PixelFormat pixel_format = 4;
+  
+  // The list of ground truth data available.
+  //
+  repeated CameraGroundTruthDataFormat ground_truth_formats = 5;
+  
+  // The number of 2D bounding boxes that have been produced.
+  //
+  // Note: The number of 2D and 3D bounding boxes produced is the same, 
+  // therefore this field also indicates the number of 3D bounding boxes.
+  //
+  google.protobuf.Int32Value nb_of_2Dbounding_boxes = 6;
+}
+
+// Metadata associated with a data produced by a lidar sensor.
+//
+message LidarMetadata {
+  // The format(s) of the data produced by a lidar sensor.
+  //
+  repeated LidarDataFormat formats = 1;
+  
+  // Resolution.
+  //
+  Resolution resolution = 2;
+}
+
+// Data description of the radar's debug view output.
+//
+message RadarDebugViewMetadata {
+  // The width of the debug view's image output.
+  //
+  int32 image_width = 1;
+
+  // The height of the debug view's image output.
+  //
+  int32 image_height = 2;
+
+  // The pixel format of the image.
+  //
+  PixelFormat pixel_format = 3;
+
+  // The identifier of the corresponding radar mode.
+  //
+  google.protobuf.Int32Value mode_identifier = 4;
+}
+
+// Resolution of a lidar output.
+//
+message Resolution {
+  // Horizontal resolution of lidar.
+  //
+  int32 horizontal_resolution = 1;
+
+  // Vertical resolution of lidar.
+  //
+  int32 vertical_resolution = 2;
+}
+
+// Metadata associated with a data produced by a radar sensor.
+//
+message RadarMetadata {
+  // The format(s) of the data produced by a radar sensor.
+  //
+  repeated RadarDataFormat formats = 1;
+
+  // The identifier of the mode that has produced the data.
+  //
+  google.protobuf.Int32Value mode_identifier = 2;
+
+  // The identifier of the transmitter antenna that has produced the data.
+  //
+  google.protobuf.Int32Value tx_identifier = 3;
+
+  // Field indicating whether or not TX waveform data are available.
+  //
+  bool tx_waveform_reported = 4;
+}
+
+// Camera sensor parameters that were used to produce the data.
+//
+message CameraFeedback {
+  // Value of the exposure time.
+  //
+  // The value is represented as a count of seconds and fractions of seconds 
+  // at nanosecond resolution.
+  //
+  google.protobuf.Duration exposure_time = 1;
+  
+  // Value of the gain.
+  //
+  double gain = 2;
+  
+  // Value of the injection time.
+  //
+  // Note: This value only makes sense when the injection mode is 
+  // activated, as it is encoded in the pixel defined in the injection
+  // parameters.
+  //
+  google.protobuf.Int32Value injection_time = 3;
+}
+
+// Sensor data info that contains sensor metadata for a given data 
+// identifier.
+//
+message SensorDataInfo {
+  // The identifier of the produced data.
+  // To be used by the subscriber to retrieve the sensor output data.
+  //
+  ansys.api.avxcelerate.sensors.v1.data_access.SensorDataIdentifier data_id = 2;
+
+  // SensorMetadata.
+  //
+  SensorMetadata metadata = 4;
+}
