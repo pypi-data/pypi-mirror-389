@@ -1,0 +1,32 @@
+{
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+    "name": "com.context7/context7",
+    "title": "Context7 Documentation Search",
+    "description": "MCP server for searching library documentation using Context7 API. Provides up-to-date documentation and code examples for any library.",
+    "version": "1.0.0",
+    "remotes": [
+      {
+        "type": "streamable-http",
+        "url": "https://mcp.context7.com/mcp",
+        "headers": [
+          {
+            "name": "CONTEXT7_API_KEY",
+            "value": "{context7_api_key}",
+            "variables": {
+              "context7_api_key": {
+                "description": "Context7 API Key for authentication",
+                "isRequired": true,
+                "isSecret": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "status": "active",
+      "publishedAt": "2025-01-22T00:00:00Z",
+      "updatedAt": "2025-01-22T00:00:00Z",
+      "isLatest": true
+    }
+  }
