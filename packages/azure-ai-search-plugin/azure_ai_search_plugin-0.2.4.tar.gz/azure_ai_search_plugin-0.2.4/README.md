@@ -1,0 +1,248 @@
+# Azure AI Search Plugin — Semantic Search & Cosmos DB Retriever
+ 
+The **Azure AI Search Plugin** is a unified, lightweight, and reusable **Python utility suite** built to connect, query, and retrieve data from **Azure Cognitive Search** which is "main.py" file and **Azure Cosmos DB** which is in "cosmos_data_retriever.py" using the official Azure SDKs.  
+It is part of the `azure_ai_search_plugin` package and designed for seamless integration with **AI agents**, **Semantic Kernel**, or **intelligent retrieval systems**.
+ 
+Together, these retrievers enable **semantic search**, **structured querying**, and **data enrichment** from multiple Azure sources — all with **async support**, **robust error handling**, and **clean structured responses**.
+ 
+---
+ 
+## Features
+ 
+### 🔹 Azure Cognitive Search (Semantic Search Retriever) (main.py file)
+- Fully **asynchronous operations** using the `aio` SDK  
+- **Semantic & keyword search** support  
+- **Top matching document retrieval** by confidence score  
+- **Dynamic parameter handling** (no hardcoded values)  
+- **Safe score conversion** and **robust exception handling**  
+- **Semantic Kernel compatible** (`@kernel_function` ready)  
+- **Custom Timeout & Retry Handling**  
+  Includes a configurable `TimeoutPolicy` and `RetryPolicy` to manage network latency and transient failures efficiently.  
+  The plugin applies per-request timeouts and automatic retries for improved resilience during Azure Search API calls.
+ 
+### 🔹 Azure Cosmos DB (Data Retriever) (cosmos_data_retriever.py)
+- **Simple connection setup** via `.env` or direct parameters  
+- **Fetch all items** or filter by specific field  
+- **Retrieve by ID and Partition Key**  
+- **Custom SQL-like query execution**  
+- **Integrated logging** and **custom error handling**
+ 
+---
+ 
+## Requirements
+ 
+| Dependency | Minimum Version |
+|-------------|----------------|
+| Python | 3.8+ |
+| azure-search-documents | ≥ 11.4.0 |
+| azure-cosmos | ≥ 4.0.0 |
+| semantic-kernel | ≥ 0.5.0 |
+| python-dotenv | ≥ 1.0 |
+ 
+---
+ 
+## Installation
+ 
+```bash
+pip install azure-search-documents azure-cosmos semantic-kernel python-dotenv
+```
+
+---
+# Note
+While installing the dependencies for this package, the build/ folder and its related files will be automatically created as part of the packaging process.
+---
+ 
+## Environment Setup
+ 
+Create a `.env` file at your project root with both Cognitive Search and Cosmos DB configuration:
+ 
+```bash
+# Azure Cognitive Search
+AZURE_SEARCH_ENDPOINT="https://your-search-service.search.windows.net"
+AZURE_SEARCH_API_KEY="your-api-key"
+AZURE_SEARCH_INDEX="your-index-name"
+AZURE_SEMANTIC_CONFIG="your-semantic-config"  # Optional
+ 
+# Azure Cosmos DB
+COSMOS_ACCOUNT_URI="your-cosmosdb-endpoint"
+COSMOS_ACCOUNT_KEY="your-cosmosdb-key"
+COSMOS_DATABASE_NAME="your-database-name"
+COSMOS_CONTAINER_NAME="your-container-name"
+```
+ 
+---
+ 
+## Usage Examples
+ 
+### 1 Semantic Search (Azure Cognitive Search)
+ 
+```python
+import asyncio
+import os
+from dotenv import load_dotenv
+from azure_ai_search_plugin.main import AzureSearchPlugin
+ 
+load_dotenv()
+ 
+async def main():
+    plugin = AzureSearchPlugin(
+        endpoint=os.getenv("AZURE_SEARCH_ENDPOINT"),
+        api_key=os.getenv("AZURE_SEARCH_API_KEY"),
+        index_name=os.getenv("AZURE_SEARCH_INDEX"),
+        semantic_config=os.getenv("AZURE_SEMANTIC_CONFIG")
+    )
+ 
+    query = "Explain Azure Cognitive Search"
+    result = await plugin.search_top(query=query, top_k=3)
+ 
+    if result:
+        print("Top matching document:")
+        print(result)
+    else:
+        print("No results found.")
+ 
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+ 
+---
+ 
+## Sample Outputs
+ 
+### Azure Cognitive Search
+```
+Top matching document:
+{
+  "id": "article-001",
+  "title": "Introduction to Azure Cognitive Search",
+  "content": "Azure Cognitive Search is a fully managed service that provides indexing and querying capabilities...",
+  "_confidence": 0.982
+}
+```
+ 
+### 2 Cosmos DB Retriever
+ 
+```python
+import os
+from dotenv import load_dotenv
+from azure_ai_search_plugin.cosmos_data_retriever import CosmosDBRetriever
+
+# Load environment variables
+load_dotenv()
+
+# Initialize retriever
+retriever = CosmosDBRetriever(
+    database_name=os.getenv("COSMOS_DATABASE_NAME"),
+    container_name=os.getenv("COSMOS_CONTAINER_NAME"),
+    endpoint=os.getenv("COSMOS_ACCOUNT_URI"),
+    key=os.getenv("COSMOS_ACCOUNT_KEY")
+)
+
+# 1️⃣ Fetch all items
+items = retriever.fetch_all_items(limit=5)
+print(f"✅ Total items fetched: {len(items)}")
+
+# 2️⃣ Fetch by field (using dict format)
+if items:
+    sample_message_id = items[0].get("message_id")
+    if sample_message_id:
+        filtered = retriever.fetch_by_field({"message_id": sample_message_id})
+        print(f"✅ Fetched {len(filtered)} items where message_id={sample_message_id}")
+    else:
+        print("⚠️ No message_id found in sample item.")
+
+# 3️⃣ Get item by ID
+if items:
+    sample_id = items[0].get("id")
+    partition_key = items[0].get("thread_id")
+    if sample_id and partition_key:
+        item = retriever.get_item_by_id(sample_id, partition_key)
+        print(f"✅ Item retrieved by ID: {sample_id}")
+    else:
+        print("⚠️ Missing ID or partition key in sample item.")
+
+# 4️⃣ Run custom query
+query = "SELECT TOP 5 c.id, c.message_id, c.subject, c.body FROM c WHERE IS_DEFINED(c.subject)"
+result = retriever.query_knowledge_source(query)
+print(f"✅ Query returned {result['count']} items.")
+```
+ 
+---
+ 
+## Sample Outputs
+ 
+### Cosmos DB Retriever
+```
+[2025-11-05 16:45:59] [INFO] azure_ai_search_plugin.cosmos_data_retriever: Initializing Cosmos DB client...
+[2025-11-05 16:46:00] [INFO] azure_ai_search_plugin.cosmos_data_retriever: Connected to container: p2pbuddy
+[2025-11-05 16:46:04] [INFO] azure_ai_search_plugin.cosmos_data_retriever: Fetched 5 items (limit=5) from container 'p2pbuddy'
+✅ Total items fetched: 5
+[2025-11-05 16:46:04] [INFO] azure_ai_search_plugin.cosmos_data_retriever: Fetched 1 items using filters: {'message_id': 'AAMkAGMxZjg3ZmZmLTBlZjAtNDE3MS1hOWU0LWU2MzcwYWQ1Y2MwOABGAAAAAABvwyE8FqhDQJwrtqZV9LGxBwDYEbrcAZD_SL9iCkI1Tv9-AAAAAAEMAADYEbrcAZD_SL9iCkI1Tv9-AACpiy1yAAA='}
+✅ Fetched 1 items where message_id=AAMkAGMxZjg3ZmZmLTBlZjAtNDE3MS1hOWU0LWU2MzcwYWQ1Y2MwOABGAAAAAABvwyE8FqhDQJwrtqZV9LGxBwDYEbrcAZD_SL9iCkI1Tv9-AAAAAAEMAADYEbrcAZD_SL9iCkI1Tv9-AACpiy1yAAA=
+[2025-11-05 16:46:05] [INFO] azure_ai_search_plugin.cosmos_data_retriever: Retrieved item with ID: 54554614-c7fc-49a1-a9f0-7b1bd34bfeae
+✅ Item retrieved by ID: 54554614-c7fc-49a1-a9f0-7b1bd34bfeae
+[2025-11-05 16:46:05] [INFO] azure_ai_search_plugin.cosmos_data_retriever: Query executed successfully. 1 items retrieved.
+✅ Query returned 1 items.
+```
+ 
+---
+ 
+## Class Overview
+ 
+### `AzureSearchPlugin`
+| Method | Description |
+|--------|--------------|
+| `search_top(query: str, top_k: int)` | Performs semantic or keyword search and returns the top matching document |
+| `TimeoutPolicy(timeout: int)` | Custom HTTP policy applied to each request to enforce timeout control |
+ 
+### `CosmosDBRetriever`
+| Method | Description |
+|--------|--------------|
+| `fetch_all_items()` | Retrieves all documents from the container |
+| `fetch_by_field(field_name, field_value)` | Fetches items matching a given field |
+| `get_item_by_id(item_id, partition_key)` | Retrieves a single item by ID and partition key |
+| `query_knowledge_source(sql_query, parameters=None)` | Executes a custom SQL-like query |
+ 
+---
+ 
+## Error Handling
+ 
+Both retrievers include **robust exception management**:
+ 
+| Error Type | Description |
+|-------------|-------------|
+| `ValueError` | Missing or invalid configuration |
+| `TypeError / ValueError` | Invalid confidence score or query parameter |
+| `CosmosConnectionError` | Cosmos DB connection or authentication issue |
+| `CosmosQueryError` | Query or data retrieval error |
+| `CosmosQuerySyntaxError` | Query contains invalid syntax or unsafe operations|
+ 
+---
+ 
+## Async Execution (Search Plugin Only)
+ 
+The **Semantic Search Retriever** is fully asynchronous:
+- Non-blocking I/O for faster parallel operations  
+- Ideal for async frameworks like **FastAPI**, **Semantic Kernel**, or **LangChain**
+ 
+---
+ 
+## Integration with Semantic Kernel
+ 
+```python
+from semantic_kernel import Kernel
+ 
+kernel = Kernel()
+kernel.import_skill(AzureSearchPlugin(...), skill_name="azure_ai_search")
+result = await kernel.skills.azure_ai_search.search_top("What is Azure AI Search?")
+```
+ 
+---
+ 
+## Logging
+ 
+- All Cosmos DB operations are logged for transparency.  
+- The Search Plugin can also be extended to include custom logging.  
+- Integrate Python’s built-in `logging` module for full observability.
+ 
+---
