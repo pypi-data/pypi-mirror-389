@@ -1,0 +1,48 @@
+{% extends "djadmin/admin_base.html" %}
+
+{% block title %}
+    {{ app_verbose_name }} - {{ site_title|default:"Django Admin" }}
+{% endblock %}
+
+{% block content %}
+    <article>
+        <header>
+            <h1>{{ app_verbose_name }}</h1>
+        </header>
+
+        <div>
+            <table>
+                <tbody>
+                    {% for item in model_admin_list %}
+                        <tr>
+                            <td>{{ item.display_name }}</td>
+                            <td>
+                                <menu>
+                                    {# General actions (main entry points like ListView, Add) #}
+                                    {% for action in item.general_actions %}
+                                        <li>
+                                            <a href="{{ action.url }}" {% if action.css_class %}class="{{ action.css_class }}"{% else %}class="primary"{% endif %}>
+                                                {% if action.icon %}
+                                                    {% include "djadmin/includes/_icon.html" with icon=action.icon %}
+                                                {% endif %}
+                                                {{ action.label }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </menu>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2">
+                                <div>
+                                    <p>No models registered for this app.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+{% endblock %}

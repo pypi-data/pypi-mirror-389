@@ -1,0 +1,29 @@
+{% extends "djadmin/base_action.html" %}
+
+{% block action_content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% include "djadmin/includes/_form.html" %}
+
+    <footer>
+      <button type="submit" class="primary">Save Changes</button>
+      <a href="{{ list_url }}">Cancel</a>
+      {% if model_admin.record_actions %}
+        <menu>
+          {% for record_action in model_admin.record_actions %}
+            {# Skip the current action (Edit) since we're already on this view #}
+            {% if record_action.url_name != action.url_name %}
+              <a href="{% url action_namespace|add:':'|add:record_action.url_name pk=object.pk %}" {% if record_action.css_class %}class="{{ record_action.css_class }}"{% endif %}>
+                {% if record_action.icon %}
+                  {% include "djadmin/includes/_icon.html" with icon=record_action.icon %}
+                {% endif %}
+                {{ record_action.label }}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </menu>
+      {% endif %}
+    </footer>
+  </form>
+{% endblock %}
