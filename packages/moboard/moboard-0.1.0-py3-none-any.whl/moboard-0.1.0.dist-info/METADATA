@@ -1,0 +1,44 @@
+Metadata-Version: 2.4
+Name: moboard
+Version: 0.1.0
+Summary: A Python package for fresh data processing
+Project-URL: Homepage, https://github.com/vincentwarmerdam/moboard
+Project-URL: Bug Tracker, https://github.com/vincentwarmerdam/moboard/issues
+Author: Vincent Warmerdam
+License-File: LICENSE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Requires-Dist: anywidget
+Provides-Extra: alt
+Requires-Dist: altair; extra == 'alt'
+Requires-Dist: vl-convert-python; extra == 'alt'
+Provides-Extra: dev
+Requires-Dist: marimo; extra == 'dev'
+Requires-Dist: mohtml; extra == 'dev'
+Requires-Dist: polars; extra == 'dev'
+Requires-Dist: pytest; extra == 'dev'
+Description-Content-Type: text/markdown
+
+### moboard
+
+Widgets, designed for marimo, that can capture keystrokes.
+
+## Installation
+
+You can install the package using pip:
+
+```bash
+uv pip install moboard
+```
+
+## Usage
+
+The goal of this project is to offer a few tools that make it easy for you to capture keystrokes in marimo.
+
+## Live demo 
+
+If you want to dive deep and experience the API, the best way is to explore the live notebook on [Github pages](https://koaning.github.io/moboard/). 
+
+[Go to live docs.](https://koaning.github.io/moboard/)
