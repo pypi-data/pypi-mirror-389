@@ -1,0 +1,803 @@
+Metadata-Version: 2.4
+Name: langchain-agentbay-integration
+Version: 0.2.0
+Summary: Integration package for AgentBay with LangChain
+License: MIT
+License-File: LICENSE
+Requires-Python: >=3.10,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Dist: dashscope (>=1.24.8,<2.0.0)
+Requires-Dist: langchain (>=1.0.3,<2.0.0)
+Requires-Dist: nest-asyncio (>=1.6.0,<2.0.0)
+Requires-Dist: playwright (>=1.55.0,<2.0.0)
+Requires-Dist: pydantic (>=2.0.0,<3.0.0)
+Requires-Dist: wuying-agentbay-sdk (>=0.9.0,<0.10.0)
+Project-URL: Repository, https://github.com/langchain-ai/langchain
+Project-URL: Release Notes, https://github.com/langchain-ai/langchain/releases?q=tag%3A%22agentbay-integration%3D%3D0%22&expanded=true
+Project-URL: Source Code, https://github.com/langchain-ai/langchain/tree/master/libs/partners/agentbay-integration
+Description-Content-Type: text/markdown
+
+# AgentBay <> LangChain Integration
+
+## Installation
+
+It's recommended to create a virtual environment before installing the package:
+
+```bash
+python3 -m venv agentbay_langchain_env
+source ./agentbay_langchain_env/bin/activate
+```
+
+To ensure you have the latest version of pip, first run:
+
+```bash
+pip install --upgrade pip
+```
+
+To install the package, run:
+
+```bash
+pip install -U langchain-agentbay-integration==0.2.0 wuying-agentbay-sdk==0.9.3
+```
+
+You'll also need to install LangChain and an LLM provider package. For example, to use with OpenAI:
+
+```bash 
+```
+
+## Setup
+
+You need to configure credentials by setting the following environment variables:
+
+### API Keys Setup
+
+**AgentBay API Key**:
+1. Visit [Agent-Bay Console](https://agentbay.console.aliyun.com/service-management)
+2. Sign up or log in to your Alibaba Cloud account
+3. Navigate to the Service Management section
+4. Create a new API KEY or select an existing one
+5. Copy the API Key and set it as the value of `AGENTBAY_API_KEY` environment variable
+
+> Note: AgentBay account needs to have Pro or higher subscription level to access the full functionality.
+
+**DashScope API Key**:
+1. Visit [DashScope Platform](https://bailian.console.aliyun.com/#/home)
+2. Sign up or log in to your account
+3. Navigate to the API Key management section
+4. Copy the API Key and set it as the value of `DASHSCOPE_API_KEY` environment variable
+
+```bash
+export AGENTBAY_API_KEY="your-agentbay-api-key"
+export DASHSCOPE_API_KEY="your-dashscope-api-key"
+```
+
+## AgentBay Integration Toolkit
+
+The AgentBay Integration Toolkits provide comprehensive sets of tools for interacting with the AgentBay cloud computing platform. Each toolkit is designed for a specific environment and use case.
+
+> **Note on LLM Usage**: Some examples, particularly the self-evolving agent system, may consume significant amounts of LLM API calls. Please monitor your usage carefully and be aware of associated costs.
+
+### Mobile Automation (MobileIntegrationToolkit)
+
+Designed for Android mobile device automation tasks.
+
+#### Instantiation
+
+Create an AgentBay session for mobile operations:
+
+```python
+import os
+from agentbay import AgentBay
+from agentbay.session_params import CreateSessionParams
+from langchain_agentbay_integration.toolkits import MobileIntegrationToolkit
+from langchain_agentbay_integration.tools import MobileSessionData
+from langgraph.store.memory import InMemoryStore
+
+# Create AgentBay session for mobile operations
+agent_bay = AgentBay()
+params = CreateSessionParams(image_id="mobile_latest")
+result = agent_bay.create(params)
+session = result.session
+
+# Initialize the toolkit for mobile operations
+toolkit = MobileIntegrationToolkit()
+tools = toolkit.get_tools()
+
+# Create memory store and put session in it
+store = InMemoryStore()
+session_data = MobileSessionData(session=session, session_id=session.session_id)
+store.put(("mobile_session",), "default", session_data)
+```
+
+#### Tools
+
+The MobileIntegrationToolkit includes the following tools:
+
+1. **mobile_tap**: Tap on the mobile screen at specific coordinates
+   - Input: `x` (int, required) - X coordinate of the tap position, `y` (int, required) - Y coordinate of the tap position
+   - Output: JSON with `success` (bool), `message` (str), `x` (int), `y` (int)
+
+2. **mobile_swipe**: Swipe on the mobile screen from one point to another
+   - Input: `start_x` (int, required) - Starting X coordinate, `start_y` (int, required) - Starting Y coordinate, `end_x` (int, required) - Ending X coordinate, `end_y` (int, required) - Ending Y coordinate, `duration_ms` (int, optional, default=300) - Duration of the swipe in milliseconds
+   - Output: JSON with `success` (bool), `message` (str), `start_x` (int), `start_y` (int), `end_x` (int), `end_y` (int), `duration_ms` (int)
+
+3. **mobile_input_text**: Input text into the active field on mobile
+   - Input: `text` (str, required) - Text to input
+   - Output: JSON with `success` (bool), `message` (str), `text` (str)
+
+4. **mobile_send_key**: Send a key event to the mobile device (e.g., HOME, BACK)
+   - Input: `key_code` (int, required) - Key code to send. Common codes: HOME=3, BACK=4, VOLUME_UP=24, VOLUME_DOWN=25, POWER=26, MENU=82
+   - Output: JSON with `success` (bool), `message` (str), `key_code` (int), `key_name` (str)
+
+5. **mobile_get_ui_elements**: Get all UI elements on the current mobile screen
+   - Input: `timeout_ms` (int, optional, default=2000) - Timeout in milliseconds to wait for UI elements
+   - Output: JSON with `success` (bool), `message` (str), `elements` (list), `timeout_ms` (int)
+
+6. **mobile_screenshot**: Take a screenshot of the current mobile screen
+   - Input: `file_path` (str, required) - File path to save the screenshot
+   - Output: JSON with `success` (bool), `message` (str), `screenshot_url` (str), `file_path` (str)
+
+7. **mobile_wait**: Wait for a specified amount of time in milliseconds
+   - Input: `milliseconds` (int, required) - Time to wait in milliseconds
+   - Output: JSON with `success` (bool), `message` (str)
+
+#### Use within an agent
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
+
+# Initialize LLM
+llm = ChatOpenAI(
+    api_key=os.getenv("DASHSCOPE_API_KEY"),
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model=os.getenv("DASHSCOPE_MODEL", "qwen3-max")
+)
+
+# Create agent using the new create_agent method from LangChain v1.0
+agent = create_agent(
+    llm,
+    tools=tools,
+    store=store,
+    system_prompt="""You are a helpful assistant with access to AgentBay mobile tools that can automate Android mobile operations.
+
+Use these tools to help the user accomplish their mobile automation tasks. When using coordinates, be specific about where you want to tap or swipe.
+For key events, use these common codes:
+- HOME: 3
+- BACK: 4
+- VOLUME_UP: 24
+- VOLUME_DOWN: 25
+- POWER: 26
+- MENU: 82
+
+Example workflows:
+1. To open an app: Get UI elements, find the app icon coordinates, then tap on those coordinates
+2. To fill a form: Tap on input fields, then use input_text to enter data
+3. To navigate: Use swipe gestures to scroll or change screens
+4. To take screenshots: Use screenshot tool to capture the current screen state
+5. To wait for operations: Use wait tool to pause execution for a specified time"""
+)
+
+# Example usage
+example_query = """
+Your task is to download and install the 12306 app from the URL provided below.
+Take a screenshot and name it '0_mobile_home_page.png'
+Get all UI elements, tap the [Browser] icon, wait 3 seconds for the browser to open, take a screenshot and name it '1_mobile_browser_first_page.png'
+Get all UI elements, tap [Agree and Continue], wait 3 seconds for the page to transition, take a screenshot and name it '2_mobile_browser_after_agree.png'
+Get all UI elements, tap the [About] text box, input download url "https://dynamic.12306.cn/otn/appdownload/12306v5.9.4.5.apk"
+Tap [Search] to enter the download page
+Get all UI elements, tap [OK] to start downloading, take a screenshot and name it '3_mobile_browser_start_download.png'
+Get all UI elements, return to [Home]
+Get all UI elements, tap the [Files] button, take a screenshot and name it '4_mobile_folder_homepage.png'
+Wait 3 seconds, get all UI elements, if download is not successful continue waiting until download completion is detected from UI elements
+Get all UI elements, tap the downloaded [12306v5.9.4.5.apk], if there is an installation permission button, take a screenshot named '5.1_mobile_need_aggree_install.png'。Tap [Settings] goto switch page 
+Get all UI elements, open the switch to install,  take a screenshot named '5.2_mobile_aggree_install.png' 
+Get all UI elements, click install,  take a screenshot named '5.3_mobile_click_install.png'，wait 5 seconds
+Return to phone [Home], take a screenshot and name it '6_mobile_after_install_homepage.png'
+"""
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": example_query}]},
+    {"recursion_limit": 500}
+)
+
+# Extract and print the final output
+if "messages" in result and len(result["messages"]) > 0:
+    final_message = result["messages"][-1]
+    if hasattr(final_message, 'content') and final_message.content:
+        print(f"Result: {final_message.content}")
+    else:
+        print(f"Result: {final_message}")
+else:
+    print(f"Result: {result}")
+```
+
+### Computer Automation (ComputerIntegrationToolkit)
+
+Designed for desktop/laptop computer automation tasks.
+
+#### Instantiation
+
+Create an AgentBay session for computer operations:
+
+```python
+import os
+from agentbay import AgentBay
+from agentbay.session_params import CreateSessionParams
+from langchain_agentbay_integration.toolkits import ComputerIntegrationToolkit
+from langchain_agentbay_integration.tools import ComputerSessionData
+from langgraph.store.memory import InMemoryStore
+
+# Create AgentBay session for computer operations
+agent_bay = AgentBay()
+# Use "linux_latest" image for a full Linux desktop environment with GUI support
+params = CreateSessionParams(image_id="linux_latest")  
+result = agent_bay.create(params)
+session = result.session
+
+# Initialize the toolkit for computer operations
+toolkit = ComputerIntegrationToolkit()
+tools = toolkit.get_tools()
+
+# Create memory store and put session in it
+store = InMemoryStore()
+session_data = ComputerSessionData(session=session, session_id=session.session_id)
+store.put(("computer_session",), "default", session_data)
+```
+
+#### Tools
+
+The ComputerIntegrationToolkit includes the following tools:
+
+1. **computer_click_mouse**: Click the mouse at specified coordinates with the specified button
+   - Input: `x` (int, required) - X coordinate for mouse click, `y` (int, required) - Y coordinate for mouse click, `button` (str, optional, default="left") - Mouse button to click. Options: 'left', 'right', 'middle', 'double_left'
+   - Output: JSON with `success` (bool), `message` (str), `x` (int), `y` (int), `button` (str)
+
+2. **computer_move_mouse**: Move the mouse to specified coordinates
+   - Input: `x` (int, required) - Target X coordinate for mouse movement, `y` (int, required) - Target Y coordinate for mouse movement
+   - Output: JSON with `success` (bool), `message` (str), `x` (int), `y` (int)
+
+3. **computer_drag_mouse**: Drag the mouse from one point to another
+   - Input: `from_x` (int, required) - Starting X coordinate for drag operation, `from_y` (int, required) - Starting Y coordinate for drag operation, `to_x` (int, required) - Ending X coordinate for drag operation, `to_y` (int, required) - Ending Y coordinate for drag operation, `button` (str, optional, default="left") - Mouse button to use for dragging. Options: 'left', 'right', 'middle'
+   - Output: JSON with `success` (bool), `message` (str), `from_x` (int), `from_y` (int), `to_x` (int), `to_y` (int), `button` (str)
+
+4. **computer_scroll**: Scroll the mouse wheel at specified coordinates
+   - Input: `x` (int, required) - X coordinate for scroll operation, `y` (int, required) - Y coordinate for scroll operation, `direction` (str, optional, default="up") - Scroll direction. Options: 'up', 'down', 'left', 'right', `amount` (int, optional, default=1) - Scroll amount
+   - Output: JSON with `success` (bool), `message` (str), `x` (int), `y` (int), `direction` (str), `amount` (int)
+
+5. **computer_get_cursor_position**: Get the current cursor position
+   - Input: None
+   - Output: JSON with `success` (bool), `message` (str), `x` (int), `y` (int)
+
+6. **computer_input_text**: Input text into the active field
+   - Input: `text` (str, required) - Text to input
+   - Output: JSON with `success` (bool), `message` (str), `text` (str)
+
+7. **computer_press_keys**: Press the specified keys
+   - Input: `keys` (List[str], required) - List of keys to press (e.g., ['Ctrl', 'a']), `hold` (bool, optional, default=False) - Whether to hold the keys
+   - Output: JSON with `success` (bool), `message` (str), `keys` (List[str]), `hold` (bool)
+
+8. **computer_screenshot**: Take a screenshot of the current screen
+   - Input: `file_path` (str, required) - File path to save the screenshot
+   - Output: JSON with `success` (bool), `message` (str), `screenshot_url` (str), `file_path` (str)
+
+9. **computer_ocr_elements**: Analyze a screenshot and identify all interactive UI elements with text
+   - Input: `image_url` (str, required) - URL of the screenshot image to analyze
+   - Output: JSON with `success` (bool), `message` (str), `result` (str)
+
+10. **computer_vlm_analysis**: Analyze an image using a vision language model
+    - Input: `image_url` (str, required) - URL of the image to analyze, `prompt` (str, required) - Custom prompt for the vision language model
+    - Output: JSON with `success` (bool), `message` (str), `result` (str)
+
+11. **computer_wait**: Wait for a specified amount of time in milliseconds
+    - Input: `milliseconds` (int, required) - Time to wait in milliseconds
+    - Output: JSON with `success` (bool), `message` (str)
+
+12. **computer_get_screen_size**: Get the screen size and DPI scaling factor
+    - Input: None
+    - Output: JSON with `success` (bool), `message` (str), `width` (int), `height` (int), `dpiScalingFactor` (float)
+
+#### Use within an agent
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
+
+# Initialize LLM
+llm = ChatOpenAI(
+    api_key=os.getenv("DASHSCOPE_API_KEY"),
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model=os.getenv("DASHSCOPE_MODEL", "qwen3-max")
+)
+
+# Create agent using the new create_agent method from LangChain v1.0
+agent = create_agent(
+    llm,
+    tools=tools,
+    store=store,
+    system_prompt="""You are a helpful assistant that can control a desktop environment.
+You can take screenshots and analyze them to identify interactive UI elements with text and their coordinates.
+Use the tools provided to perform desktop automation tasks.
+When asked to analyze UI elements, first take a screenshot, then use the OCR tool to analyze it.
+        
+Available tools:
+1. computer_click_mouse - Click the mouse at specified coordinates with the specified button
+2. computer_move_mouse - Move the mouse to specified coordinates
+3. computer_drag_mouse - Drag the mouse from one point to another
+4. computer_scroll - Scroll the mouse wheel at specified coordinates
+5. computer_get_cursor_position - Get the current cursor position
+6. computer_input_text - Input text into the active field
+7. computer_press_keys - Press the specified keys (e.g., ['Ctrl', 'a'] or ['Enter'])
+8. computer_screenshot - Take a screenshot of the current screen and save it to a file
+9. computer_ocr_elements - Analyze a screenshot to identify all interactive UI elements with text and their coordinates
+10. computer_vlm_analysis - Analyze an image using a vision language model with a custom prompt
+11. computer_wait - Wait for a specified amount of time in milliseconds before continuing
+12. computer_get_screen_size - Get the screen resolution (width and height) and DPI scaling factor"""
+)
+
+# Example usage
+example_query = """
+1. Double-click the coordinates (17, 61) of the Firefox browser window with the left mouse button, wait for 3 seconds, and save the screenshot as '0_linux_click_browser.png'.
+2. Double-click the center coordinates (886, 121) of the input field with the left mouse button, enter the text [https://cn.bing.com/], press Enter, and wait for 5 seconds for the page to load. Save the screenshot as '1_linux_bing.png'.
+3. Use computer_ocr_elements to obtain the center coordinates of the search box, double-click the center coordinates of the search box with the mouse, enter the text [Search Hangzhou's weather], press Enter, wait for 3 seconds, and save the screenshot as '2_linux_hangzhou_weather.png'.
+4. Use computer_vlm_analysis to analyze the screenshot containing the weather information, provide a summary of Hangzhou's weather for the upcoming days starting from today, and give a conclusion.
+"""
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": example_query}]},
+    {"recursion_limit": 500}
+)
+
+# Extract and print the final output
+if "messages" in result and len(result["messages"]) > 0:
+    final_message = result["messages"][-1]
+    if hasattr(final_message, 'content') and final_message.content:
+        print(f"Result: {final_message.content}")
+    else:
+        print(f"Result: {final_message}")
+else:
+    print(f"Result: {result}")
+```
+
+### Code Operations (CodespaceIntegrationToolkit)
+
+Designed for code execution and file operations in a cloud codespace.
+
+#### Instantiation
+
+Create an AgentBay session for codespace operations:
+
+```python
+import os
+from agentbay import AgentBay
+from agentbay.session_params import CreateSessionParams
+from langchain_agentbay_integration.toolkits import CodespaceIntegrationToolkit
+from langchain_agentbay_integration.tools import CodespaceSessionData
+from langgraph.store.memory import InMemoryStore
+
+# Create AgentBay session for codespace operations
+agent_bay = AgentBay()
+params = CreateSessionParams(image_id="code_latest")
+result = agent_bay.create(params)
+session = result.session
+
+# Initialize the toolkit for codespace operations
+toolkit = CodespaceIntegrationToolkit()
+tools = toolkit.get_tools()
+
+# Create memory store and put session in it
+store = InMemoryStore()
+session_data = CodespaceSessionData(session=session, session_id=session.session_id)
+store.put(("codespace_session",), "default", session_data)
+```
+
+#### Tools
+
+The CodespaceIntegrationToolkit includes the following tools:
+
+1. **codespace_write_file**: Write content to a file in the codespace
+   - Input: `path` (str, required) - Path where to write the file, `content` (str, required) - Content to write to the file, `mode` (str, optional, default="overwrite") - Write mode ('overwrite' or 'append')
+   - Output: JSON with `success` (bool), `message` (str)
+
+2. **codespace_read_file**: Read content from a file in the codespace
+   - Input: `path` (str, required) - Path of the file to read
+   - Output: JSON with `success` (bool), `message` (str), `content` (str)
+
+3. **codespace_run_code**: Execute code in the codespace
+   - Input: `code` (str, required) - The code to execute, `language` (str, required) - The programming language of the code. Supported languages are: 'python', 'javascript', `timeout_s` (int, optional, default=60) - The timeout for the code execution in seconds
+   - Output: JSON with `success` (bool), `message` (str), `result` (str), `request_id` (str)
+
+4. **codespace_execute_command**: Execute a shell command in the codespace
+   - Input: `command` (str, required) - Shell command to execute, `timeout_ms` (int, optional, default=1000) - Timeout for command execution in milliseconds
+   - Output: JSON with `success` (bool), `message` (str), `output` (str)
+
+#### Use within an agent
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
+
+# Initialize LLM
+llm = ChatOpenAI(
+    api_key=os.getenv("DASHSCOPE_API_KEY"),
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model=os.getenv("DASHSCOPE_MODEL", "qwen3-max")
+)
+
+# Create agent using the new create_agent method from LangChain v1.0
+agent = create_agent(
+    llm,
+    tools=tools,
+    store=store,
+    system_prompt="""You are a helpful assistant with access to AgentBay codespace tools that can automate code operations.
+    
+Available tools:
+1. codespace_write_file - Write content to a file in the codespace
+2. codespace_read_file - Read content from a file in the codespace
+3. codespace_run_code - Execute code in the codespace
+4. codespace_execute_command - Execute a shell command in the codespace
+
+Use these tools to help the user accomplish their code automation tasks.
+Example workflows:
+1. To create and run a Python script: Write the script to a file, then run it with run_code
+2. To check directory contents: Use execute_command with 'ls' command
+3. To read a file: Use read_file tool
+4. To create multiple files: Use write_file tool multiple times
+
+When using write_file, you can specify the mode parameter to either overwrite (default) or append to a file. 
+When appending content, make sure to include newline characters if needed to separate lines."""
+)
+
+# Example usage
+example_query = """Write a Python file '/tmp/script.py' with content 'print("Hello from Python!")
+print("AgentBay integration successful!")
+' using default mode.
+Then run the Python code in that file using the run_code tool.
+Next, write a file '/tmp/demo.txt' with content 'First line
+' using default mode.
+Then append a second line 'Second line
+' to the same file using append mode.
+After that, read the file '/tmp/demo.txt' to verify its content.
+Finally, execute command 'cat /tmp/demo.txt' to show the file content."""
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": example_query}]},
+    {"recursion_limit": 500}
+)
+
+# Extract and print the final output
+if "messages" in result and len(result["messages"]) > 0:
+    final_message = result["messages"][-1]
+    if hasattr(final_message, 'content') and final_message.content:
+        print(f"Result: {final_message.content}")
+    else:
+        print(f"Result: {final_message}")
+else:
+    print(f"Result: {result}")
+```
+
+### Browser Automation (BrowserIntegrationToolkit)
+
+Designed for web browser automation tasks.
+
+#### Instantiation
+
+Create an AgentBay session for browser operations:
+
+```python
+import os
+from agentbay import AgentBay
+from agentbay.session_params import CreateSessionParams
+from langchain_agentbay_integration.toolkits import BrowserIntegrationToolkit
+from langchain_agentbay_integration.tools import BrowserSessionData
+from langgraph.store.memory import InMemoryStore
+
+# Create AgentBay session for browser operations
+agent_bay = AgentBay()
+params = CreateSessionParams(image_id="browser_latest")
+result = agent_bay.create(params)
+session = result.session
+
+# Initialize the toolkit for browser operations
+toolkit = BrowserIntegrationToolkit()
+toolkit.initialize_browser(session)  # Initialize browser with the session
+tools = toolkit.get_tools()
+
+# Create memory store and put session in it
+store = InMemoryStore()
+session_data = BrowserSessionData(session=session, session_id=session.session_id)
+store.put(("browser_session",), "default", session_data)
+```
+
+#### Tools
+
+The BrowserIntegrationToolkit includes the following tools:
+
+1. **browser_navigate**: Navigate to a URL in the browser
+   - Input: `url` (str, required) - URL to navigate to
+   - Output: JSON with `success` (bool), `message` (str), `url` (str)
+
+2. **browser_act**: Perform an action on the current browser page
+   - Input: `action` (str, required) - Action to perform on the page
+   - Output: JSON with `success` (bool), `message` (str), `action` (str)
+
+3. **browser_screenshot**: Take a screenshot of the current browser page
+   - Input: `file_path` (str, required) - File path to save the screenshot
+   - Output: JSON with `success` (bool), `message` (str), `file_path` (str)
+
+#### Use within an agent
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
+
+# Initialize LLM
+llm = ChatOpenAI(
+    api_key=os.getenv("DASHSCOPE_API_KEY"),
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model=os.getenv("DASHSCOPE_MODEL", "qwen3-max")
+)
+
+# Create agent using the new create_agent method from LangChain v1.0
+agent = create_agent(
+    llm,
+    tools=tools,
+    store=store,
+    system_prompt="""You are a helpful assistant with access to AgentBay browser tools that can automate web browsing operations.
+    
+Available tools:
+1. browser_navigate - Navigate to a URL in the browser
+2. browser_act - Perform an action on the current browser page
+3. browser_screenshot - Take a screenshot of the current browser page
+
+Use these tools to help the user accomplish their web browsing automation tasks.
+Example workflows:
+1. To visit a website and take a screenshot: Navigate to the URL, then use screenshot tool
+2. To interact with a webpage: Navigate to the URL, then use act tool to perform actions
+3. To search on a website: Navigate to the site, use act to fill search box and submit
+
+When using browser_act, you can perform various actions such as:
+- Clicking elements: "Click on the button with text 'Submit'"
+- Filling forms: "Fill the input field with label 'Username' with 'john_doe'"
+- Selecting options: "Select 'Option 1' from the dropdown with label 'Category'"
+- Scrolling: "Scroll down by 300 pixels"
+- Waiting: "Wait for 2 seconds"
+
+Always try to be specific about what element you want to interact with, using text, labels, or other identifying features."""
+)
+
+# Example usage
+example_query = """
+Navigate to https://www.baidu.com/.
+Then take a screenshot of the page.
+Then enter 'AgentBay官网' in the search box and click the search button.
+Then take a screenshot of the search results page.
+Then, click the first search result link.
+Finally take a screenshot.
+"""
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": example_query}]},
+    {"recursion_limit": 500}
+)
+
+# Extract and print the final output
+if "messages" in result and len(result["messages"]) > 0:
+    final_message = result["messages"][-1]
+    if hasattr(final_message, 'content') and final_message.content:
+        print(f"Result: {final_message.content}")
+    else:
+        print(f"Result: {final_message}")
+else:
+    print(f"Result: {result}")
+```
+
+## Self-Evolving Agent System
+
+The self-evolving agent system is a higher-level abstraction that builds upon the basic toolkits to create agents that can improve their performance over time through self-reflection and iterative refinement.
+
+> **Note**: This self-evolving agent system is built specifically for the mobile environment using the MobileIntegrationToolkit.
+
+### Overview
+
+The self-evolving agent consists of two main components:
+1. **Coach Agent**: Oversees the training process, evaluates performance, and guides improvement
+2. **Player Agent**: Executes tasks using the tools and generates results
+
+The system works by:
+1. Starting with an initial task and a basic plan
+2. Executing the plan and evaluating the results
+3. Reflecting on the execution and generating improvements
+4. Iterating through multiple epochs to refine the approach
+5. Tracking the best performing strategy across all epochs
+
+### Usage
+
+To use the self-evolving agent system, you need to set up the required files and directories.
+
+#### Directory Structure
+
+First, create the following directory structure:
+```
+your_project/
+├── self_evolving_agent_example.py
+├── run_self_evolving_web_visualizer.py
+├── prior_knowledge/
+│   ├── pk-download-app.json
+│   └── pk-search-stock.json
+```
+
+The two Python scripts serve different purposes:
+- `self_evolving_agent_example.py`: The main script that runs the self-evolving agent training process. It initializes the coach agent, defines the initial task, and executes the training loop for a specified number of epochs. You can modify the `initial_task` variable in the script to try different tasks.
+- `run_self_evolving_web_visualizer.py`: A utility script that launches a web-based visualizer to examine the training results, compare epochs, and analyze the agent's performance over time.
+
+The `prior_knowledge/` directory contains example prior knowledge files that help accelerate the agent's learning process:
+- `pk-download-app.json`: Contains a pre-defined task and plan for downloading and installing an app, which can be used as a reference for similar tasks.
+- `pk-search-stock.json`: Contains a pre-defined task and plan for searching stock prices, which can be used as a reference for web search tasks.
+
+During the training process, the agent automatically selects the most relevant prior knowledge from the `prior_knowledge/` directory to improve the iteration rate of creating plans for new tasks. Each time a new task is successfully completed, the agent registers the newly acquired knowledge in the directory, continuously expanding its knowledge base for future tasks.
+
+#### Example Files
+
+Create `self_evolving_agent_example.py` with the following content:
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Example of using the Self-Evolving Agent system."""
+
+import os
+import sys
+import traceback
+from pathlib import Path
+
+# Import AgentBay SDK
+from agentbay import AgentBay
+
+# Import our self-evolving agent system
+from langchain_agentbay_integration.self_evolving.self_evolving_agent import CoachAgent
+
+def main():
+    print("Self-Evolving Agent System Example")
+    print("=" * 50)
+    
+    # Check for required environment variables
+    if not os.getenv("AGENTBAY_API_KEY"):
+        print("Warning: AGENTBAY_API_KEY environment variable not set")
+        print("Please set it to run with a real AgentBay session")
+        return
+    
+    if not os.getenv("DASHSCOPE_API_KEY"):
+        print("Warning: DASHSCOPE_API_KEY environment variable not set")
+        print("Please set it to run with a real LLM")
+        return
+    
+    try:
+        # Create coach agent with a specific training directory
+        training_dir = Path("./self_evolving_training_results")
+        prior_knowledge_path = "./prior_knowledge"
+        coach_agent = CoachAgent(base_directory=str(training_dir), prior_knowledge_path=str(prior_knowledge_path))
+        
+        # Define initial task
+        #initial_task = f"查看英伟达今天的股票价格。"
+        #initial_task = f"从https://dynamic.12306.cn/otn/appdownload/12306v5.9.4.5.apk下载12306的APP，并且完成安装"
+        initial_task = f"搜索杭州天气"
+
+        print(f"Starting training for task: {initial_task}")
+        print(f"Training results will be saved to: {training_dir.absolute()}")
+        
+        # Start training
+        print("Training in progress...")
+        final_result = coach_agent.train(initial_task, max_epochs=5)
+        
+        print("\nTraining completed!")
+        print(f"Total epochs: {final_result['total_epochs']}")
+        print(f"Best epoch: {final_result['best_epoch']}")
+        print(f"Best score: {final_result['best_score']:.2f}")
+        print(f"Best player ID: {final_result['best_player_id']}")
+        print("\nBest plan:")
+        print(final_result['best_plan'])
+        
+        # Print extracted knowledge if available
+        if "extracted_knowledge" in final_result:
+            print("\nExtracted Knowledge:")
+            for i, knowledge in enumerate(final_result["extracted_knowledge"], 1):
+                print(f"{i}. {knowledge}")
+        
+        print(f"\nTraining results saved to: {training_dir.absolute()}")
+        print("Directory structure:")
+        for item in sorted(training_dir.rglob("*")):
+            if item.is_file():
+                indent = "  " * len(item.relative_to(training_dir).parts[:-1])
+                print(f"{indent}{item.name}")
+        
+        print("\nExample completed successfully!")
+
+    except Exception as e:
+        print(f"Error during execution: {e}")
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Create `run_self_evolving_web_visualizer.py` with the following content:
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Script to run the web-based self-evolving agent training visualizer."""
+from langchain_agentbay_integration.self_evolving.self_evolving_web_visualizer import main
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Web-based visualizer for self-evolving agent training results")
+    parser.add_argument("--dir", help="Training directory path", default="./self_evolving_training_results")
+    parser.add_argument("--port", type=int, default=8000, help="Port to run the web server on (default: 8000)")
+    
+    args = parser.parse_args()
+    main(args.dir, args.port)
+```
+
+#### Prior Knowledge Files
+
+Create a `prior_knowledge` directory and add the following files:
+
+Create `prior_knowledge/pk-download-app.json` with the following content:
+
+```json
+{
+  "initial_task": "从https://dynamic.12306.cn/otn/appdownload/12306v5.9.4.5.apk下载12306的APP，并且完成安装",
+  "best_plan": "Plan\n#打开浏览器应用。通过点击桌面上的【浏览器】图标启动浏览器\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/0_mobile_home_page.png\")\n##mobile_tap(x=667, y=1703)\n##mobile_wait(milliseconds=3000)\n\n#同意浏览器使用协议。点击【同意并继续】按钮进入浏览器主界面\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/1_mobile_browser_first_page.png\")\n##mobile_tap(x=540, y=1675)\n##mobile_wait(milliseconds=3000)\n\n#在浏览器地址栏输入12306 APK下载链接。点击地址栏并输入指定URL\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/2_mobile_browser_after_agree.png\")\n##mobile_tap(x=337, y=90)\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_input_text(text=\"https://dynamic.12306.cn/otn/appdownload/12306v5.9.4.5.apk\")\n\n#执行搜索以进入下载页面。点击【搜索】按钮开始加载下载页面\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/3_mobile_browser_after_search_input.png\")\n##mobile_tap(x=1026, y=90)\n\n#确认并开始下载APK文件。点击【确定】按钮启动下载\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/4_mobile_browser_after_click_search.png\")\n##mobile_tap(x=902, y=1089)\n\n#返回手机主页。使用HOME键返回桌面\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/5_mobile_browser_after_click_download.png\")\n##mobile_send_key(key_code=3)\n\n#打开文件管理器。点击桌面上的【文件】应用图标\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/6_mobile_folder_after_back2homepage.png\")\n##mobile_tap(x=157, y=1703)\n##mobile_wait(milliseconds=3000)\n\n#等待并确认APK下载完成。持续检查UI元素直到发现12306v5.9.4.5.apk文件\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/7_mobile_folder_homepage.png\")\n##mobile_wait(milliseconds=5000)\n\n#点击APK文件开始安装。如果出现安装权限提示，则进入设置同意安装\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/7.1_mobile_fold_finish_download.png\")\n##mobile_tap(x=292, y=1070)\n\n#处理安装权限（如有）。点击【设置】按钮开启安装未知应用权限\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/8_mobile_after_aggree_install.png\")\n##mobile_tap(x=899, y=1060)\n\n#点击【开启】按钮开启安装未知应用权限\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/9_mobile_after_goto_setting.png\")\n##mobile_tap(x=996, y=827)\n\n#单击安装，等待5秒让其安装完\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/10_mobile_after_open_swtich.png\")\n##mobile_tap(x=854, y=1058)\n##mobile_wait(milliseconds=5000)\n\n#返回主页\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/11_mobiel_check_install.png\")\n##mobile_send_key(key_code=3)\n##mobile_wait(milliseconds=5000)\n\n#回到桌面获取最后的感知信息检查是否安装成功\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/13_mobiel_installed_homepage.png\")"
+}
+```
+
+Create `prior_knowledge/pk-search-stock.json` with the following content:
+
+```json
+{
+  "initial_task": "查看阿里巴巴今天的股票价格。",
+  "best_plan": "Plan\n#打开浏览器应用。通过点击桌面上的浏览器图标启动浏览器应用\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/0_mobile_home_page.png\")\n##mobile_tap(x=667, y=1703)\n##mobile_wait(milliseconds=3000)\n##mobile_get_ui_elements(timeout_ms=3000)\n\n#同意浏览器使用条款。如果出现“同意并继续”按钮，则点击该按钮\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/1_mobile_browser_first_page.png\")\n##mobile_tap(x=540, y=1675)\n##mobile_wait(milliseconds=3000)\n##mobile_get_ui_elements(timeout_ms=3000)\n\n#尝试直接搜索取阿里巴巴股票历史价格\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/2_mobile_browser_after_agree.png\")\n##mobile_tap(x=337, y=90)\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_input_text(text=\"阿里巴巴今天的股票价格\")\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_tap(x=1008, y=90)\n##mobile_wait(milliseconds=5000)\n##mobile_get_ui_elements(timeout_ms=5000)\n\n#结尾步骤\n##固定调用工具：获取UI元素，截图\n##mobile_get_ui_elements(timeout_ms=3000)\n##mobile_screenshot(file_path=\"./screenshots/3_mobile_final_stock_page.png\")"
+}
+```
+
+#### Running the Example
+
+To run the self-evolving agent system, execute the following command:
+
+```bash
+python3 self_evolving_agent_example.py
+```
+
+This will:
+1. Create a training session using the mobile automation toolkit
+2. Execute the specified task for up to 5 epochs
+3. Save the results of each epoch in the `self_evolving_training_results` directory
+4. Identify and report the best performing epoch
+
+### Visualizing Training Results
+
+The system includes a web-based visualizer to examine training results:
+
+```bash
+python3 run_self_evolving_web_visualizer.py
+```
+
+This will:
+1. Start a web server on port 8000
+2. Provide a web interface to browse training epochs
+3. Display plans, execution results, and performance metrics
+4. Allow comparison between different epochs
+
+The visualizer helps in understanding how the agent's performance improves over time and what changes were made in each iteration.
+
