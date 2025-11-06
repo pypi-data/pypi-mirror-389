@@ -1,0 +1,32 @@
+Metadata-Version: 2.4
+Name: ros-rclpy
+Version: 7.1.6
+Summary: Wheel for the rclpy (ros-rclpy) ROS 2 package.
+Description-Content-Type: text/markdown
+Requires-Dist: ros-rcl-lifecycle~=9.2.8
+Requires-Dist: ros-rcl-yaml-param-parser~=9.2.8
+Requires-Dist: ros-action-msgs~=2.0.3
+Requires-Dist: ros-rcl-action~=9.2.8
+Requires-Dist: ros-rosgraph-msgs~=2.0.3
+Requires-Dist: ros-rpyutils~=0.4.2
+Requires-Dist: ros-unique-identifier-msgs~=2.5.0
+Requires-Dist: ros-builtin-interfaces~=2.0.3
+Requires-Dist: pyyaml
+Requires-Dist: ros-rcl-interfaces~=2.0.3
+Requires-Dist: ros-ament-index-python~=1.8.1
+Requires-Dist: ros-rmw~=7.3.2
+Requires-Dist: ros-rmw-implementation~=2.15.6
+Requires-Dist: ros-rosidl-runtime-c~=4.6.6
+Requires-Dist: ros-rcl~=9.2.8
+Requires-Dist: ros-rcl-logging-interface~=3.1.1
+Requires-Dist: ros-lifecycle-msgs~=2.0.3
+Requires-Dist: ros-wheels-bootstrapper
+Provides-Extra: fastrtps
+Requires-Dist: ros-rmw-fastrtps-cpp~=8.4.3; extra == "fastrtps"
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: summary
+
+Wheel for the rclpy (ros-rclpy) ROS 2 package. Built using https://github.com/ycheng517/ros-python-wheels
