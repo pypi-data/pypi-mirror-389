@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "yuheng-osmapi"
+version = "1.0.1"
+description = ""
+authors = ["快乐的老鼠宝宝 <laoshubaby@protonmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "yuheng_osmapi", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.32.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
