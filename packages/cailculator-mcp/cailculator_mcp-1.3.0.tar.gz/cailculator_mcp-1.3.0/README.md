@@ -1,0 +1,338 @@
+# CAILculator MCP Server
+
+High-dimensional data analysis via Model Context Protocol.
+
+Powered by proprietary Chavez Transform technology with proven mathematical foundations.
+
+## Features
+
+- **Advanced Pattern Detection**: Find hidden structures in high-dimensional data
+- **Framework-Independent Analysis**: Works across different mathematical representations
+- **Proven Reliability**: Built on verified mathematical theorems
+- **Scales from 16D to 256D**: Handles complexity traditional methods can't
+
+## 🔬 Quant Trader Tier - BETA
+
+**For serious quantitative analysts who work with large datasets**
+
+### Optimized for Gemini CLI (recommended)
+- **Large context window** for GB-scale analysis
+- Command-line workflow for automated strategies
+- Seamless integration with your existing data pipelines
+
+**Also supports:** Claude Desktop, Claude Code (datasets <100MB recommended)
+
+---
+
+### 📊 Large Dataset Processing
+- Handle **GB-scale** files with smart sampling strategy
+- Batch processing for years of historical data
+- Memory-efficient chunked reading for massive datasets
+
+### 📈 Technical Indicators (10 Professional Indicators)
+- **Momentum**: RSI, MACD, Stochastic Oscillator
+- **Trend**: SMA/EMA, ADX, Ichimoku Cloud
+- **Volatility**: Bollinger Bands, ATR
+- **Volume**: OBV, VWAP
+- Signal interpretation and trading recommendations included
+
+### 🗣️ Financial Terminology Translation
+Three output levels to match your expertise:
+- **Technical**: Full mathematical notation (for quants/researchers)
+- **Standard**: Industry terminology (for traders/analysts)
+- **Simple**: Plain English (for beginners/executives)
+
+Example: "Conjugation symmetry" → "Mean reversion strength" → "How strongly price returns to average"
+
+### 🎯 Smart Analysis
+- Regime detection (bull/bear/sideways market classification)
+- Pattern discovery with confidence scoring
+- Anomaly detection for unusual market events
+
+## 🏆 PREMIUM: Dual-Method Regime Detection
+
+**This is what separates CAILculator from Bloomberg.**
+
+Everyone has Hidden Markov Models. Nobody has mathematical structure analysis.
+
+### The Unique Advantage
+
+**Statistical Method (what everyone has):**
+- Hidden Markov Models analyze price momentum
+- Standard quant finance approach
+- Classifies regimes as bull/bear/sideways
+
+**Mathematical Structure (UNIQUE to CAILculator):**
+- Chavez Transform in 32D sedenion space
+- Conjugation symmetry analysis
+- Zero divisor pattern detection
+- Structural stability assessment
+
+### When Both Methods Agree → High Confidence
+When statistical momentum AND mathematical structure point the same direction, trade with confidence.
+
+### When They Disagree → WARNING
+Disagreement often precedes regime changes. Like getting conflicting opinions from two specialists - time to investigate further.
+
+### Three Explanation Levels
+
+**Simple**: "Your data looks wobbly - like a seesaw getting unbalanced. When we see this, things might change soon."
+
+**Standard**: "Price action suggests bullish continuation, but mathematical structure shows instability (symmetry: 0.34). Methods disagree - caution advised."
+
+**Technical**: "HMM classification: bull (p=0.82). Conjugation symmetry: 0.34 (structural breakdown). Zero divisor count: 7 (bifurcation risk: HIGH). Agreement: 0.32 → INVESTIGATE FURTHER."
+
+## Installation
+
+```bash
+pip install cailculator-mcp
+```
+
+For HTTP transport (Gemini CLI support):
+```bash
+pip install cailculator-mcp[http]
+```
+
+## Setup
+
+CAILculator MCP Server supports **two transport modes**:
+- **stdio** (default): For Claude Desktop
+- **http**: For Gemini CLI and other HTTP-based MCP clients
+
+### Setup for Claude Desktop (stdio mode)
+
+Add to your MCP client configuration:
+
+**Mac/Linux:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "cailculator": {
+      "command": "cailculator-mcp",
+      "env": {
+        "CAILCULATOR_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+### Setup for Gemini CLI (HTTP mode)
+
+#### 1. Start the HTTP server:
+
+```bash
+cailculator-mcp --transport http --port 8080
+```
+
+Or with custom host/port:
+```bash
+cailculator-mcp --transport http --host 0.0.0.0 --port 8080
+```
+
+Set your API key via environment variable:
+```bash
+export CAILCULATOR_API_KEY="your_api_key_here"
+# Windows: set CAILCULATOR_API_KEY=your_api_key_here
+```
+
+**Important:** The server will not start without a valid API key. Contact paul@chavezailabs.com for API access.
+
+#### 2. Configure Gemini CLI:
+
+Add to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "cailculator": {
+      "manifestUrl": "http://localhost:8080/mcp/manifest"
+    }
+  }
+}
+```
+
+#### 3. Available endpoints:
+
+- **GET /mcp/manifest** - Tool definitions (required by Gemini CLI)
+- **POST /message** - MCP JSON-RPC messages
+- **GET /health** - Health check endpoint
+
+The HTTP server provides the same tools as stdio mode but with Gemini's 2M token context window, ideal for large regime detection responses.
+
+---
+
+**Contact paul@chavezailabs.com for API key access.**
+
+## Usage
+
+### General Analysis
+```
+"Apply Chavez Transform to this dataset"
+"Detect patterns in my high-dimensional data"
+"Analyze this data for hidden structures"
+```
+
+### 🆕 Quant Finance Examples
+```
+"Load Bitcoin price data from bitcoin_daily.csv and calculate RSI and MACD indicators"
+
+"Detect regime changes in this S&P 500 data using dual-method analysis, show simple explanations"
+
+"Run regime detection on my portfolio - when do the methods disagree?"
+
+"Batch analyze this 10GB tick data file for anomalies"
+
+"Calculate Bollinger Bands and Stochastic oscillator, show signals in standard trader language"
+
+"Check if current market regime is stable - use technical terminology with full methodology"
+```
+
+## Available Tools
+
+### Core Mathematical Tools
+
+#### chavez_transform
+Apply proprietary transform for high-dimensional analysis.
+
+#### detect_patterns
+Find conjugation symmetries and structural patterns.
+
+#### analyze_dataset
+Complete end-to-end analysis pipeline.
+
+#### compute_high_dimensional
+High-dimensional algebra calculations (Cayley-Dickson/Clifford frameworks).
+
+#### illustrate
+Generate visualizations: zero divisor networks, heatmaps, E8 mandalas, custom charts.
+
+### 🆕 Quant Finance Tools
+
+#### load_market_data
+Load financial data from CSV, Excel, or JSON files with smart OHLCV detection.
+- Auto-detects column names (flexible: "Close"/"close"/"CLOSE"/"price")
+- Validates data quality and cleans invalid values
+- Handles large files (>1GB) via batch processing
+- Filters by symbol and date range
+
+#### market_indicators
+Calculate 10 professional technical indicators with signal interpretation.
+- **Momentum**: RSI, MACD, Stochastic
+- **Trend**: SMA, EMA, ADX, Ichimoku
+- **Volatility**: Bollinger Bands, ATR
+- **Volume**: OBV, VWAP
+- Supports custom periods (e.g., RSI-14, RSI-21)
+- Terminology translation (technical/standard/simple)
+
+#### batch_analyze_market
+Analyze GB-scale datasets using smart sampling:
+1. Sample 5000 points → Quick analysis
+2. If confidence > 70% → Identify suspicious periods
+3. Deep dive on flagged periods only
+- **Regime detection**: Bull/bear/sideways classification
+- **Pattern discovery**: Autocorrelation and structure
+- **Anomaly detection**: Extreme events and outliers
+
+#### regime_detection 🏆 PREMIUM
+**The killer differentiator - why quants pay $1,499/mo**
+
+Dual-method regime detection combining two independent frameworks:
+- **Statistical baseline**: Hidden Markov Models (what everyone has)
+- **Mathematical structure**: Chavez Transform analysis in 32D sedenion space (UNIQUE to CAILculator)
+
+**When methods agree** → High confidence, trade normally
+**When methods disagree** → Warning signal, investigate further
+
+Features:
+- Conjugation symmetry analysis (structural stability)
+- Zero divisor pattern detection (bifurcation risk)
+- Agreement scoring between methods
+- Three terminology levels (technical/standard/simple)
+- Actionable recommendations based on confidence
+- Honest disclaimers (experimental indicator)
+
+Output includes:
+- Regime classification from both methods
+- Mathematical structure metrics (symmetry, stability, zero divisors)
+- Agreement score and overall confidence
+- Human-readable interpretation with personality
+- Specific recommendations (reduce positions, wait for clarity, etc.)
+
+## Pricing
+
+### Standard Tiers
+- **Individual**: $79.99/month - 25K requests/month
+- **Academic**: $199/month - 75K requests/month, .edu discount available
+- **Commercial**: $299/month - 250K requests/month per seat
+
+### 🆕 Quant Finance Tiers
+
+**ALL TIERS include our unique dual-method regime detection (HMM + Chavez Transform).**
+We don't hide our differentiator - we give everyone access to the unique math.
+You pay for scale, support, and expertise.
+
+---
+
+**Quant Explorer - $599/mo**
+*Try our unique dual-method approach*
+
+- ✅ **Full dual-method regime detection** (HMM + Chavez Transform structural analysis)
+- ✅ All 10 technical indicators
+- ✅ All 3 terminology levels (technical/standard/simple)
+- 📊 Up to 50K records per analysis
+- 📧 Email support (24hr response)
+- 💡 Perfect for: Individual traders testing the approach
+
+**Quant Professional - $1,499/mo**
+*Scale it up for serious analysis*
+
+- ✅ **Everything in Explorer, plus:**
+- 📊 Up to 5M records per analysis (100x more data)
+- ⚡ Batch processing for large datasets
+- 🔌 API access for automation
+- 🎯 1 custom pattern analysis per month
+- 🚀 Priority support (2hr response)
+- 💡 Perfect for: Professional quants and small hedge funds
+
+**Quant Elite - $3,499/mo**
+*Partner with us to master it*
+
+- ✅ **Everything in Professional, plus:**
+- 📊 Unlimited records + GB-scale batch processing
+- 🎓 **Monthly 60min strategy session** (apply Chavez Transform to your strategies)
+- 🛠️ 2 custom developments per month
+- 💬 Dedicated support channel (Slack/Discord)
+- 🏷️ White-label option available
+- ⚡ Priority feature requests
+- 💡 Perfect for: Institutional quants and research teams
+
+**Enterprise - Contact Sales**
+*Custom deployment and research partnership*
+
+- Everything in Elite, plus:
+- 🏢 On-premise deployment options
+- 👥 Team training and onboarding
+- 🔬 Research partnership collaboration
+- 📈 Custom indicators and methodologies
+- 🔒 SLA guarantees
+- Starting at $10K/mo
+- 💡 Perfect for: Hedge funds, prop trading firms, research institutions
+
+
+## Research Foundation
+
+Built on research published at DOI: [10.5281/zenodo.17402496](https://zenodo.org/records/17402496)
+
+Incorporates recent mathematical discoveries connecting to E8 exceptional Lie algebra (October 2025).
+
+## Contact
+
+Email: iknowpi@gmail.com
+GitHub: https://github.com/pchavez2029/cailculator-mcp
+
+---
+
+**Chavez AI Labs** - *"Better math, less suffering"*
