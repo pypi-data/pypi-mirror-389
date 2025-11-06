@@ -1,0 +1,12 @@
+deepmerge>=2.0
+packaging>=24.2
+pyyaml
+validate-pyproject
+tomli-w
+
+[:python_version < "3.11"]
+tomli>=1.1.0
+
+[develop]
+pytest
+pre-commit
