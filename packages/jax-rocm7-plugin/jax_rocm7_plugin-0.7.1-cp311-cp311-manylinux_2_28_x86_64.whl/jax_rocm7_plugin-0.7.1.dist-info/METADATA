@@ -1,0 +1,38 @@
+Metadata-Version: 2.4
+Name: jax-rocm7-plugin
+Version: 0.7.1
+Summary: JAX Plugin for AMD GPUs (ROCm:unknown)
+Home-page: https://github.com/jax-ml/jax
+Author: Ruturaj4
+Author-email: Ruturaj.Vaidya@amd.com
+License: Apache-2.0
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: jax-rocm7-pjrt==0.7.1
+Provides-Extra: with-rocm
+Requires-Dist: amd_rocm_hip_runtime_devel_instinct; extra == "with-rocm"
+Requires-Dist: amd_rocm_hip_runtime_instinct; extra == "with-rocm"
+Requires-Dist: amd_hipblas_instinct; extra == "with-rocm"
+Requires-Dist: amd_hipsparse_instinct; extra == "with-rocm"
+Requires-Dist: amd_hipsolver_instinct; extra == "with-rocm"
+Requires-Dist: amd_miopen_hip_instinct; extra == "with-rocm"
+Requires-Dist: amd_rocm_llvm_instinct; extra == "with-rocm"
+Requires-Dist: amd_rocm_language_runtime_instinct; extra == "with-rocm"
+Requires-Dist: amd_rccl_instinct; extra == "with-rocm"
+Requires-Dist: amd_hipfft_instinct; extra == "with-rocm"
+Requires-Dist: amd_rocm_device_libs_instinct; extra == "with-rocm"
+Requires-Dist: amd_hipsparselt_instinct; extra == "with-rocm"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
