@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saylt"
+version = "0.1.8"
+description = "A simple demo library that prints text when imported."
+authors = [
+  { name = "SAYLT", email = "diego@gmail.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+
+[tool.setuptools.packages.find]
+include = ["saylt"]
+
+[tool.setuptools.package-data]
+saylt = ["message.txt"]
+
+[tool.setuptools]
+license-files = ["LICENSE"]
+
