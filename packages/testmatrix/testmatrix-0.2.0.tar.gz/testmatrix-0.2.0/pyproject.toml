@@ -1,0 +1,43 @@
+[project]
+name = "testmatrix"
+dynamic = ["version"]
+description='A matrix server sanity tester'
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+]
+authors = [
+    {name = "Sebastian Spaeth", email = "Sebastian@SSpaeth.de"},
+]
+dependencies = [
+    "requests",
+]
+keywords= ["matrix", "chat", "collaboration"]
+
+
+[tool.setuptools]
+py-modules = ["test_matrix"]
+
+[tool.setuptools.dynamic]
+version = {attr = "src.testmatrix.__version__"}
+
+[tool.setuptools.packages]
+find = {}
+
+[project.scripts]
+testmatrix = "test_matrix:main"
+
+
+[project.urls]
+source = "https://codeberg.org/spaetz/testmatrix"
+issues = "https://codeberg.org/spaetz/testmatrix/issues"
+"chatroom" = "https://matrix.to/#/%23testmatrix:sspaeth.de"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
