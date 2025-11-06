@@ -1,0 +1,123 @@
+Metadata-Version: 2.4
+Name: harreman
+Version: 0.1.0
+Summary: Metabolic cell-cell communication inference in spatial transcriptomics.
+Project-URL: Documentation, https://harreman.readthedocs.io/
+Project-URL: Source, https://github.com/YosefLab/Harreman
+Project-URL: Home-page, https://github.com/YosefLab/Harreman
+Author-email: Oier Etxezarreta Arrastoa <oier.etxezarreta@weizmann.ac.il>
+License: BSD 3-Clause License
+        
+        Copyright (c) 2025, Yosef Lab, Weizmann Institute of Science
+        
+        All rights reserved.
+        
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this
+           list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice,
+           this list of conditions and the following disclaimer in the documentation
+           and/or other materials provided with the distribution.
+        
+        3. Neither the name of the copyright holder nor the names of its
+           contributors may be used to endorse or promote products derived from
+           this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+License-File: LICENSE
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Requires-Python: <3.13,>=3.10
+Requires-Dist: anndata
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scanpy
+Requires-Dist: scipy
+Requires-Dist: seaborn
+Requires-Dist: sparse
+Requires-Dist: torch
+Provides-Extra: all
+Requires-Dist: coverage; extra == 'all'
+Requires-Dist: docutils!=0.18.*,!=0.19.*,>=0.8; extra == 'all'
+Requires-Dist: ipykernel; extra == 'all'
+Requires-Dist: ipython; extra == 'all'
+Requires-Dist: jupyterlab; extra == 'all'
+Requires-Dist: myst-nb; extra == 'all'
+Requires-Dist: myst-parser; extra == 'all'
+Requires-Dist: pandas; extra == 'all'
+Requires-Dist: pytest; extra == 'all'
+Requires-Dist: sphinx; extra == 'all'
+Requires-Dist: sphinx-autodoc-typehints; extra == 'all'
+Requires-Dist: sphinx-book-theme>=1.0.0; extra == 'all'
+Requires-Dist: sphinx-copybutton; extra == 'all'
+Requires-Dist: sphinx-design; extra == 'all'
+Requires-Dist: sphinx-hoverxref; extra == 'all'
+Requires-Dist: sphinx-rtd-theme; extra == 'all'
+Requires-Dist: sphinx>=4.1; extra == 'all'
+Requires-Dist: sphinxcontrib-bibtex>=1.0.0; extra == 'all'
+Requires-Dist: sphinxext-opengraph; extra == 'all'
+Provides-Extra: dev
+Requires-Dist: myst-parser; extra == 'dev'
+Requires-Dist: sphinx; extra == 'dev'
+Requires-Dist: sphinx-rtd-theme; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: docutils!=0.18.*,!=0.19.*,>=0.8; extra == 'docs'
+Requires-Dist: ipykernel; extra == 'docs'
+Requires-Dist: ipython; extra == 'docs'
+Requires-Dist: myst-nb; extra == 'docs'
+Requires-Dist: myst-parser; extra == 'docs'
+Requires-Dist: pandas; extra == 'docs'
+Requires-Dist: sphinx-autodoc-typehints; extra == 'docs'
+Requires-Dist: sphinx-book-theme>=1.0.0; extra == 'docs'
+Requires-Dist: sphinx-copybutton; extra == 'docs'
+Requires-Dist: sphinx-design; extra == 'docs'
+Requires-Dist: sphinx-hoverxref; extra == 'docs'
+Requires-Dist: sphinx-rtd-theme; extra == 'docs'
+Requires-Dist: sphinx>=4.1; extra == 'docs'
+Requires-Dist: sphinxcontrib-bibtex>=1.0.0; extra == 'docs'
+Requires-Dist: sphinxext-opengraph; extra == 'docs'
+Provides-Extra: docsbuild
+Requires-Dist: docutils!=0.18.*,!=0.19.*,>=0.8; extra == 'docsbuild'
+Requires-Dist: ipykernel; extra == 'docsbuild'
+Requires-Dist: ipython; extra == 'docsbuild'
+Requires-Dist: myst-nb; extra == 'docsbuild'
+Requires-Dist: myst-parser; extra == 'docsbuild'
+Requires-Dist: pandas; extra == 'docsbuild'
+Requires-Dist: sphinx-autodoc-typehints; extra == 'docsbuild'
+Requires-Dist: sphinx-book-theme>=1.0.0; extra == 'docsbuild'
+Requires-Dist: sphinx-copybutton; extra == 'docsbuild'
+Requires-Dist: sphinx-design; extra == 'docsbuild'
+Requires-Dist: sphinx-hoverxref; extra == 'docsbuild'
+Requires-Dist: sphinx-rtd-theme; extra == 'docsbuild'
+Requires-Dist: sphinx>=4.1; extra == 'docsbuild'
+Requires-Dist: sphinxcontrib-bibtex>=1.0.0; extra == 'docsbuild'
+Requires-Dist: sphinxext-opengraph; extra == 'docsbuild'
+Provides-Extra: tests
+Requires-Dist: coverage; extra == 'tests'
+Requires-Dist: pytest; extra == 'tests'
+Provides-Extra: tutorials
+Requires-Dist: jupyterlab; extra == 'tutorials'
+Description-Content-Type: text/markdown
+
+<img src="docs/_static/Harreman_logo.png" alt="Alt text" width="300">
+
+# Harreman
+Metabolic cell-cell communication inference in spatial transcriptomics.
