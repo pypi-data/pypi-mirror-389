@@ -1,0 +1,67 @@
+Metadata-Version: 2.4
+Name: scrapy-mcp-server
+Version: 0.1.1
+Summary: MCP server for Scrapy request inspection and debugging
+Author: Fabien Vauchelles
+Project-URL: Homepage, https://github.com/scrapoxy/scrapy-mcp-server
+Keywords: scrapy,mcp,server,debugging,inspection,parsel,obfuscated
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: License :: Other/Proprietary License
+Classifier: Operating System :: OS Independent
+Classifier: Framework :: Scrapy
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastmcp>=0.1.0
+Requires-Dist: scrapy>=2.0.0
+Requires-Dist: requests>=2.25.0
+Requires-Dist: uvicorn>=0.20.0
+Requires-Dist: starlette>=0.20.0
+Provides-Extra: dev
+Requires-Dist: pyarmor>=9.0; extra == "dev"
+Requires-Dist: pytest>=7.0; extra == "dev"
+Dynamic: license-file
+
+# Scrapy MCP Server
+
+MCP (Model Context Protocol) server for Scrapy request inspection and debugging.
+
+## Installation & Usage
+
+Use `uvx` to run the MCP server:
+
+```bash
+uvx scrapy-mcp-server
+```
+
+## Configuration
+
+Add to your MCP client configuration (e.g., Claude Desktop):
+
+```json
+{
+  "mcpServers": {
+    "scrapy-inspector": {
+      "command": "uvx",
+      "args": ["scrapy-mcp-server"]
+    }
+  }
+}
+```
+
+## Requirements
+
+- Python >= 3.8
+- Compatible with Windows, Linux, and macOS (Intel & Apple Silicon)
+
+## License
+
+Copyright © 2015–2025 CoreDump Engineering. All rights reserved.
