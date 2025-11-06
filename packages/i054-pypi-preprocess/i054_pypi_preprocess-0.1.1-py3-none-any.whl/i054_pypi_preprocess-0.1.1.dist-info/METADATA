@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: i054_pypi_preprocess
+Version: 0.1.1
+Summary: Tiny NLP preprocessing helpers (tokenize, normalize, remove_stopwords).
+Author-email: Anumay Pandey <anumay.marshmelo@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/Anumay1231/i054_pypi_preprocess
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# i054_pypi_preprocess
+
+Small, dependency-free NLP preprocessing utilities:
+- `normalize_text(text)`
+- `remove_punct(text)`
+- `tokenize_simple(text)`
+- `remove_stopwords(tokens[, stopwords])`
+- `preprocess(text[, stopwords])`
+
+## Install
+```bash
+pip install i054_pypi_preprocess
