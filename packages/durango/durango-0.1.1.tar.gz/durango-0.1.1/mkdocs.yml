@@ -1,0 +1,41 @@
+site_name: Durango
+site_description: Flexible layered configuration management built on Pydantic Settings.
+site_url: https://bryaneburr.github.io/durango-config/
+repo_url: https://github.com/bryaneburr/durango-config
+repo_name: bryaneburr/durango-config
+theme:
+  name: shadcn
+  icon: heroicons:folder
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - attr_list
+  - mkdocs-click
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path:
+        - .
+        - ..
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["src"]
+          options:
+            docstring_style: google
+            show_source: false
+extra_css:
+  - assets/theme.css
+nav:
+  - Overview: index.md
+  - Guides:
+      - Contributing: contributing.md
+      - Publishing: publishing.md
+  - Reference:
+      - Config Manager: reference/config-manager.md
+      - Settings Models: reference/settings.md
+      - Usage Examples: reference/examples.md
+  - Architecture: architecture.md
