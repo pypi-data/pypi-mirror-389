@@ -1,0 +1,6 @@
+[betty.command]
+nginx-generate = betty_nginx._console:NginxGenerate.plugin
+nginx-serve = betty_nginx._console:NginxServe.plugin
+
+[betty.extension]
+nginx = betty_nginx:Nginx.plugin
