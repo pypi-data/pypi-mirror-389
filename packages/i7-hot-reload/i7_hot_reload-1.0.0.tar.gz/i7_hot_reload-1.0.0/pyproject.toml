@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "i7_hot_reload"
+version = "1.0.0"
+authors = [{ name = "Mahdi Mir", email = "imahdimir@gmail.com" }]
+description = "Import or reload a Python module from the CWD"
+readme = "README.md"
+license = { file = "LICENSE" }
+dependencies = [
+]
+
+keywords = [
+    "hot_reload",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/imahdimir/i7_hot_reload"
