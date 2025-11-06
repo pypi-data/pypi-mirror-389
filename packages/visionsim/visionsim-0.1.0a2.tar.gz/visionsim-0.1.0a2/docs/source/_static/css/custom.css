@@ -1,0 +1,19 @@
+table.borderless,
+table.borderless td,
+table.borderless th {
+    border: 0px solid transparent;
+    padding: 0px;
+    padding-right: 0.5em;
+    box-shadow: none
+}
+
+/* For ANSI Colors, assume green is new diff so add underline, strikethrough for red */
+.-C-Green {
+    color: #00A000 !important; 
+    text-decoration: underline;
+}
+
+.-C-Red {
+    color: #A40000 !important;
+    text-decoration: line-through;
+}

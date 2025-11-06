@@ -1,0 +1,43 @@
+Metadata-Version: 2.4
+Name: visionsim
+Version: 0.1.0a2
+Summary: Towards a Sensor-Realistic World Simulator
+Project-URL: GitHub, https://github.com/WISION-Lab/visionsim
+License-Expression: MIT
+License-File: LICENSE
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: >=3.9
+Requires-Dist: ephemeral-port-reserve
+Requires-Dist: fastdigest
+Requires-Dist: imageio
+Requires-Dist: invoke
+Requires-Dist: jsonschema
+Requires-Dist: matplotlib
+Requires-Dist: more-itertools
+Requires-Dist: multiprocess
+Requires-Dist: natsort
+Requires-Dist: numpy
+Requires-Dist: opencv-python
+Requires-Dist: openexr
+Requires-Dist: rich
+Requires-Dist: rpyc
+Requires-Dist: scipy
+Requires-Dist: torch
+Requires-Dist: torchvision
+Requires-Dist: tqdm
+Requires-Dist: tyro
+Description-Content-Type: text/markdown
+
+# VisionSIM: Towards a Sensor-Realistic World Simulator
+
+A modular and extensible framework that realistically emulates many different sensor types, alongside rich pixel-perfect ground truth annotations across low-, mid-, and high-level scene characteristics, as well as intrinsic and extrinsic camera properties.
+
+*Warning:* This project is under heavy development and still considered unstable. 
