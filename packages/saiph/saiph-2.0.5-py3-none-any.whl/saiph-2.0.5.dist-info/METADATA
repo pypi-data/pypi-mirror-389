@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: saiph
+Version: 2.0.5
+Summary: A projection package
+Author-email: Octopize <help@octopize.io>
+License: Apache-2.0
+License-File: LICENSE
+Requires-Python: <3.14,>=3.11
+Requires-Dist: msgspec<0.20,>=0.19
+Requires-Dist: numpy<2,>=1
+Requires-Dist: pandas>=2.2.2
+Requires-Dist: pydantic<3,>=2
+Requires-Dist: scikit-learn<2,>=1.0
+Requires-Dist: scipy<2,>=1.14
+Requires-Dist: toolz<2,>=1
+Provides-Extra: matplotlib
+Requires-Dist: matplotlib<4,>=3.5.2; extra == 'matplotlib'
