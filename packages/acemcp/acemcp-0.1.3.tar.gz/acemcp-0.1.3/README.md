@@ -1,0 +1,245 @@
+# Acemcp
+
+MCP server for codebase indexing and semantic search.
+
+## Installation
+
+```bash
+uv add mcp httpx fastapi "uvicorn[standard]" toml websockets
+uv sync
+```
+
+## Configuration
+
+The configuration file is automatically created at `~/.acemcp/settings.toml` on first run with default values.
+
+Edit `~/.acemcp/settings.toml` to configure:
+```toml
+BATCH_SIZE = 10
+MAX_LINES_PER_BLOB = 800
+BASE_URL = "https://your-api-endpoint.com"
+TOKEN = "your-bearer-token-here"
+TEXT_EXTENSIONS = [".py", ".js", ".ts", ...]
+EXCLUDE_PATTERNS = [".venv", "node_modules", ".git", "__pycache__", "*.pyc", ...]
+```
+
+**Configuration options:**
+- `BATCH_SIZE`: Number of files to upload per batch (default: 10)
+- `MAX_LINES_PER_BLOB`: Maximum lines per blob before splitting large files (default: 800)
+- `BASE_URL`: API endpoint URL
+- `TOKEN`: Authentication token
+- `TEXT_EXTENSIONS`: List of file extensions to index
+- `EXCLUDE_PATTERNS`: List of patterns to exclude from indexing (supports wildcards like `*.pyc`)
+
+You can also configure via:
+- **Command line arguments** (highest priority): `--base-url`, `--token`
+- **Web management interface** (updates user config file)
+- **Environment variables** with `ACEMCP_` prefix
+
+## MCP Configuration
+
+Add the following to your MCP client configuration (e.g., Claude Desktop):
+
+### Basic Configuration
+
+```json
+{
+  "mcpServers": {
+    "acemcp": {
+      "command": "uvx",
+      "args": [
+        "acemcp"
+      ]
+    }
+  }
+}
+```
+
+
+**Available command line arguments:**
+- `--base-url`: Override BASE_URL configuration
+- `--token`: Override TOKEN configuration
+- `--web-port`: Enable web management interface on specified port (e.g., 8080)
+
+### Configuration with Web Management Interface
+
+To enable the web management interface, add the `--web-port` argument:
+
+```json
+{
+  "mcpServers": {
+    "acemcp": {
+      "command": "uvx",
+      "args": [
+        "acemcp",
+        "--web-port",
+        "8888"
+      ]
+    }
+  }
+}
+```
+
+Then access the management interface at `http://localhost:8888`
+
+**Web Management Features:**
+- **Configuration Management**: View and edit server configuration (BASE_URL, TOKEN, BATCH_SIZE, MAX_LINES_PER_BLOB, TEXT_EXTENSIONS)
+- **Real-time Logs**: Monitor server logs in real-time via WebSocket connection
+- **Tool Debugger**: Test and debug MCP tools directly from the web interface
+  - Test `index_code` tool with any project path
+  - Test `search_context` tool with project path and query
+  - View formatted results and error messages
+
+## Tools
+
+### search_context
+
+Search for relevant code context based on a query. This tool **automatically performs incremental indexing** before searching, ensuring results are always up-to-date. It performs **semantic search** across your codebase and returns formatted text snippets showing where relevant code is located.
+
+**Key Features:**
+- **Automatic Incremental Indexing**: Before each search, the tool automatically indexes only new or modified files, skipping unchanged files for efficiency
+- **No Manual Indexing Required**: You don't need to manually index your project - just search and the tool handles indexing automatically
+- **Always Up-to-Date**: Search results reflect the current state of your codebase
+
+**Parameters:**
+- `project_root_path` (string): Absolute path to the project root directory
+  - **IMPORTANT**: Use forward slashes (`/`) as path separators, even on Windows
+  - Windows example: `C:/Users/username/projects/myproject`
+  - Linux/Mac example: `/home/username/projects/myproject`
+- `query` (string): Natural language search query to find relevant code context
+  - Use descriptive keywords related to what you're looking for
+  - The tool performs semantic matching, not just keyword search
+  - Returns code snippets with file paths and line numbers
+
+**What it returns:**
+- Formatted text snippets from files that match your query
+- File paths and line numbers for each snippet
+- Context around the relevant code sections
+- Multiple results ranked by relevance
+
+**Query Examples:**
+
+1. **Finding configuration code:**
+   ```json
+   {
+     "project_root_path": "C:/Users/username/projects/myproject",
+     "query": "查找所有调用 get_model 的地方"
+   }
+   ```
+   Returns: Code related to logging setup, logger initialization, and configuration
+
+2. **Finding authentication logic:**
+   ```json
+   {
+     "project_root_path": "C:/Users/username/projects/myproject",
+     "query": "user authentication login password validation"
+   }
+   ```
+   Returns: Authentication handlers, login functions, password validation code
+
+3. **Finding database code:**
+   ```json
+   {
+     "project_root_path": "C:/Users/username/projects/myproject",
+     "query": "database connection pool initialization"
+   }
+   ```
+   Returns: Database connection setup, pool configuration, initialization code
+
+4. **Finding error handling:**
+   ```json
+   {
+     "project_root_path": "C:/Users/username/projects/myproject",
+     "query": "error handling exception try catch"
+   }
+   ```
+   Returns: Error handling patterns, exception handlers, try-catch blocks
+
+5. **Finding API endpoints:**
+   ```json
+   {
+     "project_root_path": "C:/Users/username/projects/myproject",
+     "query": "API endpoint routes HTTP handlers"
+   }
+   ```
+   Returns: API route definitions, HTTP handlers, endpoint implementations
+
+**Tips for better results:**
+- Use multiple related keywords (e.g., "logging configuration setup" instead of just "logging")
+- Include technical terms specific to what you're looking for
+- Describe the functionality rather than exact variable names
+- Try different phrasings if the first query doesn't return what you need
+
+**Indexing Features:**
+- **Incremental Indexing**: Only new or modified files are uploaded, unchanged files are skipped
+- **Hash-based Deduplication**: Files are identified by SHA-256 hash of path + content
+- **Automatic Retry**: Network requests are automatically retried up to 3 times with exponential backoff (1s, 2s, 4s)
+- **Batch Resilience**: If a batch upload fails after retries, the tool continues with the next batch
+- **File Splitting**: Large files are automatically split into multiple blobs (default: 800 lines per blob)
+- **Exclude Patterns**: Automatically skips virtual environments, node_modules, .git, build artifacts, etc.
+
+**Search Features:**
+- **Automatic Retry**: Search requests are automatically retried up to 3 times with exponential backoff (2s, 4s, 8s)
+- **Graceful Degradation**: Returns a clear error message if the search fails after all retries
+- **Timeout Handling**: Uses a 60-second timeout to handle long-running searches
+- **Empty Result Handling**: Returns a helpful message if no relevant code is found
+
+**Default Exclude Patterns:**
+```
+.venv, venv, .env, env, node_modules, .git, .svn, .hg, __pycache__,
+.pytest_cache, .mypy_cache, .tox, .eggs, *.egg-info, dist, build,
+.idea, .vscode, .DS_Store, *.pyc, *.pyo, *.pyd, .Python,
+pip-log.txt, pip-delete-this-directory.txt, .coverage, htmlcov,
+.gradle, target, bin, obj
+```
+Patterns support wildcards (`*`, `?`) and match against directory/file names or paths.
+
+## Usage
+
+1. Start the MCP server (automatically started by MCP client)
+2. Use `search_context` to search for code context
+   - The tool automatically indexes your project before searching
+   - Incremental indexing ensures only new/modified files are uploaded
+   - No manual indexing step required!
+
+## Data Storage
+
+- **Configuration**: `~/.acemcp/settings.toml`
+- **Indexed projects**: `~/.acemcp/data/projects.json` (fixed location)
+- **Log files**: `~/.acemcp/log/acemcp.log` (with automatic rotation)
+- Projects are identified by their absolute path (normalized with forward slashes)
+
+## Logging
+
+The application automatically logs to `~/.acemcp/log/acemcp.log` with the following features:
+
+- **Console output**: INFO level and above (colored output)
+- **File output**: DEBUG level and above (detailed format with module, function, and line number)
+- **Automatic rotation**: Log files are rotated when they reach 5MB
+- **Retention**: Maximum of 10 log files are kept
+- **Compression**: Rotated log files are automatically compressed to `.zip` format
+- **Thread-safe**: Logging is thread-safe for concurrent operations
+
+**Log format:**
+```
+2025-11-06 13:51:25 | INFO     | acemcp.server:main:103 - Starting acemcp MCP server...
+```
+
+The log files are automatically created on first run and require no manual configuration.
+
+## Web Management Interface
+
+The web management interface provides:
+- **Real-time server status** monitoring
+- **Live log streaming** via WebSocket
+- **Configuration viewing** (current settings)
+- **Project statistics** (number of indexed projects)
+
+To enable the web interface, use the `--web-port` argument when starting the server.
+
+**Features:**
+- Real-time log display with auto-scroll
+- Server status and metrics
+- Configuration overview
+- Responsive design with Tailwind CSS
+- No build step required (uses CDN resources)
