@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chatterpy_mistral"
+version = "0.0.2"
+description = "Lighthearted conversation helpers (fun facts, etc.)"
+requires-python = ">=3.9"
+readme = "README.md"
+authors = [
+    {name = "Mahabub Alif", email = "ma7205@nyu.edu"},
+    {name = "Sydney Nadeau", email = "sen5217@nyu.edu"}, 
+    {name = "Susan Wang", email = "sw5556@nyu.edu"}, 
+    {name = "Aden Juda", email = "asj8335@nyu.edu"}, 
+    {name = "Serena Wang", email = "sw5695@nyu.edu"}
+]
+license = { file = "LICENSE" }
+keywords = ["python", "package", "build", "tutorial"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/swe-students-fall2025/3-python-package-team_mistral"
+Issues = "https://github.com/swe-students-fall2025/3-python-package-team_mistral.git"
+
+[project.scripts]
+chatterpy_mistral = "chatterpy_mistral.__main__:main" 
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
