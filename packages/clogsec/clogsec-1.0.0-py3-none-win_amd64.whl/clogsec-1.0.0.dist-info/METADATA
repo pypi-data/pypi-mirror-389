@@ -1,0 +1,196 @@
+Metadata-Version: 2.4
+Name: clogsec
+Version: 1.0.0
+Summary: Secure logging with encryption and validation.
+Author: crownie
+Author-email: crondenice@atomicmail.io
+License: Apache License 2.0
+Description-Content-Type: text/markdown
+Requires-Dist: pycryptodome>=3.0.0
+Requires-Dist: colorama>=0.1.1
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license
+Dynamic: requires-dist
+Dynamic: summary
+
+## Overview
+
+`Clogsec` is a package that provides **encryption for file-stored logs**, **checksum-based integrity validation**, and optional **correlation IDs** for easier tracing in distributed systems.
+
+It is designed for developers who want readable console logs and encrypted file logs—ensuring that sensitive data is never left unprotected on disk.
+
+---
+
+## Key Features
+
+- Colored console output for clear and readable log formatting.  
+- Encrypted file logging — automatically encrypts all log entries before saving.  
+- Checksum verification — detects tampering or corruption of log files.  
+- Correlation ID support — useful for tracing across requests or microservices.  
+- Automatic key management — generate or reuse base64-encoded RC4 keys.  
+- Backward compatible with Python’s standard `logging` module.
+
+---
+
+## Installation
+
+```bash
+pip install clogsec
+````
+
+---
+
+## Quick Start
+
+```python
+from clogsec import Logger
+
+# Create a logger that encrypts logs written to file
+logger = Logger(
+    file_name="secure.log",
+    log_level="INFO",
+    correlation_id="abc-123",
+    encrypt_file=True,
+    key_file="encryption.key"
+)
+
+logger.info("User login successful")
+logger.error("Unauthorized access attempt")
+logger.success("Transaction completed")
+logger.fail("Payment validation failed")
+```
+
+### Console Output (Colorized)
+
+```
+User login successful
+Unauthorized access attempt
+Transaction completed
+Payment validation failed
+```
+
+### File Output (`secure.log`)
+
+Each line is encrypted and includes a checksum:
+
+```
+2025-11-05 13:45:12>INFO>abc-123>e3b0c44298fc1c14...:QWERTYENCMSG==
+```
+
+---
+
+## Key Management
+
+You can provide your own base64-encoded key or let the logger manage it.
+
+### Option 1: Generate and save automatically
+
+```python
+Logger(file_name="log.txt", encrypt_file=True, key_file="keyfile.txt")
+```
+
+If `keyfile.txt` doesn’t exist, it will be generated and saved automatically.
+
+### Option 2: Use an existing key
+
+```python
+Logger(file_name="log.txt", encrypt_file=True, encryption_key="bXlzZWNyZXRrZXk=")
+```
+
+---
+
+## Decrypting Logs
+
+Use the helper function to decrypt and read your log file:
+
+```python
+from clogsec.core import decrypt_log
+
+decrypted = decrypt_log("secure.log", "bXlzZWNyZXRrZXk=")
+for line in decrypted:
+    print(line["asctime"], line["levelname"], line["decrypt_message"])
+```
+
+### Example Output
+
+```
+2025-11-05 09:45:12 INFO User login successful
+2025-11-05 09:45:12 ERROR Unauthorized access attempt
+2025-11-05 09:45:12 SUCCESS Transaction completed
+```
+
+---
+
+## Parameters
+
+| Parameter        | Type   | Default  | Description                                    |
+| ---------------- | ------ | -------- | ---------------------------------------------- |
+| `file_name`      | `str`  | `None`   | Log file path to write logs to.                |
+| `log_level`      | `str`  | `"INFO"` | Logging level (`DEBUG`, `SUCCESS`, `WARNING`, `ERROR`, `CRITICAL`) |
+| `correlation_id` | `str`  | `None`   | Adds correlation ID to each log record.        |
+| `encrypt_file`   | `bool` | `False`  | Whether to encrypt logs stored on disk.        |
+| `encryption_key` | `str`  | `None`   | Base64-encoded RC4 key string.                 |
+| `key_file`       | `str`  | `None`   | File path to load or save the encryption key.  |
+
+---
+
+## Decryption Logic
+
+The `decrypt_log()` function:
+
+1. Reads the encrypted log lines.
+2. Splits checksum and encrypted message.
+3. Decrypts the message using your key.
+4. Validates integrity via SHA-256 checksum.
+5. Returns a list of decrypted entries.
+
+---
+
+## Example Project Structure
+
+```
+clogsec/
+├── __init__.py
+├── logger.py
+├── core.py
+├── key_manager.py
+├── crypto.py
+├── crypto.pyd      # Windows optimized encryption module
+├── crypto.so       # Linux optimized encryption module
+├── filters.py
+├── formatters.py
+└── README.md
+```
+
+---
+
+## Performance Optimization
+
+To improve encryption and decryption speed, this package includes precompiled native extensions:
+
+* **`crypto.pyd`** for Windows
+* **`crypto.so`** for Linux
+
+These compiled modules replace the pure Python implementation automatically when available.
+They provide faster RC4 operations, reducing logging overhead in high-frequency or multi-threaded applications.
+
+No manual configuration is required — the package detects and loads the optimized version based on your platform.
+
+---
+
+## Notes & Security
+
+* The current version uses RC4 encryption (for compatibility).
+  Future versions may upgrade to AES/Fernet for stronger security.
+* Keep your key file secure (`chmod 600 keyfile.txt`) — anyone with the key can decrypt logs.
+* Checksum verification prevents tampered or corrupted entries from being processed.
+
+---
+
+## License
+
+This project is distributed under the **MIT License**.
+
