@@ -1,0 +1,148 @@
+defaults:
+  - default
+  - _self_
+
+# This generates a dataset like the "simple_static" dataset.
+
+birth_datetime_per_subject: null
+start_data_datetime_per_subject:
+  X:
+    - "1986-07-20T00:00:00"
+    - "1976-03-28T00:00:00"
+    - "1978-06-20T00:00:00"
+    - "1978-03-09T00:00:00"
+    - "1980-12-28T00:00:00"
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+time_between_birth_and_data_per_subject: null
+time_between_data_and_death_per_subject: null
+time_between_data_events_per_subject:
+  X:
+    - 188345466.5s
+    - 534267075.0s
+    - 144274029.142857s
+    - 508299956.0s
+    - 185359287.8s
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+num_events_per_subject:
+  X:
+    - 5
+    - 3
+    - 8
+    - 3
+    - 6
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+num_measurements_per_event:
+  X:
+    - 3
+    - 1
+    - 1
+    - 1
+    - 1
+    - 2
+    - 2
+    - 2
+    - 2
+    - 2
+    - 1
+    - 1
+    - 3
+    - 1
+    - 1
+    - 3
+    - 1
+    - 2
+    - 3
+    - 3
+    - 2
+    - 2
+    - 1
+    - 2
+    - 2
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+num_static_measurements_per_subject:
+  X:
+    - 2
+    - 2
+    - 2
+    - 2
+    - 2
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+frac_dynamic_code_occurrences_with_value:
+  X:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+frac_static_code_occurrences_with_value:
+  X:
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+  freq:
+    - 1
+    - 1
+    - 1
+    - 1
+static_vocab_size: 4
+dynamic_vocab_size: 7
+frac_subjects_with_death: 0
+frac_subjects_with_birth: 0
+birth_codes_vocab_size: 0
+death_codes_vocab_size: 0
