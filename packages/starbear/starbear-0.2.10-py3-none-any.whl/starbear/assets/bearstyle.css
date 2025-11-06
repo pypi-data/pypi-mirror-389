@@ -1,0 +1,63 @@
+.bear--tabular {
+    display: flex;
+    flex-direction: row;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.bear--tabular-area-container {
+    max-width: 700px;
+    max-height: 80vh;
+    padding: 5px;
+    overflow: scroll;
+    white-space: pre-wrap;
+    color: black;
+    background: white;
+    display: none;
+}
+
+.bear--tabular-area-container.bear--active {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.bear--tabular-buttons {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: start;
+}
+
+.bear--tabular-button.bear--empty {
+    display: none;
+}
+
+.bear--tabular-button {
+    opacity: 0.2;
+    padding: 3px;
+    cursor: pointer;
+    font-size: 20px;
+    text-align: center;
+    width: 1em;
+    user-select: none;
+}
+
+.bear--tabular-button:hover, .bear--tabular-button.bear--active {
+    opacity: 1;
+}
+
+.bear--hidden {
+    display: none;
+}
+
+.bear--tabular-button.bear--new {
+    opacity: 1;
+    animation: blinker 2s linear 5;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0.2;
+    }
+}

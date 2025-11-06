@@ -1,0 +1,9 @@
+<inline>
+    <link rel="stylesheet" href="{{std:bearstyle.css}}" />
+    <script type="module">
+        import Constructor from "{{std:bearlib.js}}";
+        let bear = new Constructor("{{route}}");
+        window.$$BEAR = bear;
+        {{connect_line}};
+    </script>
+</inline>
