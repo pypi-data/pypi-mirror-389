@@ -1,0 +1,131 @@
+[project]
+name = "Fringes"
+version = "2.0.0"
+description = "Phase shifting algorithms for encoding and decoding sinusoidal fringe patterns."
+authors = [{name="Christian Kludt"}]
+readme = "README.md"
+license = "GPL-3.0-only"
+license-files = ["LICEN[CS]E.*"]
+keywords = [
+    "phase shifting",
+    "phase unwrapping",
+    "fringe analysis",
+    "fringe projection",
+    "deflectometry",
+    "computational imaging"
+]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research"
+]
+requires-python = ">=3.10"  # added in python 3.10: Allow writing union types as X | Y
+dependencies = [
+    "numba>=0.55",  # 0.55 is first version to support python>=3.10
+    "numpy>=1.21.2",  # 1.21.2 is first version to support python>=3.10; in 1.21 the Mypy plugin was introduced
+    "opencv-contrib-python>=4.5.4.58",  # 4.5.4.58 is first version to support python>=3.10
+    "pyyaml>=6.0.2",
+    "scikit-image>=0.19",  # 0.19 is first version to support python>=3.10
+    "scipy>=1.7",  # 1.7 is first version to support python>=3.10
+    "sympy>=1.13.3",
+]
+
+[project.optional-dependencies]
+#cli = [
+#    "rich>=10.12",  # 10.12 is official Py3.10 release
+#    "rich-argparse",
+#]
+#data = [
+##    "asdf>=3",  # requires python>=3.9
+#    "pooch>=1.8.2",  # todo: allow older version
+#    "pyqtgraph>=0.13",
+#    "pyside6>=6.0.4",  # 6.0.4 is first version to only support the Qt 6.0+ framework
+#]
+#gui = [
+#    "qdarktheme",
+#    "textual>=4",
+#    {include-group = "data"},
+#]
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10", # 3.10 is first version to support python>=3.10
+    "pyside6>=6.0.4", # 6.0.4 is first version to only the Qt 6.0+ frameworksince 6.2 support for: QImage::Format_RGBX16FPx4, QImage::Format_RGBA16FPx4, QImage::Format_RGBX32FPx4, QImage::Format_RGBA32FPx4
+    "pyqtgraph>=0.13",
+    {include-group = "docs"},
+    {include-group = "lint"},
+    {include-group = "test"}
+]
+docs = [
+    "imageio>=2",
+    "sphinx>=7.4.7",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.6.1",
+    "sphinx-rtd-theme>=3.0.2",
+    "tomli>=1.1.0 ; python_version < '3.11'", # https://pypi.org/project/tomli/
+]  # ensure the "docs" group is mentioned in ".readthedocs.yml"
+lint = [
+    "black>=25",  # 25 is the latest major version
+]
+test = [
+    "coverage>=7.10.6",  # 7 is latest major version
+    "pytest>=8", # 8 is the latest major version
+#    "pytest-cov>=6", # 6 is the latest major version
+    "matplotlib>=3.10", # 3.10 is first version to support python>=3.10 (pyplot is required for testing the examples)
+]
+
+[project.scripts]
+fringes = "fringes.__main__:main"  # instead of 'uvx run fringes':
+
+#[project.gui-scripts]
+#fgui = "fringes.gui:main"
+
+[project.urls]  # https://docs.pypi.org/project_metadata/
+Documentation = "https://fringes.readthedocs.io"
+Repository = "https://github.com/comimag/fringes"
+#Changelog = "https://github.com/comimag/Fringes/commits/main/"
+Donate = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EHBGZ229DKUC4"
+# JOSS
+# ZENODO
+
+[tool.black]
+line-length = 120
+
+[tool.coverage.run]
+#branch = true
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if False:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    ]
+ignore_errors = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --doctest-continue-on-failure"
+pythonpath = "examples"
+testpaths = [
+    "tests",
+    "src",
+]
+
+[tool.uv]
+package = true
