@@ -1,0 +1,201 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  PYTHON: python3
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  # Development tasks
+  install:
+    desc: Install development dependencies
+    cmds:
+      - uv sync --all-extras
+
+  test:
+    desc: Run tests
+    cmds:
+      - uv run pytest
+      - go test ./...
+
+  test-coverage:
+    desc: Run tests with coverage report
+    cmds:
+      - uv run pytest --cov=lofigui --cov-report=html --cov-report=xml --cov-report=term-missing
+
+  lint:
+    desc: Run all linters
+    cmds:
+      - task: lint-black
+      - task: lint-flake8
+      # - task: lint-mypy
+
+  lint-black:
+    desc: Check code formatting with black
+    cmds:
+      - .venv/bin/black --check lofigui tests
+
+  lint-flake8:
+    desc: Run flake8 linter
+    cmds:
+      - .venv/bin/flake8 lofigui tests --max-line-length=100 --extend-ignore=E203,W503,F401
+
+  lint-mypy:
+    desc: Run mypy type checker
+    cmds:
+      - .venv/bin/mypy lofigui
+
+  format:
+    desc: Format code with black
+    cmds:
+      - .venv/bin/black lofigui tests
+
+  build:
+    desc: Build package distribution
+    cmds:
+      - uv build
+
+  # Python example tasks
+  example-01:
+    desc: Run Python example 01 (Hello World with FastAPI)
+    aliases: [py01]
+    dir: examples/01_hello_world/python
+    cmds:
+      - uv sync --no-install-project
+      - uv run --no-project python hello.py
+
+  example-02:
+    desc: Run Python example 02 (SVG Graph with Pygal)
+    aliases: [py02]
+    dir: examples/02_svg_graph/python
+    cmds:
+      - uv sync --no-install-project
+      - uv run --no-project python graph.py
+
+  example-05:
+    desc: Run Python example 05 (Demo App with template inheritance)
+    aliases: [py05, demo]
+    dir: examples/05_demo_app
+    cmds:
+      - uv sync --no-install-project
+      - uv run --no-project python demo_app.py
+
+  example-06:
+    desc: Run Python example 06 (Notes CRUD)
+    aliases: [py06]
+    dir: examples/06_notes_crud/python
+    cmds:
+      - uv sync --no-install-project
+      - uv run --no-project python notes.py
+
+  # Go example tasks
+  tidy:
+    desc: Run go tidy and update for all
+    deps: [t_main,t_01,t_02,t_03,t_04,t_06]
+
+  t_main:
+    desc: Run go tidy and update main
+    cmds:
+      - go mod tidy
+      - go get -u ./...
+
+  t_01:
+    desc: Run go tidy an update
+    dir: examples/01_hello_world/go
+    cmds:
+      - go mod tidy
+      - go get -u ./...
+
+  t_02:
+    desc: Run go tidy an update
+    dir: examples/02_svg_graph/go
+    cmds:
+      - go mod tidy
+      - go get -u ./...
+
+  t_03:
+    desc: Run go tidy an update
+    dir: examples/03_hello_world_wasm/go
+    cmds:
+      - go mod tidy
+      - go get -u ./...
+
+  t_04:
+    desc: Run go tidy an update
+    dir: examples/04_tinygo_wasm/go
+    cmds:
+      - go mod tidy
+      - go get -u ./...
+
+  t_06:
+    desc: Run go tidy an update
+    dir: examples/06_notes_crud/go
+    cmds:
+      - go mod tidy
+      - go get -u ./...
+
+  go-example-01:
+    desc: Run Go example 01 (Hello World with net/http)
+    aliases: [go01]
+    dir: examples/01_hello_world/go
+    cmds:
+      - go mod tidy
+      - go run main.go
+
+  go-example-02:
+    desc: Run Go example 02 (SVG Graph)
+    aliases: [go02]
+    dir: examples/02_svg_graph/go
+    cmds:
+      - go mod download
+      - go run main.go
+
+  go-example-03:
+    desc: Build and serve Go WASM example
+    aliases: [go03, go-wasm]
+    dir: examples/03_hello_world_wasm/go
+    cmds:
+      - chmod +x build.sh
+      - ./build.sh
+      - echo ""
+      - echo "Build complete! Starting server..."
+      - cd .. && "{{.PYTHON}} serve.py"
+
+  build-go-wasm:
+    desc: Build Go WASM binary only (no serve)
+    dir: examples/03_hello_world_wasm/go
+    cmds:
+      - chmod +x build.sh
+      - ./build.sh
+
+  go-example-04:
+    desc: Build and serve TinyGo WASM example
+    aliases: [go04, tinygo-wasm]
+    dir: examples/04_tinygo_wasm/go
+    cmds:
+      - chmod +x build.sh
+      - ./build.sh
+      - echo ""
+      - echo "Build complete! Starting server..."
+      - cd .. && "{{.PYTHON}} serve.py"
+
+  build-tinygo-wasm:
+    desc: Build TinyGo WASM binary only (no serve)
+    dir: examples/04_tinygo_wasm/go
+    cmds:
+      - chmod +x build.sh
+      - ./build.sh
+
+  go-example-06:
+    desc: Run Go example 06 (Notes CRUD)
+    aliases: [go06]
+    dir: examples/06_notes_crud/go
+    cmds:
+      - go mod tidy
+      - go run main.go

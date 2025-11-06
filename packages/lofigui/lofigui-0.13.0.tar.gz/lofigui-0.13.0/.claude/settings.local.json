@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(chmod:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv run python:*)",
+      "Bash(uv run:*)",
+      "Bash(timeout 5 uv run:*)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(pytest:*)",
+      "Bash(.venv/bin/python -m pytest tests/test_app.py -v)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(.venv/bin/pytest:*)",
+      "Bash(go test:*)",
+      "Bash(go build:*)",
+      "Bash(task lint:*)",
+      "Bash(.venv/bin/black --check lofigui tests)",
+      "Bash(.venv/bin/flake8:*)",
+      "Bash(.venv/bin/mypy lofigui)",
+      "Bash(.venv/bin/mypy:*)",
+      "Bash(.venv/bin/black:*)",
+      "Bash(go mod init:*)",
+      "Bash(tree:*)",
+      "Bash(task t_04)",
+      "Bash(task --list:*)",
+      "Bash(bash:*)",
+      "Bash(mkdir:*)",
+      "Bash(task py05)",
+      "Bash(timeout 3 uv run:*)",
+      "Bash(timeout 3 bash:*)",
+      "Bash(timeout 5 task:*)",
+      "Bash(timeout 5 .venv/bin/python:*)",
+      "Bash(uv pip install:*)",
+      "Bash(go mod tidy:*)",
+      "Bash(timeout 3 task:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
