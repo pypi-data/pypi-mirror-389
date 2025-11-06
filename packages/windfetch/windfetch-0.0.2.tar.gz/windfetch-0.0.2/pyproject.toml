@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "windfetch"
+version = "0.0.2"
+authors = [
+    { name = "星灿长风v(StarWindv)", email = "starwindv.stv@gmail.com"}
+]
+description = "An elegant Python system information tool, inspired by `neofetch`"
+readme = "readme.md"
+license = "MIT"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "requests",
+    "stv_utils>=0.0.8",
+    "psutil"
+]
+urls = { "Homepage" = "https://github.com/StarWindv/pyfetch" }
+
+[project.scripts]
+windfetch = "windfetch.windfetch:main"
