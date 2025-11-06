@@ -1,0 +1,48 @@
+Metadata-Version: 2.4
+Name: json_toon
+Version: 1.0.0
+Summary: Convert JSON to TOON (Token-Oriented Object Notation) and back.
+Author-email: Monish Meher <monishmeher@gmail.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/CatalystMonish/json_toon
+Keywords: json,toon,converter,llm,prompt
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# JSON Toon
+
+A Python library for JSON conversion utilities.
+
+## Installation
+
+```bash
+pip install json-toon
+```
+
+## Usage
+
+```python
+from json_toon import converter
+
+# Convert data to JSON
+data = {"name": "example", "value": 42}
+json_string = converter.convert_to_json(data)
+
+# Convert JSON to data
+parsed_data = converter.convert_from_json(json_string)
+```
+
+## Development
+
+To install in development mode:
+
+```bash
+pip install -e .
+```
+
+## License
+
+See LICENSE file for details.
+
