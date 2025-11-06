@@ -1,0 +1,143 @@
+Metadata-Version: 2.4
+Name: eclips-blossom-ai
+Version: 0.4.3
+Summary: 🌸 Beautiful and simple AI generation library for images, text, and audio
+Project-URL: Homepage, https://github.com/PrimeevolutionZ/blossom-ai
+Project-URL: Documentation, https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/INDEX.md
+Project-URL: Repository, https://github.com/PrimeevolutionZ/blossom-ai
+Project-URL: Source Code, https://github.com/PrimeevolutionZ/blossom-ai
+Project-URL: Bug Tracker, https://github.com/PrimeevolutionZ/blossom-ai/issues
+Project-URL: Issue Tracker, https://github.com/PrimeevolutionZ/blossom-ai/issues
+Project-URL: Changelog, https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/CHANGELOG.md
+Project-URL: Security Policy, https://github.com/PrimeevolutionZ/blossom-ai/blob/master/SECURITY.md
+Author-email: Eclips Team <develop@eclips-team.ru>
+Maintainer-email: Eclips Team <develop@eclips-team.ru>
+License: MIT
+License-File: LICENSE
+Keywords: ai,artificial-intelligence,audio-generation,deep-learning,generative-ai,gpt,image-generation,llm,machine-learning,pollinations,stable-diffusion,text-generation,text-to-speech,tts
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Natural Language :: Russian
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Multimedia :: Graphics
+Classifier: Topic :: Multimedia :: Sound/Audio :: Speech
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Requires-Python: >=3.8
+Requires-Dist: aiohttp<4.0.0,>=3.8.0
+Requires-Dist: requests<3.0.0,>=2.28.0
+Requires-Dist: tenacity<9.0.0,>=8.2.0
+Provides-Extra: all
+Requires-Dist: blossom-ai[dev,docs]; extra == 'all'
+Provides-Extra: dev
+Requires-Dist: black>=23.7.0; extra == 'dev'
+Requires-Dist: mypy>=1.5.0; extra == 'dev'
+Requires-Dist: pre-commit>=3.3.0; extra == 'dev'
+Requires-Dist: pytest-asyncio>=0.21.0; extra == 'dev'
+Requires-Dist: pytest-cov>=4.1.0; extra == 'dev'
+Requires-Dist: pytest-mock>=3.11.0; extra == 'dev'
+Requires-Dist: pytest>=7.4.0; extra == 'dev'
+Requires-Dist: ruff>=0.0.287; extra == 'dev'
+Requires-Dist: types-requests>=2.31.0; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: mkdocs-material>=9.2.0; extra == 'docs'
+Requires-Dist: mkdocs>=1.5.0; extra == 'docs'
+Requires-Dist: mkdocstrings[python]>=0.22.0; extra == 'docs'
+Provides-Extra: test
+Requires-Dist: pytest-asyncio>=0.21.0; extra == 'test'
+Requires-Dist: pytest-cov>=4.1.0; extra == 'test'
+Requires-Dist: pytest-mock>=3.11.0; extra == 'test'
+Requires-Dist: pytest>=7.4.0; extra == 'test'
+Description-Content-Type: text/markdown
+
+# 🌸 Blossom AI
+
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.4.1-blue.svg)](https://pypi.org/project/eclips-blossom-ai/)
+
+**A beautiful Python SDK for Pollinations.AI - Generate images, text, and audio with AI.**
+
+Blossom AI is a comprehensive, easy-to-use Python library that provides unified access to Pollinations.AI's powerful AI generation services. Create stunning images, generate text with various models, and convert text to speech with multiple voices - all through a beautifully designed, intuitive API.
+
+## ✨ Features
+
+- 🖼️ **Image Generation** - Create stunning images from text descriptions
+- 🔗 **Image URL Generation** - Get direct links without downloading (v0.2.5!)
+- 📝 **Text Generation** - Generate text with various AI models
+- 🌊 **Streaming** - Real-time text generation with timeout protection
+- 🎙️ **Audio Generation** - Text-to-speech with multiple voices
+- 🚀 **Unified API** - Same code works in sync and async contexts
+- 🧹 **Clean** - Proper resource management and automatic cleanup
+
+## 🚀 Quick Start
+
+### 📦 Installation
+
+```bash
+pip install eclips-blossom-ai
+```
+
+### ⚡ Basic Usage
+
+```python
+from blossom_ai import Blossom
+
+with Blossom() as ai:
+    # Generate image URL (Fast & Free!)
+    url = ai.image.generate_url("a beautiful sunset")
+    print(url)
+    
+    # Save image directly to a file
+    ai.image.save("a serene lake at dawn", "lake.jpg")
+
+    # Get raw image bytes for custom processing
+    image_bytes = ai.image.generate("a robot painting a portrait")
+    # Now you can upload, display, or manipulate image_bytes as needed
+
+    # Generate text
+    response = ai.text.generate("Explain quantum computing")
+    print(response)
+
+    # Stream text
+    for chunk in ai.text.generate("Tell me a story", stream=True):
+        print(chunk, end='', flush=True)
+```
+
+## 📚 Documentation
+
+- **[Documentation Index](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/INDEX.md)** - Start here for complete guide
+- **[Installation & Setup](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/INSTALLATION.md)**
+- **[Examples](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/EXAMPLES.md)** - Practical code examples
+- **[Changelog](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/CHANGELOG.md)**
+
+## 🤝 Contributing
+
+Contributions welcome!
+
+## 📄 License
+
+MIT License - see [LICENSE](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/LICENSE)
+
+---
+
+Made with 🌸 by [Eclips Team](https://github.com/PrimeevolutionZ)
+
+:D
