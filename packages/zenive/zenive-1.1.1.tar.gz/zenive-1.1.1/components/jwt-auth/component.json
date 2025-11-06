@@ -1,0 +1,35 @@
+{
+  "name": "jwt-auth",
+  "version": "2.0.0",
+  "description": "JWT authentication utilities with token generation, validation, and middleware",
+  "category": "auth",
+  "type": "component",
+  "dependencies": ["PyJWT", "cryptography"],
+  "files": [
+    {
+      "name": "jwt_handler.py",
+      "path": "src/auth/jwt_handler.py",
+      "url": "./jwt_handler.py"
+    },
+    {
+      "name": "middleware.py",
+      "path": "src/auth/middleware.py", 
+      "url": "./middleware.py"
+    },
+    {
+      "name": "__init__.py",
+      "path": "src/auth/__init__.py",
+      "url": "./__init__.py"
+    },
+    {
+      "name": "requirements.txt",
+      "path": "requirements.txt",
+      "url": "./requirements.txt"
+    }
+  ],
+  "author": "zen",
+  "license": "MIT",
+  "python_requires": ">=3.8",
+  "keywords": ["jwt", "authentication", "auth", "token", "security"],
+  "homepage": "https://github.com/TheRaj71/Zenive"
+}

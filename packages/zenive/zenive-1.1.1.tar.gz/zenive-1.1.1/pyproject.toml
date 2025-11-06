@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zenive"
+version = "1.1.1"
+authors = [
+    {name = "TheRaj71", email = "theraj714@zohomail.in"},
+]
+description = "A component registry for discovering, installing, and managing reusable code components"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: System :: Software Distribution",
+]
+keywords = ["components", "registry", "shadcn", "python", "cli", "zen"]
+dependencies = [
+    "click>=8.0.0",
+    "requests>=2.25.0",
+    "pydantic>=2.0.0",
+    "PyYAML>=6.0.0",
+    "rich>=13.0.0",
+    "packaging>=21.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/TheRaj71/Zenive"
+"Bug Tracker" = "https://github.com/TheRaj71/Zenive/issues"
+"Source Code" = "https://github.com/TheRaj71/Zenive"
+Documentation = "https://github.com/TheRaj71/Zenive#readme"
+
+[project.scripts]
+zen = "zen.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["zen*"]
+
+[tool.setuptools.package-data]
+zen = ["templates/*", "schemas/*"]

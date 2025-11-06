@@ -1,0 +1,147 @@
+{
+    "name": "github-actions-python",
+    "version": "1.0.0",
+    "description": "Comprehensive GitHub Actions workflows for Python development",
+    "category": "devops",
+    "type": "component",
+    "dependencies": [],
+    "files": [
+        {
+            "name": "__init__.py",
+            "path": "components/github-actions-python/__init__.py",
+            "url": "./__init__.py"
+        },
+        {
+            "name": "installer.py",
+            "path": "components/github-actions-python/installer.py", 
+            "url": "./installer.py"
+        },
+        {
+            "name": "requirements.txt",
+            "path": "components/github-actions-python/requirements.txt",
+            "url": "./requirements.txt"
+        },
+        {
+            "name": "ci-basic.yml",
+            "path": ".github/workflows/ci-basic.yml",
+            "url": "./workflows/ci-basic.yml"
+        },
+        {
+            "name": "ci-matrix.yml",
+            "path": ".github/workflows/ci-matrix.yml",
+            "url": "./workflows/ci-matrix.yml"
+        },
+        {
+            "name": "code-quality.yml",
+            "path": ".github/workflows/code-quality.yml",
+            "url": "./workflows/code-quality.yml"
+        },
+        {
+            "name": "security-scan.yml",
+            "path": ".github/workflows/security-scan.yml",
+            "url": "./workflows/security-scan.yml"
+        },
+        {
+            "name": "publish-pypi.yml",
+            "path": ".github/workflows/publish-pypi.yml",
+            "url": "./workflows/publish-pypi.yml"
+        },
+        {
+            "name": "publish-testpypi.yml",
+            "path": ".github/workflows/publish-testpypi.yml",
+            "url": "./workflows/publish-testpypi.yml"
+        },
+        {
+            "name": "docs-sphinx.yml",
+            "path": ".github/workflows/docs-sphinx.yml",
+            "url": "./workflows/docs-sphinx.yml"
+        },
+        {
+            "name": "docs-mkdocs.yml",
+            "path": ".github/workflows/docs-mkdocs.yml",
+            "url": "./workflows/docs-mkdocs.yml"
+        },
+        {
+            "name": "dependency-update.yml",
+            "path": ".github/workflows/dependency-update.yml",
+            "url": "./workflows/dependency-update.yml"
+        },
+        {
+            "name": "performance-test.yml",
+            "path": ".github/workflows/performance-test.yml",
+            "url": "./workflows/performance-test.yml"
+        },
+        {
+            "name": "dependabot.yml",
+            "path": ".github/dependabot.yml",
+            "url": "./configs/dependabot.yml"
+        },
+        {
+            "name": ".pre-commit-config.yaml",
+            "path": ".pre-commit-config.yaml",
+            "url": "./configs/.pre-commit-config.yaml"
+        },
+        {
+            "name": "pyproject.toml.template",
+            "path": "pyproject.toml.template",
+            "url": "./configs/pyproject.toml.template"
+        }
+    ],
+    "installation_options": {
+        "workflows": {
+            "basic_ci": true,
+            "matrix_ci": false,
+            "code_quality": true,
+            "security_scan": true,
+            "publish_pypi": false,
+            "publish_testpypi": false,
+            "docs_sphinx": false,
+            "docs_mkdocs": false,
+            "dependency_update": true,
+            "performance_test": false
+        },
+        "configs": {
+            "dependabot": true,
+            "pre_commit": true,
+            "pyproject_template": false
+        }
+    },
+    "installer": {
+        "type": "custom",
+        "module": "components.github-actions-python",
+        "function": "install_component",
+        "cli": "components.github-actions-python.installer",
+        "supports_selection": true,
+        "supports_presets": true
+    },
+    "presets": {
+        "minimal": {
+            "name": "Minimal Setup",
+            "description": "Basic CI and code quality for small projects"
+        },
+        "standard": {
+            "name": "Standard Setup", 
+            "description": "Comprehensive setup for most Python projects"
+        },
+        "library": {
+            "name": "Python Library",
+            "description": "Complete setup for Python libraries and packages"
+        },
+        "enterprise": {
+            "name": "Enterprise Setup",
+            "description": "Full setup with all security and quality features"
+        }
+    },
+    "author": "zen",
+    "license": "MIT",
+    "python_requires": ">=3.8",
+    "keywords": [
+        "github-actions",
+        "ci-cd",
+        "python",
+        "workflows",
+        "automation",
+        "devops"
+    ],
+    "homepage": "https://github.com/TheRaj71/Zenive"
+}
