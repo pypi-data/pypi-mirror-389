@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: kbc-clustering
+Version: 0.3.3
+Summary: KBC: Isolation-Kernel + Binary Connected-component Clustering
+Author-email: Hang Zhang <your.email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/IsolationKernel/Kernel-bounded-clustering-versus-spectral-clustering
+Project-URL: Repository, https://github.com/IsolationKernel/Kernel-bounded-clustering-versus-spectral-clustering
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.6
+Requires-Dist: torch>=1.0
+Requires-Dist: tqdm>=4.6
+Dynamic: license-file
+
+# KBC Clustering
+
+Kernel-Bounded Clustering: Achieving the Objective of Spectral Clustering without Eigendecomposition
+
+## Installation
+
+```bash
+pip install kbc-clustering
+
+
+```python
+from kbc import KBC
+import numpy as np
+
+X = np.random.rand(1000, 50)
+model = KBC(k=5, tau=0.4, psi=64, random_state=42)
+labels = model.fit_predict(X)
+
+
+## Reference
+@article{ZHANG2025104440,
+title = {Kernel-Bounded Clustering: Achieving the Objective of Spectral Clustering without Eigendecomposition},
+journal = {Artificial Intelligence},
+pages = {104440},
+year = {2025},
+issn = {0004-3702},
+doi = {https://doi.org/10.1016/j.artint.2025.104440},
+url = {https://www.sciencedirect.com/science/article/pii/S0004370225001596},
+author = {Hang Zhang and Kai Ming Ting and Ye Zhu},
