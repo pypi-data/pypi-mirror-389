@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "x402tools"
+version = "1.0.0"
+description = "Python SDK for x402 Usage-Based Billing API"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+keywords = ["billing", "api", "usage", "tracking", "envelope", "metering"]
+authors = [
+    {name = "Stakefy", email = "support@stakefy.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "requests>=2.31.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/JaspSoe/stakefy-usage-envelope"
+Documentation = "https://github.com/JaspSoe/stakefy-usage-envelope"
+Repository = "https://github.com/JaspSoe/stakefy-usage-envelope"
