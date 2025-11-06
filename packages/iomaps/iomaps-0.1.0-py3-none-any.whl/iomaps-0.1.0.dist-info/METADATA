@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: iomaps
+Version: 0.1.0
+Summary: Tools to handle data from indianopenmaps
+Project-URL: homepage, https://github.com/ramSeraph/indianopenmaps
+Project-URL: repository, https://github.com/ramSeraph/indianopenmaps.git
+Requires-Python: >=3.12
+Requires-Dist: fiona>=1.10.1
+Requires-Dist: multivolumefile>=0.2.3
+Requires-Dist: py7zr>=1.0.0
+Requires-Dist: shapely>=2.1.2
+Requires-Dist: tqdm>=4.67.1
+Provides-Extra: ui
+Requires-Dist: streamlit; extra == 'ui'
