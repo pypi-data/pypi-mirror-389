@@ -1,0 +1,25 @@
+[project]
+name = "strangeworks-extensions"
+version = "0.8.0"
+description = "Shared code for SDK Extensions"
+authors = [
+    { name = "Strange Devs", email = "hello@strangeworks.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "strangeworks-core>=0.5.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/strangeworks_extensions"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/strangeworks_extensions"]
+
+[project.entry-points.'strangeworks_sdk_add_ons']
+extensions_core = "strangeworks_extensions.extensions:setup"
+
