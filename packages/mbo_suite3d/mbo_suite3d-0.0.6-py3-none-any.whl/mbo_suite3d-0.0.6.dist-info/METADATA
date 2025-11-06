@@ -1,0 +1,120 @@
+Metadata-Version: 2.4
+Name: mbo_suite3d
+Version: 0.0.6
+Summary: Fast, volumetric cell detection. In development.
+License: AGPL-3.0-or-later
+Project-URL: homepage, https://github.com/alihaydaroglu/suite3d
+Keywords: Pipeline,Numpy,Microscopy,ScanImage,Suite2p,Volumetric
+Requires-Python: <3.13,>=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: dask>=2025.3.0
+Requires-Dist: tifffile>=2021.3.4
+Requires-Dist: zarr>=2.18.3
+Requires-Dist: matplotlib>=3.10.1
+Requires-Dist: torch>=1.7.1
+Requires-Dist: natsort
+Requires-Dist: rastermap>0.1.0
+Requires-Dist: scanimage-tiff-reader>=1.4.1
+Requires-Dist: importlib-metadata
+Requires-Dist: paramiko
+Requires-Dist: pynwb
+Requires-Dist: sbxreader
+Requires-Dist: imreg-dft-nw
+Requires-Dist: click
+Requires-Dist: ipython
+Requires-Dist: jupyterlab==4.2.6
+Requires-Dist: jupyter_rfb
+Requires-Dist: pyqt5==5.15.11
+Requires-Dist: pyqtgraph
+Requires-Dist: ipykernel
+Requires-Dist: napari
+Requires-Dist: scikit-image
+Requires-Dist: dask-image
+Requires-Dist: pyqt5-qt5==5.15.2; sys_platform == "win32"
+Requires-Dist: pyqt5-qt5==5.15.16; sys_platform == "darwin" or sys_platform == "linux"
+Provides-Extra: gpu
+Provides-Extra: mrc
+Requires-Dist: mrcfile; extra == "mrc"
+Provides-Extra: fpl
+Requires-Dist: fastplotlib; extra == "fpl"
+Requires-Dist: ipykernel; extra == "fpl"
+Requires-Dist: jupyter_rfb; extra == "fpl"
+Requires-Dist: imgui-bundle; extra == "fpl"
+Provides-Extra: all
+Requires-Dist: fastplotlib; extra == "all"
+Requires-Dist: ipykernel; extra == "all"
+Requires-Dist: jupyter_rfb; extra == "all"
+Requires-Dist: imgui-bundle; extra == "all"
+Requires-Dist: mrcfile; extra == "all"
+Dynamic: license-file
+
+## Overview
+
+Suite3D is a volumetric cell detection algorithm, generally applicable to any type of multi-plane functional 2p imaging where you see cells on multiple planes.
+For an overview of the algorithms, [see our recent preprint](https://www.biorxiv.org/content/10.1101/2025.03.26.645628v1).
+
+You might run into few kinks - please reach out to Ali (ali.haydaroglu.20@ucl.ac.uk, or by creating issues on this repository) and I'll be happy to help you get up and running. 
+
+## Installation
+
+``` bash
+git clone git@github.com:alihaydaroglu/suite3d.git
+cd suite3d
+```
+
+`conda` (miniforge3 only)
+``` bash
+conda create -n s3d -c conda-forge python=3.11
+conda activate s3d
+pip install -e ".[all]"  # [all] optional
+```
+
+
+`pip`
+``` bash
+python -m venv
+source .venv/bin/activate      # linux, macOS
+# or
+# source .venv/Scripts/activate  # windows
+
+pip install ".[all]" % include viz/jupyter utilities
+```
+
+
+### GPU Dependencies
+
+To use the GPU, you need a system [`cuda`](https://developer.nvidia.com/cuda-downloads) installation.
+We recommend `12.x`.
+
+After downloading CUDA, use the corresponding pip install for cupy:
+
+| Supported CUDA Toolkits: v11.2 / v11.3 / v11.4 / v11.5 / v11.6 / v11.7 / v11.8 / v12.0 / v12.1 / v12.2 / v12.3 / v12.4 / v12.5 / v12.6 / v12.8
+
+```bash
+pip install cupy-cuda12x  # or 11x if you installed CUDA v11.2 - v11.8
+```
+
+If you are unsure what CUDA toolkit you have installed, you can install `cupy` through `conda` and it will [handle the CUDA requirements for you](see here: https://docs.cupy.dev/en/v12.2.0/install.html#installing-cupy-from-conda-forge):
+```bash
+conda install -c conda-forge cupy
+```
+
+
+**Note on `conda` environments**
+We highly recommend switching from your current conda package manager to miniforge3 if you have not yet done so. If not on miniforge3, and the installation gets stuck around "Solving Environment", you should use libmamba ([explanation](https://conda.github.io/conda-libmamba-solver/libmamba-vs-classic/)), install it using the [instructions here](https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community). Also, set the conda channel priority to be strict: `conda config --set channel_priority strict`. It's important that you don't forget the `-e` in the pip command, this allows the suite2p installation to be editable.
+
+## Usage
+Run a jupyter notebook in this envinronment, either by running `jupyter notebook` in the activated environment or running a jupyter server from a different conda env and selecting this environment for the kernel ([see here](https://medium.com/@nrk25693/how-to-add-your-conda-environment-to-your-jupyter-notebook-in-just-4-steps-abeab8b8d084)). Make sure you use the correct environment!
+
+Then, run the Demo notebook.
+
+## Docker
+
+There is a Dockerfile in this repo that successfully builds (`docker build - < Dockerfile`). I don't know anything about Docker, but I would love to have this successfully run in a container. If you manage to get that working let me know! Ideally, this would also include some sort of X host to run napari (https://napari.org/stable/howtos/docker.html#base-napari-image), presumably there is a way to merge the napari-xpra docker image into this one to make that work. 
+
+## Sample Data
+Use [this](https://liveuclac-my.sharepoint.com/:f:/g/personal/ucqfhay_ucl_ac_uk/EuQX2PFw13xHhILvRux29AQB48tXCxBJQ7z6JfHee25pfw?e=HmBlAc) for the standard 2p imaging demo, recorded in mouse CA1, courtesy of Andrew Landau. 
+
+Sample LBM data coming soon!
+
