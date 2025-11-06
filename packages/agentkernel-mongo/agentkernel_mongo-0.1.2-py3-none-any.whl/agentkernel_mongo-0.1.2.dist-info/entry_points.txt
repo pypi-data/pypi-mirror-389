@@ -1,0 +1,5 @@
+[agentkernel.configs]
+mongodb = agentkernel_mongo:get_config_model
+
+[agentkernel.sessions]
+mongodb = agentkernel_mongo:get_session_store_factory
