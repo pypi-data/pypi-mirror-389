@@ -1,0 +1,199 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "securecode-ai"
+version = "1.0.0"
+description = "AI-Powered Security Analysis CLI with GitHub Integration and Universal Language Support"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "SecureCLI Team"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Version Control :: Git"
+]
+requires-python = ">=3.10"
+dependencies = [
+    "prompt-toolkit>=3.0.0",
+    "click>=8.0.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0.0",
+    "rich>=13.0.0",
+    "gitpython>=3.1.0",
+    "jinja2>=3.1.0",
+    "toml>=0.10.0",
+    "requests>=2.31.0",
+    "aiofiles>=23.0.0",
+    "colorama>=0.4.6",
+    "pyfiglet>=1.0.2",
+    "termcolor>=2.3.0",
+    "blessed>=1.20.0",
+    "art>=6.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.11.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.0.0",
+]
+web3 = [
+    "slither-analyzer>=0.10.0",
+    "mythril>=0.24.0",
+    "brownie>=1.19.0",
+    "web3>=6.0.0",
+]
+mobile = [
+    "xcrun>=1.0.0",
+    "android-lint>=1.0.0"
+]
+infrastructure = [
+    "terraform>=1.0.0",
+    "ansible>=7.0.0", 
+    "kubernetes>=27.0.0"
+]
+ci = [
+    "github-actions-runner>=1.0.0",
+]
+all = [
+    "securecli[dev,web3,mobile,infrastructure,ci]"
+]
+
+[project.scripts]
+secure = "securecli.main:main"
+securecli = "securecli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/securecli/securecli"
+Repository = "https://github.com/securecli/securecli"
+Documentation = "https://securecli.readthedocs.io"
+"Bug Tracker" = "https://github.com/securecli/securecli/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/securecli"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "git.*",
+    "chromadb.*",
+    "openai.*",
+    "anthropic.*",
+    "langchain.*",
+    "semgrep.*",
+    "slither.*",
+    "bandit.*",
+    "docker.*"
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--cov=src/securecli",
+    "--cov-report=html:htmlcov",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--tb=short",
+    "-ra"
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "e2e: End-to-end tests",
+    "slow: Slow running tests",
+    "github: Tests requiring GitHub access",
+    "docker: Tests requiring Docker",
+    "web3: Web3/blockchain specific tests",
+    "web2: Web2 specific tests",
+    "mobile: Mobile development tests",
+    "infrastructure: Infrastructure/DevOps tests"
+]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning"
+]
+
+[tool.coverage.run]
+source = ["src/securecli"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/env/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError", 
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod"
+]
+show_missing = true
+precision = 2
+
+[tool.bandit]
+exclude_dirs = ["tests", "build", "dist"]
+skips = ["B101", "B601"]

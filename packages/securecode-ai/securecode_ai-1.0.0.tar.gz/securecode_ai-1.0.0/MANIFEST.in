@@ -1,0 +1,16 @@
+include README.md
+include LICENSE
+include config.default.yml
+include pyproject.toml
+recursive-include src *
+recursive-include docs *.md *.rst *.txt
+recursive-include examples *.py *.md *.yml *.yaml *.json
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .pytest_cache
+global-exclude *.so
+global-exclude .DS_Store
+prune tests
+prune .pytest_cache
+prune __pycache__
+prune *.egg-info

@@ -1,0 +1,432 @@
+# SecureCLI Configuration File
+# This is the default configuration for SecureCLI security analysis tool
+
+# Application settings
+app:
+  name: "SecureCLI"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"
+
+# Output configuration
+output:
+  dir: "./output"
+  formats:
+    - "markdown"
+    - "json"
+    - "sarif"
+  generate_diagrams: true
+  compress_reports: false
+
+# LangChain and LLM configuration
+llm:
+  provider: "openai"
+  model: "gpt-4"
+  temperature: 0.1
+  max_tokens: 4000
+  timeout: 60
+  api_key_env: "OPENAI_API_KEY"
+  
+  # Alternative providers
+  anthropic:
+    model: "claude-3-sonnet-20240229"
+    api_key_env: "ANTHROPIC_API_KEY"
+  
+  azure:
+    deployment_name: "gpt-4"
+    api_key_env: "AZURE_OPENAI_API_KEY"
+    endpoint_env: "AZURE_OPENAI_ENDPOINT"
+
+# RAG and embeddings configuration
+rag:
+  enabled: true
+  provider: "openai"
+  model: "text-embedding-ada-002"
+  chunk_size: 1000
+  chunk_overlap: 200
+  vector_store: "faiss"  # faiss, chroma
+  
+  # Vector store settings
+  faiss:
+    index_type: "HNSW"
+    similarity_metric: "cosine"
+  
+  chroma:
+    persist_directory: "./data/chroma"
+    collection_name: "securecli"
+
+# Module configuration
+modules:
+  # Enabled modules
+  enabled:
+    - "semgrep_scanner"
+    - "gitleaks_scanner"
+    - "dependency_scanner"
+    - "llm_frontend_auditor"
+    - "llm_backend_auditor"
+    - "llm_web3_auditor"
+    - "architecture_auditor"
+  
+  # Scanner modules
+  semgrep_scanner:
+    enabled: true
+    priority: 90
+    timeout: 300
+    rulesets:
+      - "auto"
+      - "security"
+      - "owasp-top-ten"
+    custom_rules: []
+    exclude_patterns:
+      - "*.test.js"
+      - "*.spec.ts"
+      - "**/node_modules/**"
+      - "**/vendor/**"
+  
+  gitleaks_scanner:
+    enabled: true
+    priority: 95
+    timeout: 60
+    redact_secrets: true
+    custom_config: null
+    exclude_patterns:
+      - "**/test/**"
+      - "**/*.example"
+  
+  slither_scanner:
+    enabled: true
+    priority: 85
+    timeout: 180
+    detectors: "all"
+    exclude_informational: false
+  
+  bandit_scanner:
+    enabled: true
+    priority: 80
+    timeout: 120
+    confidence: "medium"
+    severity: "low"
+  
+  gosec_scanner:
+    enabled: true
+    priority: 80
+    timeout: 120
+    exclude_tests: true
+  
+  dependency_scanner:
+    enabled: true
+    priority: 70
+    timeout: 300
+    check_npm: true
+    check_pip: true
+    check_go: true
+    check_rust: true
+    check_maven: true
+    check_gradle: true
+  
+  # Auditor modules
+  llm_frontend_auditor:
+    enabled: true
+    priority: 60
+    timeout: 180
+    max_files: 10
+    max_file_size: 50000
+    dependencies:
+      - "semgrep_scanner"
+  
+  llm_backend_auditor:
+    enabled: true
+    priority: 60
+    timeout: 180
+    max_files: 10
+    max_file_size: 50000
+    dependencies:
+      - "semgrep_scanner"
+  
+  llm_web3_auditor:
+    enabled: true
+    priority: 60
+    timeout: 300
+    max_files: 5
+    max_file_size: 30000
+    dependencies:
+      - "slither_scanner"
+  
+  architecture_auditor:
+    enabled: true
+    priority: 40
+    timeout: 120
+    min_files: 10
+    dependencies:
+      - "semgrep_scanner"
+
+# Scan mode configurations
+scan_modes:
+  quick:
+    description: "Fast scan using automated tools only"
+    modules:
+      - "scanners"
+    timeout: 300
+    generate_reports: true
+  
+  comprehensive:
+    description: "Automated tools + AI-powered analysis"
+    modules:
+      - "scanners"
+      - "auditors"
+    timeout: 900
+    generate_reports: true
+  
+  deep:
+    description: "Full analysis including hardening recommendations"
+    modules:
+      - "scanners"
+      - "auditors"
+      - "tighten"
+    timeout: 1800
+    generate_reports: true
+
+# Domain profile configurations
+domain_profiles:
+  web2_frontend:
+    technologies:
+      - "javascript"
+      - "typescript"
+      - "react"
+      - "vue"
+      - "angular"
+    focus_areas:
+      - "xss"
+      - "csrf"
+      - "client_side_injection"
+      - "authentication"
+      - "cors"
+    
+  web2_backend:
+    technologies:
+      - "python"
+      - "java"
+      - "go"
+      - "ruby"
+      - "php"
+      - "csharp"
+    focus_areas:
+      - "sql_injection"
+      - "command_injection"
+      - "authentication"
+      - "authorization"
+      - "input_validation"
+    
+  web2_api:
+    technologies:
+      - "rest"
+      - "graphql"
+      - "grpc"
+    focus_areas:
+      - "authentication"
+      - "authorization"
+      - "input_validation"
+      - "rate_limiting"
+      - "data_exposure"
+    
+  web3_smart_contract:
+    technologies:
+      - "solidity"
+      - "vyper"
+    focus_areas:
+      - "reentrancy"
+      - "integer_overflow"
+      - "access_control"
+      - "delegatecall"
+      - "gas_optimization"
+    
+  web3_defi:
+    technologies:
+      - "solidity"
+      - "vyper"
+    focus_areas:
+      - "flash_loans"
+      - "oracle_manipulation"
+      - "liquidity_attacks"
+      - "governance_attacks"
+      - "mev"
+    
+  infrastructure:
+    technologies:
+      - "docker"
+      - "kubernetes"
+      - "terraform"
+      - "ansible"
+    focus_areas:
+      - "container_security"
+      - "secrets_management"
+      - "network_security"
+      - "access_control"
+      - "misconfigurations"
+
+# Tool-specific configurations
+tools:
+  semgrep:
+    binary_path: "semgrep"
+    config_path: null
+    cache_enabled: true
+    
+  gitleaks:
+    binary_path: "gitleaks"
+    config_path: null
+    
+  slither:
+    binary_path: "slither"
+    solc_version: "latest"
+    
+  bandit:
+    binary_path: "bandit"
+    config_path: null
+    
+  gosec:
+    binary_path: "gosec"
+    config_path: null
+
+# Workspace configuration
+workspace:
+  default_name: "analysis"
+  auto_save: true
+  max_history: 10
+  cleanup_on_exit: false
+  
+  # File filtering
+  include_patterns:
+    - "**/*.py"
+    - "**/*.js"
+    - "**/*.jsx"
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "**/*.java"
+    - "**/*.go"
+    - "**/*.rb"
+    - "**/*.php"
+    - "**/*.cs"
+    - "**/*.sol"
+    - "**/*.vy"
+    - "**/*.yml"
+    - "**/*.yaml"
+    - "**/*.json"
+    - "**/*.tf"
+    - "**/Dockerfile*"
+  
+  exclude_patterns:
+    - "**/node_modules/**"
+    - "**/vendor/**"
+    - "**/.git/**"
+    - "**/build/**"
+    - "**/dist/**"
+    - "**/*.min.js"
+    - "**/*.map"
+    - "**/test/**"
+    - "**/tests/**"
+    - "**/*test*"
+    - "**/*spec*"
+
+# Reporting configuration
+reporting:
+  cvss_version: "4.0"
+  include_remediation: true
+  include_references: true
+  group_by_severity: true
+  max_findings_per_report: 1000
+  
+  # Report templates
+  templates:
+    executive_summary: "default"
+    technical_details: "comprehensive"
+    remediation_guide: "actionable"
+  
+  # Export settings
+  exports:
+    markdown:
+      include_diagrams: true
+      table_of_contents: true
+      code_syntax_highlighting: true
+    
+    json:
+      pretty_print: true
+      include_metadata: true
+    
+    sarif:
+      version: "2.1.0"
+      include_fingerprints: true
+    
+    csv:
+      delimiter: ","
+      include_headers: true
+
+# CI/CD integration
+ci:
+  enabled: true
+  fail_on_critical: true
+  fail_on_high: false
+  max_findings:
+    critical: 0
+    high: 5
+    medium: 20
+    low: 50
+  
+  # Exit codes
+  exit_codes:
+    success: 0
+    warnings: 1
+    failure: 2
+  
+  # Outputs
+  outputs:
+    sarif: true
+    junit: false
+    summary: true
+
+# Security and privacy
+security:
+  # API key handling
+  mask_api_keys: true
+  api_key_patterns:
+    - "sk-[a-zA-Z0-9]{48}"
+    - "xoxb-[0-9]+-[0-9]+-[a-zA-Z0-9]+"
+    - "ghp_[a-zA-Z0-9]{36}"
+  
+  # Data handling
+  anonymize_paths: false
+  redact_secrets: true
+  sanitize_outputs: true
+  
+  # Network settings
+  allow_external_requests: true
+  timeout_requests: 30
+  verify_ssl: true
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/securecli.log"
+  max_size: "10MB"
+  backup_count: 5
+  
+  # Logger levels
+  loggers:
+    "securecli": "INFO"
+    "langchain": "WARNING"
+    "openai": "WARNING"
+    "httpx": "WARNING"
+
+# Performance settings
+performance:
+  max_workers: 4
+  chunk_processing: true
+  cache_embeddings: true
+  memory_limit: "2GB"
+  timeout_analysis: 3600
+  
+  # Resource limits
+  limits:
+    max_file_size: "10MB"
+    max_files_per_scan: 1000
+    max_embedding_cache: "500MB"
