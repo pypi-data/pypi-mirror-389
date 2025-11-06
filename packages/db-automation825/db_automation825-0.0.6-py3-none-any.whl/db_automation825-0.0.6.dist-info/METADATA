@@ -1,0 +1,41 @@
+Metadata-Version: 2.4
+Name: db_automation825
+Version: 0.0.6
+Summary: A Python package for connecting with MongoDB.
+Home-page: https://github.com/owais825/mongodb_connector
+Author: owais825
+Author-email: owais825@gmail.com
+License: MIT
+Project-URL: Bug Tracker, https://github.com/owais825/mongodb_connector/issues
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pymongo
+Requires-Dist: pymongo[srv]
+Requires-Dist: dnspython
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: ensure
+Requires-Dist: pytest
+Provides-Extra: testing
+Requires-Dist: pytest>=7.1.3; extra == "testing"
+Requires-Dist: mypy>=0.971; extra == "testing"
+Requires-Dist: flake8>=5.0.4; extra == "testing"
+Requires-Dist: tox>=3.25.1; extra == "testing"
+Requires-Dist: black>=22.8.0; extra == "testing"
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# mongodb_connector
