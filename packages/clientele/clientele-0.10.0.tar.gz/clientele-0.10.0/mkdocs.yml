@@ -1,0 +1,31 @@
+site_name: ⚜️ Clientele
+site_url: https://phalt.github.io/clientele/
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: blue grey
+repo_name: phalt/clientele
+repo_url: https://github.com/phalt/clientele
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Use: usage.md
+  - Design: design.md
+  - Client Example: examples.md
+  - Testing: testing.md
+  - Compatibility: compatibility.md
+  - Change log: CHANGELOG.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.highlight
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - codehilite
