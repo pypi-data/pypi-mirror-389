@@ -1,0 +1,74 @@
+
+
+
+# trainlytics
+
+[![PyPI version](https://img.shields.io/pypi/v/trainlytics.svg)](https://pypi.org/project/trainlytics/)
+[![Build Status](https://github.com/youruser/trainlytics/actions/workflows/ci.yml/badge.svg)](https://github.com/youruser/trainlytics/actions)
+[![Coverage Status](https://coveralls.io/repos/github/youruser/trainlytics/badge.svg?branch=main)](https://coveralls.io/github/youruser/trainlytics?branch=main)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![repostatus](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
+
+## Overview
+Open-source Python package for physical training analysis and recommendations. Ingests workout logs, computes metrics, detects plateaus, and suggests weekly progressions. Professional structure, automation, tests, and robust documentation.
+
+- **Target audience:** Data scientists, fitness professionals, enthusiasts, and developers.
+- **Highlights:** Professional structure, strong documentation, tests, CI/CD, reproducible data and reports.
+
+## Quick Demo
+![Demo GIF](docs/demo.gif) <!-- Replace with a real GIF -->
+
+## Installation
+```bash
+pip install trainlytics
+```
+
+## Quickstart
+```python
+from trainlytics import ingest, clean, features, model, recommender
+# See notebooks/ for complete examples
+```
+
+## Project Structure
+- `src/trainlytics/`: Core package modules
+- `notebooks/`: EDA, modeling, reporting
+- `tests/`: Unit and integration tests
+- `docs/`: Documentation, changelog, references
+- `.github/workflows/`: CI/CD
+- `data/`: Sample data
+
+## Sample Data
+- CSV format: `data/sample_workout_log.csv`
+- Schema: `date,exercise,sets,reps,weight`
+- Note: Example data only, for educational purposes.
+
+## How to Use
+1. Install dependencies: `pip install -r requirements.txt`
+2. Activate the virtual environment: `source .venv/bin/activate` (Linux/Mac) or `.venv\Scripts\Activate.ps1` (Windows)
+3. Run notebooks in `notebooks/` for full examples.
+4. Run tests: `PYTHONPATH=src pytest tests` (Linux/Mac) or `$env:PYTHONPATH="$(Resolve-Path .\src)"; pytest tests` (Windows)
+
+## Automation & Tasks
+- CI/CD: Lint, test, build, and publish artifacts via GitHub Actions
+- VS Code tasks: Lint, format, test (see `.vscode/tasks.json`)
+
+## FAIR & Reproducibility
+- Versioned data and code
+- Notebooks with controlled outputs
+- Metadata and citation in `CITATION.cff`
+
+## Roadmap
+- [x] Initial structure
+- [ ] Ingestion and cleaning modules
+- [ ] Modeling and recommendation
+- [ ] Micro-app and reporting
+- [ ] Tests and coverage
+
+## How to Cite
+See `CITATION.cff` for BibTeX/APA.
+
+## How to Contribute
+See `CONTRIBUTING.md` and open a PR!
+
+## License
+MIT
