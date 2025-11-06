@@ -1,0 +1,78 @@
+packages:
+  - name: nerdctl
+    versions:
+      github:
+        path: containerd/nerdctl
+    release: https://github.com/containerd/nerdctl/releases/download/v{version}/nerdctl-full-{version}-linux-amd64.tar.gz
+    ext: .tar.gz
+  - name: kubectl
+    versions:
+      value:
+        - 1.29.2
+        - 1.28.7
+        - 1.27.11
+        - 1.26.14
+    homepage: https://github.com/kubernetes/kubectl/releases
+    release: https://dl.k8s.io/release/v{version}/bin/linux/amd64/kubectl
+    ext: ""
+  - name: helm
+    versions:
+      github:
+        path: helm/helm
+        match: ^[0-9]+.[0-9]+.[0-9]+$
+    homepage: https://github.com/helm/helm/releases
+    release: https://get.helm.sh/helm-v{version}-linux-amd64.tar.gz
+    ext: .tar.gz
+  - name: tmux-resurrect
+    versions:
+      github:
+        path: tmux-plugins/tmux-resurrect
+        match: ^[0-9]+.[0-9]+.[0-9]+$
+    homepage: https://github.com/tmux-plugins/tmux-resurrect/releases
+    release: https://github.com/tmux-plugins/tmux-resurrect/archive/refs/tags/v{version}.tar.gz
+    ext: .tar.gz
+  - name: tmux-continuum
+    versions:
+      github:
+        path: tmux-plugins/tmux-continuum
+        match: ^[0-9]+.[0-9]+.[0-9]+$
+    homepage: https://github.com/tmux-plugins/tmux-continuum/releases
+    release: https://github.com/tmux-plugins/tmux-continuum/archive/refs/tags/v{version}.tar.gz
+    ext: .tar.gz
+  - name: libvirt
+    versions:
+      value:
+        - 0.1.0
+    release: /shell/libvirt.sh
+  - name: sinicization
+    versions:
+      value:
+        - 0.1.0
+    release: /shell/sinicization.sh
+  - name: history
+    versions:
+      value:
+        - 0.1.0
+    release: /shell/history.sh
+  - name: diskexpend
+    versions:
+      value:
+        - 0.1.0
+    release: /shell/diskexpend.sh
+  - name: node
+    versions:
+      value:
+        - 0.1.0
+    release: /shell/node.sh
+  - name: chrome-windows
+    versions:
+      value:
+        - 136.0.7103.49
+    homepage: https://github.com/sanzenwin/binaries
+    release: https://github.com/sanzenwin/binaries/releases/download/chrome-{version}-windows/chromium.zip
+  - name: chrome-linux
+    versions:
+      value:
+        - 136.0.7103.49
+    homepage: https://github.com/sanzenwin/binaries
+    release: https://github.com/sanzenwin/binaries/releases/download/chrome-{version}-linux/chromium.zip
