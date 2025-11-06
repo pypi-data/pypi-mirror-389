@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flower-i18n"
+version = "0.1.1"
+description = "Internationalization (i18n) support for Flower Celery monitoring tool"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "邹长林 (Zou Changlin)", email = "zchanglin@163.com"}
+]
+keywords = ["flower", "celery", "i18n", "internationalization", "monitoring"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Internationalization",
+    "Topic :: System :: Monitoring",
+]
+
+dependencies = [
+    "flower>=2.0.0",
+    "tornado>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=22.0",
+    "flake8>=6.0",
+    "mypy>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/zouchanglin/flower-i18n"
+Documentation = "https://github.com/zouchanglin/flower-i18n#readme"
+Repository = "https://github.com/zouchanglin/flower-i18n.git"
+"Bug Tracker" = "https://github.com/zouchanglin/flower-i18n/issues"
+
+[project.scripts]
+flower-i18n-patch = "flower_i18n.patcher:patch_flower"
+flower-i18n-unpatch = "flower_i18n.patcher:unpatch_flower"
+
+[tool.setuptools]
+packages = ["flower_i18n", "flower_i18n.locales.en_US", "flower_i18n.locales.zh_CN"]
+
+[tool.setuptools.package-data]
+flower_i18n = [
+    "locales/*/messages.json",
+    "static/js/*.js",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311", "py312"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

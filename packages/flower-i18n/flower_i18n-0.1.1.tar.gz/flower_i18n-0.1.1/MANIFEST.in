@@ -1,0 +1,13 @@
+include README.md
+include LICENSE
+include EXAMPLE.md
+include pyproject.toml
+include setup.py
+
+recursive-include flower_i18n/locales *.json
+recursive-include flower_i18n/static *.js *.css
+recursive-include flower_i18n/templates *.html
+
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
