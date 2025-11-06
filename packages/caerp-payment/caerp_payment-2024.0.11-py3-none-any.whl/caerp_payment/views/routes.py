@@ -1,0 +1,18 @@
+import os
+
+CAERP_PAYMENT_HISTORY = "/caerp_payment/history"
+CAERP_PAYMENT_HISTORY_ITEM = os.path.join(CAERP_PAYMENT_HISTORY, "{id}")
+CAERP_PAYMENT_HISTORY_ITEM_ARCHIVE = os.path.join(CAERP_PAYMENT_HISTORY_ITEM, "archive")
+
+CAERP_PAYMENT_ARCHIVE = "/caerp_payment/archives"
+CAERP_PAYMENT_ARCHIVE_ITEM = os.path.join(CAERP_PAYMENT_ARCHIVE, "{id}")
+
+
+def includeme(config):
+    config.add_route(CAERP_PAYMENT_HISTORY, CAERP_PAYMENT_HISTORY)
+    config.add_route(CAERP_PAYMENT_HISTORY_ITEM, CAERP_PAYMENT_HISTORY_ITEM)
+    config.add_route(
+        CAERP_PAYMENT_HISTORY_ITEM_ARCHIVE,
+        CAERP_PAYMENT_HISTORY_ITEM_ARCHIVE,
+    )
+    config.add_route(CAERP_PAYMENT_ARCHIVE_ITEM, CAERP_PAYMENT_ARCHIVE_ITEM)
