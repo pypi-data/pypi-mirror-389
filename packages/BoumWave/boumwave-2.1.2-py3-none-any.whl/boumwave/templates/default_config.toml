@@ -1,0 +1,115 @@
+# BoumWave Configuration File
+# Edit this file to customize your static site generator settings
+
+[paths]
+# Folder where your HTML templates are stored
+template_folder = "templates"
+
+# Folder where your markdown content files are stored
+content_folder = "content"
+
+# Folder where the generated posts will be output
+# This will also be used as the URL path segment (e.g., example.com/posts/)
+output_folder = "posts"
+
+# HTML template file used to generate posts
+# This file should be located in the template_folder
+# The markdown content will be rendered and injected into this template
+post_template = "post.html"
+
+# HTML template file used to generate links to posts
+# This file should be located in the template_folder
+# When you generate a post, BoumWave will create an HTML snippet
+# that will be automatically added to your index.html
+link_template = "link.html"
+
+# HTML file for the blog's index/home page
+# This file will be created at the root of your project if it doesn't exist
+index_template = "index.html"
+
+# XML file for the sitemap
+# This file will be created at the root of your project if it doesn't exist
+sitemap_template = "sitemap.xml"
+
+# ========================================
+# "Now." Feature (Optional)
+# ========================================
+# The "Now." feature lets you share quick updates about what you're currently doing,
+# thinking, or working on. It's like a micro-blog that appears on your homepage.
+#
+# To enable this feature:
+# 1. Uncomment the lines below
+# 2. Run "bw scaffold" to create the example now.html template
+# 3. Add the Now. markers to your index.html where you want the latest update to appear
+# 4. Use "bw new_now" to create a new update
+# 5. Use "bw generate_now" to publish your updates
+#
+# Each Now. post is a simple markdown file named by date (e.g., 2025-10-28.md)
+# The latest update appears on your homepage, and all updates are archived on now.html
+#
+# Configuration options:
+# - now_folder: Folder where your Now. markdown files are stored
+# - now_template: HTML page listing all your Now. posts (e.g., example.com/now.html)
+# - now_index_template: HTML template snippet for displaying the latest Now. post in index.html
+#                       This template lets you customize how the Now. section appears on your homepage
+#
+# now_folder = "now"
+# now_template = "now.html"
+# now_index_template = "now_index.html"
+
+[site]
+# Languages supported by your site
+# Examples:
+#   Single language: languages = ["en"]
+#   Multiple languages: languages = ["fr", "en"]
+# Note: You don't need to write every post in every language
+languages = ["en"]
+
+# URL of your site (used for canonical links and social media meta tags)
+site_url = "https://example.com/"
+
+# Post list markers for index.html
+# BoumWave will automatically insert generated post links between these markers in your index.html
+# The zone between these markers will be completely regenerated when you run "bw generate"
+# If you bring your own index.html, make sure to add these markers where you want your post list to appear
+posts_start_marker = "<!-- BOUMWAVE_POSTS_START -->"
+posts_end_marker = "<!-- BOUMWAVE_POSTS_END -->"
+
+# Sitemap markers for sitemap.xml
+# BoumWave will automatically insert blog post URLs between these markers in your sitemap.xml
+# The zone between these markers will be regenerated when you run "bw generate_sitemap"
+# You can add your own custom URLs (e.g., /my-projects.html) outside these markers
+sitemap_start_marker = "<!-- BOUMWAVE_START -->"
+sitemap_end_marker = "<!-- BOUMWAVE_END -->"
+
+# Now. markers for index.html (Optional - only needed if you enable the Now. feature)
+# BoumWave will automatically insert your latest Now. update between these markers
+# The zone between these markers will be regenerated when you run "bw generate_now"
+# Add these markers in your index.html where you want your current status to appear
+# Uncomment these lines if you want to use the Now. feature:
+# now_start_marker = "<!-- BOUMWAVE_NOW_START -->"
+# now_end_marker = "<!-- BOUMWAVE_NOW_END -->"
+
+# Path to your site's logo
+# This logo will be used for social media meta tags (Open Graph, Twitter Card)
+# when sharing articles that don't have their own image
+logo_path = "path/to/logo.jpg"
+
+# Date format for displaying publication dates
+# Available formats (examples for October 24, 2025):
+#   short  → 10/24/25
+#   medium → Oct 24, 2025
+#   long   → October 24, 2025
+#   full   → Friday, October 24, 2025
+# Note: Dates are automatically localized based on the post language
+#       (e.g., "long" becomes "24 octobre 2025" in French, "October 24, 2025" in English)
+date_format = "long"
+
+# Translations for template text
+# You must provide translations for each language defined in 'languages'
+[site.translations.en]
+published_on = "Published on"
+
+# To support multiple languages, add a section for each language code:
+# [site.translations.fr]
+# published_on = "Publié le"
