@@ -1,0 +1,14 @@
+[project]
+name = "quas-docs"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask-pydantic-spec>=0.8.6",
+]
+
+
+[build-system]
+requires = ["setuptools>=78.1.0", "wheel>=0.45.1"]
+build-backend = "setuptools.build_meta"
