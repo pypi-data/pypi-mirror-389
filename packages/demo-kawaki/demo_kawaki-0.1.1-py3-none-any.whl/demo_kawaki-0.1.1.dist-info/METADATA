@@ -1,0 +1,29 @@
+Metadata-Version: 2.4
+Name: demo-kawaki
+Version: 0.1.1
+Summary: A demo Django app: demo_kawaki
+Author: Your Name
+License: MIT
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 5
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: Django>=4.2
+
+# demo-kawaki
+
+A demo Django reusable app named `demo_kawaki`.
+
+## Usage
+
+- Install: `pip install demo-kawaki`
+- Add to `INSTALLED_APPS`: `"demo_kawaki"`
+- Include URLs: `path("", include("demo_kawaki.urls"))`
+
+## Development
+
+This repository includes a local Django project `kawaki_project` for testing.
