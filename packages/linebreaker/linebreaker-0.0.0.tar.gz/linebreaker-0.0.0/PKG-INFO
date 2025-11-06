@@ -1,0 +1,134 @@
+Metadata-Version: 2.4
+Name: linebreaker
+Version: 0.0.0
+Summary: Intelligent line breaking for Markdown and text files
+Author-email: Silas Kieser <silas.kieser@gmail.com>
+Maintainer-email: Silas Kieser <silas.kieser@gmail.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/SilasK/linebreaker
+Project-URL: Repository, https://github.com/SilasK/linebreaker
+Project-URL: Issues, https://github.com/SilasK/linebreaker/issues
+Project-URL: Changelog, https://github.com/SilasK/linebreaker/blob/main/CHANGELOG.md
+Keywords: markdown,text,line-breaking,formatting
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Text Processing :: Markup :: Markdown
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: versioneer; extra == "dev"
+Dynamic: license-file
+
+
+
+# Linebreaker
+
+I created this tool because I couldn't find a reliable line breaking utility that works with Quarto markdown without altering headers, lists, or other formatting. This tool is conservative - it preserves your document structure and only adds line breaks when both the preceding and following text segments are sufficiently long.
+
+## Features
+Intelligent line breaking for Markdown and text files, with support for:
+- Citations in format `[@...]`
+- Decimal numbers
+- Common abbreviations (Dr., Prof., vs., et al., etc.)
+- YAML headers
+- Code blocks
+- Soft breaks on conjunctions, commas, and/or
+
+## Installation
+
+Install from PyPI using pixi:
+
+
+```bash
+pip install linebreaker
+```
+
+```bash
+pixi add --pypi linebreaker
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/silas/linebreaker.git
+cd linebreaker
+pixi install
+```
+
+## Usage
+
+
+### As a command-line tool:
+
+```bash
+# Process a single file
+linebreaker your_file.md
+
+# Process a directory
+linebreaker writing/
+
+# For compatibility, you can still use the old script
+python -m linebreaker.cli your_file.md
+```
+> **⚠️ Important**: Only use this tool on files that are tracked by a version control system like Git. Line breaking modifies your files, and having version control ensures you can review and revert changes if needed.
+
+
+### As a module:
+
+```python
+from linebreaker import format_line, break_text
+
+# Format a single line
+result = format_line("Your text here...")
+
+# Process entire text with YAML/code blocks
+result = break_text(full_text)
+```
+
+## Running Tests
+
+```bash
+# Run all tests
+pytest linebreaker/tests/
+```
+
+
+
+## Detailed Features
+
+### Hard Breaks (Sentence Boundaries)
+- Splits on `.`, `?`, `!` when both before and after have 20+ characters
+- Avoids common abbreviations: vs., Dr., Prof., Mr., Mrs., Ms., Ph.D., M.D., Jr., Sr., etc., e.g., i.e., et al., vol., no., pp., fig.
+
+### Medium Breaks (Colons/Semicolons)
+- Splits sentences longer than 80 characters at `:` or `;`
+- Only if both parts have 20+ characters
+
+### Soft Breaks (Conjunctions)
+- Applied when there are 3+ sentences or sentence is >60 characters
+- Breaks on: `but`, `such as`, `for example`, `e.g.`, `i.e.` (after 20 chars)
+- Breaks on commas (after 40 chars)
+- Breaks on `and`, `or` (after 40 chars)
+
+### Smart Masking
+- Citations `[@...]` are masked to prevent dots inside from triggering breaks
+- Decimal numbers like `0.85` are masked similarly
+
+## Development
+
+To add new abbreviations, edit the `abbreviations` pattern in `core.py`:
+
+```python
+abbreviations = r'(?!vs\.|dr\.|prof\.|...|your_abbrev\.)'
+```

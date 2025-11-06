@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "versioneer[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linebreaker"
+dynamic = ["version"]
+description = "Intelligent line breaking for Markdown and text files"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    {name = "Silas Kieser", email = "silas.kieser@gmail.com"},
+]
+maintainers = [
+    {name = "Silas Kieser", email = "silas.kieser@gmail.com"},
+]
+keywords = ["markdown", "text", "line-breaking", "formatting"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "build",
+    "versioneer",
+]
+
+[project.urls]
+Homepage = "https://github.com/SilasK/linebreaker"
+Repository = "https://github.com/SilasK/linebreaker"
+Issues = "https://github.com/SilasK/linebreaker/issues"
+Changelog = "https://github.com/SilasK/linebreaker/blob/main/CHANGELOG.md"
+
+[project.scripts]
+linebreaker = "linebreaker.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+linebreaker = ["py.typed"]  # If you add type stubs later
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "src/linebreaker/_version.py"
+versionfile_build = "linebreaker/_version.py"
+tag_prefix = "v"
+parentdir_prefix = "linebreaker-"
+[tool.pixi.workspace]
+channels = ["conda-forge", "bioconda"]
+platforms = ["osx-arm64", "linux-64", "win-64"]
+
+[tool.pixi.pypi-dependencies]
+linebreaker = { path = ".", editable = true }
+build = "*"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+
+[tool.pixi.tasks]
