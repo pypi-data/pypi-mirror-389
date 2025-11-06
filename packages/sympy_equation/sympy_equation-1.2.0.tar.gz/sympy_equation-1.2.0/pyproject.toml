@@ -1,0 +1,93 @@
+[project]
+name = "sympy_equation"
+version = "1.2.0"
+description = "Equations that can be algebraicly manipulated."
+authors = [
+    { name = "Davide Sandonà", email = "sandona.davide@gmail.com" },
+    { name = "Jonathan Gutow", email = "gutow@uwosh.edu" },
+]
+dependencies = [
+    "param",
+    "sympy",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+keywords = [
+    "symbolic algebra",
+    "computer algebra",
+    "CAS",
+    "sympy",
+    "equation",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+[project.license]
+text = "GPL-3.0+"
+
+[project.urls]
+Homepage = "https://github.com/Davide-sd/sympy-equation"
+
+[project.optional-dependencies]
+interactive = [
+    "ipython>=8.18.1",
+    "jupyterlab>=4.4.2",
+]
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
+
+[tool.ruff]
+line-length = 79
+exclude = [
+    "doc",
+    "assets",
+]
+
+[tool.ruff.lint]
+ignore = [
+    "E731",
+    "E741",
+    "N801",
+    "N802",
+    "N803",
+    "N806",
+    "TRY003",
+    "EM101",
+    "EM101",
+    "RUF012",
+    "C408",
+    "PT006",
+    "UP031",
+]
+
+[dependency-groups]
+test = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
+    "ruff>=0.11.9",
+    "IPython>=8.18.1",
+]
+doc = [
+    "matplotlib>=3.9.4",
+    "numpy>=2.0.2",
+    "sphinx>=7.4.7",
+    "numpydoc>=1.8.0",
+    "sphinx-design>=0.6.1",
+    "sphinx-rtd-theme>=3.0.2",
+    "nbsphinx>=0.9.7",
+    "IPython>=8.18.1",
+]
