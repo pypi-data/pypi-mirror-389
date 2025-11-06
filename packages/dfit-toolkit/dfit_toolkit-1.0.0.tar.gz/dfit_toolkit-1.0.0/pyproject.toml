@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dfit-toolkit"
+version = "1.0.0"
+description = "A comprehensive command-line forensics toolkit for digital image analysis"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "C0d3-cr4f73r"}
+]
+keywords = [
+    "forensics",
+    "image-analysis",
+    "steganography",
+    "tampering-detection",
+    "metadata",
+    "EXIF",
+    "digital-forensics",
+    "security",
+    "CLI"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Legal Industry",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+dependencies = [
+    "pillow==10.3.0",
+    "exifread==3.0.0",
+    "click==8.1.7",
+    "numpy==1.26.4",
+    "opencv-python-headless==4.10.0.84",
+]
+
+[project.urls]
+Homepage = "https://github.com/C0d3-cr4f73r/DFIT"
+Documentation = "https://github.com/C0d3-cr4f73r/DFIT#readme"
+Repository = "https://github.com/C0d3-cr4f73r/DFIT"
+"Bug Tracker" = "https://github.com/C0d3-cr4f73r/DFIT/issues"
+
+[project.scripts]
+dfit = "src.cli.main:cli"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+packages = ["src", "src.cli", "src.core"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"]
