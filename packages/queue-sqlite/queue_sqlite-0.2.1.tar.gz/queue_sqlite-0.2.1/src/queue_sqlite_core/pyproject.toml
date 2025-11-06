@@ -1,0 +1,28 @@
+[project]
+name = "queue_sqlite_core"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+description = "Python bindings for queue_sqlite_core Rust library"
+dependencies = []
+
+[build-system]
+requires = ["maturin>=1.9,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+
+[[tool.uv.index]]
+default = true
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
+[dependency-groups]
+dev = [
+    "twine>=4.0.2",
+    "maturin>=1.9.4",
+]

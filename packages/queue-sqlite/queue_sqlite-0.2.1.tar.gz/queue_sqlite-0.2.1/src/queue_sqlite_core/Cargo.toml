@@ -1,0 +1,26 @@
+[package]
+name = "queue_sqlite_core"
+version = "0.2.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "queue_sqlite_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+chrono = "0.4.41"
+pyo3 = "0.25.0"
+r2d2 = "0.8"
+r2d2_sqlite = "0.25"
+rand = "0.9.2"
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.145"
+sha2 = "0.10.9"
+thiserror = "2.0.16"
+tokio = "1.47.1"
+uuid = "1.18.1"
+
+[package.metadata.maturin]
+generate-importlib = true
