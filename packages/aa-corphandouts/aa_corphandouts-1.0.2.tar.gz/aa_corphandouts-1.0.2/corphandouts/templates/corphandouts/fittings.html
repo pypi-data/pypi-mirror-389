@@ -1,0 +1,96 @@
+{% extends 'corphandouts/base.html' %}
+{% load i18n %}
+{% load evelinks %}
+{% load static %}
+{% block handouts_block %}
+    {% if not fittings %}
+    {% else %}
+        <table class="table table-striped table-hover" id="fittingTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{% translate "Ship Type" %}</th>
+                    <th>{% translate "Ship name" %}</th>
+                    <th>{% translate "Doctrine" %}</th>
+                    <th>{% translate "Errors" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fitting in fittings %}
+                    <tr>
+                        <td>
+                            <span class="d-block" style="min-width: 250px;">
+                                <span class="me-2" style="height: 64px; width: 64px;">
+                                    <img src="{{ fitting.fit.fit.ship_type_type_id|type_icon_url:64 }}"
+                                         class="rounded"
+                                         height="64"
+                                         width="64"
+                                         alt="">
+                                </span>
+                            </span>
+                        </td>
+                        <td>{{ fitting.fit.fit.ship_type.name }}</td>
+                        <td>{{ fitting.item_name }}</td>
+                        <td>
+                            <a href="{% url "fittings:view_fit" fitting.fit.id %}">{{ fitting.fit.fit }}</a>
+                        </td>
+                        <td>
+                            {% for type_id, description in fitting.get_correction_icons %}
+                                <img src="{{ type_id|type_icon_url:32 }}"
+                                     height="32"
+                                     width="32"
+                                     title="{{ description }}"
+                                     alt="{{ description }}">
+                            {% endfor %}
+                            <button type="button"
+                                    class="btn btn-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#fit-modal-id"
+                                    data-ajax_url="{% url "corphandouts:fitting" fitting.id %}">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Modals -->
+        {% include "corphandouts/modals/base.html" with modal_id="fit-modal-id" modal_content_id="fit-modal-content-id" %}
+    {% endif %}
+{% endblock %}
+{% block extra_nav_collapse_left %}
+    <li class="nav-item">
+        <a class="nav-link"
+           href="{% url "corphandouts:doctrine_report" doctrine_id %}">
+            {% translate "Show fitting reports for this doctrine" %}
+        </a>
+    </li>
+{% endblock %}
+{% block extra_javascript %}
+    {% include "bundles/datatables-js-bs5.html" %}
+    {% include "bundles/filterdropdown-js.html" %}
+    {% include "corphandouts/partials/handle_modals.html" %}
+    {% get_datatables_language_static LANGUAGE_CODE as DT_LANG_PATH %}
+    <script>
+        $(document).ready(() => {
+            {% if fittings %}
+                $('#fittingTable').DataTable({
+                    order: [[ 0, "asc" ]],
+                    filterDropDown: {
+                        columns: [
+                            {
+                                idx: 1,
+                                title: "{% translate "Ship Type" %}",
+                                maxWidth: "10em",
+                            }
+                        ],
+                        bootstrap: true,
+                        bootstrap_version: 5,
+                    }
+
+                });
+                handle_modal_events("fit-modal-id", "fit-modal-content-id");
+            {% endif %}
+        });
+    </script>
+{% endblock %}

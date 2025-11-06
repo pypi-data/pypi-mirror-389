@@ -1,0 +1,293 @@
+{
+    "EveCategory": [
+        {
+            "id": 6,
+            "name": "Ship",
+            "published": true
+        },
+        {
+            "id": 7,
+            "name": "Module",
+            "published": true
+        },
+        {
+            "id": 8,
+            "name": "Charge",
+            "published": true
+        }
+    ],
+    "EveGroup": [
+        {
+            "eve_category_id": 7,
+            "id": 38,
+            "name": "Shield Extender",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 46,
+            "name": "Propulsion Module",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 52,
+            "name": "Warp Scrambler",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 55,
+            "name": "Projectile Weapon",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 330,
+            "name": "Cloaking Device",
+            "published": true
+        },
+        {
+            "eve_category_id": 8,
+            "id": 372,
+            "name": "Advanced Autocannon Ammo",
+            "published": true
+        },
+        {
+            "eve_category_id": 6,
+            "id": 541,
+            "name": "Interdictor",
+            "published": true
+        },
+        {
+            "eve_category_id": 8,
+            "id": 548,
+            "name": "Interdiction Probe",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 589,
+            "name": "Interdiction Sphere Launcher",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 763,
+            "name": "Nanofiber Internal Structure",
+            "published": true
+        },
+        {
+            "eve_category_id": 7,
+            "id": 782,
+            "name": "Rig Navigation",
+            "published": true
+        }
+    ],
+    "EveType": [
+        {
+            "capacity": 0.0,
+            "description": "Replaces some of the heavier structure components with lighter, but more fragile material. Increases ship's velocity and improves maneuverability at the expense of hull strength.\r\n\r\nPenalty: Using more than one type of this module or similar modules that affect the same attribute on the ship will be penalized.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 763,
+            "eve_market_group_id": null,
+            "icon_id": 1042,
+            "id": 2605,
+            "mass": 100.0,
+            "name": "Nanofiber Internal Structure II",
+            "packaged_volume": 5.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 50.0,
+            "volume": 5.0
+        },
+        {
+            "capacity": 0.5,
+            "description": "This multi-barrel autocannon is designed for skirmish warfare. \r\n\r\nMust be loaded with any of the following regular and advanced projectile ammo types: Carbonized Lead, Depleted Uranium, EMP, Fusion, Nuclear, Phased Plasma, Proton, Titanium Sabot, Barrage, Hail.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 55,
+            "eve_market_group_id": null,
+            "icon_id": 387,
+            "id": 2873,
+            "mass": 500.0,
+            "name": "125mm Gatling AutoCannon II",
+            "packaged_volume": 5.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 2000.0,
+            "volume": 5.0
+        },
+        {
+            "capacity": 0.0,
+            "description": "Increases the maximum strength of the shield.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 38,
+            "eve_market_group_id": null,
+            "icon_id": 1044,
+            "id": 8517,
+            "mass": 0.0,
+            "name": "Medium F-S9 Regolith Compact Shield Extender",
+            "packaged_volume": 10.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 1.0,
+            "volume": 10.0
+        },
+        {
+            "capacity": 0.0,
+            "description": "Hail is an attempt to combine the penetration of titanium sabot with the versatility of a depleted uranium shell. It has tremendous damage potential, but should not be used at long ranges. Any pilot using this ammunition should be prepared to trade optimal range, falloff range, and tracking speed for a devastating amount of damage.\r\n\r\n25% reduced falloff.\r\n50% reduced optimal range.\r\n25% reduced tracking speed.\r\n\r\nNote: This ammunition can only be used by small tech level II and faction Autocannons.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 372,
+            "eve_market_group_id": null,
+            "icon_id": 1285,
+            "id": 12608,
+            "mass": 0.01,
+            "name": "Hail S",
+            "packaged_volume": 0.0025,
+            "portion_size": 5000,
+            "published": true,
+            "radius": 1.0,
+            "volume": 0.0025
+        },
+        {
+            "capacity": 0.0,
+            "description": "An advanced version of the standard Nuclear ammo with a Morphite-enriched warhead and a smart tracking system.\r\n \r\n25% reduced tracking speed.\r\n50% increased falloff.\r\n\r\nNote: This ammunition can only be used by small tech level II and faction Autocannons.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 372,
+            "eve_market_group_id": null,
+            "icon_id": 1288,
+            "id": 12625,
+            "mass": 0.01,
+            "name": "Barrage S",
+            "packaged_volume": 0.0025,
+            "portion_size": 5000,
+            "published": true,
+            "radius": 1.0,
+            "volume": 0.0025
+        },
+        {
+            "capacity": 0.0,
+            "description": "An Improved Cloaking device based on the Crielere Labs prototype. It performs better and allows for faster movement while cloaked.\r\n\r\nNote: Fitting two or more cloaking devices to a ship negates their use, as unsynchronized light deflection causes interference.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 330,
+            "eve_market_group_id": null,
+            "icon_id": 2106,
+            "id": 20565,
+            "mass": 0.0,
+            "name": "Improved 'Guise' Cloaking Device II",
+            "packaged_volume": 100.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 1.0,
+            "volume": 100.0
+        },
+        {
+            "capacity": 400.0,
+            "description": "Interdictors are destroyer-sized vessels built to fill a single important tactical niche: the breaching of enemy warp tunnels. Capable of launching warp-disrupting interdiction spheres, interdictors are of great value in locations of strategic importance where enemy movement must be restricted. Additionally, much like their destroyer-class progenitors, they are well-suited to offensive strikes against frigate-sized craft.\r\n",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 541,
+            "eve_market_group_id": null,
+            "icon_id": null,
+            "id": 22456,
+            "mass": 1285000.0,
+            "name": "Sabre",
+            "packaged_volume": 5000.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 138.0,
+            "volume": 43000.0
+        },
+        {
+            "capacity": 0.0,
+            "description": "Deployed from an Interdiction Sphere Launcher fitted to an Interdictor this probe prevents warping from within its area of effect.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 548,
+            "eve_market_group_id": null,
+            "icon_id": 1721,
+            "id": 22778,
+            "mass": 1.0,
+            "name": "Warp Disrupt Probe",
+            "packaged_volume": 5.0,
+            "portion_size": 2,
+            "published": true,
+            "radius": 1.0,
+            "volume": 5.0
+        },
+        {
+            "capacity": 15.0,
+            "description": "Built for use with interdictor-class vessels, this launcher produces a warp disruption sphere capable of pulling passing vessels out of warp.\r\n\r\nLimited to one per ship.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 589,
+            "eve_market_group_id": null,
+            "icon_id": 2990,
+            "id": 22782,
+            "mass": 0.0,
+            "name": "Interdiction Sphere Launcher I",
+            "packaged_volume": 50.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 1.0,
+            "volume": 50.0
+        },
+        {
+            "capacity": 0.0,
+            "description": "This ship modification is designed to increase a ship's warp speed and acceleration at the expense of increased signature radius.\r\n\r\nPenalty: Using more than one type of this module or similar modules that affect the same attribute on the ship will be penalized.\r\n\r\nThe drawbacks of fitting this rig may be reduced by training the <a href=showinfo:26254>Astronautics Rigging</a> skill.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 782,
+            "eve_market_group_id": null,
+            "icon_id": 3196,
+            "id": 31165,
+            "mass": 200.0,
+            "name": "Small Hyperspatial Velocity Optimizer II",
+            "packaged_volume": 5.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 100.0,
+            "volume": 5.0
+        },
+        {
+            "capacity": 0.0,
+            "description": "Massive boost to speed for a very short time. The thrust that boosts the ship, and the corresponding maximum velocity bonus, are limited by the mass of the ship that uses this module. The sheer amount of energy needed to power this system means that it must permanently reserve a fraction of the capacitor output just to maintain the integrity of its warp containment field, and when activated it substantially increases the ship's EM footprint.\r\n\r\nPenalty: Max capacitor reduced.\r\n\r\nNote: Usually fit on Frigates and Destroyers.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 46,
+            "eve_market_group_id": null,
+            "icon_id": 10149,
+            "id": 35658,
+            "mass": 0.0,
+            "name": "5MN Quad LiF Restrained Microwarpdrive",
+            "packaged_volume": 10.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 1.0,
+            "volume": 10.0
+        },
+        {
+            "capacity": 0.0,
+            "description": "Disrupts the target ship's navigation computer, disabling warping, jumping, microwarpdrives and micro jump drives.",
+            "enabled_sections": 0,
+            "eve_graphic_id": null,
+            "eve_group_id": 52,
+            "eve_market_group_id": null,
+            "icon_id": 3433,
+            "id": 40758,
+            "mass": 0.0,
+            "name": "Heavy Warp Scrambler II",
+            "packaged_volume": 100.0,
+            "portion_size": 1,
+            "published": true,
+            "radius": 1.0,
+            "volume": 100.0
+        }
+    ]
+}

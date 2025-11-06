@@ -1,0 +1,80 @@
+{% load i18n %}
+{% load evelinks %}
+{% load corphandouts %}
+<div class="row">
+    <div class="col-md-2">
+        <p>
+            <strong>{% translate "Ship name" %}:</strong>
+        </p>
+    </div>
+    <div class="col-md-10">
+        <p>{{ fitting.item_name }}</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <p>
+            <strong>{% translate "Ship type" %}:</strong>
+        </p>
+    </div>
+    <div class="col-md-10">
+        <p>{{ fitting.fit.fit.ship_type.name }}</p>
+    </div>
+</div>
+<table class="table table-striped table-hover" id="correctionTable">
+    <thead>
+        <tr>
+            <th class="w-auto">{% translate "Type name" %}</th>
+            <th class="w-auto">{% translate "Amount to change" %}</th>
+            <th class="w-auto">{% translate "Location" %}</th>
+            <th class="w-auto">{% translate "Type category" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for correction in fitting.corrections.all %}
+            <tr>
+                <td>
+                    <span class="d-block">
+                        <span class="me-2" style="height: 32px; width: 32px;">
+                            <img src="{{ correction.eve_type.id|type_icon_url:32 }}"
+                                 height="32"
+                                 width="32"
+                                 alt="{{ correction.eve_type.name }} icon">
+                        </span>
+                        {{ correction.eve_type.name }}
+                    </span>
+                </td>
+                <td>{{ correction.correction }}</td>
+                <td>{{ correction.correction_type|correction_type }}</td>
+                <td>{{ correction.eve_type.eve_group.eve_category.name }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+    {% get_datatables_language_static LANGUAGE_CODE as DT_LANG_PATH %}
+    $(document).ready(() => {
+        $('#correctionTable').DataTable({
+            order: [[ 0, "asc" ]],
+            filterDropDown: {
+                columns: [
+                    {
+                        idx: 2,
+                        title: "{% translate "Location" %}",
+                        maxWidth: "10em",
+                    },
+                    {
+                        idx: 3,
+                        title: "{% translate "Category" %}",
+                        maxWidth: "10em",
+                    },
+                ],
+                bootstrap: true,
+                bootstrap_version: 5,
+            },
+            columnDefs: [
+                { visible: false, targets: [ 3 ] },
+            ],
+        })
+    })
+</script>
