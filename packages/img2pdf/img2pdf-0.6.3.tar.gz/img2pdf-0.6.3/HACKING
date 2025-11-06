@@ -1,0 +1,85 @@
+Running img2pdf from source
+---------------------------
+
+img2pdf can be run directly from the cloned git repository:
+
+    $ python3 src/img2pdf.py img.jpg -o out.pdf
+
+Running the testsuite
+---------------------
+
+    $ pytest
+
+Making a new release
+--------------------
+
+ - CHANGES.rst: Add a new entry
+ - setup.py: Bump VERSION
+ - src/img2pdf.py: Bump __version__
+ - Commit:
+
+    $ git add CHANGES.rst setup.py src/img2pdf.py
+    $ git commit -m "release version X.Y.Z"
+
+ - Add git tag:
+
+    $ git tag X.Y.Z -m X.Y.Z
+
+ - Build and upload to pypi:
+
+    $ git clean -fdx
+    $ flit build
+    $ flit publish
+
+ - Push everything to git forge
+
+    $ git push
+
+ - Push to github
+
+    $ git push github
+
+ - Obtain img2pdf.exe from appveyor:
+
+    https://ci.appveyor.com/project/josch/img2pdf/
+
+ - Create new release:
+
+    https://gitlab.mister-muffin.de/josch/img2pdf/releases/new
+
+Using debbisect to find regressions
+-----------------------------------
+
+    $ debbisect --cache=./cache  --depends="git,ca-certificates,python3,
+           ghostscript,imagemagick,mupdf-tools,poppler-utils,python3-pil,
+           python3-pytest,python3-numpy,python3-scipy,python3-pikepdf" \
+      --verbose  2023-09-16 2023-10-24 \
+      'chroot "$1" sh -c "
+           git clone https://gitlab.mister-muffin.de/josch/img2pdf.git
+           && cd img2pdf
+           && pytest 'src/img2pdf_test.py::test_jpg_2000_rgba8[internal]"'
+
+Using debbisect cache
+---------------------
+
+    $ mmdebstrap --variant=apt --aptopt='Acquire::Check-Valid-Until "false"' \
+          --include=git,ca-certificates,python3,ghostscript,imagemagick \
+          --include=mupdf-tools,poppler-utils,python3-pil,python3-pytest \
+          --include=python3-numpy,python3-scipy,python3-pikepdf \
+          --hook-dir=/usr/share/mmdebstrap/hooks/file-mirror-automount \
+          --setup-hook='mkdir -p "$1/home/josch/git/devscripts/cache/pool/"' \
+          --setup-hook='mount -o ro,bind /home/josch/git/devscripts/cache/pool/ "$1/home/josch/git/devscripts/cache/pool/"' \
+          --chrooted-customize-hook=bash
+          unstable /dev/null
+          file:///home/josch/git/devscripts/cache/archive/debian/20231022T090139Z/
+
+Bisecting imagemagick
+---------------------
+
+Imagemagick can be built with minimal dependencies. To build with support for
+jpeg images, installing build-essential, pkgconf and libjpeg-dev is sufficient.
+
+    $ git clean -fdx && git reset --hard
+    $ ./configure
+    $ make -j$(nproc) utilities/magick
+    $ ./magick.sh magick compare ...
