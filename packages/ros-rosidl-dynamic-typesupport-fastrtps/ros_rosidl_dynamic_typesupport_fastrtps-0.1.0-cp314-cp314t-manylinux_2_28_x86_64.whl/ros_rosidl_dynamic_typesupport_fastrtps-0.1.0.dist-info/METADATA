@@ -1,0 +1,32 @@
+Metadata-Version: 2.4
+Name: ros-rosidl-dynamic-typesupport-fastrtps
+Version: 0.1.0
+Summary: A ROS package providing dynamic (runtime) typesupport serialization support for FastRTPS, manipulating `DynamicType` and `DynamicData` objects.
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ros-fastrtps~=2.14.5
+Requires-Dist: ros-fastcdr~=2.2.5
+Requires-Dist: ros-rcutils~=6.7.4
+Requires-Dist: ros-rosidl-dynamic-typesupport~=0.1.2
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+Built using https://github.com/ycheng517/ros-python-wheels.
+
+# rosidl_dynamic_typesupport_fastrtps
+Dynamic (Runtime) Typesupport Serialization Support Library for FastRTPS
+
+This library provides implementations for the interface specified in the `rosidl_dynamic_typesupport` package, providing FastRTPS-specific implementations for manipulating and accessing `DynamicType` and `DynamicData` objects.
+
+```c++
+rosidl_dynamic_typesupport_serialization_support_t serialization_support;
+
+rosidl_dynamic_typesupport_serialization_support_init(
+  rosidl_dynamic_typesupport_fastrtps_init_serialization_support_impl(),
+  rosidl_dynamic_typesupport_fastrtps_init_serialization_support_interface(),
+  rcutils_get_default_allocator(),
+  &serialization_support);
+```
