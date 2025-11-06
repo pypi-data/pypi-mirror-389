@@ -1,0 +1,1 @@
+Change how interpolations are done by copying edge pixels as opposed to reflecting them when filling gaps left behind by shifts. This will eliminate "ghost" lines. Replace L1 frame pixels with NaNs where the source data comes from a single beam.
