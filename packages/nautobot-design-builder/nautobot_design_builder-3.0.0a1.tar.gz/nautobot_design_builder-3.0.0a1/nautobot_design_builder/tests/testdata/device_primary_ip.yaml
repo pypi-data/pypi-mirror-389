@@ -1,0 +1,28 @@
+---
+depends_on: "base_test.yaml"
+designs:
+  - prefixes:
+      - prefix: "192.168.56.0/24"
+        status__name: "Active"
+    devices:
+      - name: "device_1"
+        location__name: "Site"
+        status__name: "Active"
+        device_type__model: "model name"
+        role__name: "device role"
+        interfaces:
+          - name: "Ethernet1/1"
+            type: "virtual"
+            status__name: "Active"
+            description: "description for Ethernet1/1"
+            ip_address_assignments:
+              - ip_address:
+                  address: "192.168.56.1/24"
+                  status__name: "Active"
+        primary_ip4: {"!get:address": "192.168.56.1/24", "deferred": true}
+checks:
+  - equal:
+      - model: "nautobot.dcim.models.Device"
+        query: {name: "device_1"}
+        attribute: "primary_ip4.address.__str__"
+      - value: ["192.168.56.1/24"]

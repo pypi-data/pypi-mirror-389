@@ -1,0 +1,6 @@
+{% load helpers %}
+{% load static %}
+
+<h2>{{ design_name }} design</h2>
+
+<div id="{{ design_name|slugify }}">{{ text_content | render_markdown }}</div>

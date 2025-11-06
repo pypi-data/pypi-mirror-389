@@ -1,0 +1,43 @@
+---
+extensions:
+  - "nautobot_design_builder.contrib.ext.LookupExtension"
+depends_on: "base_test.yaml"
+designs:
+  - relationships:
+      - label: "Device to VLANS"
+        key: "device_to_vlans"
+        type: "many-to-many"
+        "!lookup:source_type":
+          app_label: "dcim"
+          model: "device"
+        "!lookup:destination_type":
+          app_label: "ipam"
+          model: "vlan"
+
+    vlans:
+      - "!create_or_update:vid": 42
+        name: "The Answer"
+        status__name: "Active"
+
+    devices:
+      - name: "device_1"
+        location__name: "Site"
+        status__name: "Active"
+        device_type__model: "model name"
+        role__name: "device role"
+        vlans:
+          - "!get:vid": 42
+          - vid: "43"
+            name: "Better Answer"
+            status__name: "Active"
+checks:
+  - model_exists:
+      model: "nautobot.ipam.models.VLAN"
+      query: {vid: "43"}
+
+  - equal:
+      - model: "nautobot.extras.models.RelationshipAssociation"
+        query: {relationship__label: "Device to VLANS"}
+        count: true
+      - model: "nautobot.ipam.models.VLAN"
+        count: true
