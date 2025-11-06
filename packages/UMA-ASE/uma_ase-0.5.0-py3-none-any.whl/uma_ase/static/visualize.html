@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>UMA-ASE Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6fb;
+      color: #1f2937;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #d1d5db;
+      background: #fff;
+    }
+    .tab {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease;
+      color: #4b5563;
+    }
+    .tab.active {
+      color: #2563eb;
+      border-bottom: 3px solid #2563eb;
+    }
+    .tab:not(.active):hover {
+      background: #f3f4f6;
+    }
+    .tab-content {
+      display: none;
+      padding: 1.5rem;
+      background: #f4f6fb;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .input-section,
+    .viewer-section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .input-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    @media (min-width: 800px) {
+      .input-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+      }
+      .input-grid .full {
+        grid-column: 1 / -1;
+      }
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.35rem;
+      color: #1d4ed8;
+    }
+    input[type="file"],
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid #cbd5f5;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #f9fafb;
+    }
+    .summary-box {
+      background: #1f2937;
+      color: #f9fafb;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: "Fira Code", monospace;
+      min-height: 120px;
+      white-space: pre-wrap;
+    }
+    .viewer-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .viewer-controls input[type="file"] {
+      width: auto;
+    }
+    iframe {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      background: #fff;
+      min-height: 420px;
+      box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.08);
+    }
+    button.primary {
+      background: linear-gradient(120deg, #2563eb, #06b6d4);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.75rem 1.75rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+    }
+    .status {
+      font-size: 0.92rem;
+      color: #475569;
+      margin-top: 0.65rem;
+    }
+  </style>
+</head>
+<body>
+<div class="tabs">
+  <div class="tab active" data-tab="tab-calc">Calculate</div>
+  <div class="tab" data-tab="tab-visualize">Visualize</div>
+</div>
+
+<div id="tab-calc" class="tab-content active">
+  <section class="input-section">
+    <h2>Input Details</h2>
+    <div class="input-grid">
+      <div class="full">
+        <label for="calc-input-file">Select Geometry Input file</label>
+        <input id="calc-input-file" type="file" accept=".xyz,.pdb,.mol,.cif,.sdf,.gjf" />
+        <span id="calc-file-indicator" class="status">No file selected.</span>
+      </div>
+      <div>
+        <label for="calc-charge">Charge</label>
+        <input type="number" id="calc-charge" value="0" step="1" />
+      </div>
+      <div>
+        <label for="calc-spin">Spin Multiplicity</label>
+        <input type="number" id="calc-spin" value="1" min="1" step="1" />
+      </div>
+      <div>
+        <label for="calc-checkpoint">MLFF Checkpoint</label>
+        <input type="text" id="calc-checkpoint" value="uma-s-1p1" />
+      </div>
+      <div>
+        <label for="calc-task">MLFF Task</label>
+        <input type="text" id="calc-task" value="omol" />
+      </div>
+      <div class="full">
+        <label>Run Type</label>
+        <div class="viewer-controls" id="calc-run-types">
+          <label><input type="checkbox" value="sp" checked /> Single Point</label>
+          <label><input type="checkbox" value="geoopt" /> GeoOpt</label>
+          <label><input type="checkbox" value="freqs" /> Frequencies</label>
+        </div>
+      </div>
+      <div class="full">
+        <label class="status">Summary</label>
+        <pre id="calc-summary" class="summary-box">No structure loaded.</pre>
+      </div>
+    </div>
+    <button id="calc-run" class="primary">Run uma-ase</button>
+    <div id="calc-status" class="status"></div>
+  </section>
+</div>
+
+<div id="tab-visualize" class="tab-content">
+  <section class="input-section">
+    <h2>Input Details</h2>
+    <div class="input-grid">
+      <div class="full">
+        <label>Geometry Input file</label>
+        <span id="viz-file-indicator" class="status">No file selected.</span>
+      </div>
+      <div>
+        <label for="viz-charge">Charge</label>
+        <input type="number" id="viz-charge" value="0" step="1" />
+      </div>
+      <div>
+        <label for="viz-spin">Spin Multiplicity</label>
+        <input type="number" id="viz-spin" value="1" min="1" step="1" />
+      </div>
+      <div class="full">
+        <label class="status">Summary</label>
+        <pre id="viz-summary" class="summary-box">No structure loaded.</pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="viewer-section">
+    <h2>3D Visualizer</h2>
+    <p class="status">
+      The visualizer automatically loads the geometry selected on Calculate tab. Load a different file below to preview without replacing the main selection.
+    </p>
+    <div class="viewer-controls">
+      <input id="viz-own-file" type="file" accept=".xyz,.pdb,.mol,.cif,.sdf,.gjf" />
+    </div>
+    <iframe id="jsmol-viewer" src="/assets/jsmol-viewer.html" title="JSmol Viewer"></iframe>
+  </section>
+</div>
+
+<script>
+  const calcTabBtn = document.querySelector('[data-tab="tab-calc"]');
+  const vizTabBtn = document.querySelector('[data-tab="tab-visualize"]');
+  const tabs = { calc: document.getElementById('tab-calc'), viz: document.getElementById('tab-visualize') };
+
+  document.querySelectorAll('.tab-button, .tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-button, .tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(btn.dataset.tab);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  const calcFileInput = document.getElementById('calc-input-file');
+  const calcFileIndicator = document.getElementById('calc-file-indicator');
+  const vizFileIndicator = document.getElementById('viz-file-indicator');
+  const viewerFrame = document.getElementById('jsmol-viewer');
+  let viewerReady = false;
+  let queuedViewerFile = null;
+
+  function syncIndicators(file) {
+    const label = file ? file.name : 'No file selected.';
+    calcFileIndicator.textContent = label;
+    vizFileIndicator.textContent = label;
+    if (viewerFrame && viewerFrame.contentWindow) {
+      viewerFrame.contentWindow.postMessage({ type: 'uma-ase:set-viewer-name', name: file ? file.name : '' }, '*');
+    }
+  }
+
+  function sendFileToViewer(file) {
+    if (!viewerFrame || !viewerFrame.contentWindow || !viewerReady) {
+      queuedViewerFile = file || null;
+      return;
+    }
+    if (!file) {
+      viewerFrame.contentWindow.postMessage({ type: 'uma-ase:clear-xyz' }, '*');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      viewerFrame.contentWindow.postMessage(
+        {
+          type: 'uma-ase:load-xyz',
+          name: file.name || 'geometry.xyz',
+          content: reader.result,
+          lastModified: file.lastModified || Date.now(),
+        },
+        '*'
+      );
+    };
+    reader.readAsText(file);
+  }
+
+  calcFileInput.addEventListener('change', () => {
+    const file = calcFileInput.files[0] || null;
+    syncIndicators(file);
+    sendFileToViewer(file);
+  });
+
+  viewerFrame.addEventListener('load', () => {
+    viewerReady = false;
+    setTimeout(() => viewerFrame.contentWindow?.postMessage({ type: 'uma-ase:ping' }, '*'), 250);
+  });
+
+  window.addEventListener('message', (event) => {
+    if (event.source !== viewerFrame.contentWindow) return;
+    const data = event.data;
+    if (!data || typeof data !== 'object') return;
+    if (data.type === 'uma-ase:viewer-ready') {
+      viewerReady = true;
+      if (queuedViewerFile !== null) {
+        const file = queuedViewerFile;
+        queuedViewerFile = null;
+        sendFileToViewer(file);
+      } else if (calcFileInput.files[0]) {
+        sendFileToViewer(calcFileInput.files[0]);
+      }
+    } else if (data.type === 'uma-ase:viewer-file-selected') {
+      if (typeof data.content !== 'string' || !data.name) return;
+      try {
+        const file = new File([data.content], data.name, {
+          type: 'chemical/x-xyz',
+          lastModified: data.lastModified || Date.now(),
+        });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        calcFileInput.files = dt.files;
+        syncIndicators(file);
+      } catch (error) {
+        console.error('Failed to sync viewer file', error);
+      }
+    }
+  });
+
+  document.getElementById('viz-own-file').addEventListener('change', (event) => {
+    const file = event.target.files[0] || null;
+    sendFileToViewer(file);
+  });
+</script>
+</body>
+</html>
