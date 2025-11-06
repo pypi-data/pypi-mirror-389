@@ -1,0 +1,49 @@
+Metadata-Version: 2.4
+Name: pure-ab-3d-mot
+Version: 2.1.0
+Summary: The gist of the AB3DMOT (a base-line of 3D multiple-object tracking).
+Project-URL: Repository, https://github.com/kovalp/pure-ab-3d-mot
+Project-URL: ChangeLog, https://github.com/kovalp/pure-ab-3d-mot/blob/main/CHANGELOG.md
+Author-email: Xinshuo Weng <xinshuo.weng@gmail.com>
+Maintainer-email: Peter Koval <koval.peter@gmail.com>
+License-File: LICENSE
+Keywords: Kalman filter,baseline for nuScenes,kinematic,tracking by detection
+Requires-Python: >=3.8
+Requires-Dist: association-quality-clavia>=0.2.0
+Requires-Dist: filterpy>=1.4.5
+Requires-Dist: scipy-stubs>=1.14.1.3; python_version > '3.9'
+Requires-Dist: scipy>=1.10.1
+Description-Content-Type: text/markdown
+
+# Pure AB3DMOT
+
+The gist of the AB3DMOT (a base-line of 3D multiple-object tracking).
+
+[Original repo](https://github.com/xinshuoweng/AB3DMOT)
+
+This version produces the same results as original AB3DMOT tracker 
+without center-of-motion (COM) correction. Although the results are 
+the same, the implementation features several refactorings which 
+improve speed, readability and maintainability of the code.
+
+This version of the package demonstrates a binary classification of the association outcomes via
+instrumentation of the tracker (ClavIA). The instrumentation consists of adding
+an *annotation ID* `ann_id` to the `Box3D` and `Target` classes. Apart from the annotation ID,
+an *update ID* `upd_id` is added to the `Target` class. 
+
+The tracker class `Ab3dMot` is modified to process the  instrumentation fields.
+The instrumentation serves the observing (inquiry) purposes. It does not change the original
+objects beyond that purpose. The function of the instrumentation is checked in this repository and
+used in a separate evaluation code (package `eval-ab-3d-mot`).
+
+## Usage
+
+The package contains a bare minimum for the tracker to function. The interface for
+using the tracker in evaluation is done in separate repos (see `eval-ab-3d-mot`).
+
+## Install
+
+```shell
+
+pip install pure-ab-3d-mot
+```
