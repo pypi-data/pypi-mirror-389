@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSmol Viewer</title>
+    <script src="jsmol/jquery/jquery-1.11.0.js"></script>
+    <script src="jsmol/JSmol.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: "Segoe UI", Roboto, sans-serif;
+        margin: 2rem;
+        background: #f5f5f9;
+        color: #1f2933;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #4a5568;
+        margin-bottom: 1rem;
+      }
+      .controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      input[type="file"] {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 0.4rem;
+      }
+      .selected-name {
+        font-size: 0.9rem;
+        color: #1f2933;
+      }
+      #viewer-container {
+        margin-top: 1.5rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        padding: 1rem;
+        max-width: 640px;
+      }
+      #applet {
+        width: 100%;
+        min-height: 420px;
+      }
+      .status-text {
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        color: #475569;
+      }
+      .status-text.error {
+        color: #b91c1c;
+      }
+      .JSmolSpinner,
+      .JmolSpinner {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="hint">
+      Choose an <code>.xyz</code> structure to preview it locally. All rendering runs in the browser using
+      the bundled JSmol assets.
+    </p>
+
+    <div class="controls">
+      <label for="xyzFile"><strong>Select XYZ file:</strong></label>
+      <input id="xyzFile" accept=".xyz" type="file" />
+      <span id="selected-file-name" class="selected-name">No file selected</span>
+    </div>
+
+    <div id="viewer-container">
+      <div id="applet"></div>
+      <div id="status" class="status-text">No structure loaded.</div>
+    </div>
+
+    <script>
+      Jmol._isAsync = false;
+      Jmol._debugCode = false;
+      Jmol._ajaxTestSite = "";
+      Jmol._binaryTypes = [];
+
+      const fileInput = document.getElementById("xyzFile");
+      const selectedNameEl = document.getElementById("selected-file-name");
+      const statusEl = document.getElementById("status");
+      const viewerOrigin = window.location.origin;
+      const parentTargetOrigin = viewerOrigin && viewerOrigin !== "null" ? viewerOrigin : "*";
+      let applyingExternalUpdate = false;
+
+      function notifyParentReady() {
+        if (!window.parent || window.parent === window) {
+          return;
+        }
+        window.parent.postMessage({ type: "uma-ase:viewer-ready" }, parentTargetOrigin);
+      }
+
+      const Info = {
+        width: 600,
+        height: 400,
+        debug: false,
+        color: "0xFFFFFF",
+        use: "HTML5",
+        j2sPath: "jsmol/j2s",
+        script: "background white; set antialiasDisplay true; spin off;",
+        disableJ2SLoadMonitor: true,
+        disableInitialConsole: true,
+        allowJavaScript: true,
+        readyFunction: () => {
+          updateStatus("Viewer ready. Select a structure to display.");
+          notifyParentReady();
+        },
+      };
+
+      Jmol.setDocument(0);
+      const applet = Jmol.getApplet("jsmolApplet", Info);
+      const container = document.getElementById("applet");
+      container.innerHTML = Jmol.getAppletHtml(applet);
+
+      function updateSelectedName(name) {
+        selectedNameEl.textContent = name || "No file selected";
+      }
+
+      function updateStatus(message, isError = false) {
+        statusEl.textContent = message;
+        statusEl.classList.toggle("error", isError);
+      }
+
+      function clearViewer() {
+        Jmol.script(applet, "zap; background white;");
+        updateStatus("No structure loaded.");
+        updateSelectedName("");
+      }
+
+      const supportedExtensions = new Set(["xyz", "pdb", "mol", "sdf", "cif", "gjf"]);
+
+      function determineExtension(fileName) {
+        if (!fileName) {
+          return "xyz";
+        }
+        const match = /\.([a-zA-Z0-9]+)$/.exec(fileName);
+        if (!match) {
+          return "xyz";
+        }
+        const ext = match[1].toLowerCase();
+        return ext || "xyz";
+      }
+
+      function loadStructureContent(name, content) {
+        const fileName = name || "geometry.xyz";
+        updateSelectedName(fileName);
+        const trimmed = `${content}`.trim();
+        if (!trimmed) {
+          throw new Error("Empty structure file.");
+        }
+        const ext = determineExtension(fileName);
+        const hint = supportedExtensions.has(ext) ? ext : "xyz";
+        const loadScript = [
+          "zap;",
+          "background white;",
+          `load DATA "inline"`,
+          trimmed,
+          'END "inline";',
+          "spin off;",
+        ].join("\n");
+        Jmol.script(applet, loadScript);
+        updateStatus(`Loaded ${fileName}.`);
+      }
+
+      function notifyParentSelection(file, content) {
+        if (!window.parent || window.parent === window) {
+          return;
+        }
+        window.parent.postMessage(
+          {
+            type: "uma-ase:viewer-file-selected",
+            name: file.name,
+            content,
+            lastModified: file.lastModified,
+          },
+          parentTargetOrigin,
+        );
+      }
+
+      function notifyParentClear() {
+        if (!window.parent || window.parent === window) {
+          return;
+        }
+        window.parent.postMessage({ type: "uma-ase:viewer-clear" }, parentTargetOrigin);
+      }
+
+      fileInput.addEventListener("change", (event) => {
+        if (applyingExternalUpdate) {
+          return;
+        }
+        const file = event.target.files[0];
+        if (!file) {
+          clearViewer();
+          notifyParentClear();
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = e.target.result;
+            loadStructureContent(file.name, data);
+            notifyParentSelection(file, data);
+          } catch (error) {
+            updateStatus(error.message, true);
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      window.addEventListener("message", (event) => {
+        if (parentTargetOrigin !== "*" && event.origin !== parentTargetOrigin) {
+          return;
+        }
+        const data = event.data;
+        if (!data || typeof data !== "object") {
+          return;
+        }
+
+        if (data.type === "uma-ase:set-viewer-name") {
+          if (!data || typeof data.name !== "string") {
+            updateSelectedName("");
+          } else {
+            updateSelectedName(data.name);
+          }
+          if (!data || !data.name) {
+            updateStatus("No structure loaded.");
+          }
+        } else if (data.type === "uma-ase:load-xyz") {
+          if (typeof data.content !== "string") {
+            return;
+          }
+          const fileName = data.name || "geometry.xyz";
+          applyingExternalUpdate = true;
+          try {
+            if (typeof DataTransfer !== "undefined") {
+              const dt = new DataTransfer();
+              const syntheticFile = new File(
+                [data.content],
+                fileName,
+                {
+                  type: "chemical/x-xyz",
+                  lastModified: typeof data.lastModified === "number" ? data.lastModified : Date.now(),
+                },
+              );
+              dt.items.add(syntheticFile);
+              fileInput.files = dt.files;
+            } else {
+              fileInput.value = "";
+            }
+          } catch (error) {
+            console.warn("Unable to sync viewer selection from parent", error);
+          } finally {
+            setTimeout(() => {
+              applyingExternalUpdate = false;
+            }, 0);
+          }
+          try {
+            loadStructureContent(fileName, data.content);
+          } catch (error) {
+            updateStatus(error.message, true);
+          }
+        } else if (data.type === "uma-ase:clear-xyz") {
+          applyingExternalUpdate = true;
+          fileInput.value = "";
+          clearViewer();
+          setTimeout(() => {
+            applyingExternalUpdate = false;
+          }, 0);
+        }
+      });
+
+    </script>
+  </body>
+</html>
