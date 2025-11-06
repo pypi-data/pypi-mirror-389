@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "qa-kit"
+version = "0.1.2"
+description = "CLI + generator for REST API pytest integration tests with Allure reporting"
+authors = ["Roshan Gupta <roshanguptamca@gmail.com>"]
+homepage = "https://github.com/roshanguptamca/qa-kit"
+repository = "https://github.com/roshanguptamca/qa-kit"
+readme = "README.md"
+license = "MIT"
+keywords = ["API testing", "pytest", "allure", "automation", "cli", "httpx"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Testing",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Framework :: Pytest",
+]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+httpx = "^0.25.0"
+typer = ">=0.12.3"
+click = ">=8.1.7"
+jinja2 = "^3.1.2"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+pytest-asyncio = "^0.21.0"
+allure-pytest = "^2.13.5"
+docker = "^6.1.0"
+rich = "^14.2.0"
+black = "^25.9.0"
+isort = "^7.0.0"
+mypy = "^1.5.1"
+flake8 = "^7.0.0"
+
+[tool.poetry.scripts]
+qa_kit = "qa_kit.cli:app"
+
+[build-system]
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
