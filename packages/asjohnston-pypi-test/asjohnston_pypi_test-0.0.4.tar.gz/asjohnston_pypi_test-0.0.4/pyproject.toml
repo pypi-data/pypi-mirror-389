@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asjohnston_pypi_test"
+requires-python = ">=3.10"
+authors = [
+    {name="Andrew Johnston", email="asjohnston@alaska.edu"},
+]
+description = "A dummy package to test publishing to PyPI"
+readme = "README.md"
+license = "BSD-3-Clause"
+classifiers=[
+    "Programming Language :: Python :: 3",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+develop = [
+    "build",
+]
+
+[project.urls]
+Homepage = "https://github.com/asjohnston-asf/pypi-test"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]

@@ -1,0 +1,14 @@
+name: Build and Distribute to PyPI
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  call-pypi-workflow:
+    uses: ASFHyP3/actions/.github/workflows/reusable-pypi.yml@reusable-pypi
+    permissions:
+      contents: read
+    secrets:
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
