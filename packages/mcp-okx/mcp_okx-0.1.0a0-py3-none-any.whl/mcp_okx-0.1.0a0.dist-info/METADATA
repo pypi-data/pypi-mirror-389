@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: mcp-okx
+Version: 0.1.0a0
+Summary: OKX MCP Server
+Project-URL: Repository, https://github.com/aahl/mcp-okx
+License: MIT
+License-File: LICENSE
+Keywords: llm,mcp
+Requires-Python: >=3.10
+Requires-Dist: fastmcp>=2.0.0
+Requires-Dist: python-okx>=0.4.0
+Description-Content-Type: text/markdown
+
+# 🆗 OKX MCP Server
+
+<!-- mcp-name: io.github.aahl/mcp-okx -->
+
+
+## Install
+
+### Method 1: uvx
+```yaml
+{
+  "mcpServers": {
+    "mcp-okx": {
+      "command": "uvx",
+      "args": ["mcp-okx"],
+      "env": {
+        "OKX_API_KEY": "your-okx-api-key",
+        "OKX_API_SECRET": "api-secret-key",
+        "OKX_PASSPHRASE": "api-passphrase",
+        "OKX_TRADE_FLAG": "1" # 0: Production trading, 1: Demo trading
+      }
+    }
+  }
+}
+```
+
+### Method 2: Docker
+```bash
+mkdir /opt/mcp-okx
+cd /opt/mcp-okx
+wget https://raw.githubusercontent.com/aahl/mcp-okx/refs/heads/main/docker-compose.yml
+docker-compose up -d
+```
+```yaml
+{
+  "mcpServers": {
+    "mcp-okx": {
+      "url": "http://0.0.0.0:8811/mcp" # Streamable HTTP
+    }
+  }
+}
+```
