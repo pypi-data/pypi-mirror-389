@@ -1,0 +1,164 @@
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import tetra3  # type: ignore
+from pydantic import BaseModel, Field, model_validator
+
+from pixelemon.logging import PIXELEMON_LOG
+
+TETRA_DATABASE_PATH = Path(__file__).parent / "tyc_db_to_40_deg.npz"
+
+
+def _deobjectify(arr: np.ndarray) -> np.ndarray:
+    if arr.dtype != object:
+        return arr
+    # Common cases: array-of-arrays or array-of-tuples/lists with equal shapes
+    try:
+        return np.stack(list(arr))
+    except Exception:
+        pass
+    # Fallback: try regular array coercion (works if elements are scalars / equal-length seqs)
+    try:
+        return np.array(list(arr))
+    except Exception:
+        pass
+    # Last try: numeric cast
+    try:
+        return np.array(list(arr), dtype=np.float64)
+    except Exception:
+        raise ValueError("Could not convert an object-dtype array to a plain ndarray")
+
+
+def _depickle(db_path: Path) -> None:
+    with np.load(db_path, allow_pickle=True) as d:
+        fixed = {}
+        for k in d.files:
+            fixed[k] = _deobjectify(d[k])
+
+    np.savez(db_path, **fixed)
+
+
+class TetraSolver(tetra3.Tetra3):
+
+    _instance: "TetraSolver | None" = None
+    _initialized: bool = False
+
+    def __new__(cls, *args, **kwargs) -> "TetraSolver":
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self, database_path: Path | None = None, reload: bool = False):
+        if not self._initialized or reload:
+            if database_path is None:
+                super().__init__()
+            else:
+                try:
+                    super().__init__(load_database=database_path.as_posix())
+                except ValueError:
+                    PIXELEMON_LOG.warning(f"Overwriting {database_path} after failed load")
+                    _depickle(database_path)
+                    super().__init__(load_database=database_path.as_posix())
+            self.settings = TetraSettings.model_validate(self.database_properties)
+            self._initialized = True
+
+    @classmethod
+    def low_memory(cls) -> "TetraSolver":
+        solver = cls(reload=True)
+        PIXELEMON_LOG.info("Configured TetraSolver for low memory usage")
+        return solver
+
+    @classmethod
+    def high_memory(cls) -> "TetraSolver":
+        solver = cls(TETRA_DATABASE_PATH, reload=True)
+        PIXELEMON_LOG.info("Configured TetraSolver for high memory usage")
+        return solver
+
+
+class TetraSettings(BaseModel):
+    dimmest_star_magnitude: float = Field(
+        ...,
+        description="The dimmest star magnitude to consider in the plate solve",
+        alias="star_max_magnitude",
+    )
+    max_field_of_view: float = Field(
+        ...,
+        description="The maximum field of view in degrees the solver can reliably handle",
+        alias="max_fov",
+    )
+    min_field_of_view: float = Field(
+        ...,
+        description="The minimum field of view in degrees the solver can reliably handle",
+        alias="min_fov",
+    )
+    verification_star_count: int = Field(
+        ...,
+        description="The number of stars to use for verification of the plate solve",
+        alias="verification_stars_per_fov",
+    )
+
+    def model_post_init(self, _: Any) -> None:
+        PIXELEMON_LOG.info(f"Tetra dimmest star magnitude set to {self.dimmest_star_magnitude}")
+        PIXELEMON_LOG.info(f"Tetra max field of view set to {self.max_field_of_view} degrees")
+        PIXELEMON_LOG.info(f"Tetra min field of view set to {self.min_field_of_view} degrees")
+        PIXELEMON_LOG.info(f"Tetra verification star count set to {self.verification_star_count}")
+
+
+class MatchedStar(BaseModel):
+    right_ascension: float = Field(..., description="Right ascension in degrees")
+    declination: float = Field(..., description="Declination in degrees")
+    magnitude: float = Field(..., description="Visual magnitude")
+
+    @model_validator(mode="before")
+    def from_tuple(cls, vals):
+        if not isinstance(vals, dict):
+            return {"right_ascension": vals[0], "declination": vals[1], "magnitude": vals[2]}
+
+
+class PlateSolve(BaseModel):
+    right_ascension: float = Field(
+        ...,
+        description="Right Ascension in degrees",
+        alias="RA",
+    )
+    declination: float = Field(
+        ...,
+        description="Declination in degrees",
+        alias="Dec",
+    )
+    roll: float = Field(
+        ...,
+        description="Roll angle in degrees",
+        alias="Roll",
+    )
+    estimated_horizontal_fov: float = Field(
+        ...,
+        description="Estimated horizontal field of view in degrees",
+        alias="FOV",
+    )
+    root_mean_square_error: float = Field(
+        ...,
+        description="Root mean square error of the plate solve in arcseconds",
+        alias="RMSE",
+    )
+    number_of_stars: int = Field(
+        ...,
+        description="Number of stars used in the plate solve",
+        alias="Matches",
+    )
+    false_positive_probability: float = Field(
+        ...,
+        description="Probability of a false positive plate solve",
+        alias="Prob",
+    )
+    solve_time: float = Field(
+        ...,
+        description="Time taken to perform the plate solve in milliseconds",
+        alias="T_solve",
+    )
+
+    matched_stars: list[MatchedStar] = Field(
+        ..., description="Collection of coordinates and magnitudes for matched stars in the solve"
+    )
+    distortion: float = Field(..., description="Calculated distortion of the image")
