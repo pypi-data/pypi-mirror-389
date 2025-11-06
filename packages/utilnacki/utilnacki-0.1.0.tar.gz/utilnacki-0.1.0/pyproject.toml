@@ -1,0 +1,21 @@
+[project]
+name = "utilnacki"
+version = "0.1.0"
+description = "houses various helpful functions accumulated over time"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4==4.12.3",
+    "numpy==2.0.1",
+    "pandas==2.2.2",
+    "python-dateutil==2.9.0.post0",
+    "pytz==2024.1",
+    "requests==2.32.3",
+    "six==1.16.0",
+    "tzdata==2024.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
