@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "hcgatewood_coda"
+version = "0.6.0"
+description = "Personal Lodash-style utility library"
+authors = ["Hunter Gatewood <hgatewood@gmail.com>"]
+readme = "README.md"
+
+packages = [{ include = "coda" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

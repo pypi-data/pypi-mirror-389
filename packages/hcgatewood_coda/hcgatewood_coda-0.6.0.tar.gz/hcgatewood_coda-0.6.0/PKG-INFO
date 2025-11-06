@@ -1,0 +1,41 @@
+Metadata-Version: 2.1
+Name: hcgatewood_coda
+Version: 0.6.0
+Summary: Personal Lodash-style utility library
+Author: Hunter Gatewood
+Author-email: hgatewood@gmail.com
+Requires-Python: >=3.10,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Description-Content-Type: text/markdown
+
+# Coda
+
+Coda is a personal Lodash-style utility library.
+
+## Installation
+
+```bash
+pip install hcgatewood_coda
+```
+
+## Usage
+
+```python
+import coda
+```
+
+## Features
+
+- Env variable loading
+  - `must_getenv` get env variable or raise
+  - `getenv_bool` get env variable and coerce to bool
+- Immutability
+  - `ConstDict` immutable dictionary returning mutable copies of its values
+- Logging
+  - `set_log_level` set log level for root logger based on `LOG_LEVEL` env variable
+- Rate limiting
+  - `RateLimiter` basic SQLite-backed sliding window rate limiter
+
