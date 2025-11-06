@@ -1,0 +1,255 @@
+# Asimov SDK (Python)
+
+Official Python SDK for the Asimov API - a powerful vector search and content indexing platform.
+
+## Installation
+
+```bash
+pip install asimov-sdk
+```
+
+Or using pipx:
+
+```bash
+pipx install asimov-sdk
+```
+
+## Quick Start
+
+```python
+from asimov import Asimov, SearchParams, AddParams
+
+# Initialize the client
+client = Asimov(api_key="your-api-key-here")
+
+# Search for content
+results = client.search.query(
+    SearchParams(query="machine learning", limit=10)
+)
+
+print(f"Found {results.count} results:")
+for result in results.results:
+    print(f"- {result.content[:100]}...")
+
+# Add content to the index
+response = client.add.create(
+    AddParams(
+        content="Your content here...",
+        name="Document Name",
+        params={"category": "technology", "author": "John Doe"}
+    )
+)
+
+print(f"Content added: {response.success}")
+```
+
+## API Reference
+
+### Initialization
+
+```python
+client = Asimov(
+    api_key="your-api-key-here",
+    base_url="https://api.asimov.mov",  # Optional
+    timeout=60  # Optional, seconds
+)
+```
+
+#### Parameters
+
+- `api_key` (str, required): Your Asimov API key
+- `base_url` (str, optional): Base URL for the API (default: `https://api.asimov.mov`)
+- `timeout` (int, optional): Request timeout in seconds (default: 60)
+
+### Search
+
+Search for content using semantic vector search.
+
+```python
+results = client.search.query(params: SearchParams) -> SearchResponse
+```
+
+#### SearchParams
+
+- `query` (str, required): The search query string (min length: 1)
+- `limit` (int, optional): Maximum number of results to return (default: 10, max: 1000)
+- `id` (str, optional): Filter results by document ID
+- `params` (dict, optional): Filter results by parameter key-value pairs
+- `recall` (int, optional): Number of candidates for vector search (default: 100, max: 10000)
+
+**Note:** All parameters are validated using Pydantic before sending the request.
+
+#### SearchResponse
+
+```python
+class SearchResponse:
+    success: bool
+    results: List[SearchResult]  # Each has a 'content' field
+    count: int
+```
+
+#### Example
+
+```python
+# Basic search
+results = client.search.query(
+    SearchParams(query="artificial intelligence", limit=5)
+)
+
+# Search with filters
+filtered_results = client.search.query(
+    SearchParams(
+        query="Python programming",
+        limit=10,
+        params={"category": "programming", "difficulty": "beginner"}
+    )
+)
+
+# Search specific document
+doc_results = client.search.query(
+    SearchParams(query="machine learning", id="doc-123", limit=20)
+)
+```
+
+### Add
+
+Add content to the index for semantic search.
+
+```python
+response = client.add.create(params: AddParams) -> AddResponse
+```
+
+#### AddParams
+
+- `content` (str, required): The content to add to the index (min length: 1, max: 10MB)
+- `params` (dict, optional): Parameter key-value pairs for filtering
+- `name` (str, optional): Document name (max length: 500 characters)
+
+**Note:** All parameters are validated using Pydantic before sending the request.
+
+#### AddResponse
+
+```python
+class AddResponse:
+    success: bool
+```
+
+#### Example
+
+```python
+# Basic add
+response = client.add.create(
+    AddParams(content="This is a sample document about machine learning...")
+)
+
+# Add with metadata
+response = client.add.create(
+    AddParams(
+        content="Advanced neural network architectures...",
+        name="Neural Networks Guide",
+        params={
+            "category": "technology",
+            "topic": "deep-learning",
+            "author": "Jane Smith"
+        }
+    )
+)
+```
+
+## Error Handling
+
+The SDK raises two types of errors:
+
+### Validation Errors (Pydantic ValidationError)
+
+Parameters are validated using Pydantic models before making API requests. If validation fails, a `ValidationError` is raised:
+
+```python
+from pydantic import ValidationError
+from asimov import Asimov, SearchParams
+
+try:
+    results = client.search.query(
+        SearchParams(query="")  # Empty query will fail validation
+    )
+except ValidationError as e:
+    print("Validation Error:")
+    for error in e.errors():
+        print(f"  - {error['loc']}: {error['msg']}")
+```
+
+### API Errors (APIError)
+
+API-related errors are raised as `APIError` instances:
+
+```python
+from asimov import Asimov, APIError
+
+try:
+    results = client.search.query(
+        SearchParams(query="test query")
+    )
+except APIError as e:
+    print(f"API Error: {e.message}")
+    print(f"Status: {e.status}")
+    print(f"Details: {e.details}")
+```
+
+### Complete Error Handling Example
+
+```python
+from asimov import Asimov, APIError, SearchParams
+from pydantic import ValidationError
+
+try:
+    results = client.search.query(
+        SearchParams(query="machine learning", limit=10)
+    )
+except ValidationError as e:
+    # Handle validation errors
+    print("Invalid parameters:")
+    for error in e.errors():
+        print(f"  - {error['loc']}: {error['msg']}")
+except APIError as e:
+    # Handle API errors
+    print(f"API Error: {e.message}")
+    print(f"Status Code: {e.status}")
+except Exception as e:
+    # Handle unexpected errors
+    print(f"Unexpected error: {e}")
+```
+
+## Using Pydantic Models for Custom Validation
+
+You can use the Pydantic models directly for custom validation in your application:
+
+```python
+from asimov import SearchParams, AddParams
+
+# Validate before using the SDK
+params = {
+    "query": "machine learning",
+    "limit": 10
+}
+
+try:
+    validated = SearchParams(**params)
+    results = client.search.query(validated)
+except ValidationError as e:
+    print("Validation errors:", e.errors())
+```
+
+## Type Hints
+
+The SDK is fully typed with Python type hints and uses Pydantic for runtime validation, ensuring type safety at both development time and runtime.
+
+## Requirements
+
+- Python 3.8+
+- requests >= 2.31.0
+- pydantic >= 2.0.0
+
+## License
+
+MIT
+
