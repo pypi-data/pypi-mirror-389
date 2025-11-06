@@ -1,0 +1,48 @@
+Metadata-Version: 2.4
+Name: reactor_runtime
+Version: 0.0.4
+Summary: Reactor runtime with public model API
+Author-email: Reactor <team@reactor.inc>
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: websockets>=13.0
+Requires-Dist: numpy<2.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pyyaml
+Requires-Dist: av>=12.0.0
+Requires-Dist: aiortc>=1.10.0
+Requires-Dist: fastapi>=0.100.0
+Requires-Dist: uvicorn[standard]>=0.23.0
+Requires-Dist: livekit-api>=1.0.5
+Requires-Dist: livekit==1.0.12
+Requires-Dist: aiohttp>=3.9.3
+Requires-Dist: redis
+Requires-Dist: supabase>=2.0.0
+Requires-Dist: boto3>=1.28.0
+Requires-Dist: opentelemetry-api
+Requires-Dist: opentelemetry-sdk
+Requires-Dist: opentelemetry-exporter-otlp-proto-http
+Requires-Dist: tqdm
+
+# Reactor Runtime
+
+A Python runtime for building real-time video processing models. This runtime abstracts all the techincal implementations of real-time networking, allowing
+researchers and models developers to run their model focusing only on the ML code.
+
+You can think of this similarly to the way you write Telegram/Discord applications or bots using SDKs. You don't have to worry about the networking and the protocols of the medium. Instead, you can put all your effort in writing your application code, which in this case is ML code.
+
+Documentation: https://docs.reactor.inc/runtime/overview
+
+## Installation
+
+```bash
+pip install reactor-runtime
+```
+
+# Reactor CLI
+
+You can learn more about the Reactor CLI through the docs: https://docs.reactor.inc/runtime/cli-reference
+
+# Coding your models
+
+To convert an existing model or start coding a model using the reactor runtime, check the following guide: https://docs.reactor.inc/runtime/coding-models
