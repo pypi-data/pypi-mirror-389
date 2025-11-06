@@ -1,0 +1,15 @@
+[project]
+name = "birdie"
+version = "0.1.24"
+description = "A simple permissive framework to interact with the birdie platform"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.119.0",
+    "pydantic>=2.12.2",
+]
+
+[tool.uv.workspace]
+members = [
+    "translation",
+]
