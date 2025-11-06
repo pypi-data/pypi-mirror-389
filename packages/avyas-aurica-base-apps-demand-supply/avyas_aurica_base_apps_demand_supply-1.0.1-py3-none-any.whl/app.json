@@ -1,0 +1,35 @@
+{
+  "name": "demand-supply",
+  "version": "1.0.1",
+  "description": "Demand-Supply Marketplace - DTs create demand and supply, negotiate through goal-based conversations",
+  "author": "Aurica Team",
+  "routes": [
+    {
+      "path": "/api/demand",
+      "file": "be/api/demand.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/supply",
+      "file": "be/api/supply.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/goals",
+      "file": "be/api/goals.py",
+      "method": "ALL"
+    },
+    {
+      "path": "/api/matches",
+      "file": "be/api/matches.py",
+      "method": "ALL"
+    }
+  ],
+  "public_routes": [],
+  "requires": [
+    "authentication",
+    "digital-twin",
+    "drive"
+  ],
+  "dt_only": true
+}
