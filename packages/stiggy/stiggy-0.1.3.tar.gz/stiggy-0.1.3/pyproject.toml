@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "stiggy"
+version = "0.1.3"
+description = "Stiggy: Python framework for software engineering"
+authors = ["Piotr Serwa <pserwa@exida.com>"]
+readme = "README.md"
+packages = [
+    { include = "stiggy", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.14"
+
+# Core dependencies
+typer = { extras = ["all"], version = "*" }
+pandas = "*"
+pyyaml = "*"
+lxml = "*"
+
+# Word / PDF generation
+python-docx = "*"
+docxcompose = "*"
+
+# MkDocs & docs generation
+mkdocs = "*"
+mkdocs-material = "*"
+mike = "*"
+pymdown-extensions = "*"
+Pillow = "*"
+cairosvg = "*"
+watchfiles = "*"
+mkdocs-include-markdown-plugin = "*"
+jsonschema = "*"
+yamllint = "*"
+docxtpl = "^0.20.1"
+jinja2 = "^3.1.6"
+setuptools = "<81"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pyinstaller = ">=5.13"
+nuitka = "^2.7.12"
+pytest-cov = "^6.2.1"
+
+[tool.poetry.scripts]
+stiggy = "stiggy.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["src"]
+addopts = "--import-mode=importlib"
+
+
+[tool.poetry-pyinstaller-plugin.scripts]
+stiggy = { source = "src/stiggy/main.py", type = "onefile", bundle = true }
