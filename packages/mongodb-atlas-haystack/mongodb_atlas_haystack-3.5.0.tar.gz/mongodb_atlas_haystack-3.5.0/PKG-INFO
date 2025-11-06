@@ -1,0 +1,40 @@
+Metadata-Version: 2.4
+Name: mongodb-atlas-haystack
+Version: 3.5.0
+Summary: An integration of MongoDB Atlas with Haystack
+Project-URL: Source, https://github.com/deepset-ai/haystack-core-integrations
+Project-URL: Documentation, https://github.com/deepset-ai/haystack-core-integrations/blob/main/integrations/mongodb_atlas/README.md
+Project-URL: Issues, https://github.com/deepset-ai/haystack-core-integrations/issues
+Author-email: deepset GmbH <info@deepset.ai>
+License-Expression: Apache-2.0
+License-File: LICENSE.txt
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.9
+Requires-Dist: haystack-ai>=2.11.0
+Requires-Dist: pymongo[srv]>=4.13.0
+Description-Content-Type: text/markdown
+
+# mongodb-atlas-haystack
+
+[![PyPI - Version](https://img.shields.io/pypi/v/mongodb-atlas-haystack.svg)](https://pypi.org/project/mongodb-atlas-haystack)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mongodb-atlas-haystack.svg)](https://pypi.org/project/mongodb-atlas-haystack)
+
+- [Integration page](https://haystack.deepset.ai/integrations/mongodb-atlas)
+- [Changelog](https://github.com/deepset-ai/haystack-core-integrations/blob/main/integrations/mongodb_atlas/CHANGELOG.md)
+
+---
+
+## Contributing
+
+Refer to the general [Contribution Guidelines](https://github.com/deepset-ai/haystack-core-integrations/blob/main/CONTRIBUTING.md).
+
+Integration tests are based on a private MongoDB instance. Reach out to a maintainer to run them.
