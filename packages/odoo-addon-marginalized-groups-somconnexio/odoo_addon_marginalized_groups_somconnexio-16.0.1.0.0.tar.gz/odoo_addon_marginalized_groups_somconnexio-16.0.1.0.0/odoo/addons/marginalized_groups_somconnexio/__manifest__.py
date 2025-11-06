@@ -1,0 +1,23 @@
+{
+    "name": "Odoo Som Connexió Marginalized Groups customizations",
+    "version": "16.0.1.0.0",
+    "summary": "Customizations for marginalized groups in Som Connexió.",
+    "author": "Coopdevs Treball SCCL, Som Connexió SCCL",
+    "website": "https://coopdevs.org",
+    "license": "AGPL-3",
+    "category": "Cooperative management",
+    "depends": ["cooperator_somconnexio"],
+    "data": [
+        "data/mail_activity_type.xml",
+        "data/res_partner_category.xml",
+        "reports/CM_50_conditions.xml",
+        "reports/CM_100_conditions.xml",
+        "reports/CM_mixed_conditions.xml",
+        "reports/crm_lead_creation_CM_email_template.xml",
+        "views/res_partner_view.xml",
+    ],
+    "demo": [],
+    "external_dependencies": {},
+    "application": False,
+    "installable": True,
+}
