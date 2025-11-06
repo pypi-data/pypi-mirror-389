@@ -1,0 +1,46 @@
+# This is the main configuration file for your project.
+# It tells Python's build tools everything they need to know.
+# This replaces the older 'setup.py' and 'setup.cfg' files.
+
+[build-system]
+# These are the tools needed to build your package
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# This is all the metadata about your package
+name = "dmaikjsit" # IMPORTANT: This MUST be unique on PyPI
+version = "0.0.12"  # <-- THE FINAL VERSION
+authors = [
+  { name="Neel Parekh", email="neeluparekh001@gmail.com" },
+]
+description = "It has all the Dmai codes"
+readme = "README.md" # It will use your README file
+
+# --- THE FINAL FIX ---
+# The 'license' key is GONE.
+# The 'LICENSE.txt' file is GONE.
+# This classifier is the ONLY place the license is defined.
+
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools]
+# This section tells the build tool where to find your code
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+# This automatically finds all packages in the 'src' directory
+where = ["src"]
+
+[project.scripts]
+# This is correct and points to your 'core.py' file.
+get-dmai-codes = "dmaikjsit.core:get_all_codes_main"
+
+[tool.setuptools.package-data]
+# This is correct and looks for the 'codes' folder.
+"dmaikjsit" = ["codes/*.*"]
