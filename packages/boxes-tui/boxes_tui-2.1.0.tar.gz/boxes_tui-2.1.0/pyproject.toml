@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "boxes-tui"
+version = "2.01.0"
+authors = [
+  { name="Legende_7" },
+]
+description = "A collection of tools for python TUIs"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "BSD-2-Clause"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/IamLegende7/boxes-tui"
+Issues = "https://github.com/IamLegende7/boxes-tui/issues"
