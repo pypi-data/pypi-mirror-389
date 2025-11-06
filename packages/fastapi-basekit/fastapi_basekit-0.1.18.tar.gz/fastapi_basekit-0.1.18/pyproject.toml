@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=67,<74", "wheel<0.43"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapi-basekit"
+version = "0.1.18"
+description = "Utilities and base classes for FastAPI async projects (Beanie or SQLAlchemy)"
+readme = "README.md"
+requires-python = ">=3.11"
+
+authors = [
+  {name = "Jerson Moreno", email = "jerson.ml820@hotmail.com"}
+]
+
+license = {text = "MIT"}
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3",
+  "Framework :: FastAPI",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "fastapi>=0.116.1",
+  "pydantic>=2.11.7,<3",
+  "fastapi-restful[all]>=0.6.0",
+]
+
+[tool.setuptools]
+packages = { find = { include = ["fastapi_basekit*"] } }
+
+[project.optional-dependencies]
+beanie = [
+  "beanie>=1.24.0",
+  "motor>=3.3.0",
+]
+sqlalchemy = [
+  "SQLAlchemy[asyncio]>=2.0.0",
+  "psycopg2>=2.9.0",
+]
+all = [
+  "beanie>=1.24.0",
+  "motor>=3.3.0",
+  "SQLAlchemy[asyncio]>=2.0.0",
+  "psycopg2>=2.9.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mundobien2025/fastapi-basekit"
+Repository = "https://github.com/mundobien2025/fastapi-basekit"
+Issues = "https://github.com/mundobien2025/fastapi-basekit/issues"

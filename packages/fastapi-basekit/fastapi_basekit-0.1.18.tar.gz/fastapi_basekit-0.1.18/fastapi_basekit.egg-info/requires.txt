@@ -1,0 +1,17 @@
+fastapi>=0.116.1
+pydantic<3,>=2.11.7
+fastapi-restful[all]>=0.6.0
+
+[all]
+beanie>=1.24.0
+motor>=3.3.0
+SQLAlchemy[asyncio]>=2.0.0
+psycopg2>=2.9.0
+
+[beanie]
+beanie>=1.24.0
+motor>=3.3.0
+
+[sqlalchemy]
+SQLAlchemy[asyncio]>=2.0.0
+psycopg2>=2.9.0
