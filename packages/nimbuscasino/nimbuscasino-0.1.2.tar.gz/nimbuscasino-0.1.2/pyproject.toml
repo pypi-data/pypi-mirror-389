@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nimbuscasino"
+description = "An example of a package developed with pipenv, built with build using setuptools, uploaded to PyPI using twine, and distributed via pip."
+version = "0.1.2"
+authors = [
+  { name="Mojin Yuan", email="my2384@nyu.edu" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+keywords = ["python", "package", "build", "minigames"]
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+"Homepage" = "https://github.com/swe-students-fall2025/3-python-package-team_nimbus"
+"Repository" = "https://github.com/swe-students-fall2025/3-python-package-team_nimbus.git"
+"Bug Tracker" = "https://github.com/swe-students-fall2025/3-python-package-team_nimbus/issues"
+
+[project.scripts]
+nimbuscasino = "nimbuscasino.__main__:main"
