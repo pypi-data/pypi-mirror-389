@@ -1,0 +1,2 @@
+## AVAILABLE APPLICATION TOOL SCHEMAS
+{tool_schemas}
