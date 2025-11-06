@@ -1,0 +1,86 @@
+heros.helper
+============
+
+.. py:module:: heros.helper
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   heros.helper.SPAM
+   heros.helper.log
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   heros.helper.Logger
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   heros.helper.object_name_from_keyexpr
+   heros.helper.full_classname
+   heros.helper.get_logger
+
+
+Module Contents
+---------------
+
+.. py:function:: object_name_from_keyexpr(key_expr, ns_objects, realm, endpoint='.*')
+
+.. py:function:: full_classname(o)
+
+   Return the fully qualified class name of an object.
+
+   :param o: object
+
+   :returns: fully qualified module and class name
+
+
+.. py:data:: SPAM
+   :value: 5
+
+
+.. py:class:: Logger(name, level=NOTSET)
+
+   Bases: :py:obj:`logging.Logger`
+
+
+   Instances of the Logger class represent a single logging channel. A
+   "logging channel" indicates an area of an application. Exactly how an
+   "area" is defined is up to the application developer. Since an
+   application can have any number of areas, logging channels are identified
+   by a unique string. Application areas can be nested (e.g. an area
+   of "input processing" might include sub-areas "read CSV files", "read
+   XLS files" and "read Gnumeric files"). To cater for this natural nesting,
+   channel names are organized into a namespace hierarchy where levels are
+   separated by periods, much like the Java or Python package namespace. So
+   in the instance given above, channel names might be "input" for the upper
+   level, and "input.csv", "input.xls" and "input.gnu" for the sub-levels.
+   There is no arbitrary limit to the depth of nesting.
+
+
+   .. py:method:: setLevel(level, globally=False)
+
+      Set logger level; optionally propagate to all existing loggers.
+
+
+
+   .. py:method:: spam(msg, *args, **kwargs)
+
+      Log a SPAM-level message.
+
+
+
+.. py:function:: get_logger(name: str = 'heros') -> Logger
+
+.. py:data:: log
+
