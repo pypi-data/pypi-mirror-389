@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lablog"
+version = "0.1.0"
+description = "Research workflow memory system - track experiments, todos, and context"
+authors = [
+    {name = "Research Community"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["research", "ml", "experiment-tracking", "workflow", "lab-notebook"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "click>=8.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+lablog = "lablog.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/Linskii/lablog"
+Repository = "https://github.com/Linskii/lablog"
+Issues = "https://github.com/Linskii/lablog/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lablog*"]
