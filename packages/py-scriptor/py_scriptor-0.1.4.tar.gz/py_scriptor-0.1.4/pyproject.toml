@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools==76.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "py-scriptor"
+version = "0.1.4"
+description = "Scriptor is a small Python library for defining and running simple rule-based scripts"
+authors = [{name = "libmaster169 on github", email = "PRIVATE@EMAIL.COW"}]
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = []
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+[tool.setuptools.packages.find]
+where = ["."]
