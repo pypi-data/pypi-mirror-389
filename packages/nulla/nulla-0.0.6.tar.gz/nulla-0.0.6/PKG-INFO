@@ -1,0 +1,90 @@
+Metadata-Version: 2.4
+Name: nulla
+Version: 0.0.6
+Summary: Nulla: a local AI companion bootstrapper (Windows) with voice (Whisper ASR + XTTS v2 TTS), llama.cpp + OpenHermes GGUF, and built-in mini-games.
+Project-URL: Homepage, https://github.com/Tsoxer/nulla
+Project-URL: Source, https://github.com/Tsoxer/nulla
+Project-URL: Issues, https://github.com/Tsoxer/nulla/issues
+Author-email: Tsoxer <tsoxercontact@gmail.com>
+License: ﻿MIT License
+        
+        Copyright (c) 2025 Tsoxer
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+        THE SOFTWARE.
+License-File: LICENSE
+Keywords: ai companion,asr,coqui-tts,gguf,llama.cpp,minigame,nulla,openhermes,runner,snake,speech-to-text,text-to-speech,tts,whisper,xtts
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Games/Entertainment
+Classifier: Topic :: Multimedia :: Sound/Audio :: Speech
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: ==3.11.6
+Description-Content-Type: text/markdown
+
+﻿# Nulla
+
+*A local Windows bootstrapper for a talkative AI companion — sets up Whisper (ASR), XTTS v2 (TTS), llama.cpp with OpenHermes GGUF, and ships sample mini-games.*
+
+---
+
+### Status
+**Alpha — functional CLI.** `nulla setup` creates isolated venvs, fetches llama.cpp Windows binaries and the OpenHermes-2.5-Mistral-7B GGUF from **official upstreams**, and wires in Whisper (CPU) + XTTS v2 (CUDA/CPU).  
+This package **does not redistribute** third-party models/binaries; they are downloaded during setup under their respective licenses.
+
+### Tested Environment
+- **GPU:** RTX 5070 Ti 16 GB  
+- **CPU:** Ryzen 5 5600X  
+- **RAM:** 32 GB  
+- **Storage:** ~20 GB free recommended  
+- **OS:** Windows 11  
+- **Python:** **3.11.6 (required)**
+
+### Requirements
+- Windows 11
+- **Python 3.11.6 exactly**
+- NVIDIA CUDA (optional; CPU fallbacks exist but are slower)
+
+**Python requirement:** This project targets **Python 3.11.6 exactly**.
+
+**What this package does *not* include:**  
+- No Whisper code/weights, no llama.cpp binaries, no XTTS-v2 models, no GGUF models.  
+
+## Credits & Tools
+- **Author/Maintainer/Creative Director:** Tsoxer — <tsoxercontact@gmail.com>  
+- **Code scaffolding & helper scripts:** co-authored with **ChatGPT-5**  
+- **Image assets:** generated with **ChatGPT-5** (OpenAI)
+
+## Third-Party Notices (not bundled)
+- **OpenAI Whisper** — MIT License. Source: openai/whisper.  
+- **llama.cpp** — MIT-licensed C/C++ inference project.  
+- **XTTS-v2 (Coqui)** — licensed under the Coqui Public Model License (non-commercial). You must review and comply with their terms.  
+- **OpenHermes-2.5-Mistral-7B-GGUF (TheBloke)** — GGUF conversions hosted on Hugging Face; follow the original/model repo licenses.  
+
+## Third-Party Notices (bundled)
+
+- **salutations.wav by shadoWisp** — used in demos; licensed **CC BY 3.0**. If you use it, give attribution and link the source: https://freesound.org/s/260931/
+
+This package is © 2025 Tsoxer (MIT). See `LICENSE`.

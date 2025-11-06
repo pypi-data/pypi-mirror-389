@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nulla"
+version = "0.0.6"
+description = "Nulla: a local AI companion bootstrapper (Windows) with voice (Whisper ASR + XTTS v2 TTS), llama.cpp + OpenHermes GGUF, and built-in mini-games."
+readme = "README.md"
+requires-python = "==3.11.6"
+license = { file = "LICENSE" }
+authors = [{ name = "Tsoxer", email = "tsoxercontact@gmail.com" }]
+keywords = [
+  "nulla", "ai companion", "llama.cpp", "gguf", "openhermes",
+  "whisper", "xtts", "coqui-tts", "asr", "tts", "speech-to-text",
+  "text-to-speech", "minigame", "snake", "runner"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Environment :: Console",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+  "Topic :: Games/Entertainment",
+  "Operating System :: Microsoft :: Windows"
+]
+
+[project.urls]
+Homepage = "https://github.com/Tsoxer/nulla"
+Source = "https://github.com/Tsoxer/nulla"
+Issues = "https://github.com/Tsoxer/nulla/issues"
+# Optional extras:
+# Documentation = "https://pypi.org/project/nulla/"
+# Model Hub = "https://huggingface.co/Tsoxer"
+
+[project.scripts]
+nulla = "nulla.__main__:main"
+
+# --- Packaging rules (Hatch) ---
+# Ship just the Python package + tiny templates/notes, not your local test trees.
+[tool.hatch.build]
+include = [
+  "nulla/**",
+  "README.md",
+  "LICENSE"
+]
+exclude = [
+  # safety: exclude any local sandboxes if present in repo by accident
+  "assets/**",
+  "models/**",
+  "llama.cpp/**",
+  "XTTS-v2/**",
+  "Whisper/**",
+  "bin/**",
+  "dist/**",
+  "build/**",
+  ".venv/**",
+  "scripts/**",       # your runtime copies/creates helpers from package templates instead
+  "examples/**",
+  "tests/**",
+  "tmp/**",
+  "temp/**"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["nulla"]
