@@ -1,0 +1,27 @@
+---
+depends_on: "base_test.yaml"
+designs:
+  - devices:
+      - name: "device_1"
+        location__name: "Site"
+        status__name: "Active"
+        device_type__model: "model name"
+        role__name: "device role"
+        interfaces:
+          - name: "Ethernet1/1"
+            type: "virtual"
+            status__name: "Active"
+            description: "description for Ethernet1/1"
+checks:
+  - equal:
+      - model: "nautobot.dcim.models.Interface"
+        query: {name: "Ethernet1/1"}
+        attribute: "device"
+      - model: "nautobot.dcim.models.Device"
+        query: {name: "device_1"}
+  - equal:
+      - model: "nautobot.dcim.models.Device"
+        query: {name: "device_1"}
+        attribute: "location"
+      - model: "nautobot.dcim.models.Location"
+        query: {name: "Site"}

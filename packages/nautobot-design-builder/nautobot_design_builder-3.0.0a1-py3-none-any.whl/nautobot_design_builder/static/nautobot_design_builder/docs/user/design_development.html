@@ -1,0 +1,2617 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.nautobot.com/projects/design-builder/en/latest/user/design_development.html">
+      
+      
+        <link rel="prev" href="design_quickstart.html">
+      
+      
+        <link rel="next" href="design_lifecycle.html">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>Design Development - Nautobot Design Builder Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../assets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getting-started-with-designs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Nautobot Design Builder Documentation" class="md-header__button md-logo" aria-label="Nautobot Design Builder Documentation" data-md-component="logo">
+      
+  <img src="../assets/nautobot_logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nautobot Design Builder Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design Development
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/nautobot/nautobot-app-design-builder" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="app_overview.html" class="md-tabs__link">
+          
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../admin/install.html" class="md-tabs__link">
+          
+  
+    
+  
+  Administrator Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../dev/extending.html" class="md-tabs__link">
+          
+  
+    
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://docs.nautobot.com" class="md-tabs__link">
+        
+  
+    
+  
+  Nautobot Docs Home ↗︎
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Nautobot Design Builder Documentation" class="md-nav__button md-logo" aria-label="Nautobot Design Builder Documentation" data-md-component="logo">
+      
+  <img src="../assets/nautobot_logo.svg" alt="logo">
+
+    </a>
+    Nautobot Design Builder Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/nautobot/nautobot-app-design-builder" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    User Guide
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="app_overview.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    App Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="app_getting_started.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="design_quickstart.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Design Development
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="design_development.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Design Development
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#design-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Components
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#designjob" class="md-nav__link">
+    <span class="md-ellipsis">
+      DesignJob
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DesignJob">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-metadata-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class Metadata Attributes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      design_file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      design_files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      context_class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report" class="md-nav__link">
+    <span class="md-ellipsis">
+      report
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    <span class="md-ellipsis">
+      version
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      description
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docs" class="md-nav__link">
+    <span class="md-ellipsis">
+      docs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Context
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-validations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context Validations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Templates
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Templates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-syntax-query-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special Syntax - Query Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#special-syntax-action-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special Syntax - Action Tag
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Special Syntax - Action Tag">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-update-or-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Update or Create
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-git-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Git Context
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Reference
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#special-yaml-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special YAML Values
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Special YAML Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-value-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag Value - Reference
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-jinja-control-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Jinja Control Syntax
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional Jinja Control Syntax">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-include-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      The {% include %} statement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="design_lifecycle.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design LifeCycle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="design_testing.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="design_job_testing.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Job Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Frequently Asked Questions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="git_config_context.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Git-based Config Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Administrator Guide
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Administrator Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install and Configure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/upgrade.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/uninstall.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uninstall
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/compatibility_matrix.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compatibility Matrix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../admin/release_notes/index.html" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Release Notes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_1.0.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_1.1.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_1.2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_1.3.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.3
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_1.4.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1.4
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_2.0.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v2.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_2.1.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v2.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_2.2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v2.2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/release_notes/version_3.0.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v3.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Developer Guide
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Developer Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/extending.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Extending the App
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/contributing.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing to the App
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/dev_environment.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development Environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/release_checklist.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Release Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../dev/code_reference/index.html" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Code Reference
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/package.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Package
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/context.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Context
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/design.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Builder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/fields.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Field Descriptors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/design_job.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Job
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/jinja2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jinja Rendering
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/jinja_filters.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jinja Filters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/ext.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Template Extensions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/testing.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/code_reference/util.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Util
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assets/abbreviations.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Abbreviations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://docs.nautobot.com" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Nautobot Docs Home ↗︎
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#design-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Components
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#designjob" class="md-nav__link">
+    <span class="md-ellipsis">
+      DesignJob
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DesignJob">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-metadata-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class Metadata Attributes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      design_file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      design_files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_class" class="md-nav__link">
+    <span class="md-ellipsis">
+      context_class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report" class="md-nav__link">
+    <span class="md-ellipsis">
+      report
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    <span class="md-ellipsis">
+      version
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      description
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docs" class="md-nav__link">
+    <span class="md-ellipsis">
+      docs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Context
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-validations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context Validations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Templates
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Templates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-syntax-query-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special Syntax - Query Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#special-syntax-action-tag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special Syntax - Action Tag
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Special Syntax - Action Tag">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-update-or-create" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Update or Create
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-git-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Git Context
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag - Reference
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#special-yaml-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special YAML Values
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Special YAML Values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#action-tag-value-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action Tag Value - Reference
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-jinja-control-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Jinja Control Syntax
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional Jinja Control Syntax">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-include-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      The {% include %} statement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/nautobot/nautobot-app-design-builder/edit/main/docs/user/design_development.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/nautobot/nautobot-app-design-builder/raw/main/docs/user/design_development.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="getting-started-with-designs">Getting Started with Designs<a class="headerlink" href="#getting-started-with-designs" title="Permanent link">&para;</a></h1>
+<p>If you've ever watched an episode of <a href="https://en.wikipedia.org/wiki/How_It%27s_Made">"How it's made"</a>, you probably already have a good idea how Design Builder works. Take the analogy of building a car assembly line in a plant, to support building many cars. There are various car parts made by a press, such as the hood, doors, bumper, etc. For a given car, you can only have a 40 inch hood but <strong>not</strong> the 50 inch hood that would go on the truck. The assembly line is created so that many of the things needed for the car are fixed, such as a specific kind of steering wheel, but the worker building the car can substitute variable components requested by the customer. This could include the car's color, sound system, and choice of sun roof. This ensures that the worker can only assemble the car with valid components and the outcome is guaranteed to be a proper car.</p>
+<p>In the same way, the Design Builder app works to combine standardized design templates (the assembly line in this analogy) with a design context (the user supplied and computed information) to produce a design that can be used to create or update data within Nautobot, essentially creating the ability to expand the data massively from a few simple inputs. The combination of template, context and the job to build the objects are all collectively referred to as a design.</p>
+<p>A special form of Nautobot Job, known as a Design Job, is the main entrypoint into a design's implementation. The design job is responsible for defining the inputs required from a user and any input validation that must take place prior to a job's implementation. Once a user has provided the necessary inputs, a design context is created from those inputs. The design context provides any variables and values needed in the design templates for rendering. The design context can provide computed values, perform database lookups within Nautobot, or perform provisioning tasks. Once the design context has been created, the design builder will render the design template using the design context as a Jinja render context.</p>
+<p>The general flow of data through the design builder system can be visualized with the following picture:</p>
+<p><img alt="design builder data flow" src="../images/design/data-flow.png" /></p>
+<p>For the remainder of this tutorial we will focus solely on the Design Job, Design Context and Design Template portions of that diagram.</p>
+<h2 id="design-components">Design Components<a class="headerlink" href="#design-components" title="Permanent link">&para;</a></h2>
+<p>Designs can be loaded either from local files or from a git repository. Either way, the structure of the actual designs and all the associated files is the same. Since, fundamentally, all designs are Nautobot Jobs, everything must be in a top level <code>jobs</code> python package (meaning the directory must contain the file <code>__init__.py</code>) and all design classes must be either defined in this <code>jobs</code> module or be imported to it. The following directory layout is from the <a href="https://github.com/nautobot/demo-designs">demo designs repository</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">jobs</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├──<span class="w"> </span>core_site
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│<span class="w">   </span>├──<span class="w"> </span>context
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>context.yaml
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│<span class="w">   </span>└──<span class="w"> </span>designs
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│<span class="w">       </span>└──<span class="w"> </span>0001_design.yaml.j2
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>├──<span class="w"> </span>edge_site
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│<span class="w">   </span>├──<span class="w"> </span>context
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>context.yaml
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│<span class="w">   </span>└──<span class="w"> </span>designs
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│<span class="w">       </span>└──<span class="w"> </span>0001_design.yaml.j2
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>└──<span class="w"> </span>initial_data
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">    </span>├──<span class="w"> </span>context
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span>└──<span class="w"> </span>designs
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">        </span>└──<span class="w"> </span>0001_design.yaml.j2
+</code></pre></div>
+<p>The <code>jobs</code> directory contains everything that is needed for implementing a design. In the above case, the directory contains three designs:</p>
+<ul>
+<li>Initial Design</li>
+<li>Core Site</li>
+<li>Edge Site</li>
+</ul>
+<p>Within the <code>jobs</code> directory, the naming of modules and files is not important. However, it is recommended to use intuitive names to help understand each file's relationship with others. For instance, above there is are design contexts specified as both Python modules as well as YAML files and each design has exactly one design template. The relationship of context YAML files and context Python modules will be discussed later.</p>
+<p>Designs are just specialized Nautobot jobs. Any design must inherit from <code>DesignJob</code>, and just like any other job, design jobs must be registered using <code>register_jobs</code>. An example design follows:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.apps.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_jobs</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot_design_builder.design_job</span><span class="w"> </span><span class="kn">import</span> <span class="n">DesignJob</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">BasicDesign</span><span class="p">(</span><span class="n">DesignJob</span><span class="p">):</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A basic design for design builder.&quot;&quot;&quot;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata describing this design job.&quot;&quot;&quot;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Basic Design&quot;</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="n">commit_default</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        <span class="n">design_file</span> <span class="o">=</span> <span class="s2">&quot;designs/0001_design.yaml.j2&quot;</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="n">register_jobs</span><span class="p">(</span><span class="n">BasicDesign</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="designjob">DesignJob<a class="headerlink" href="#designjob" title="Permanent link">&para;</a></h2>
+<p>Primary Purpose:</p>
+<ul>
+<li>Define the Job</li>
+<li>Provide the user inputs</li>
+<li>Define the Design Context and Design Templates</li>
+</ul>
+<p>As previously stated, the entry point for all designs is the <code>DesignJob</code> class. New designs should include this class in their ancestry. Design Jobs are an extension of Nautobot Jobs with several additional metadata attributes. Here is the initial data job from our sample design:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="sd">&quot;&quot;&quot;Initial data required for core sites.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.apps.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_jobs</span><span class="p">,</span> <span class="n">IntegerVar</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot_design_builder.design_job</span><span class="w"> </span><span class="kn">import</span> <span class="n">DesignJob</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialDesignContext</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">InitialDesign</span><span class="p">(</span><span class="n">DesignJob</span><span class="p">):</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the database with default values needed by the core site designs.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="n">has_sensitive_variables</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="n">has_sensitive_variables</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="n">routers_per_site</span> <span class="o">=</span> <span class="n">IntegerVar</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata needed to implement the backbone site design.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Initial Data&quot;</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>        <span class="n">commit_default</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="n">design_file</span> <span class="o">=</span> <span class="s2">&quot;designs/0001_design.yaml.j2&quot;</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>        <span class="n">context_class</span> <span class="o">=</span> <span class="n">InitialDesignContext</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>        <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Establish the devices and site information for four sites: IAD5, LGA1, LAX11, SEA11.&quot;</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>        <span class="n">docs</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;This design creates the following objects in the source of truth to establish the initia network environment in  four sites: IAD5, LGA1, LAX11, SEA11.</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="s2">These sites belong to the America region (and different subregions), and use Juniper PTX10016 devices.</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="s2">The user input data is:</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="s2">    - Number of routers per site (integer)</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="s2">    - The description for us-west-1 region (string)</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="s2">&quot;&quot;&quot;</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Demo Designs&quot;</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="n">register_jobs</span><span class="p">(</span><span class="n">InitialDesign</span><span class="p">)</span>
+</code></pre></div>
+<p>This particular design job does not collect any input from the user, it will use <code>InitialDesignContext</code> for its render context and it will consume the <code>templates/initial_design.yaml.j2</code> file for its design. When this job is run, the Design Builder will create an instance of <code>InitialDesignContext</code>, read <code>templates/initial_design.yaml.j2</code> and then render the template with Jinja using the design context as a render context.</p>
+<p>Here is another, more interesting design:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">&quot;&quot;&quot;Design to create a core backbone site.&quot;&quot;&quot;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.apps.jobs</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_jobs</span><span class="p">,</span> <span class="n">ObjectVar</span><span class="p">,</span> <span class="n">StringVar</span><span class="p">,</span> <span class="n">IPNetworkVar</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.dcim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Location</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot_design_builder.design_job</span><span class="w"> </span><span class="kn">import</span> <span class="n">DesignJob</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoreSiteContext</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">CoreSiteDesign</span><span class="p">(</span><span class="n">DesignJob</span><span class="p">):</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a core backbone site.&quot;&quot;&quot;</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="n">region</span> <span class="o">=</span> <span class="n">ObjectVar</span><span class="p">(</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Region&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Region for the new backbone site&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="n">model</span><span class="o">=</span><span class="n">Location</span><span class="p">,</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="p">)</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    <span class="n">site_name</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\w</span><span class="si">{3}</span><span class="s2">\d+&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    <span class="n">site_prefix</span> <span class="o">=</span> <span class="n">IPNetworkVar</span><span class="p">(</span><span class="n">min_prefix_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">max_prefix_length</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    <span class="n">has_sensitive_variables</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata needed to implement the backbone site design.&quot;&quot;&quot;</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Backbone Site Design&quot;</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>        <span class="n">commit_default</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>        <span class="n">design_file</span> <span class="o">=</span> <span class="s2">&quot;designs/0001_design.yaml.j2&quot;</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>        <span class="n">context_class</span> <span class="o">=</span> <span class="n">CoreSiteContext</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>        <span class="n">nautobot_version</span> <span class="o">=</span> <span class="s2">&quot;&gt;=2&quot;</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Demo Designs&quot;</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="n">register_jobs</span><span class="p">(</span><span class="n">CoreSiteDesign</span><span class="p">)</span>
+</code></pre></div>
+<p>In this case, we have a design that will create a site, populate it with two racks, each rack will have a core router and each router will be populated with routing engines and switch fabric cards. The design job specifies that the user needs to supply a location for the new site, a site name and an IP prefix. These inputs will be combined in the design context to be used for building out a new site.</p>
+<h3 id="class-metadata-attributes">Class Metadata Attributes<a class="headerlink" href="#class-metadata-attributes" title="Permanent link">&para;</a></h3>
+<p>The design jobs above include standard metadata (<code>name</code> and <code>commit_default</code> for instance) attributes needed by Nautobot. Additionally, there are attributes specific to the design job. The <code>design_file</code> is a required require attribute specifying the design template. An optional <code>context_class</code> attribute can be given to specify the design context Python class. A more detailed description of these attributes follows in the next section.</p>
+<h3 id="design_file"><code>design_file</code><a class="headerlink" href="#design_file" title="Permanent link">&para;</a></h3>
+<p>Design file specifies the Jinja template that should be used to produce the input for the design builder. The builder will resolve the file's location relative to the location of the design job class.</p>
+<h3 id="design_files"><code>design_files</code><a class="headerlink" href="#design_files" title="Permanent link">&para;</a></h3>
+<p>Design files specifies a list of Jinja template that should be used to produce the input for the design builder. The builder will resolve the files' locations relative to the location of the design job class. Exactly one of <code>design_file</code> or <code>design_files</code> must be present in the design's Metadata. If <code>design_files</code> is used for a list of design templates, each one is evaluated in order. The same context and builder are used for all files. Since a single builder instance is used, references can be created in one design file and then accessed in a later design file.</p>
+<h3 id="context_class"><code>context_class</code><a class="headerlink" href="#context_class" title="Permanent link">&para;</a></h3>
+<p>The value of the <code>context_class</code> metadata attribute should be any Python class that inherits from the <code>nautobot_design_builder.Context</code> base class. Design builder will create an instance of this class and use it for the Jinja rendering environment in the first stage of implementation.</p>
+<h3 id="report"><code>report</code><a class="headerlink" href="#report" title="Permanent link">&para;</a></h3>
+<p>This attribute is optional. A report is a Jinja template that is rendered once the design has been implemented. Like <code>design_file</code> the design builder will look for this template relative to the filename that defines the design job. This is helpful to generate a custom view of the data that was built during the design build.</p>
+<h3 id="version"><code>version</code><a class="headerlink" href="#version" title="Permanent link">&para;</a></h3>
+<p>It's an optional string attribute that is used to define the versioning reference of a design job. This will enable in the future the versioning lifecycle of design deployments. For example, one a design evolves from one version to another, the design deployment will be able to accommodate the new changes.</p>
+<h3 id="description"><code>description</code><a class="headerlink" href="#description" title="Permanent link">&para;</a></h3>
+<p>This optional attribute that is a string that provides a high-level overview of the intend of the design job. This description is displayed int the design detail view.</p>
+<h3 id="docs"><code>docs</code><a class="headerlink" href="#docs" title="Permanent link">&para;</a></h3>
+<p>This attribute is also displayed on the design detail view. The <code>docs</code> attribute can utilize markdown format and should provide more detailed information than the description. This should help the users of the <code>Design</code> to understand the goal of the design and the impact of the input data.</p>
+<h2 id="design-context">Design Context<a class="headerlink" href="#design-context" title="Permanent link">&para;</a></h2>
+<p>Primary Purpose:</p>
+<ul>
+<li>Organize data from multiple places</li>
+<li>Validate data</li>
+</ul>
+<p>As previously stated, the design context is a combination of user supplied input and computed values. The design context should include any details needed to produce a design that can be built. Fundamentally, the design context is a Python class that extends the <code>nautobot_design_builder.Context</code> class. However, this context can be supplemented with YAML. Once Design Builder has created and populated the design context it passes this context off to a Jinja rendering environment to be used for variable lookups.</p>
+<p>That's a lot to digest, so let's break it down to the net effect of the design context.</p>
+<p>A context is essentially a mapping (similar to a dictionary) where the context's instance properties can be retrieved using the index operator (<code>[]</code>). YAML files that are included in the context will have their values added to the context as instance attributes. When design builder is rendering the design template it will use the context to resolve any unknown variables. One feature of the design context is that values in YAML contexts can include Jinja templates. For instance, consider the core site context from the design above:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot.dcim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Location</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">netaddr</span><span class="w"> </span><span class="kn">import</span> <span class="n">IPNetwork</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot_design_builder.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">DesignValidationError</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot_design_builder.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">context_file</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="nd">@context_file</span><span class="p">(</span><span class="s2">&quot;context.yaml&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">CoreSiteContext</span><span class="p">(</span><span class="n">Context</span><span class="p">):</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Render context for core site design&quot;&quot;&quot;</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="n">region</span><span class="p">:</span> <span class="n">Location</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="n">site_name</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    <span class="n">site_prefix</span><span class="p">:</span> <span class="n">IPNetwork</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">validate_new_site</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>            <span class="n">Location</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name__iexact</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">site_name</span><span class="p">))</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>            <span class="k">raise</span> <span class="n">DesignValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Another site exist with the name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">site_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>        <span class="k">except</span> <span class="n">Location</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>            <span class="k">return</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_serial_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">):</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>        <span class="c1"># ideally this would be an API call, or some external</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>        <span class="c1"># process, to determine the serial number. This is just to</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>        <span class="c1"># demonstrate var lookup from the context object</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">device_name</span><span class="p">)))</span>
+</code></pre></div>
+<p>This context has instance variables <code>region</code>, <code>site_name</code> and <code>site_prefix</code>. These instance variables will be populated from the user input provided by the design job. Additionally note the class decorator <code>@context_file</code>. This decorator indicates that the <code>core_site_context.yaml</code> file should be used to also populate values of the design context. The context includes a method called <code>validate_new_site</code> to perform some pre-implementation validation (see the <a href="#context-validations">next section</a> for details). The context also includes a method called <code>get_serial_number</code>. The implementation of this method is there only to demonstrate that some dynamic processing can occur to retrieve context values. For example, there may be an external <abbr title="Configuration Management Database">CMDB</abbr> that contains serial numbers for the devices. The <code>get_serial_number</code> method could connect to that system and lookup the serial number to populate the Nautobot object.</p>
+<p>Now let's inspect the context YAML file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nn">---</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">core_1_loopback</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">site_prefix</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">network_offset(&#39;0.0.0.1/32&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">core_2_loopback</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">site_prefix</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">network_offset(&#39;0.0.1.1/32&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</code></pre></div>
+<p>This context YAML creates two variables that will be added to the design context: <code>core_1_loopback</code> and <code>core_2_loopback</code>. The values of both of these variables are computed using a jinja template. The template uses a jinja filter from the <code>netutils</code> project to compute the address using the user-supplied <code>site_prefix</code>. When the design context is created, the variables will be added to the context. The values (from the jinja template) are rendered when the variables are looked up during the design template rendering process.</p>
+<blockquote>
+<p>Note: The <code>Context</code> class also contains a property to retrieve the <code>Tag</code> associated with the design and attached to all the objects with full_control. With this tag you can check for data in objects already created when the design is updated, for example: <code>.filter(tags__in=[self.design_instance_tag]</code>.</p>
+</blockquote>
+<h3 id="context-validations">Context Validations<a class="headerlink" href="#context-validations" title="Permanent link">&para;</a></h3>
+<p>Sometimes design data needs to be validated before a design can be built. The Design Builder provides a means for a design context to determine if it is valid and can/should the implementation proceed. After a design job creates and populates a design context, the job will call any methods on the context where the method name begins with <code>validate_</code>. These methods should not accept any arguments other than <code>self</code> and should either return <code>None</code> when valid or should raise <code>nautobot_design_builder.DesignValidationError</code>. In the above Context example, the design context checks to see if a site with the same name already exists, and if so it raises an error. Any number of validation methods can exist in a design context. Each will be called in the order it is defined in the class.</p>
+<h2 id="design-templates">Design Templates<a class="headerlink" href="#design-templates" title="Permanent link">&para;</a></h2>
+<p>Primary Purpose:</p>
+<ul>
+<li>Generate YAML files that conform to Design Builder's design file format.</li>
+</ul>
+<p>Design templates are Jinja templates that render to YAML. The YAML file represents a dictionary of objects that the design builder will create or update. The design builder supports all data models that exist within Nautobot, including any data models that are defined by applications installed within Nautobot. Top level keys in a design file map to the verbose plural name of the model. For instance, the <code>dcim.Device</code> model maps to the top level <code>devices</code> key within a design. Similarly, <code>dcim.Location</code> maps to <code>locations</code>.</p>
+<p>Design templates support object hierarchy where relationship mapping takes place automatically during the design build process. For instance, consider the following:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">locations</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;US-East-1&quot;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nt">location_type__name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Region&quot;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nt">children</span><span class="p">:</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;IAD5&quot;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">        </span><span class="nt">location_type__name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Site&quot;</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="nt">status__name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Active&quot;</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;LGA1&quot;</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="nt">location_type__name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Site&quot;</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">        </span><span class="nt">status__name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Active&quot;</span>
+</code></pre></div>
+<p>This design template will create location types and several locations. The Design Builder automatically takes care of the underlying relationships so that <code>IAD5</code> and <code>LGA1</code> are correctly associated with the <code>US-East-1</code> location. All relationships that are defined on the underlying database models are supported as nested objects within design templates.</p>
+<h3 id="special-syntax-query-fields">Special Syntax - Query Fields<a class="headerlink" href="#special-syntax-query-fields" title="Permanent link">&para;</a></h3>
+<p>Syntax: <code>field__&lt;relatedfield&gt;</code></p>
+<p>Double underscores between a <code>field</code> and a <code>relatedfield</code> cause design builder to attempt to query a related object using the <code>relatedfield</code> as a query parameter. This query must return only one object. The returned object is then assigned to the <code>field</code> of the object being created or updated. For instance:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">devices</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;switch1&quot;</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">platform__name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Arista</span><span class="nv"> </span><span class="s">EOS&quot;</span>
+</code></pre></div>
+<p>This template will attempt to find the <code>platform</code> with the name <code>Arista EOS</code> and then assign the object to the <code>platform</code> field on the <code>device</code>. The value for query fields can be a scalar or a dictionary. In the case above (<code>platform__name</code>) the scalar value <code>"Arista EOS"</code> expands the the equivalent ORM query: <code>Platform.objects.get(name="Arista EOS")</code> with the returned object being assigned to the <code>platform</code> attribute of the device.</p>
+<p>If a query field's value is a dictionary, then more complex lookups can be performed. For instance:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">devices</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;switch1&quot;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nt">platform</span><span class="p">:</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Arista</span><span class="nv"> </span><span class="s">EOS&quot;</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="nt">napalm_driver</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;eos&quot;</span>
+</code></pre></div>
+<p>The above query expands to the following ORM code: <code>Platform.objects.get(name="Arista EOS", napalm_driver="eos")</code> with the returned value being assigned to the <code>platform</code> attribute of the device.</p>
+<h3 id="special-syntax-action-tag">Special Syntax - Action Tag<a class="headerlink" href="#special-syntax-action-tag" title="Permanent link">&para;</a></h3>
+<p>In addition to the object mapping described above, some additional syntax, in what are called <code>Action Tags</code> are available in YAML design templates. These actions tags have special meaning to the design builder. Sometimes additional information is needed before the Design Builder can determine how to update the database or how to map a relationship. These special cases are handled with action tags within the YAML design templates. Any mapping key that begins with an exclamation point (<code>!</code>) is considered an action tag and carries special meaning in the design template. An example of a situation where an action tag is required is when updating, rather than creating, an object in the database. If Nautobot already has an instance of a data model and a design only requires updating that model then the <code>update:</code> action tag can be used. This instructs the builder to update the object, rather than try to create it. The available action tags are documented below.</p>
+<blockquote>
+<p>Note: Any YAML key that begins with an exclamation point (<code>!</code>) must be quoted or a YAML syntax error will be raised.</p>
+</blockquote>
+<h4 id="action-tag-update">Action Tag - Update<a class="headerlink" href="#action-tag-update" title="Permanent link">&para;</a></h4>
+<p>Syntax: <code>!update:&lt;field&gt;</code></p>
+<p>This syntax is used when you know an object already exists and indicates to design builder that the object should be updated, rather than created. An example of this is updating the description on an interface.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;!update:name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;Ethernet1/1&quot;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;new</span><span class="nv"> </span><span class="s">description</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">Ethernet1/1&quot;</span>
+</code></pre></div>
+<p>This template will find the interface with the name <code>Ethernet1/1</code> and then set the <code>description</code> field.</p>
+<h4 id="action-tag-update-or-create">Action Tag - Update or Create<a class="headerlink" href="#action-tag-update-or-create" title="Permanent link">&para;</a></h4>
+<p>Syntax: <code>!create_or_update:&lt;field&gt;</code></p>
+<p>Similar to <code>!update</code> this is used before a field name but will also create the object if it does not already exist. For example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">devices</span><span class="p">:</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;!create_or_update:name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bb-rtr-1</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="s">&quot;interfaces&quot;</span><span class="p p-Indicator">:</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;!create_or_update:name&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet1/1</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Uplink</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">provider&quot;</span>
+</code></pre></div>
+<p>This template will cause design builder to attempt to first lookup the device by the name <code>bb-rtr-1</code>, if not found it will be created. Subsequently, the device interface named <code>Ethernet1/1</code> will also be either created or updated. Note that when being created all required fields must be specified. The above example would fail during creation since both the device and the interface are missing required fields. Design Builder performs model validation prior to saving any model to the database.</p>
+<h4 id="action-tag-git-context">Action Tag - Git Context<a class="headerlink" href="#action-tag-git-context" title="Permanent link">&para;</a></h4>
+<p>Syntax: <code>!git_context</code></p>
+<p>Nautobot supports assigning config contexts from a git repository. Therefore the design builder supports generating config context data for an associated git repository. Using the <code>!git_context</code> key will indicate that design builder should store the rendered config context in a git repository. This functionality requires that a <code>destination</code> and <code>data</code> key are nested within the <code>!git_context</code> key, such as the below example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="x">&quot;!git_context&quot;:</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="x">    destination: &quot;config_contexts/devices/</span><span class="cp">{{</span> <span class="nv">device_name</span> <span class="cp">}}</span><span class="x">.yml&quot;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="x">    data:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="x">    </span><span class="cp">{%</span> <span class="k">include</span> <span class="s1">&#39;templates/spine_switch_config_context.yaml.j2&#39;</span> <span class="cp">%}</span>
+</code></pre></div>
+<p>In this example, the included template will be rendered and a new file will be created named <code>config_context/devices/{{ device_name }}.yml</code>, and the content of the rendered data template will be written to the file. Note that the <code>context_repository</code> configuration key must be set in the <code>nautobot_config.py</code> in order for this feature to work. More information can be found in the <a href="git_config_context.html">Git-Based Config Context documentation</a></p>
+<h4 id="action-tag-reference">Action Tag - Reference<a class="headerlink" href="#action-tag-reference" title="Permanent link">&para;</a></h4>
+<p>Syntax: <code>!ref</code></p>
+<p>When used as a YAML mapping key, <code>!ref</code> will store a reference to the current Nautobot object for use later in the design template. The value of the <code>!ref</code> key is used as the reference name within design builder. This feature is useful when you need to set a relationship field to the value of a previously created or updated object. One use-case where this can come up is when uplinks on a device are dynamically assigned based on the next available ports. The exact interfaces used may not be known but references to them can be created and then reused later to create cable terminations.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="x"># Creating a reference to spine interfaces.</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="x">#</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="x"># In the rendered YAML this ends up being something like</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="x"># &quot;spine_switch1:Ethernet1&quot;, &quot;spine_switch1:Ethernet2&quot;, etc</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="x">#</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="x">#</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="x">- &quot;!create_or_update:name&quot;: &quot;</span><span class="cp">{{</span> <span class="nv">interface</span> <span class="cp">}}</span><span class="x">&quot;</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="x">  &quot;!ref&quot;: &quot;</span><span class="cp">{{</span> <span class="nv">spine.name</span> <span class="cp">}}</span><span class="x">:</span><span class="cp">{{</span> <span class="nv">interface</span> <span class="cp">}}</span><span class="x">&quot;</span>
+</code></pre></div>
+<h3 id="special-yaml-values">Special YAML Values<a class="headerlink" href="#special-yaml-values" title="Permanent link">&para;</a></h3>
+<p>In addition to the special syntax provided for mapping keys, there are also some action tags provided for values. The following document the available value tags within the Design Builder.</p>
+<h4 id="action-tag-value-reference">Action Tag Value - Reference<a class="headerlink" href="#action-tag-value-reference" title="Permanent link">&para;</a></h4>
+<p>Syntax: <code>!ref</code></p>
+<p>When used as the value for a key <code>!ref:&lt;reference_name&gt;</code> will return the the previously stored object. In our example of cabling the reference lookup will look something like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="x"># Looking up a reference to previously created spine interfaces.</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="x">#</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="x"># In the rendered YAML &quot;!ref:</span><span class="cp">{{</span> <span class="nv">spine.name</span> <span class="cp">}}</span><span class="x">:</span><span class="cp">{{</span> <span class="nv">interface</span> <span class="cp">}}</span><span class="x">&quot; will become something like</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="x"># &quot;!ref:spine_switch1:Ethernet1&quot;, &quot;!ref:spine_switch1:Ethernet2&quot;, etc</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="x"># ObjectCreator will be able to assign the cable termination A side to the previously created objects.</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="x">#</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="x">#</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="cp">{%</span> <span class="k">for</span> <span class="nv">leaf</span><span class="o">,</span><span class="nv">interface</span> <span class="k">in</span> <span class="nv">spine_to_leaf</span><span class="o">[</span><span class="nb">loop</span><span class="nv">.index0</span><span class="o">]</span><span class="nv">.items</span><span class="o">()</span> <span class="cp">%}</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="x">- termination_a: &quot;!ref:</span><span class="cp">{{</span> <span class="nv">spine.name</span> <span class="cp">}}</span><span class="x">:</span><span class="cp">{{</span> <span class="nv">interface</span> <span class="cp">}}</span><span class="x">&quot;</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="x">  termination_b: &quot;!ref:</span><span class="cp">{{</span> <span class="nv">leaf</span> <span class="cp">}}</span><span class="x">:</span><span class="cp">{{</span> <span class="nv">leaf_to_spine</span><span class="o">[</span><span class="nv">leaf_index</span><span class="o">][</span><span class="nv">spine_index</span><span class="o">]</span> <span class="cp">}}</span><span class="x">&quot;</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="x">  status__name: &quot;Planned&quot;</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+</code></pre></div>
+<p>In this case, both <code>termination_a</code> and <code>termination_b</code> will be assigned the objects by looking for references by their name.</p>
+<h3 id="additional-jinja-control-syntax">Additional Jinja Control Syntax<a class="headerlink" href="#additional-jinja-control-syntax" title="Permanent link">&para;</a></h3>
+<p>The following section includes some additional information about Jinja syntax as well as describing some extensions to the Jinja parser that are provided by design builder.</p>
+<h4 id="the-include-statement">The <code>{% include %}</code> statement<a class="headerlink" href="#the-include-statement" title="Permanent link">&para;</a></h4>
+<p><code>include</code> is a built-in jinja expression that provides the ability to separate sections of a template into individual files and then produce a completed template as a composition of those files. This is useful when you want to split up a large template or it makes logical sense to keep certain parts separate, or if some of the template might be shared between two parent templates.</p>
+<p>Of particular note when using this Jinja expression is that the included files must have the same indentation as the point of inclusion, otherwise a YAML syntax error is introduced. The following example demonstrates the <code>include</code> expression:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="x">---</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="x">devices:</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="cp">{%</span> <span class="k">for</span> <span class="nv">device_name</span> <span class="k">in</span> <span class="nv">device_names</span> <span class="cp">%}</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="x">  - name: &quot;</span><span class="cp">{{</span> <span class="nv">device_name</span> <span class="cp">}}</span><span class="x">&quot;</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="x">    </span><span class="cp">{%</span> <span class="k">include</span> <span class="s1">&#39;design_files/templates/switch_template.yaml.j2&#39;</span> <span class="cp">%}</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+</code></pre></div>
+<p>The path to the included template is relative to the directory where the design class is defined for the particular design job. Using the example layout defined above, this path would be <code>designs/design_files/templates/switch_template.yaml.j2</code>.</p>
+<h3 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">&para;</a></h3>
+<p>Custom action tags can be created using template extensions. If a design needs custom functionality implemented as an action tag, the design developer can simply create a new tag (see the <a href="../dev/extending.html">extension</a> documentation). The new tag class can be added to the design using the extensions attribute in the design Meta class:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">DesignJobWithExtensions</span><span class="p">(</span><span class="n">DesignJob</span><span class="p">):</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Design with Custom Extensions&quot;</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>        <span class="n">design_file</span> <span class="o">=</span> <span class="s2">&quot;templates/simple_design.yaml.j2&quot;</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>        <span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="n">CustomExtension</span><span class="p">]</span>
+</code></pre></div>
+<p>Several additional extensions ship with Design Builder and are located in the <code>nautobot_design_builder.contrib.ext</code> module. This module includes several useful extensions to help with things like connecting cables or creating BGP peers. However, these extensions may not be supported in all versions of Nautobot or in all configurations. For instance, the <code>bgp_peering</code> action tag requires that the BGP models plugin be installed. Given that these extensions may require optional packages, and are not supported across the entire Nautobot ecosystem they are distributed in the <code>contrib</code> package.</p>
+<p>In order to use any of these contributed packages, simply import the <code>ext</code> module and include the necessary extensions in the design job:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">nautobot_design_builder.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ext</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">DesignJobWithExtensions</span><span class="p">(</span><span class="n">DesignJob</span><span class="p">):</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Design with Custom Extensions&quot;</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>        <span class="n">design_file</span> <span class="o">=</span> <span class="s2">&quot;templates/simple_design.yaml.j2&quot;</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>        <span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="n">ext</span><span class="o">.</span><span class="n">BGPPeeringExtension</span><span class="p">]</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="design_quickstart.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Design Quick Start">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Design Quick Start
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="design_lifecycle.html" class="md-footer__link md-footer__link--next" aria-label="Next: Design LifeCycle">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Design LifeCycle
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      
+<div class="md-copyright">
+    
+    <div class="md-copyright__highlight">
+        Copyright &copy; The Authors
+    </div>
+    <a href="https://github.com/nautobot/nautobot-app-design-builder/blob/main/LICENSE">Apache-2.0 LICENSE</a>
+    
+</div>
+
+<div class="md-copyright">
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">Made with Material for MkDocs</a>
+    | <a href="https://www.networktocode.com/community/open-source/" target="_blank" rel="noopener">Join #Nautobot on the Network to Code Slack</a>
+    
+    | <a href="https://networktocode.com" target="_blank" rel="noopener">Sponsored by <img
+            src=../assets/networktocode_bw.png class="copyright-logo"></a>
+    
+</div>
+
+<!-- RTD version flyout injected on live site -->
+<div id="readthedocs-embed-flyout"></div>
+
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://blog.networktocode.com/blog/tags/nautobot" target="_blank" rel="noopener" title="Network to Code Blog" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M0 64c0-17.7 14.3-32 32-32 229.8 0 416 186.2 416 416 0 17.7-14.3 32-32 32s-32-14.3-32-32C384 253.6 226.4 96 32 96 14.3 96 0 81.7 0 64m0 352a64 64 0 1 1 128 0 64 64 0 1 1-128 0m32-256c159.1 0 288 128.9 288 288 0 17.7-14.3 32-32 32s-32-14.3-32-32c0-123.7-100.3-224-224-224-17.7 0-32-14.3-32-32s14.3-32 32-32"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://www.youtube.com/playlist?list=PLjA0bhxgryJ2Ts4GJMDA-tPzVWEncv4pb" target="_blank" rel="noopener" title="Nautobot Videos" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305m-317.51 213.508V175.185l142.739 81.205z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://www.networktocode.com/community/" target="_blank" rel="noopener" title="Network to Code Community" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1s21.16-47.06 47.06-47.06h47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06S448 171 448 196.9s-21.16 47.06-47.06 47.06h-47.06zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06S309 480 283.1 480s-47.06-21.16-47.06-47.06v-47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06s21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/nautobot/nautobot" target="_blank" rel="noopener" title="GitHub Repo" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://twitter.com/networktocode" target="_blank" rel="noopener" title="Network to Code Twitter" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "navigation.footer", "navigation.indexes", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "search.highlight", "search.share", "search.suggest"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+    
+  </body>
+</html>
