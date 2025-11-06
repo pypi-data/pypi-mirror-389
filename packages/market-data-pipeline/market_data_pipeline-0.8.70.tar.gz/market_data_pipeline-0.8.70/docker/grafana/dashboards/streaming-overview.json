@@ -1,0 +1,185 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Market Data Pipeline - Streaming Overview",
+    "tags": ["market-data", "streaming"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Events Ingested Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(stream_events_ingested_total[5m])",
+            "legendFormat": "Events/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1000
+                },
+                {
+                  "color": "red",
+                  "value": 5000
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Consumer Lag",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "stream_consumer_lag_ms",
+            "legendFormat": "Lag (ms)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1000
+                },
+                {
+                  "color": "red",
+                  "value": 5000
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Micro-batch Flush Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(microbatch_flush_total[5m])",
+            "legendFormat": "{{symbol}} - {{window_ms}}ms"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Window Processing Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(microbatch_window_latency_ms_bucket[5m]))",
+            "legendFormat": "P95 Latency (ms)"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(microbatch_window_latency_ms_bucket[5m]))",
+            "legendFormat": "P50 Latency (ms)"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "Store Write Duration",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(store_write_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Write Duration (s)"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 6,
+        "title": "Signals Emitted",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(signals_emitted_total[5m])",
+            "legendFormat": "{{name}} - {{adapter}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 7,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(errors_total[5m])",
+            "legendFormat": "{{component}} - {{reason}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 32
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

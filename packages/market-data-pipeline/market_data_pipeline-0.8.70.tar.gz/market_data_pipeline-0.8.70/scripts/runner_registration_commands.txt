@@ -1,0 +1,33 @@
+# Runner Registration Commands for All Repositories
+# Run these commands on your Docker runner host
+
+# 1. market_data_pipeline
+./config.sh \
+  --url https://github.com/mjdevaccount/market_data_pipeline \
+  --token BE3WCOLPHF4N5MOLKPDBMDLI7P4JW \
+  --name md-runner \
+  --labels self-hosted,Linux,X64,mdnet \
+  --work _work \
+  --replace
+
+# 2. market_data_ibkr
+./config.sh \
+  --url https://github.com/mjdevaccount/market_data_ibkr \
+  --token BE3WCOO2RIJROKA5DQJDPJLI7P4PA \
+  --name md-runner \
+  --labels self-hosted,Linux,X64,mdnet \
+  --work _work \
+  --replace
+
+# 3. market_data_orchestrator
+./config.sh \
+  --url https://github.com/mjdevaccount/market_data_orchestrator \
+  --token BE3WCOOAIVE27UVCPWNPQTDI7P4PK \
+  --name md-runner \
+  --labels self-hosted,Linux,X64,mdnet \
+  --work _work \
+  --replace
+
+# Note: market_data_store returned 404 - repository may not exist or have different permissions
+
+# Note: market_data_infra is already registered

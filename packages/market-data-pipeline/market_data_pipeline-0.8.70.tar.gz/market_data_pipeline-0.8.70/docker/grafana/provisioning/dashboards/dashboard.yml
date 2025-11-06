@@ -1,0 +1,10 @@
+providers:
+  - name: 'Market Data Pipeline'
+    orgId: 1
+    folder: 'Market Data'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,175 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to'
+        required: true
+        default: 'test_pypi'
+        type: choice
+        options:
+          - test_pypi
+          - pypi
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build hatchling
+    
+    - name: Build package
+      run: python -m build
+    
+    - name: Store distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'test_pypi'
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: test_pypi
+      url: https://test.pypi.org/p/market_data_pipeline
+    
+    permissions:
+      id-token: write
+    
+    steps:
+    - name: Download distribution packages
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'pypi')
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: pypi
+      url: https://pypi.org/p/market_data_pipeline
+    
+    permissions:
+      id-token: write
+    
+    steps:
+    - name: Download distribution packages
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+
+  github-release:
+    name: Sign and upload to GitHub Release
+    if: github.event_name == 'release'
+    needs:
+    - publish-to-pypi
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      id-token: write
+    
+    steps:
+    - name: Download distribution packages
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    
+    - name: Sign with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    
+    - name: Upload artifacts to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release upload
+        '${{ github.ref_name }}' dist/**
+        --repo '${{ github.repository }}'
+
+  notify-infra:
+    name: Notify Infrastructure
+    runs-on: ubuntu-latest
+    needs: github-release
+    timeout-minutes: 2
+
+    steps:
+      - name: Extract version info
+        id: vars
+        run: |
+          # Extract version from release tag (remove 'v' prefix if present)
+          VERSION="${{ github.ref_name }}"
+          VERSION=${VERSION#v}  # Remove 'v' prefix if present
+          
+          # Extract repo name from repository (e.g., "mjdevaccount/market_data_pipeline" -> "market_data_pipeline")
+          REPO_NAME="${{ github.repository }}"
+          ORIGIN=${REPO_NAME##*/}  # Get everything after the last '/'
+          
+          echo "origin=$ORIGIN" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
+
+      - name: Trigger infra workflow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: mjdevaccount/market_data_infra
+          event-type: downstream_release
+          client-payload: |
+            {
+              "origin": "${{ steps.vars.outputs.origin }}",
+              "version": "${{ steps.vars.outputs.version }}",
+              "repo_name": "${{ steps.vars.outputs.repo_name }}",
+              "release_url": "${{ github.event.release.html_url }}",
+              "release_body": "${{ github.event.release.body }}"
+            }
+
+      - name: Log Summary
+        run: |
+          echo "✅ Triggered infra workflow for ${{ steps.vars.outputs.origin }} v${{ steps.vars.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "📤 Sent to: mjdevaccount/market_data_infra" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 Event: downstream_release" >> $GITHUB_STEP_SUMMARY
+

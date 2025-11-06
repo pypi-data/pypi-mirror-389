@@ -1,0 +1,92 @@
+version: 1
+profile: dev
+
+# Stream bus configuration
+bus:
+  type: "redis"  # redis | kafka
+  redis:
+    uri: "${REDIS_URI:-redis://localhost:6379/0}"
+    stream: "mdp.events"
+    signals_stream: "mdp.signals"
+    consumer_group: "mdp-consumers"
+  kafka:
+    brokers: ["kafka:9092"]
+    topic: "mdp.events"
+    signals_topic: "mdp.signals"
+
+# Producer configuration
+producers:
+  synthetic:
+    enabled: true
+    symbols: ["SPY", "AAPL", "MSFT", "GOOGL", "TSLA"]
+    tick_rate: 1.0  # ticks per second per symbol
+    price_volatility: 0.02  # 2% volatility
+    seed: 42
+    batch_max: 500
+    linger_ms: 50
+    heartbeat_ms: 5000
+  
+  ibkr:
+    enabled: false
+    symbols: ["SPY", "AAPL", "MSFT"]
+    host: "127.0.0.1"
+    port: 7497
+    client_id: 1
+    batch_max: 500
+    linger_ms: 50
+    heartbeat_ms: 5000
+
+# Micro-batch configuration
+micro_batch:
+  window_ms: 2000  # 2 second windows
+  max_batch_size: 5000
+  allow_late_ms: 500  # 500ms grace period for late events
+  flush_timeout_ms: 1000  # Flush timeout
+
+# Feature windows
+features:
+  windows:
+    - name: "vwap_1m"
+      horizon: "60s"
+    - name: "ret_30s"
+      horizon: "30s"
+    - name: "vol_5m"
+      horizon: "300s"
+    - name: "rsi_14"
+      horizon: "14s"
+    - name: "momentum_1m"
+      horizon: "60s"
+
+# Inference configuration
+inference:
+  adapters:
+    rules:
+      enabled: true
+      file: "configs/rules.yaml"
+    sklearn:
+      enabled: false
+      model_path: "models/signal_model.pkl"
+
+# Telemetry configuration
+telemetry:
+  metrics_port: 9101
+  log_level: INFO
+  metrics:
+    enabled: true
+    port: 9101
+  tracing:
+    enabled: false
+    otlp_endpoint: ""
+
+# Storage configuration (for micro-batcher and inference)
+storage:
+  primary:
+    type: "timescaledb"
+    uri: "${DATABASE_URI:-postgresql://user:pass@localhost:5432/marketdata}"
+    schema: "public"
+    table_bars: "bars_ohlcv"
+    table_signals: "signals"
+    write:
+      batch_size: 1000
+      upsert_keys: ["provider", "symbol", "interval", "ts"]
+      deduplicate: true

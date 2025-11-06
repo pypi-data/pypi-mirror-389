@@ -1,0 +1,186 @@
+name: Stream Processing Tests
+
+on:
+  push:
+    branches: [ base, main ]
+    paths:
+      - 'src/market_data_pipeline/streaming/**'
+      - 'tests/**'
+      - '.github/workflows/stream-tests.yml'
+  pull_request:
+    branches: [ base, main ]
+    paths:
+      - 'src/market_data_pipeline/streaming/**'
+      - 'tests/**'
+      - '.github/workflows/stream-tests.yml'
+
+jobs:
+  stream-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - "6379:6379"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      postgres:
+        image: timescale/timescaledb:latest-pg15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: marketdata
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U user -d marketdata"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+          pip install pytest pytest-asyncio pytest-mock
+          pip install redis asyncpg
+          # Ensure store client available for integration tests
+          pip install market_data_store
+      
+      - name: Wait for services
+        run: |
+          # Wait for Redis using Python
+          python -c "
+          import redis
+          import time
+          import sys
+          
+          r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+          for i in range(30):
+              try:
+                  r.ping()
+                  print('Redis is ready')
+                  break
+              except redis.ConnectionError:
+                  print(f'Waiting for Redis... ({i+1}/30)')
+                  time.sleep(1)
+          else:
+              print('Redis connection timeout')
+              sys.exit(1)
+          "
+          
+          # Wait for PostgreSQL
+          timeout 30 bash -c 'until pg_isready -h localhost -U user -d marketdata; do sleep 1; done'
+      
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/test_window_assigner.py -v --tb=short
+          pytest tests/unit/test_redis_connection.py -v --tb=short
+        env:
+          REDIS_URI: redis://localhost:6379/0
+          DATABASE_URI: postgresql://user:pass@localhost:5432/marketdata
+      
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/test_stream_to_store_roundtrip.py -v --tb=short
+        env:
+          REDIS_URI: redis://localhost:6379/0
+          DATABASE_URI: postgresql://user:pass@localhost:5432/marketdata
+      
+      - name: Run signals tests
+        run: |
+          pytest tests/integration/test_signals_roundtrip.py -v --tb=short
+        env:
+          DATABASE_URI: postgresql://user:pass@localhost:5432/marketdata
+      
+      - name: Test imports
+        run: |
+          python -c "
+          print('Testing imports...')
+          from market_data_pipeline.streaming.cli import StreamingCLI
+          print('✅ CLI import successful')
+          
+          from market_data_pipeline.streaming.telemetry import start_metrics_server
+          print('✅ Telemetry import successful')
+          
+          from market_data_pipeline.streaming.redis_bus import RedisStreamBus
+          print('✅ Redis bus import successful')
+          
+          from market_data_pipeline.streaming.bus import StreamEvent, SignalEvent
+          print('✅ Bus events import successful')
+          
+          from market_data_pipeline.streaming.consumers.micro_batcher import MicroBatcher
+          print('✅ Micro-batcher import successful')
+          
+          from market_data_pipeline.streaming.features.rolling import RollingFeatures
+          print('✅ Features import successful')
+          
+          from market_data_pipeline.streaming.inference.engine import InferenceEngine
+          print('✅ Inference engine import successful')
+          
+          print('✅ All imports successful')
+          "
+      
+      - name: Run smoke test
+        run: |
+          # Test basic streaming components
+          python -c "
+          import asyncio
+          import sys
+          from market_data_pipeline.streaming.redis_bus import RedisStreamBus
+          from market_data_pipeline.streaming.bus import StreamEvent
+          from datetime import datetime, timezone
+          
+          async def test_basic_flow():
+              try:
+                  bus = RedisStreamBus('redis://localhost:6379/0')
+                  await bus.connect()
+                  
+                  # Create test event
+                  event = StreamEvent(
+                      provider='test',
+                      symbol='TEST',
+                      kind='tick',
+                      src_ts=datetime.now(timezone.utc),
+                      ingest_ts=datetime.now(timezone.utc),
+                      data={'o': 100.0, 'h': 100.0, 'l': 100.0, 'c': 100.0, 'v': 1000}
+                  )
+                  
+                  # Publish event
+                  await bus.publish_event(event)
+                  print('✅ Event published successfully')
+                  
+                  await bus.disconnect()
+                  print('✅ Redis bus test completed')
+                  
+              except Exception as e:
+                  print(f'❌ Redis bus test failed: {e}')
+                  sys.exit(1)
+          
+          asyncio.run(test_basic_flow())
+          "
+        env:
+          REDIS_URI: redis://localhost:6379/0
+      
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results/
+            .pytest_cache/

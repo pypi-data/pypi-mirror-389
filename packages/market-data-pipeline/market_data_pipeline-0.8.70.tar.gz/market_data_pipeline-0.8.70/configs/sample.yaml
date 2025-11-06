@@ -1,0 +1,70 @@
+version: 2
+profile: dev
+
+# Providers
+providers:
+  synthetic_1:
+    type: synthetic
+    enabled: true
+    seed: 42
+
+# Storage
+storage:
+  primary:
+    type: timescaledb
+    uri: "postgresql://user:pass@localhost:5432/marketdata"
+    schema: "public"
+    table_bars: "bars_ohlcv"
+    write:
+      batch_size: 1000
+      upsert_keys: ["provider", "symbol", "interval", "ts"]
+      deduplicate: true
+
+# Datasets
+datasets:
+  synthetic_smoke:
+    provider: synthetic_1
+    symbols: ["SPY", "AAPL", "MSFT"]
+    interval: "1d"
+    fields: ["open", "high", "low", "close", "volume"]
+    adjustments:
+      splits: true
+      dividends: true
+
+# Jobs
+jobs:
+  synthetic_live:
+    dataset: synthetic_smoke
+    mode: live
+    execution:
+      concurrency: 1
+      retry:
+        max_attempts: 3
+        backoff_seconds: 5
+
+  synthetic_backfill:
+    dataset: synthetic_smoke
+    mode: backfill
+    backfill:
+      from: "now-30d"
+      to: "now"
+      chunk: "7d"
+      concurrency: 1
+    execution:
+      concurrency: 1
+      retry:
+        max_attempts: 3
+        backoff_seconds: 5
+
+# Features
+features:
+  dry_run: false
+  write_enabled: true
+  export_enabled: false
+
+# Telemetry
+telemetry:
+  log_level: INFO
+  metrics:
+    enabled: true
+    port: 9090

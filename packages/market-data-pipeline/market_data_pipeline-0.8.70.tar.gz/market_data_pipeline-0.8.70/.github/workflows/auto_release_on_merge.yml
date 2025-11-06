@@ -1,0 +1,186 @@
+name: Auto-Release on Core Dependency Update
+
+on:
+  push:
+    branches:
+      - base
+    paths:
+      - 'pyproject.toml'
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  auto-release:
+    name: Tag & Publish New Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bump version (patch)
+        id: bump
+        run: |
+          OLD_VERSION=$(grep -E '^version *= *"' pyproject.toml | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+          NEW_VERSION=$(bash scripts/bump_version.sh)
+          echo "old_version=$OLD_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Guard duplicate tags
+        run: |
+          if git rev-parse "v${{ steps.bump.outputs.new_version }}" >/dev/null 2>&1; then
+            echo "⚠️ Tag v${{ steps.bump.outputs.new_version }} already exists — skipping publish."
+            exit 0
+          fi
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml
+          git commit -m "chore(release): bump version to v${{ steps.bump.outputs.new_version }}"
+          git tag "v${{ steps.bump.outputs.new_version }}"
+          git push origin HEAD
+          git push origin "v${{ steps.bump.outputs.new_version }}"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build & Check
+        run: |
+          python -m build
+          python -m twine check dist/*
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        timeout-minutes: 5
+        run: |
+          python -m twine upload dist/* --skip-existing
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.bump.outputs.new_version }}
+          name: Release v${{ steps.bump.outputs.new_version }}
+          body: |
+            ## 🎉 Automated Release v${{ steps.bump.outputs.new_version }}
+            **Previous Version:** v${{ steps.bump.outputs.old_version }}
+
+            ✅ Auto-released after Core dependency update.
+
+            **PyPI:** https://pypi.org/project/market_data_pipeline/${{ steps.bump.outputs.new_version }}/
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+
+      - name: Dispatch to market_data_ibkr
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: mjdevaccount/market_data_ibkr
+          event-type: core_release
+          client-payload: |
+            {
+              "version": "${{ steps.bump.outputs.new_version }}",
+              "origin": "market_data_pipeline"
+            }
+
+      - name: Dispatch to market_data_orchestrator
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: mjdevaccount/market_data_orchestrator
+          event-type: downstream_release
+          client-payload: |
+            {
+              "version": "${{ steps.bump.outputs.new_version }}",
+              "origin": "market_data_pipeline"
+            }
+
+      - name: Show environment summary
+        if: always()
+        run: |
+          echo "## 🎉 Auto-Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Repository:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Previous Version:** ${{ steps.bump.outputs.old_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**New Version:** ${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Published To" >> $GITHUB_STEP_SUMMARY
+          echo "- **PyPI:** https://pypi.org/project/market_data_pipeline/${{ steps.bump.outputs.new_version }}/" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub:** https://github.com/${{ github.repository }}/releases/tag/v${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+
+  notify-infra:
+    name: Notify Infrastructure
+    runs-on: ubuntu-latest
+    needs: auto-release
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for tags
+
+      - name: Extract version info
+        id: vars
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Get the latest release tag
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          echo "Latest tag: $LATEST_TAG"
+          
+          # Extract version from release tag (remove 'v' prefix if present)
+          VERSION="$LATEST_TAG"
+          VERSION=${VERSION#v}  # Remove 'v' prefix if present
+          
+          # Extract repo name from repository (e.g., "mjdevaccount/market_data_pipeline" -> "market_data_pipeline")
+          REPO_NAME="${{ github.repository }}"
+          ORIGIN=${REPO_NAME##*/}  # Get everything after the last '/'
+          
+          echo "origin=$ORIGIN" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
+          echo "tag_name=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Trigger infra workflow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: mjdevaccount/market_data_infra
+          event-type: downstream_release
+          client-payload: |
+            {
+              "origin": "${{ steps.vars.outputs.origin }}",
+              "version": "${{ steps.vars.outputs.version }}",
+              "repo_name": "${{ steps.vars.outputs.repo_name }}",
+              "release_url": "https://github.com/${{ github.repository }}/releases/tag/${{ steps.vars.outputs.tag_name }}",
+              "release_body": "Auto-released after Core dependency update."
+            }
+
+      - name: Log Summary
+        run: |
+          echo "✅ Triggered infra workflow for ${{ steps.vars.outputs.origin }} v${{ steps.vars.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "📤 Sent to: mjdevaccount/market_data_infra" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 Event: downstream_release" >> $GITHUB_STEP_SUMMARY
+

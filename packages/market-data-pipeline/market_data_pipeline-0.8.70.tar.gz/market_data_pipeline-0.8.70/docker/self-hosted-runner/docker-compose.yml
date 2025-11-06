@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  github-runner:
+    build: .
+    container_name: market_data_pipeline_runner
+    restart: unless-stopped
+    environment:
+      - RUNNER_TOKEN=BE3WCOIAIHWCJUFNMHC5BKTI7P4EE
+      - RUNNER_NAME=infra-runner-docker
+      - RUNNER_LABELS=self-hosted,linux,x64,infra,docker
+    volumes:
+      # Persist runner state
+      - runner_data:/home/runner/actions-runner
+      # Allow access to host network for localhost:8000
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    network_mode: host  # This allows access to localhost:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  runner_data:
+    driver: local

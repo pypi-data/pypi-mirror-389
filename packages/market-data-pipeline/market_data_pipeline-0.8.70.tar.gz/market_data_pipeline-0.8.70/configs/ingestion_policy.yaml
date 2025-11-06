@@ -1,0 +1,35 @@
+# Write-path and safety controls for orchestrated ingestion
+version: 1
+
+write_path:
+  # High-level gating (orchestrator level)
+  enabled: true
+  dry_run: false                  # If true, sources start but no write to store/sinks
+  max_runtime_seconds: 0          # 0 = unlimited; >0 = auto-stop after N seconds
+
+store_sync:
+  # Choose how the orchestrator coordinates writing:
+  mode: "bus"                     # "bus" | "http" | "none"
+  bus:
+    # Your micro-batcher / redis_bus already reads from the stream
+    stream: "mdp.events"
+  http:
+    # Optional direct write endpoint if you have one
+    endpoint: "http://store:8082/ingest/prices"   # example
+    timeout_seconds: 5
+
+# Phase 20.1: Dual-sink configuration
+ingestion:
+  store_mode: provider             # "legacy" | "provider"
+  default_timeframe: "1m"
+  workers: 2
+  queue_max: 100
+  # Environment overrides:
+  # STORE_MODE=provider
+  # DATABASE_URL=postgresql://user:pass@host/db
+
+guards:
+  # Pre-flight guardrails for provider activation (simple, local checks)
+  require_provider_enabled: true
+  require_symbols_nonempty: true
+  # Future: add more checks (quota, connectivity prechecks, etc.)

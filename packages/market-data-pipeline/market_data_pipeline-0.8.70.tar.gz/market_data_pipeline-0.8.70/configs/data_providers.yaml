@@ -1,0 +1,24 @@
+# Feature flags and provider parameters (top-level orchestration view)
+version: 1
+
+providers:
+  synthetic:
+    enabled: true
+    # Orchestrator defaults; producers can still read streaming.yaml if needed
+    symbols: ["SPY", "AAPL", "MSFT", "GOOGL", "TSLA"]
+    ticks_per_sec: 5
+    pacing_budget:
+      max_msgs_per_sec: 1000
+      burst: 1000
+    seed: 42
+
+  ibkr:
+    enabled: false
+    symbols: ["SPY", "AAPL", "MSFT"]
+    host: "127.0.0.1"
+    port: 7497
+    client_id: 1
+    # batch/pacing knobs (optional; actual producer may use streaming.yaml)
+    pacing_budget:
+      max_msgs_per_sec: 800
+      burst: 800

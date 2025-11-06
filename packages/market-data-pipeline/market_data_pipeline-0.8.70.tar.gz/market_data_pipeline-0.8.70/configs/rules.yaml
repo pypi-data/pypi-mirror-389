@@ -1,0 +1,62 @@
+# Rules configuration for inference adapter
+# Each rule defines a condition and signal generation
+
+- name: "price_momentum_up"
+  condition: "momentum > 0.01"
+  signal: 1.0
+  score: 0.8
+  description: "Strong upward price momentum"
+
+- name: "price_momentum_down"
+  condition: "momentum < -0.01"
+  signal: -1.0
+  score: 0.8
+  description: "Strong downward price momentum"
+
+- name: "high_volatility"
+  condition: "volatility > 0.3"
+  signal: 0.0
+  score: 0.9
+  description: "High volatility warning"
+
+- name: "rsi_overbought"
+  condition: "rsi > 70"
+  signal: -1.0
+  score: 0.7
+  description: "RSI indicates overbought condition"
+
+- name: "rsi_oversold"
+  condition: "rsi < 30"
+  signal: 1.0
+  score: 0.7
+  description: "RSI indicates oversold condition"
+
+- name: "vwap_cross_up"
+  condition: "close > vwap"
+  signal: 1.0
+  score: 0.6
+  description: "Price crosses above VWAP"
+
+- name: "vwap_cross_down"
+  condition: "close < vwap"
+  signal: -1.0
+  score: 0.6
+  description: "Price crosses below VWAP"
+
+- name: "volume_spike"
+  condition: "volume > 2 * volume_mean"
+  signal: 0.5
+  score: 0.8
+  description: "Unusual volume activity"
+
+- name: "price_breakout"
+  condition: "close > high_max"
+  signal: 1.0
+  score: 0.9
+  description: "Price breaks above recent high"
+
+- name: "price_breakdown"
+  condition: "close < low_min"
+  signal: -1.0
+  score: 0.9
+  description: "Price breaks below recent low"
