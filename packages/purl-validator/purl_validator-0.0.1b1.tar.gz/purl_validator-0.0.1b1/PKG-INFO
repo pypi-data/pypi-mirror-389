@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: purl-validator
+Version: 0.0.1b1
+Summary: purl-validator
+Home-page: https://github.com/aboutcode-org/purl-validator
+Author: nexB. Inc. and others
+Author-email: info@aboutcode.org
+License: Apache-2.0
+Keywords: utilities
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Software Development
+Classifier: Topic :: Utilities
+Requires-Python: >=3.10
+Description-Content-Type: text/x-rst
+License-File: apache-2.0.LICENSE
+License-File: NOTICE
+License-File: AUTHORS.rst
+License-File: CHANGELOG.rst
+License-File: CODE_OF_CONDUCT.rst
+License-File: README.rst
+Requires-Dist: commoncode
+Requires-Dist: ducer
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.1; extra == "dev"
+Requires-Dist: pytest-xdist>=2; extra == "dev"
+Requires-Dist: aboutcode-toolkit>=7.0.2; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: Sphinx>=5.0.2; extra == "dev"
+Requires-Dist: sphinx-rtd-theme>=1.0.0; extra == "dev"
+Requires-Dist: sphinx-reredirects>=0.1.2; extra == "dev"
+Requires-Dist: doc8>=0.11.2; extra == "dev"
+Requires-Dist: sphinx-autobuild; extra == "dev"
+Requires-Dist: sphinx-rtd-dark-mode>=1.3.0; extra == "dev"
+Requires-Dist: sphinx-copybutton; extra == "dev"
+Dynamic: license-file
+
+purl-validator
+================================
+
+PURLs are everywhere in SBOMs. But with adoption comes widespread errors.
+A recent study on the quality of SBOMs revealed that for many proprietary and
+open source tools, PURLs in SBOMs are inconsistent, fake, incorrect, or
+misleading. This is a serious problem to any application of SBOMs for
+cybersecurity and application security, as well as related compliance
+regulations. This project is to create a PURL validator that's decentralized
+such that libraries can use it offline and help them create better PURLs.
+
+Building this compact dataset is new territory. There is research
+and exploration necessary for creating a super compact data structure
+that is also easy and fast to query across multiple languages. The data
+structure will also need memory-mapping to avoid running out of memory.
