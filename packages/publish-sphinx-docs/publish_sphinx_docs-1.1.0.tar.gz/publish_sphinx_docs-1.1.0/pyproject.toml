@@ -1,0 +1,27 @@
+[project]
+name = "publish-sphinx-docs"
+version = "1.1.0"
+description = "A simple Python CLI to publish your Sphinx documentation to a Github Pages or Gitlab Pages repository."
+readme = "README.rst"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Alexander Raichev", email = "araichev@mrcagney.com" },
+]
+dependencies = [
+    "ghp-import>=1",
+    "click>=8",
+]
+
+[project.scripts]
+publish-sphinx-docs = "publish_sphinx_docs:main.publish"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=6",
+    "sphinx-click>=3.0",
+]
