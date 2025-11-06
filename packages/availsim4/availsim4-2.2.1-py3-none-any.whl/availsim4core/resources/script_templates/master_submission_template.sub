@@ -1,0 +1,12 @@
+executable = $bash_script_location
+arguments = $$(ProcId)
+
+output = $output_location
+error = $error_location
+log = $log_location
+
+RequestCpus = 1
++MaxRuntime = $max_runtime
+$htcondor_extra_argument
+
+queue $n_parallel
