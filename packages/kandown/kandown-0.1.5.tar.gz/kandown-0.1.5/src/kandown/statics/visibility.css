@@ -1,0 +1,64 @@
+/* Mode-specific visibility utilities */
+/* Show only in CLI mode */
+.show-cli {
+  display: none !important;
+}
+body.mode-cli .show-cli {
+  display: revert !important;
+}
+
+/* Show only in page localStorage mode */
+.show-page-local {
+  display: none !important;
+}
+body.mode-page-local .show-page-local {
+  display: revert !important;
+}
+
+/* Show only in page filesystem mode (now 'page-fs') */
+.show-page-fs {
+  display: none !important;
+}
+body.mode-page-fs .show-page-fs {
+  display: revert !important;
+}
+
+/* Show only in readOnly mode */
+.show-readOnly {
+  display: none !important;
+}
+body.mode-readOnly .show-readOnly {
+  display: revert !important;
+}
+
+/* Hide in CLI mode */
+.hide-cli {
+  display: revert !important;
+}
+body.mode-cli .hide-cli {
+  display: none !important;
+}
+
+/* Hide in page localStorage mode */
+.hide-page-local {
+  display: revert !important;
+}
+body.mode-page-local .hide-page-local {
+  display: none !important;
+}
+
+/* Hide in page filesystem mode (now 'page-fs') */
+.hide-page-fs {
+  display: revert !important;
+}
+body.mode-page-fs .hide-page-fs {
+  display: none !important;
+}
+
+/* Hide in readOnly mode */
+.hide-readOnly {
+  display: revert !important;
+}
+body.mode-readOnly .hide-readOnly {
+  display: none !important;
+}
