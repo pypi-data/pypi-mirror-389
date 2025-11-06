@@ -1,0 +1,277 @@
+Metadata-Version: 2.4
+Name: flux-pipeline
+Version: 0.1.2
+Summary: A simple framework for building composable, asynchronous workflows
+Home-page: https://github.com/kai4avaya/flux
+Author: Flux Team
+License: MIT
+Project-URL: Homepage, https://github.com/kai4avaya/flux
+Project-URL: Documentation, https://github.com/kai4avaya/flux#readme
+Project-URL: Repository, https://github.com/kai4avaya/flux
+Project-URL: Issues, https://github.com/kai4avaya/flux/issues
+Keywords: async,pipeline,workflow,composable,asyncio
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# Flux - Tiny Pipeline Framework
+
+A minimal, composable pipeline framework for building async workflows with persistence, parallel execution, and pause/resume capabilities.
+
+## Quick Start
+
+### Installation
+
+```bash
+pip install flux-pipeline
+```
+
+### Basic Example
+
+```python
+import asyncio
+from flux import Node
+
+@Node
+def step1(input):
+    return f"processed: {input}"
+
+@Node
+def step2(input):
+    return f"{input} -> complete"
+
+# Chain nodes with pipe operator
+pipeline = step1 | step2
+
+# Execute
+result = await pipeline("hello")
+# Output: "processed: hello -> complete"
+```
+
+## Core Concepts
+
+### 1. Nodes - Building Blocks
+Decorate any function to make it a pipeline node:
+
+```python
+@Node
+def my_function(input):
+    return input.upper()
+```
+
+Nodes can be sync or async, and automatically handle persistence and shared state.
+
+### 2. Pipelines - Composition with |
+Chain nodes sequentially using the pipe operator:
+
+```python
+pipeline = node1 | node2 | node3
+result = await pipeline(input_data)
+```
+
+### 3. Parallel Execution
+Run multiple nodes in parallel:
+
+```python
+from flux import Parallel
+
+parallel = Parallel(node1, node2, node3)
+results = await parallel(input)  # Returns list of results
+```
+
+### 4. Conditional Branching
+Route execution based on conditions:
+
+```python
+from flux import Conditional
+
+@Node
+def check_type(input):
+    return "number" if isinstance(input, int) else "text"
+
+pipeline = Conditional(
+    check_type,
+    {
+        "number": number_handler,
+        "text": text_handler,
+        "": default_handler  # Default branch
+    }
+)
+```
+
+### 5. Persistence and State
+Track execution state and share data between nodes:
+
+```python
+@Node
+def save_data(input, persistence=None):
+    if persistence:
+        persistence.save("key", "value")
+    return input
+
+@Node
+def load_data(input, persistence=None):
+    if persistence:
+        value = persistence.get("key")
+    return input
+```
+
+### 6. Pause/Resume
+Pause and resume pipeline execution:
+
+```python
+@Node
+def pausable_step(input, persistence=None, node=None):
+    if should_pause:
+        node.pause(persistence)
+    return input
+
+# Execution pauses, can be resumed later
+```
+
+## Framework Features
+
+### Node Capabilities
+- **Auto-detection**: Automatically detects sync/async functions
+- **Dependency injection**: Supports `shared`, `persistence`, `storage`, `observability`
+- **Composable**: Chain with `|` operator or use in `Parallel`/`Conditional`
+
+### Persistence API
+```python
+persistence.save(key, value)      # Save state
+persistence.get(key, default)     # Get state
+persistence.delete(key)           # Delete state
+persistence.get_history()         # Get execution history
+persistence.set_status(status)    # Mark run status
+persistence.pause()               # Pause execution
+```
+
+### Run Management
+```python
+Persistence.list_runs()           # List all tracked runs
+Persistence.get_run(run_id)       # Get specific run data
+Persistence.cleanup_run(run_id)   # Clean up run data
+```
+
+## Complete Example
+
+```python
+import asyncio
+from flux import Node, Parallel
+
+@Node
+def fetch_data(input):
+    return f"data-{input}"
+
+@Node
+def process_data(input, persistence=None):
+    if persistence:
+        persistence.save("processed", input)
+    return input.upper()
+
+@Node
+def transform(input):
+    return f"transformed-{input}"
+
+@Node
+def combine(inputs: list):
+    return " + ".join(inputs)
+
+# Build pipeline: parallel processing then combine
+parallel = Parallel(
+    fetch_data | process_data,
+    transform
+)
+pipeline = parallel | combine
+
+# Execute
+result = await pipeline("start")
+# Output: "DATA-DATA-START + transformed-start"
+```
+
+## Advanced Features
+
+### Custom Storage Backend
+```python
+class CustomStorage:
+    def save(self, key: str, value: Any) -> None: ...
+    def get(self, key: str) -> Any: ...
+    def delete(self, key: str) -> bool: ...
+
+pipeline = my_pipeline(input, storage=CustomStorage())
+```
+
+### Observability
+```python
+def logger(action: str, key: str, value: Any) -> None:
+    print(f"{action}: {key} = {value}")
+
+pipeline = my_pipeline(input, observability=logger)
+```
+
+### Execution History
+```python
+result = await pipeline(input)
+history = persistence.get_history()
+
+for entry in history:
+    print(f"{entry['node_name']}: {entry['duration']:.4f}s")
+```
+
+## Project Structure
+
+```
+flux/
+├── __init__.py          # Tiny framework (~400 lines)
+├── requirements.txt     # Dependencies
+├── setup.py            # Package setup
+└── tests/              # Test suite
+```
+
+## Design Philosophy
+
+- Tiny: ~400 lines of core framework code
+- Composable: Build complex workflows from simple functions
+- Flexible: Sync/async, parallel, conditional execution
+- Observable: Built-in persistence and execution tracking
+- Zero Dependencies: Only Python standard library (asyncio)
+
+## Testing
+
+```bash
+# Run tests
+python -m pytest
+
+# Run quick test
+python __init__.py
+```
+
+## Development
+
+For local development:
+
+```bash
+# Clone the repository
+git clone https://github.com/kai4avaya/flux.git
+cd flux
+
+# Install in development mode
+pip install -e .
+```
+
+## License
+
+This project is licensed under the MIT License.
