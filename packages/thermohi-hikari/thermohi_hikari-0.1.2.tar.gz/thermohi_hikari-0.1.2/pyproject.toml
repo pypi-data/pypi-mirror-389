@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=40.8.0", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "thermohi-hikari"
+version = "0.1.2"
+description = "A thermogravimetric analysis helper tool by Hikari."
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { text = "MIT" }
+authors = [{ name = "Hikari Quicklime" }]
+requires-python = ">=3.8"
