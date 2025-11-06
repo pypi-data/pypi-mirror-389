@@ -1,0 +1,99 @@
+## BiRRe Configuration Defaults
+##
+## Precedence (lowest → highest):
+##   config.toml  <  config.local.toml  <  environment variables  <  CLI flags
+##
+## Only update values here to change project defaults.
+## Create config.local.toml to set your own values.
+## Environment and CLI equivalents are documented alongside each setting.
+
+[bitsight]
+# BitSight API key used to authenticate requests.
+# ENV: BITSIGHT_API_KEY
+# CLI: --bitsight-api-key
+# api_key = "bitsight_api_key_goes_here"
+
+# Subscription folder used when creating ephemeral subscriptions.
+# ENV: BIRRE_SUBSCRIPTION_FOLDER
+# CLI: --subscription-folder
+subscription_folder = "API"
+
+# Subscription type used for ephemeral subscriptions.
+# ENV: BIRRE_SUBSCRIPTION_TYPE
+# CLI: --subscription-type
+subscription_type = "continuous_monitoring"
+
+[runtime]
+# Skip startup checks (not recommended outside controlled environments).
+# ENV: BIRRE_SKIP_STARTUP_CHECKS
+# CLI: --skip-startup-checks
+skip_startup_checks = false
+
+# Enable verbose debug logging and diagnostic payloads.
+# ENV: BIRRE_DEBUG (or DEBUG)
+# CLI: --debug
+debug = false
+
+# Disable HTTPS certificate verification for BitSight API requests.
+# ENV: BIRRE_ALLOW_INSECURE_TLS
+# CLI: --allow-insecure-tls
+# allow_insecure_tls = false
+
+# Path to a custom certificate authority bundle for BitSight API HTTPS validation.
+# ENV: BIRRE_CA_BUNDLE
+# CLI: --ca-bundle
+# ca_bundle_path = "C:/path/to/proxy-root.pem"
+
+[roles]
+# Default persona exposed by the server.
+#   standard      - quick rating workflows (default)
+#   risk_manager  - subscription operations
+# ENV: BIRRE_CONTEXT
+# CLI: --context
+context = "standard"
+
+# Comma-separated risk vectors used when selecting top findings.
+# ENV: BIRRE_RISK_VECTOR_FILTER
+# CLI: --risk-vector-filter
+risk_vector_filter = """
+botnet_infections,
+spam_propagation,
+malware_servers,
+unsolicited_comm,
+potentially_exploited,
+open_ports,
+patching_cadence,
+insecure_systems,
+server_software
+"""
+
+# Maximum number of top findings returned with company rating.
+# ENV: BIRRE_MAX_FINDINGS
+# CLI: --max-findings
+max_findings = 10
+
+[logging]
+# Logging level (e.g. DEBUG, INFO, WARNING).
+# ENV: BIRRE_LOG_LEVEL
+# CLI: --log-level
+level = "INFO"
+
+# Logging format ("text" or "json").
+# ENV: BIRRE_LOG_FORMAT
+# CLI: --log-format
+format = "text"
+
+# Optional log file path (set empty, -, none, stderr, etc., or use --no-log-file for stderr-only).
+# ENV: BIRRE_LOG_FILE (empty or disable keyword to disable)
+# CLI: --log-file / --no-log-file
+file = "birre.log"
+
+# Maximum size in bytes for rotating log files.
+# ENV: BIRRE_LOG_MAX_BYTES
+# CLI: --log-max-bytes
+max_bytes = 10_000_000
+
+# Number of rotating log file backups to keep.
+# ENV: BIRRE_LOG_BACKUP_COUNT
+# CLI: --log-backup-count
+backup_count = 5
