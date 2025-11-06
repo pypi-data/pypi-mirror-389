@@ -1,0 +1,33 @@
+[package]
+name = "i2ptunnel"
+version = "0.1.2"
+edition = "2021"
+description = "I2P Proxy Tunnel with Python decorator support"
+license = "MIT"
+repository = "https://github.com/Krabbens/i2ptunnel"
+homepage = "https://github.com/Krabbens/i2ptunnel"
+documentation = "https://github.com/Krabbens/i2ptunnel#readme"
+readme = "README.md"
+
+[lib]
+name = "i2ptunnel"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["json", "multipart", "rustls-tls", "socks"] }
+pyo3 = { version = "0.21", features = ["auto-initialize", "extension-module"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "ansi", "json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+scraper = "0.19"
+url = "2.5"
+regex = "1.10"
+once_cell = "1.19"
+parking_lot = "0.12"
+futures = "0.3"
+
+[build-dependencies]
+pyo3-build-config = "0.21"
+
