@@ -1,0 +1,42 @@
+[build-system]
+requires = ["maturin>=1.9,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "snaplit"
+version = "0.1.0"
+description = "Snaplit — a Rust-powered Python package"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "HysingerDev", email = "HysingerDev@gmail.com" }]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = [
+    "rust",
+    "py03",
+    "python-extensions",
+    "data-structures",
+    "graphs",
+    "linear",
+    "probability",
+    "trees",
+    "hashing",
+    "algorithm",
+    "performance",
+    "library",
+    "ffi"
+]
+
+[tool.maturin]
+manifest-path = "rust/Cargo.toml"
+python-source = "src"
+module-name = "snaplit._rust_snaplit"
+bindings = "pyo3"
+features = ["pyo3/extension-module"]
