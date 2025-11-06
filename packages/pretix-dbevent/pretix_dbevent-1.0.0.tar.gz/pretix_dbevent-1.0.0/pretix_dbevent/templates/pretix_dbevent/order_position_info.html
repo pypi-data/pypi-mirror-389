@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load eventurl %}
+{% load bootstrap3 %}
+{% load static %}
+{% load rich_text %}
+
+{% if event.settings.dbevent_event_id %}
+    <div class="panel panel-dbred">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ event.settings.dbevent_advertising_title }}</h3>
+        </div>
+        <div class="panel-body">
+            {{ dbevent_advertising_text|rich_text }}
+        </div>
+    </div>
+{% endif %}

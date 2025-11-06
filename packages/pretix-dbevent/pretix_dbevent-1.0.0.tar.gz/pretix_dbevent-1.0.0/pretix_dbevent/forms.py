@@ -1,0 +1,110 @@
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
+from i18nfield.forms import I18nFormField
+from pretix.base.forms import (
+    I18nMarkdownTextarea,
+    I18nMarkdownTextInput,
+    PlaceholderValidator,
+    SettingsForm,
+)
+from urllib.parse import parse_qs, urlparse
+
+from .models import ItemDBEventConfig
+
+
+class ItemDBEventConfigForm(forms.ModelForm):
+    show_offer = forms.BooleanField(
+        label=pgettext_lazy(
+            "dbevent", "Display DB Event Offer if this product is purchased"
+        ),
+        required=False,
+    )
+
+    class Meta:
+        model = ItemDBEventConfig
+        fields = ["show_offer"]
+        exclude = []
+
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop("event")  # NoQA
+        instance = kwargs.get("instance")  # NoQA
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        if not self.cleaned_data["show_offer"]:
+            if self.instance.pk:
+                self.instance.delete()
+            else:
+                return
+        else:
+            v = self.cleaned_data["show_offer"]
+            self.instance.show_offer = v
+            return super().save(commit=commit)
+
+
+class DBEventSettingsForm(SettingsForm):
+    dbevent_event_id = forms.CharField(
+        label=_("DB Event ID"),
+        help_text=_(
+            "The ID of your event as displayed in the DB Event Offers portal. If your URL is "
+            "<code>https://www.veranstaltungsticket-bahn.de/?event=33148&language=de</code>, or "
+            "<code>https://www.eventanreise-bahn.de/de/events/33148</code>, please enter "
+            "<code>33148</code>."
+        ),
+        required=False,
+    )
+
+    dbevent_override_texts = forms.BooleanField(
+        label=_("Override default texts"),
+        required=False,
+    )
+
+    dbevent_advertising_title = I18nFormField(
+        label=_("Title"),
+        required=False,
+        widget=I18nMarkdownTextInput,
+        widget_kwargs={
+            "attrs": {
+                "data-display-dependency": "#id_dbevent_override_texts",
+            },
+        },
+    )
+
+    dbevent_advertising_content = I18nFormField(
+        label=_("Content"),
+        required=False,
+        widget=I18nMarkdownTextarea,
+        widget_kwargs={
+            "attrs": {
+                "data-display-dependency": "#id_dbevent_override_texts",
+            },
+        },
+        validators=[
+            PlaceholderValidator(
+                [
+                    "{event}",
+                    "{booking_url}",
+                    "{booking_button}",
+                    "{faq_url}",
+                    "{event_id}",
+                ]
+            )
+        ],
+        help_text=_(
+            "Available placeholders: {event}, {booking_url}, {booking_button}, {faq_url}, {event_id}"
+        ),
+    )
+
+    def clean_dbevent_event_id(self):
+        if self.cleaned_data.get("dbevent_event_id", "").isnumeric():
+            return self.cleaned_data.get("dbevent_event_id")
+        elif self.cleaned_data.get("dbevent_event_id", None) == "":
+            return None
+        else:
+            try:
+                return parse_qs(
+                    urlparse(self.cleaned_data.get("dbevent_event_id")).query
+                )["event"][0]
+            except KeyError:
+                raise ValidationError(_("Invalid DB Event ID"))
