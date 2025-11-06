@@ -1,0 +1,74 @@
+# 🌸 Blossom AI
+
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.4.1-blue.svg)](https://pypi.org/project/eclips-blossom-ai/)
+
+**A beautiful Python SDK for Pollinations.AI - Generate images, text, and audio with AI.**
+
+Blossom AI is a comprehensive, easy-to-use Python library that provides unified access to Pollinations.AI's powerful AI generation services. Create stunning images, generate text with various models, and convert text to speech with multiple voices - all through a beautifully designed, intuitive API.
+
+## ✨ Features
+
+- 🖼️ **Image Generation** - Create stunning images from text descriptions
+- 🔗 **Image URL Generation** - Get direct links without downloading (v0.2.5!)
+- 📝 **Text Generation** - Generate text with various AI models
+- 🌊 **Streaming** - Real-time text generation with timeout protection
+- 🎙️ **Audio Generation** - Text-to-speech with multiple voices
+- 🚀 **Unified API** - Same code works in sync and async contexts
+- 🧹 **Clean** - Proper resource management and automatic cleanup
+
+## 🚀 Quick Start
+
+### 📦 Installation
+
+```bash
+pip install eclips-blossom-ai
+```
+
+### ⚡ Basic Usage
+
+```python
+from blossom_ai import Blossom
+
+with Blossom() as ai:
+    # Generate image URL (Fast & Free!)
+    url = ai.image.generate_url("a beautiful sunset")
+    print(url)
+    
+    # Save image directly to a file
+    ai.image.save("a serene lake at dawn", "lake.jpg")
+
+    # Get raw image bytes for custom processing
+    image_bytes = ai.image.generate("a robot painting a portrait")
+    # Now you can upload, display, or manipulate image_bytes as needed
+
+    # Generate text
+    response = ai.text.generate("Explain quantum computing")
+    print(response)
+
+    # Stream text
+    for chunk in ai.text.generate("Tell me a story", stream=True):
+        print(chunk, end='', flush=True)
+```
+
+## 📚 Documentation
+
+- **[Documentation Index](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/INDEX.md)** - Start here for complete guide
+- **[Installation & Setup](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/INSTALLATION.md)**
+- **[Examples](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/EXAMPLES.md)** - Practical code examples
+- **[Changelog](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/blossom_ai/docs/CHANGELOG.md)**
+
+## 🤝 Contributing
+
+Contributions welcome!
+
+## 📄 License
+
+MIT License - see [LICENSE](https://github.com/PrimeevolutionZ/blossom-ai/blob/master/LICENSE)
+
+---
+
+Made with 🌸 by [Eclips Team](https://github.com/PrimeevolutionZ)
+
+:D
