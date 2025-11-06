@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "todo-cli-hpk"               
+version = "0.0.1"
+description = "A simple ToDo CLI app using Click and SQLite"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }       
+authors = [{ name = "Hossein Pakaein", email = "hosseinpakaein@gmail.com" }]
+keywords = ["todo", "cli", "productivity", "sqlite", "click"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Utilities",
+]
+
+dependencies = [
+  "click>=8.1.7",
+]
+
+[project.urls]
+Homepage = "https://github.com/hosseinpk/ToDo_CLI"
+Issues = "https://github.com/hosseinpk/ToDo_CLI/issues"
+
+[project.scripts]
+todo = "todo_cli.main:cli"           
+
+[tool.hatch.build.targets.sdist]
+include = ["todo_cli", "README.md", "LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["todo_cli"]
