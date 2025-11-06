@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dwm-notebooks"
+version = "0.3.0"
+description = "A small package that bundles six ML notebooks and provides a CLI to extract them to a user folder."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [ { name = "(you)", email = "you@example.com" } ]
+dependencies = [
+	"importlib-resources; python_version < \"3.9\"",
+	"google-generativeai>=0.7.2",
+]
+
+[project.scripts]
+# CLI entry point installed as `dwm-install`
+dwm-install = "dwm_notebooks.installer:main"
+dwm-gemini = "dwm_notebooks.gemini_chat:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["dwm_notebooks"]
+
+[tool.setuptools.package-data]
+"dwm_notebooks" = ["*.ipynb"]
