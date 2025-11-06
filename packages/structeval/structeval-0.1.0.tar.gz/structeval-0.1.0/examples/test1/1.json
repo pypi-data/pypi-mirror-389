@@ -1,0 +1,11 @@
+{
+    "name": "John Smith",
+    "age": 27,
+    "is_student": false,
+    "metadata": {"had_a_meal": true, "nested_metadata": {"had_a_meal_yesterday": true}},
+    "hobbies": [
+        {"name": "reading", "is_physical": false, "metadata": [{"recorded_ts": 1730131200}]},
+        {"name": "swimming and stuff", "is_physical": true, "metadata": [{"recorded_ts": 1730131200}, {"recorded_ts": 1730131201}, {"recorded_ts": 1730131202}]},
+        {"name": "climbing", "is_physical": true, "metadata": [{"recorded_ts": 1730131201}, {"recorded_ts": 1730131202}]}
+    ]
+}

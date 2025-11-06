@@ -1,0 +1,15 @@
+site_name: structeval
+site_description: Functional-first Python developer library template
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - API: api.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+

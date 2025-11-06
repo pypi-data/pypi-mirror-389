@@ -1,0 +1,57 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "enum": ["John", "John Smith"]
+        },
+        "age": {
+            "type": "integer",
+            "x-override-evaluator": {
+                "evaluation_type": "threshold",
+                "evaluation_params": {
+                    "threshold": 100,
+                    "difference_penalty_weighting": 0
+                }
+            }
+        },
+        "is_student": {
+            "type": "boolean"
+        },
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "had_a_meal": {
+                    "type": "boolean"
+                },
+                "nested_metadata": {
+                    "type": "object",
+                    "properties": {
+                        "had_a_meal_yesterday": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        }   
+    },
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "is_physical": {
+                "type": "boolean"
+            },
+            "metadata": {
+                "type": "object",
+                "properties": {
+                    "is_true": {
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}

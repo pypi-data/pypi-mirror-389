@@ -1,0 +1,16 @@
+{
+    "string_evaluation_type": {
+        "evaluation_type": "cosine",
+        "evaluation_params": {
+            "embedding_model": "all-MiniLM-L6-v2"
+        }
+    },
+    "integer_evaluation_type": {
+        "evaluation_type": "threshold",
+        "evaluation_params": {
+            "threshold": 10,
+            "difference_penalty_weighting": 1
+        }
+    },
+    "array_matching_threshold": 0.4
+}
