@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "availsim4"
+authors = [
+  { name="TE-MPE", email="availsim4-developers@cern.ch" },
+]
+description = """Availsim4 is a tool to predict reliability and availability \
+              of modern particle accelerators and their related systems."""
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Other Audience",
+
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+
+    "Programming Language :: Python"
+]
+dynamic = ["version"]
+license = {file = "LICENSE"}
+dependencies = [
+    'numpy > 1.20',
+    'pandas > 2.1',
+    'datetime',
+    'openpyxl > 3',
+    'scipy > 1.10',
+    'xlsxwriter > 3.1',
+]
+
+[project.optional-dependencies]
+test = ['pytest',
+  'memory_profiler',
+  'Pillow',
+  'pytest-cov']
+quasi-mc = ['qmcpy == 1.6.1']
+graphs = ['matplotlib',
+  'networkx',
+  'pygraphviz']
+dev = ['pre-commit']
+
+[project.urls]
+Homepage = "https://gitlab.cern.ch/availsim4/availsim4"
+Issues = "https://gitlab.cern.ch/availsim4/availsim4/issues"
+
+[project.scripts]
+availsim4 = "availsim4core.main:main"
+
+[tool.setuptools_scm]
+
+[tool.setuptools.package-data]
+availsim4core = ['logging/logging.conf', 'version.txt']
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["availsim4core/test", "availsim4core/logging", "availsim4core/resources", "doc", "CI", "input_template"]
+namespaces = false

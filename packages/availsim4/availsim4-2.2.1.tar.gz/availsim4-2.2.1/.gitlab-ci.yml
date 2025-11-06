@@ -1,0 +1,75 @@
+variables:
+  project_name: availsim4core
+  PY_VERSION: "3.11"
+  project_root: ./
+
+stages:
+  - test
+  - release
+  - release_cvmfs
+
+type_checking:
+  image: python:${PY_VERSION}
+  stage: test
+  script:
+    - pip3 install mypy
+    - mypy --ignore-missing-imports availsim4core
+  allow_failure: true
+
+test_dev:
+  stage: test
+  image: registry.cern.ch/docker.io/library/python:${PY_VERSION}
+  artifacts:
+    paths:
+      - coverage-reports/coverage-availsim4.xml
+      - "availsim4core/test/E2E/output/*/*.png"
+    when: always
+    expire_in: 1 day
+  before_script:
+    - apt-get update
+    - apt-get -y install graphviz libgraphviz-dev
+    - python -m pip install -e ${project_root}[test,quasi-mc,graphs]
+  script:
+    - pytest ${project_root}/${project_name} --cov=${project_name} --junitxml=report.xml
+    - pytest --cov-report xml:coverage-reports/coverage-availsim4.xml --cov=${project_name} ${project_root}/${project_name}
+
+# A push of the source distribution to the PyPI, only on git tag.
+release_sdist_on_tag:
+  stage: release
+  image: registry.cern.ch/docker.io/library/python:${PY_VERSION}
+  script:
+   - pip install twine build
+   - python -m build
+   - twine upload -u "__token__" -p ${PYPI_TOKEN} --verbose --skip-existing dist/*
+  only:
+   - tags
+
+# A push of the new most recent PyPI code to the CVMFS, only on git tag and to be run after release_sdist_on_tag stage.
+release_to_cvmfs_on_tag:
+  stage: release_cvmfs
+  image: registry.cern.ch/docker.io/library/python:${PY_VERSION}
+  before_script:
+   - export DEBIAN_FRONTEND=noninteractive
+   - apt-get update && apt-get install -y krb5-user
+   - echo $CVMFS_KEYTAB | base64 --decode > /tmp/keytab
+   - kinit $CVMFS_PUBLISHER_PRINCIPAL -k -t /tmp/keytab
+  script:
+   - ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $CVMFS_PUBLISHER
+   - sudo -i -u cvavailsim4
+   - cvmfs_server transaction beam-physics.cern.ch/availsim4
+   - mkdir /cvmfs/beam-physics.cern.ch/availsim4/${CI_COMMIT_TAG}
+   - cd /cvmfs/beam-physics.cern.ch/availsim4/${CI_COMMIT_TAG}/
+   - git clone ${CI_REPOSITORY_URL}
+   - cd
+   - ln -sf /cvmfs/beam-physics.cern.ch/availsim4/${CI_COMMIT_TAG}/ /cvmfs/beam-physics.cern.ch/availsim4/latest
+   - cvmfs_server publish beam-physics.cern.ch/availsim4
+  only:
+   - tags
+
+pylint_checking:
+  image: registry.cern.ch/docker.io/library/python:${PY_VERSION}
+  stage: test
+  script:
+    - pip3 install pylint
+    - pylint availsim4core --max-line-length=120
+  allow_failure: true

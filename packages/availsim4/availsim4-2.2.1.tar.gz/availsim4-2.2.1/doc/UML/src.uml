@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#/home/thomas/cernbox/ARCHIVE/codes/availsim4/availsim4core/availsim4core/src</OriginalElement>
+  <nodes>
+    <node x="8495.249999999998" y="616.0">availsim4core.src.discrete_event_simulation.event.c_event.phase_event.order_next_phase_if_failure_event.OrderNextPhaseIfFailureEvent</node>
+    <node x="7515.999999999998" y="976.0">availsim4core.src.discrete_event_simulation.event.c_event.repair_event.order_repair_event.OrderRepairEvent</node>
+    <node x="12259.999999999998" y="976.0">availsim4core.src.discrete_event_simulation.event.b_event.repair_event.end_repairing_event.EndRepairingEvent</node>
+    <node x="3213.0" y="1936.0">availsim4core.src.timeline.record_component.RecordComponent</node>
+    <node x="9220.0" y="2823.0">availsim4core.src.sensitivity_analysis.exploration_strategy.Outer</node>
+    <node x="7245.0" y="3010.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateMinimalReplaceableUnitColumn</node>
+    <node x="10869.0" y="3258.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateField</node>
+    <node x="10519.0" y="2593.0">availsim4core.src.context.system.minimal_replaceable_unit.MinimalReplaceableUnit</node>
+    <node x="12422.0" y="3010.0">availsim4core.src.discrete_event_simulation.b_event_generator.BEventGenerator</node>
+    <node x="8177.0" y="3010.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplatePhasesColumn</node>
+    <node x="4513.0" y="2593.0">availsim4core.src.discrete_event_simulation.discrete_event_simulation.DiscreteEventSimulation</node>
+    <node x="15534.999999999998" y="988.0">availsim4core.src.discrete_event_simulation.event.b_event.repair_event.minimal_replaceable_unit_start_repairing_event.MinimalReplaceableUnitStartRepairingEvent</node>
+    <node x="13897.0" y="1767.0">availsim4core.src.results.result_record_entry_phase.ResultRecordEntryPhase</node>
+    <node x="1594.0" y="3143.0">availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_outer_strategy.SystemModifierCombinationOuterStrategy</node>
+    <node x="14615.0" y="1743.0">availsim4core.src.results.result_record_entry_component.ResultRecordEntryComponent</node>
+    <node x="9973.0" y="3258.0">availsim4core.src.context.system.children_logic.children_logic_factory.ChildrenLogicFactory</node>
+    <node x="4007.999999999998" y="1000.0">availsim4core.src.discrete_event_simulation.event.c_event.failure_event.order_failure_event.OrderFailureEvent</node>
+    <node x="0.0" y="2176.0">availsim4core.src.context.system.component_tree.compound.Compound</node>
+    <node x="0.0" y="3010.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateArchitectureColumn</node>
+    <node x="8402.0" y="1949.0">availsim4core.src.context.system.children_logic.tolerated_fault.ToleratedFault</node>
+    <node x="14226.0" y="2593.0">availsim4core.src.context.context.Context</node>
+    <node x="7097.0" y="1634.0">availsim4core.src.statistics.statistics.Statistics</node>
+    <node x="6230.999999999998" y="1012.0">availsim4core.src.discrete_event_simulation.event.c_event.failure_event.reevaluate_order_all_failure_event.ReevaluateOrderAllFailureEvent</node>
+    <node x="11158.999999999998" y="976.0">availsim4core.src.discrete_event_simulation.event.b_event.inspection_event.end_inspection_event.EndInspectionEvent</node>
+    <node x="5013.0" y="3010.0">availsim4core.src.analysis.Analysis</node>
+    <node x="4171.0" y="3010.0">availsim4core.src.sensitivity_analysis.system_modifier.system_modifier.SystemModifier</node>
+    <node x="9156.0" y="1961.0">availsim4core.src.context.system.children_logic.and_.And</node>
+    <node x="12975.0" y="1634.0">availsim4core.src.context.phase.phase_manager.PhaseManager</node>
+    <node x="13502.0" y="3010.0">availsim4core.src.timeline.record_generator.RecordGenerator</node>
+    <node x="8176.499999999998" y="1350.0">availsim4core.src.discrete_event_simulation.event.b_event.failure_event.blind_failure_event.BlindFailureEvent</node>
+    <node x="13287.0" y="2593.0">availsim4core.src.exporter.result_exporter.ResultExporter</node>
+    <node x="8852.749999999998" y="0.0">availsim4core.src.discrete_event_simulation.event.event.Event</node>
+    <node x="8751.999999999998" y="1012.0">availsim4core.src.discrete_event_simulation.event.b_event.failure_event.failure_event.FailureEvent</node>
+    <node x="2418.0" y="3258.0">availsim4core.src.reader.xlsx.simulation_reader.SimulationSheet</node>
+    <node x="3890.25" y="1634.0">availsim4core.src.timeline.record.Record</node>
+    <node x="923.5" y="1634.0">availsim4core.src.context.system.component_tree.component.Component</node>
+    <node x="9690.0" y="3010.0">availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination.SystemModifierCombination</node>
+    <node x="3035.499999999998" y="652.5">availsim4core.src.discrete_event_simulation.event.c_event.phase_event.order_next_phase_event.OrderNextPhaseEvent</node>
+    <node x="5826.0" y="3010.0">availsim4core.src.context.system.failure_mode_assignments.FailureModeAssignments</node>
+    <node x="2641.999999999998" y="1012.0">availsim4core.src.discrete_event_simulation.event.c_event.inspection_event.reevaluate_order_all_inspection_event.ReevaluateOrderAllInspectionEvent</node>
+    <node x="1212.9999999999982" y="964.0">availsim4core.src.discrete_event_simulation.event.c_event.repair_event.minimal_replaceable_unit_order_repair_event.MinimalReplaceableUnitOrderRepairEvent</node>
+    <node x="12546.0" y="2593.0">availsim4core.src.context.system.inspection.Inspection</node>
+    <node x="4198.0" y="1960.0">availsim4core.src.timeline.record_phase.RecordPhase</node>
+    <node x="4837.0" y="1984.0">availsim4core.src.context.system.probability_law.normal_law.NormalLaw</node>
+    <node x="2121.0" y="2810.0">availsim4core.src.reader.xlsx.sensitivity_analysis_reader.SensitivityAnalysisReader</node>
+    <node x="3062.0" y="3258.0">availsim4core.src.context.system.minimal_replaceable_unit.MinimalReplaceableUnitFactory</node>
+    <node x="14420.999999999998" y="976.0">availsim4core.src.discrete_event_simulation.event.b_event.inspection_event.start_inspection_event.StartInspectionEvent</node>
+    <node x="11212.0" y="3010.0">availsim4core.src.context.system.system_utils.SystemUtils</node>
+    <node x="0.0" y="2593.0">availsim4core.src.context.system.system_template.SystemTemplate</node>
+    <node x="11594.0" y="3258.0">availsim4core.src.reader.xlsx.monte_carlo_reader.MonteCarloReader</node>
+    <node x="14323.5" y="1634.0">availsim4core.src.results.result_record_entry.ResultRecordEntry</node>
+    <node x="9711.999999999998" y="976.0">availsim4core.src.discrete_event_simulation.event.b_event.repair_event.minimal_replaceable_unit_end_repairing_event.MinimalReplaceableUnitEndRepairingEvent</node>
+    <node x="9475.5" y="2593.0">availsim4core.src.sensitivity_analysis.exploration_strategy.ExplorationStrategy</node>
+    <node x="3860.0" y="2822.0">availsim4core.src.reader.xlsx.simulation_reader.SimulationReader</node>
+    <node x="0.0" y="1000.0">availsim4core.src.discrete_event_simulation.event.c_event.inspection_event.order_start_inspection_event.OrderStartInspectionEvent</node>
+    <node x="9066.0" y="1634.0">availsim4core.src.context.system.children_logic.children_logic.ChildrenLogic</node>
+    <node x="7624.0" y="1634.0">availsim4core.src.results.results.Results</node>
+    <node x="7287.749999999998" y="254.0">availsim4core.src.discrete_event_simulation.event.c_event.c_event.CEvent</node>
+    <node x="4503.0" y="3258.0">availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_strategy_director.SystemModifierCombinationStrategyDirector</node>
+    <node x="10739.0" y="3010.0">availsim4core.src.timeline.timeline.Timeline</node>
+    <node x="10545.0" y="1863.5">availsim4core.src.simulation.quick_parse.QuickParse</node>
+    <node x="13360.999999999998" y="1000.0">availsim4core.src.discrete_event_simulation.event.b_event.repair_event.start_repairing_event.StartRepairingEvent</node>
+    <node x="5510.0" y="1984.0">availsim4core.src.context.system.probability_law.exponential_law.ExponentialLaw</node>
+    <node x="9209.499999999998" y="1314.0">availsim4core.src.discrete_event_simulation.event.b_event.failure_event.detectable_failure_event.DetectableFailureEvent</node>
+    <node x="842.0" y="3010.0">availsim4core.src.reader.xlsx.monte_carlo_reader.SimulationMonteCarloColumn</node>
+    <node x="13340.499999999998" y="206.0">availsim4core.src.discrete_event_simulation.event.b_event.b_event.BEvent</node>
+    <node x="15129.0" y="3258.0">availsim4core.src.sensitivity_analysis.exploration_strategy_factory.SensitivityAnalysisStrategyError</node>
+    <node x="2920.0" y="2750.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateReader</node>
+    <node x="2870.0" y="3143.0">availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_inner_strategy.SystemModifierCombinationInnerStrategy</node>
+    <node x="0.0" y="3258.0">availsim4core.src.discrete_event_simulation.c_event_generator.CEventGenerator</node>
+    <node x="14170.999999999998" y="556.0">availsim4core.src.discrete_event_simulation.event.b_event.phase_event.next_phase_if_failure_event.NextPhaseIfFailureEvent</node>
+    <node x="12256.0" y="3258.0">availsim4core.src.context.system.failure_factory.FailureFactory</node>
+    <node x="13990.0" y="3258.0">availsim4core.src.discrete_event_simulation.event.b_event.failure_event.failure_event_factory.FailureEventFactoryError</node>
+    <node x="11150.75" y="1634.0">availsim4core.src.simulation.simulation.Simulation</node>
+    <node x="5858.0" y="3258.0">availsim4core.src.discrete_event_simulation.event.b_event.inspection_event.inspection_event_factory.InspectionEventFactory</node>
+    <node x="3130.0" y="2593.0">availsim4core.src.reader.xlsx.xlsx_reader.XLSXReader</node>
+    <node x="6273.0" y="1984.0">availsim4core.src.context.system.probability_law.deterministic_law.DeterministicLaw</node>
+    <node x="14850.0" y="3010.0">availsim4core.src.reader.xlsx.sensitivity_analysis_reader.SensitivityAnalysisSheet</node>
+    <node x="770.0" y="3258.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateFailureModeAssignmentsColumn</node>
+    <node x="13472.0" y="3258.0">availsim4core.src.runner.local_runner.LocalRunner</node>
+    <node x="15665.0" y="3010.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateInspectionsColumn</node>
+    <node x="7065.0" y="2593.0">availsim4core.src.context.system.architecture_entry.ArchitectureEntry</node>
+    <node x="5053.999999999998" y="1000.0">availsim4core.src.discrete_event_simulation.event.c_event.inspection_event.order_end_inspection_event.OrderEndInspectionEvent</node>
+    <node x="1702.0" y="3258.0">availsim4core.src.context.system.component_tree.component.ComponentType</node>
+    <node x="11056.0" y="1743.0">availsim4core.src.simulation.monte_carlo.MonteCarlo</node>
+    <node x="968.0" y="3410.0">availsim4core.src.context.system.children_logic.children_logic_factory.ChildrenLogicFactoryError</node>
+    <node x="6623.0" y="3010.0">availsim4core.src.context.system.failure.Failure</node>
+    <node x="8127.0" y="3258.0">availsim4core.src.sensitivity_analysis.exploration_strategy_factory.ExplorationStrategyFactory</node>
+    <node x="12900.0" y="3258.0">availsim4core.src.runner.htcondor_runner.HTCondorRunner</node>
+    <node x="2742.0" y="3410.0">availsim4core.src.reader.xlsx.simulation_reader.SimulationNotFoundError</node>
+    <node x="8965.0" y="3010.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateSheet</node>
+    <node x="0.0" y="3410.0">availsim4core.src.context.system.probability_law.probability_law_factory.ProbabilityLawFactoryError</node>
+    <node x="5510.0" y="1634.0">availsim4core.src.context.system.probability_law.probability_law.ProbabilityLaw</node>
+    <node x="4095.499999999998" y="640.0">availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent</node>
+    <node x="1909.0" y="3410.0">availsim4core.src.context.system.component_tree.component_factory.ComponentTypeError</node>
+    <node x="6168.0" y="2593.0">availsim4core.src.context.system.component_tree.component_factory.ComponentFactory</node>
+    <node x="5427.0" y="2593.0">availsim4core.src.context.phase.phase.Phase</node>
+    <node x="2281.5" y="3010.0">availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_strategy.SystemModifierCombinationStrategy</node>
+    <node x="12410.999999999998" y="652.0">availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent</node>
+    <node x="9050.0" y="3258.0">availsim4core.src.context.system.probability_law.probability_law_factory.ProbabilityLawFactory</node>
+    <node x="11713.0" y="2593.0">availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateFailureModeColumn</node>
+    <node x="1413.0" y="2224.0">availsim4core.src.context.system.component_tree.basic.Basic</node>
+    <node x="15665.0" y="2593.0">availsim4core.src.sensitivity_analysis.sensitivity_analysis.SensitivityAnalysis</node>
+    <node x="4174.0" y="3410.0">availsim4core.src.context.system.failure_factory.FailureFactoryError</node>
+    <node x="7033.0" y="3258.0">availsim4core.src.discrete_event_simulation.event.b_event.failure_event.failure_event_factory.FailureEventFactory</node>
+    <node x="13209.999999999998" y="580.5">availsim4core.src.discrete_event_simulation.event.b_event.phase_event.next_phase_event.NextPhaseEvent</node>
+    <node x="3458.0" y="3410.0">availsim4core.src.context.system.children_logic.oo.ChildrenLogicOoError</node>
+    <node x="7642.249999999998" y="616.0">availsim4core.src.discrete_event_simulation.event.c_event.postpone_c_event.PostponeCEvent</node>
+    <node x="9857.0" y="2823.0">availsim4core.src.sensitivity_analysis.exploration_strategy.Inner</node>
+    <node x="15039.0" y="2593.0">availsim4core.src.context.system.component_tree.status.Status</node>
+    <node x="8513.0" y="2593.0">availsim4core.src.exporter.xlsx_analysis_exporter.XLSXAnalysisExporter</node>
+    <node x="9021.5" y="1743.0">availsim4core.src.context.system.children_logic.oo.Oo</node>
+    <node x="9712.0" y="1973.5">availsim4core.src.context.system.children_logic.required_component.RequiredComponent</node>
+    <node x="7624.0" y="1767.0">availsim4core.src.results.simulation_results.SimulationResults</node>
+    <node x="14305.0" y="3010.0">availsim4core.src.context.system.failure.FailureType</node>
+    <node x="13347.0" y="2702.0">availsim4core.src.exporter.xlsx_result_exporter_summary.XLSXResultExporterSummary</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="availsim4core.src.timeline.record_phase.RecordPhase" target="availsim4core.src.timeline.record.Record">
+      <point x="0.0" y="-114.0" />
+      <point x="4495.0" y="1911.0" />
+      <point x="4197.75" y="1911.0" />
+      <point x="102.5" y="126.0" />
+    </edge>
+    <edge source="availsim4core.src.timeline.record_component.RecordComponent" target="availsim4core.src.timeline.record.Record">
+      <point x="0.0" y="-138.0" />
+      <point x="3695.5" y="1911.0" />
+      <point x="3992.75" y="1911.0" />
+      <point x="-102.5" y="126.0" />
+    </edge>
+    <edge source="availsim4core.src.exporter.xlsx_result_exporter_summary.XLSXResultExporterSummary" target="availsim4core.src.exporter.result_exporter.ResultExporter">
+      <point x="0.0" y="-65.5" />
+      <point x="0.0" y="29.5" />
+    </edge>
+    <edge source="availsim4core.src.sensitivity_analysis.exploration_strategy.Inner" target="availsim4core.src.sensitivity_analysis.exploration_strategy.ExplorationStrategy">
+      <point x="0.0" y="-29.5" />
+      <point x="10165.5" y="2798.0" />
+      <point x="10032.75" y="2798.0" />
+      <point x="185.75" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.reader.xlsx.sensitivity_analysis_reader.SensitivityAnalysisReader" target="availsim4core.src.reader.xlsx.xlsx_reader.XLSXReader">
+      <point x="0.0" y="-41.5" />
+      <point x="2510.5" y="2725.0" />
+      <point x="3213.3333333333335" y="2725.0" />
+      <point x="-166.66666666666652" y="53.5" />
+    </edge>
+    <edge source="availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_inner_strategy.SystemModifierCombinationInnerStrategy" target="availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_strategy.SystemModifierCombinationStrategy">
+      <point x="0.0" y="-29.5" />
+      <point x="3498.0" y="3118.0" />
+      <point x="3149.25" y="3118.0" />
+      <point x="289.25" y="41.5" />
+    </edge>
+    <edge source="availsim4core.src.context.system.component_tree.compound.Compound" target="availsim4core.src.context.system.component_tree.component.Component">
+      <point x="0.0" y="-186.0" />
+      <point x="696.5" y="2151.0" />
+      <point x="1208.5" y="2151.0" />
+      <point x="-285.0" y="246.0" />
+    </edge>
+    <edge source="availsim4core.src.reader.xlsx.system_template_reader.SystemTemplateReader" target="availsim4core.src.reader.xlsx.xlsx_reader.XLSXReader">
+      <point x="0.0" y="-101.5" />
+      <point x="0.0" y="53.5" />
+    </edge>
+    <edge source="availsim4core.src.context.system.probability_law.exponential_law.ExponentialLaw" target="availsim4core.src.context.system.probability_law.probability_law.ProbabilityLaw">
+      <point x="0.0" y="-89.5" />
+      <point x="0.0" y="150.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.c_event.CEvent">
+      <point x="0.0" y="-90.0" />
+      <point x="4520.999999999998" y="536.0" />
+      <point x="7542.749999999998" y="536.0" />
+      <point x="-85.0" y="102.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.failure_event.blind_failure_event.BlindFailureEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.failure_event.failure_event.FailureEvent">
+      <point x="0.0" y="-101.5" />
+      <point x="8682.999999999998" y="1289.0" />
+      <point x="8986.999999999998" y="1289.0" />
+      <point x="-235.0" y="102.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.inspection_event.reevaluate_order_all_inspection_event.ReevaluateOrderAllInspectionEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-102.0" />
+      <point x="3314.999999999998" y="944.0" />
+      <point x="4399.42857142857" y="944.0" />
+      <point x="-121.57142857142844" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.inspection_event.order_end_inspection_event.OrderEndInspectionEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-114.0" />
+      <point x="5632.499999999998" y="944.0" />
+      <point x="4642.571428571427" y="944.0" />
+      <point x="121.57142857142844" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.phase_event.order_next_phase_if_failure_event.OrderNextPhaseIfFailureEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.c_event.CEvent">
+      <point x="0.0" y="-114.0" />
+      <point x="9105.249999999998" y="526.0" />
+      <point x="7882.749999999998" y="526.0" />
+      <point x="255.0" y="102.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.postpone_c_event.PostponeCEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.c_event.CEvent">
+      <point x="0.0" y="-114.0" />
+      <point x="8058.749999999998" y="536.0" />
+      <point x="7712.749999999998" y="536.0" />
+      <point x="85.0" y="102.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.phase_event.next_phase_event.NextPhaseEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.b_event.BEvent">
+      <point x="0.0" y="-149.5" />
+      <point x="0.0" y="150.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.b_event.BEvent" target="availsim4core.src.discrete_event_simulation.event.event.Event">
+      <point x="0.0" y="-150.0" />
+      <point x="13680.499999999998" y="181.0" />
+      <point x="9288.499999999998" y="181.0" />
+      <point x="145.25" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.repair_event.minimal_replaceable_unit_order_repair_event.MinimalReplaceableUnitOrderRepairEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-150.0" />
+      <point x="1917.4999999999982" y="934.0" />
+      <point x="4277.857142857141" y="934.0" />
+      <point x="-243.14285714285688" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.b_event.BEvent">
+      <point x="0.0" y="-78.0" />
+      <point x="12800.499999999998" y="536.0" />
+      <point x="13453.833333333332" y="536.0" />
+      <point x="-226.66666666666606" y="150.0" />
+    </edge>
+    <edge source="availsim4core.src.simulation.monte_carlo.MonteCarlo" target="availsim4core.src.simulation.simulation.Simulation">
+      <point x="0.0" y="-150.0" />
+      <point x="11993.0" y="1718.0" />
+      <point x="11512.25" y="1718.0" />
+      <point x="120.5" y="29.5" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.inspection_event.end_inspection_event.EndInspectionEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-138.0" />
+      <point x="11699.499999999998" y="944.0" />
+      <point x="12689.214285714284" y="944.0" />
+      <point x="-111.28571428571377" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.failure_event.reevaluate_order_all_failure_event.ReevaluateOrderAllFailureEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-102.0" />
+      <point x="6863.499999999998" y="934.0" />
+      <point x="4764.142857142855" y="934.0" />
+      <point x="243.14285714285688" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.phase_event.next_phase_if_failure_event.NextPhaseIfFailureEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.b_event.BEvent">
+      <point x="0.0" y="-174.0" />
+      <point x="14731.499999999998" y="536.0" />
+      <point x="13907.166666666664" y="536.0" />
+      <point x="226.66666666666606" y="150.0" />
+    </edge>
+    <edge source="availsim4core.src.results.simulation_results.SimulationResults" target="availsim4core.src.results.results.Results">
+      <point x="0.0" y="-162.0" />
+      <point x="0.0" y="41.5" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.repair_event.start_repairing_event.StartRepairingEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-114.0" />
+      <point x="13880.999999999998" y="944.0" />
+      <point x="12911.785714285712" y="944.0" />
+      <point x="111.28571428571377" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.failure_event.failure_event.FailureEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-102.0" />
+      <point x="9221.999999999998" y="924.0" />
+      <point x="12466.642857142855" y="924.0" />
+      <point x="-333.8571428571431" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.c_event.CEvent" target="availsim4core.src.discrete_event_simulation.event.event.Event">
+      <point x="0.0" y="-102.0" />
+      <point x="7627.749999999998" y="181.0" />
+      <point x="8997.999999999998" y="181.0" />
+      <point x="-145.25" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.context.system.component_tree.basic.Basic" target="availsim4core.src.context.system.component_tree.component.Component">
+      <point x="0.0" y="-138.0" />
+      <point x="2290.5" y="2151.0" />
+      <point x="1778.5" y="2151.0" />
+      <point x="285.0" y="246.0" />
+    </edge>
+    <edge source="availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_outer_strategy.SystemModifierCombinationOuterStrategy" target="availsim4core.src.sensitivity_analysis.system_modifier.system_modifier_combination_strategy.SystemModifierCombinationStrategy">
+      <point x="0.0" y="-29.5" />
+      <point x="2222.0" y="3118.0" />
+      <point x="2570.75" y="3118.0" />
+      <point x="-289.25" y="41.5" />
+    </edge>
+    <edge source="availsim4core.src.results.result_record_entry_component.ResultRecordEntryComponent" target="availsim4core.src.results.result_record_entry.ResultRecordEntry">
+      <point x="0.0" y="-138.0" />
+      <point x="15000.0" y="1718.0" />
+      <point x="14772.75" y="1718.0" />
+      <point x="149.75" y="29.5" />
+    </edge>
+    <edge source="availsim4core.src.results.result_record_entry_phase.ResultRecordEntryPhase" target="availsim4core.src.results.result_record_entry.ResultRecordEntry">
+      <point x="0.0" y="-114.0" />
+      <point x="14246.0" y="1718.0" />
+      <point x="14473.25" y="1718.0" />
+      <point x="-149.75" y="29.5" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.failure_event.detectable_failure_event.DetectableFailureEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.failure_event.failure_event.FailureEvent">
+      <point x="0.0" y="-137.5" />
+      <point x="9760.999999999998" y="1289.0" />
+      <point x="9456.999999999998" y="1289.0" />
+      <point x="235.0" y="102.0" />
+    </edge>
+    <edge source="availsim4core.src.sensitivity_analysis.exploration_strategy.Outer" target="availsim4core.src.sensitivity_analysis.exploration_strategy.ExplorationStrategy">
+      <point x="0.0" y="-29.5" />
+      <point x="9528.5" y="2798.0" />
+      <point x="9661.25" y="2798.0" />
+      <point x="-185.75" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.repair_event.minimal_replaceable_unit_start_repairing_event.MinimalReplaceableUnitStartRepairingEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-126.0" />
+      <point x="16266.499999999998" y="924.0" />
+      <point x="13134.357142857141" y="924.0" />
+      <point x="333.8571428571431" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.context.system.children_logic.oo.Oo" target="availsim4core.src.context.system.children_logic.children_logic.ChildrenLogic">
+      <point x="0.0" y="-78.0" />
+      <point x="0.0" y="29.5" />
+    </edge>
+    <edge source="availsim4core.src.context.system.children_logic.tolerated_fault.ToleratedFault" target="availsim4core.src.context.system.children_logic.oo.Oo">
+      <point x="0.0" y="-66.0" />
+      <point x="8769.0" y="1924.0" />
+      <point x="9155.666666666666" y="1924.0" />
+      <point x="-268.33333333333394" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.repair_event.order_repair_event.OrderRepairEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-138.0" />
+      <point x="8123.999999999998" y="924.0" />
+      <point x="4885.714285714284" y="924.0" />
+      <point x="364.71428571428623" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.context.system.probability_law.deterministic_law.DeterministicLaw" target="availsim4core.src.context.system.probability_law.probability_law.ProbabilityLaw">
+      <point x="0.0" y="-89.5" />
+      <point x="6662.5" y="1959.0" />
+      <point x="6129.166666666667" y="1959.0" />
+      <point x="247.66666666666697" y="150.0" />
+    </edge>
+    <edge source="availsim4core.src.simulation.quick_parse.QuickParse" target="availsim4core.src.simulation.simulation.Simulation">
+      <point x="0.0" y="-29.5" />
+      <point x="10790.5" y="1718.0" />
+      <point x="11271.25" y="1718.0" />
+      <point x="-120.5" y="29.5" />
+    </edge>
+    <edge source="availsim4core.src.context.system.probability_law.normal_law.NormalLaw" target="availsim4core.src.context.system.probability_law.probability_law.ProbabilityLaw">
+      <point x="0.0" y="-89.5" />
+      <point x="5163.5" y="1959.0" />
+      <point x="5633.833333333333" y="1959.0" />
+      <point x="-247.66666666666697" y="150.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.repair_event.minimal_replaceable_unit_end_repairing_event.MinimalReplaceableUnitEndRepairingEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-138.0" />
+      <point x="10425.499999999998" y="934.0" />
+      <point x="12577.928571428569" y="934.0" />
+      <point x="-222.57142857142935" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.phase_event.order_next_phase_event.OrderNextPhaseEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.c_event.CEvent">
+      <point x="0.0" y="-77.5" />
+      <point x="3555.499999999998" y="526.0" />
+      <point x="7372.749999999998" y="526.0" />
+      <point x="-255.0" y="102.0" />
+    </edge>
+    <edge source="availsim4core.src.context.system.children_logic.and_.And" target="availsim4core.src.context.system.children_logic.oo.Oo">
+      <point x="0.0" y="-54.0" />
+      <point x="0.0" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.repair_event.end_repairing_event.EndRepairingEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-138.0" />
+      <point x="0.0" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.context.system.children_logic.required_component.RequiredComponent" target="availsim4core.src.context.system.children_logic.oo.Oo">
+      <point x="0.0" y="-41.5" />
+      <point x="10106.0" y="1924.0" />
+      <point x="9692.333333333334" y="1924.0" />
+      <point x="268.33333333333394" y="78.0" />
+    </edge>
+    <edge source="availsim4core.src.reader.xlsx.simulation_reader.SimulationReader" target="availsim4core.src.reader.xlsx.xlsx_reader.XLSXReader">
+      <point x="0.0" y="-29.5" />
+      <point x="4164.0" y="2725.0" />
+      <point x="3546.6666666666665" y="2725.0" />
+      <point x="166.66666666666652" y="53.5" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.failure_event.order_failure_event.OrderFailureEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-114.0" />
+      <point x="0.0" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.c_event.inspection_event.order_start_inspection_event.OrderStartInspectionEvent" target="availsim4core.src.discrete_event_simulation.event.c_event.component_c_event.ComponentCEvent">
+      <point x="0.0" y="-114.0" />
+      <point x="596.5" y="924.0" />
+      <point x="4156.285714285712" y="924.0" />
+      <point x="-364.7142857142858" y="90.0" />
+    </edge>
+    <edge source="availsim4core.src.discrete_event_simulation.event.b_event.inspection_event.start_inspection_event.StartInspectionEvent" target="availsim4core.src.discrete_event_simulation.event.b_event.basic_b_event.BasicBEvent">
+      <point x="0.0" y="-138.0" />
+      <point x="14967.999999999998" y="934.0" />
+      <point x="13023.071428571428" y="934.0" />
+      <point x="222.57142857142935" y="78.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.12616053590316137" x="8499.0" y="1721.5" />
+  <SelectedNodes>
+    <node>availsim4core.src.discrete_event_simulation.event.c_event.phase_event.order_next_phase_if_failure_event.OrderNextPhaseIfFailureEvent</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
