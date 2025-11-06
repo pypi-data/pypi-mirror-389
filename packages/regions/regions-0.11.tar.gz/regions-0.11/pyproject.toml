@@ -1,0 +1,267 @@
+[project]
+name = 'regions'
+description = 'An Astropy coordinated package for region handling'
+readme = 'README.rst'
+license = 'BSD-3-Clause'
+license-files = ['LICENSE.rst']
+authors = [
+    {name = 'Regions Developers', email = 'astropy.team@gmail.com'},
+]
+keywords = [
+    'astronomy',
+    'astrophysics',
+    'astropy',
+    'regions',
+]
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'Natural Language :: English',
+    'Operating System :: OS Independent',
+    'Programming Language :: Cython',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering :: Astronomy',
+]
+dynamic = ['version']
+requires-python = '>=3.11'
+dependencies = [
+    'numpy >= 1.25',
+    'astropy >= 6.0',
+]
+
+[project.urls]
+Homepage = 'https://github.com/astropy/regions'
+Documentation = 'https://astropy-regions.readthedocs.io/en/stable/'
+
+[project.optional-dependencies]
+all = [
+    'matplotlib >= 3.8',
+    'shapely >= 2.0.0',
+]
+test = [
+    'pytest-astropy >= 0.11',
+    'pytest-xdist >= 2.5.0',
+    'pytest-arraydiff >= 0.6.1',
+    'tox > 4.0',
+]
+docs = [
+    'regions[all]',
+    'sphinx',
+    'sphinx-astropy>=1.9',
+]
+dev = [
+    'regions[docs,test]',
+    'pre-commit > 4.0',
+]
+
+[build-system]
+requires = [
+    'setuptools >= 77.0',
+    'setuptools_scm >= 8.0',
+    'cython >= 3.1.2,<4',
+    'numpy >= 2.0.0',
+    'extension-helpers >= 1.3,<2',
+]
+build-backend = 'setuptools.build_meta'
+
+[tool.extension-helpers]
+use_extension_helpers = true
+
+[tool.setuptools_scm]
+write_to = 'regions/version.py'
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = false
+
+[tool.setuptools.packages.find]
+namespaces = false
+
+[tool.setuptools.package-data]
+'*' = [
+    'data/*',
+]
+'regions' = [
+    'CITATION.rst',
+]
+'regions.shapes.tests' = [
+    'reference/*.txt',
+    'data/*.fits',
+]
+'regions.io.crtf.tests' = [
+    'data/*.crtf',
+]
+'regions.io.ds9.tests' = [
+    'data/*.reg',
+]
+'regions.io.fits.tests' = [
+    'data/*.fits',
+]
+
+[tool.pytest.ini_options]
+minversion = 7.0
+testpaths = [
+    'regions',
+    'docs',
+]
+norecursedirs = [
+    'docs/_build',
+    'extern',
+]
+astropy_header = true
+doctest_plus = 'enabled'
+text_file_format = 'rst'
+addopts = [
+    '-ra',
+    '--color=yes',
+    '--doctest-rst',
+    '--strict-config',
+    '--strict-markers',
+]
+log_cli_level = 'INFO'
+xfail_strict = true
+remote_data_strict = true
+filterwarnings = [
+    'error',  # turn warnings into exceptions
+]
+markers = [
+    'array_compare'
+]
+
+[tool.coverage.run]
+omit = [
+    'regions/conftest.py',
+    'regions/*setup_package*',
+    'regions/tests/*',
+    'regions/*/tests/*',
+    'regions/extern/*',
+    'regions/version*',
+    '*/regions/conftest.py',
+    '*/regions/*setup_package*',
+    '*/regions/tests/*',
+    '*/regions/*/tests/*',
+    '*/regions/extern/*',
+    '*/regions/version*',
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'except ImportError',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'def main\\(.*\\):',
+    'pragma: py{ignore_python_version}',
+    'def _ipython_key_completions_',
+]
+
+[tool.isort]
+skip_glob = [
+    'regions/*__init__.py*',
+]
+known_first_party = [
+    'regions',
+    'extension_helpers',
+]
+use_parentheses = true
+
+[tool.black]
+force-exclude = """
+(
+  .*
+)
+"""
+
+[tool.bandit]
+exclude_dirs = ['*/tests/test_casa_mask.py']
+
+[tool.bandit.assert_used]
+skips = ['*_test.py', '*/test_*.py', '*/tests/helpers.py']
+
+[tool.cibuildwheel]
+# explicitly skip free-threaded builds
+skip = ["cp*t-*"]
+
+[tool.repo-review]
+ignore = [
+    'MY',  # ignore MyPy
+    'PC110',  # ignore using black or ruff-format in pre-commit
+    'PC111',  # ignore using blacken-docs in pre-commit
+    'PC140',  # ignore using mypy in pre-commit
+    'PC180',  # ignore using prettier in pre-commit
+    'PC901',  # ignore using custom pre-commit update message
+    'PY005',  # ignore having a tests/ folder
+]
+
+[tool.codespell]
+ignore-words-list = """
+    exten,
+"""
+
+[tool.docformatter]
+    wrap-summaries = 72
+    pre-summary-newline = true
+    make-summary-multi-line = true
+
+[tool.numpydoc_validation]
+checks = [
+    'all',   # report on all checks, except the below
+    'ES01',  # missing extended summary
+    'EX01',  # missing "Examples"
+    'GL08',  # missing docstring -- FIXME
+    'RT01',  # do not require return type for lazy properties
+    'RT02',  # only type in "Returns" section (no name)
+    'SA01',  # missing "See Also"
+    'SA04',  # missing "See Also" description
+    'SS06',  # single-line summary
+]
+
+# don't report on objects that match any of these regex;
+# remember to use single quotes for regex in TOML
+exclude = [
+    '\._.*',  # private functions/methods
+    '^test_*',  # test code
+    '^conftest.*$',  # pytest configuration
+]
+
+[tool.ruff.lint]
+select = [
+    'B', 'D', 'E', 'F', 'FLY', 'I', 'INT', 'N', 'NPY', 'PERF', 'PL', 'Q',
+    'RSE', 'SIM', 'UP', 'W'
+]
+ignore = [
+    'E501',
+    'B028',
+    'B905',  # revisit
+    'D100',
+    'D101',
+    'D102',
+    'D103',
+    'D105',
+    'D107',
+    'D200',
+    'D205',
+    'D212',
+    'D404',
+    'I001',
+    'PLC0415',  # import-outside-top-level
+    'PLR0912',
+    'PLR0913',
+    'PLR0915',
+    'PLR2004',
+    'PLW1641',  # eq-without-hash
+    'PLW2901',
+    'Q000',
+    'SIM910',
+    'UP038',
+]
+
+[tool.ruff.lint.per-file-ignores]
+'__init__.py' = ['D104', 'I']
+'docs/conf.py' = ['ERA001', 'INP001', 'TRY400']
+
+[tool.ruff.lint.pydocstyle]
+convention = 'numpy'
+
+[tool.distutils.bdist_wheel]
+py-limited-api = "cp311"
