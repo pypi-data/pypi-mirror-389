@@ -1,0 +1,76 @@
+#########################
+ SomConnexio Application
+#########################
+
+.. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
+   :alt: Beta
+   :target: https://odoo-community.org/page/development-status
+
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+   :alt: License: AGPL-3
+   :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
+
+|badge1| |badge2|
+
+Som Connexio's application with customely developed odoo addons as
+dependencies used to fulfill the cooperative requirements.
+
+**Table of contents**
+
+.. contents::
+   :local:
+
+******************
+ Available addons
+******************
+
+.. csv-table:: Available addons
+   :header: "addon", "version", "summary"
+   :widths: 10 10 30
+
+   "`base_rest_somconnexio <base_rest_somconnexio/>`_", 16.0.1.0.0, "Expose the basic REST and public API controllers used in Som Connexió."
+   "`contract_api_somconnexio <contract_api_somconnexio/>`_", 16.0.1.0.5, "Expose the REST API used in Som Connexió to create and manage contracts in Odoo."
+   "`contract_group_somconnexio <contract_group_somconnexio/>`_", 16.0.1.0.2, "Customizations for contract groups in Som Connexió."
+   "`cooperator_api_somconnexio <cooperator_api_somconnexio/>`_", 16.0.1.0.0, "Expose a REST API to integrate cooperators and sponsorship to Som Connexió partner structure."
+   "`cooperator_somconnexio <cooperator_somconnexio/>`_", 16.0.1.0.0, "SomConnexió custom usage of cooperative users (cooperators)."
+   "`cooperator_sponsorship <cooperator_sponsorship/>`_", 16.0.1.0.0, "Sponsorship module for cooperators in Som Connexió."
+   "`correos_somconnexio <correos_somconnexio/>`_", 16.0.1.0.0, "Integration with Correos for Som Connexió."
+   "`crm_lead_api_somconnexio <crm_lead_api_somconnexio/>`_", 16.0.1.0.1, "Expose a REST API to create CRM Leads using the CRM Lead Som Connexió structure."
+   "`delivery_somconnexio <delivery_somconnexio/>`_", 16.0.1.0.0, "Customizations for delivery processes in Som Connexió."
+   "`filmin_somconnexio <filmin_somconnexio/>`_", 16.0.1.0.2, "Manages Filmin subscriptions within the SomConnexió ERP."
+   "`hide_sequence_gaps_warning <hide_sequence_gaps_warning/>`_", 16.0.1.0.0, "Hides sequence gap warnings in accounting."
+   "`hr_assistance_somconnexio <hr_assistance_somconnexio/>`_", 16.0.1.0.0, "Expose the REST API used in Som Connexió to create and manage contracts in Odoo."
+   "`invoice_somconnexio <invoice_somconnexio/>`_", 16.0.1.0.1, "Customizations for invoicing in Som Connexió."
+   "`marginalized_groups_somconnexio <marginalized_groups_somconnexio/>`_", 16.0.1.0.0, "Customizations for marginalized groups in Som Connexió."
+   "`mass_mailing_somconnexio <mass_mailing_somconnexio/>`_", 16.0.1.0.0, "Customizations for mass mailing in Som Connexió."
+   "`multimedia_api_somconnexio <multimedia_api_somconnexio/>`_", 16.0.1.0.0, "Multimedia API for Som Connexió."
+   "`multimedia_somconnexio <multimedia_somconnexio/>`_", 16.0.1.0.1, "Sets a basic structure for multimedia subscriptions within the SomConnexió ERP."
+   "`oficinavirtual_somconnexio <oficinavirtual_somconnexio/>`_", 16.0.1.0.2, "Integrates office virtual functionalities specific to Som Connexió."
+   "`opencell_somconnexio <opencell_somconnexio/>`_", 16.0.1.0.1, "Synchronize the needed objects to invoicing from OpenCell."
+   "`otrs_somconnexio <otrs_somconnexio/>`_", 16.0.1.0.8, "Integration with OTRS for Som Connexió."
+   "`product_product_sale_subscription_template <product_product_sale_subscription_template/>`_", 16.0.1.0.1, "Sets a basic structure for multimedia subscriptions within the SomConnexió ERP."
+   "`res_partner_api_somconnexio <res_partner_api_somconnexio/>`_", 16.0.1.0.0, "Customizations for res.partner API in Som Connexió."
+   "`somconnexio <somconnexio/>`_", 16.0.1.0.11, "Customizations for Som Connexió ERP."
+   "`switchboard_somconnexio <switchboard_somconnexio/>`_", 16.0.1.0.2, "Switchboard technology management for Som Connexió."
+
+***************
+ Configuration
+***************
+
+**Development**
+
+Mount the development folder with odoo somconnexio git repository
+(containing all developed modules) into a local container under the
+following path:
+
+.. code::
+
+   /opt/odoo_modules/odoo-somconnexio/
+
+Then, make sure this path is included in the `addons_path` from the odoo
+conf file ("/etc/odoo/odoo.conf"):
+
+.. code::
+
+   ; Custom Modules
+   addons_path = /opt/odoo_modules, /opt/odoo_modules/odoo-somconnexio, /opt/odoo/addons
