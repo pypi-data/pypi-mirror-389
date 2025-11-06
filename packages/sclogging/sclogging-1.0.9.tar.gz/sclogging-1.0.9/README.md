@@ -1,0 +1,200 @@
+# SCLogging
+
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) 
+[![Documentation Status](https://readthedocs.org/projects/sclogging/badge/?version=latest)](https://sclogging.readthedocs.io/en/latest/?badge=latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/sclogging.svg)](https://badge.fury.io/py/sclogging)
+[![Anaconda-Server Badge](https://anaconda.org/sshimek42/sclogging/badges/latest_release_date.svg)](https://anaconda.org/sshimek42/sclogging)
+[![Anaconda-Server Badge](https://anaconda.org/sshimek42/sclogging/badges/version.svg)](https://anaconda.org/sshimek42/sclogging)
+
+
+A small, convenient wrapper around Python’s logging that makes it easy to:
+- Bootstrap a ready-to-use logger with sensible defaults
+- Optionally log to a rotating file in addition to the console
+- Apply per-module/per-library log levels
+- Use a simple Timer helper to measure and report elapsed time
+- Centralize configuration (including colors and formatting)
+
+The primary entry points are:
+- get_logger(...) — create or retrieve a configured logger
+- set_config({...}) — write a simple TOML-backed configuration
+- Timer — a helper class to time code blocks and log results
+
+Note: This README focuses on the public API and how to use it. Internal implementation details are intentionally omitted.
+
+Full documentation: https://sclogging.readthedocs.io/en/latest/
+
+## Why SCLogging?
+
+SCLogging aims to simplify common logging tasks:
+- One-liner to get a ready-to-use logger
+- Easy switch to also log to a file (with an auto-created directory if needed)
+- Uniform formatting and colorized console output for readability
+- Fine-grained control over noisy third-party libraries
+- Lightweight timing utility for quick performance measurements
+
+## Quick Start
+
+Basic usage:
+```python
+# Python
+from sclogging.sclogging_main import get_logger
+
+logger = get_logger(__name__)
+logger.info("Hello from SCLogging!")
+logger.warning("Heads up...")
+logger.error("Something went wrong.")
+```
+
+
+Add a timed section:
+```python
+# Python
+from sclogging.sclogging_main import get_logger, Timer
+
+logger = get_logger(__name__)
+
+t = Timer(logger=logger, level="INFO")  # level is optional; INFO is a common choice
+t.start_timer("Loading data")
+# ... your work here ...
+t.stop_timer("Loading data complete")
+```
+
+
+## Configuration
+
+You can set configuration in two ways:
+
+1) Programmatically via set_config:
+```python
+# Python
+from sclogging.sclogging_main import set_config, get_logger
+
+set_config({
+    # Write these values into a TOML settings file used by SCLogging.
+    # Typical options:
+    "logging_log_to_file": True,               # Whether to also log to a file
+    "logging_path": "C:\\Logs",                # Where to store log files (auto-created if enabled)
+    "logging_level": "INFO",                   # Default console log level
+    "logging_file_level": "WARNING",           # Default file log level
+    "logging_ext": "log",                      # Log file extension (e.g., .log)
+    "logging_auto_create_dir": True,           # Auto-create log directory if not present
+
+    # Visuals
+    "spacer": "_",                             # Spacer used in formatted output
+    "spacer_color": "LIGHTBLACK_EX",           # Color name for spacer (console)
+
+    # Reduce noise from third-party libraries
+    "specific_loggers": {
+        "urllib3": "WARNING",
+        "selenium": "WARNING",
+        "xhtml2pdf": "WARNING",
+    },
+})
+
+logger = get_logger(__name__)
+logger.info("Configured and ready!")
+```
+
+
+2) Via a settings file:
+- SCLogging looks for a TOML-based settings file that stores the same keys shown above.
+- Use set_config to generate/update this file programmatically, or manage it yourself alongside your project if preferred.
+
+Notes:
+- Log directory auto-creation is controlled by logging_auto_create_dir.
+- When logging_log_to_file is True, logs will be written under logging_path with the extension logging_ext.
+- Per-library overrides in specific_loggers help keep the console/file outputs tidy.
+
+## API Overview
+
+- get_logger(name: str, ...) -> logging.Logger
+  - Returns a logger configured according to your settings. Typically called with __name__ to inherit the calling module’s name.
+
+- set_config(config_data: dict) -> None
+  - Writes configuration into the project’s SCLogging settings file (TOML). Accepts keys such as:
+    - logging_log_to_file: bool
+    - logging_path: str
+    - logging_level: str
+    - logging_file_level: str
+    - logging_ext: str
+    - logging_auto_create_dir: bool
+    - spacer: str
+    - spacer_color: str
+    - specific_loggers: dict[str, str]
+
+- class Timer(logger=None, level="INFO", ...)
+  - start_timer(context: str | None = None) -> None
+  - stop_timer(context: str | None = None) -> None
+  - A simple timing helper. Call start_timer before the work you want to measure and stop_timer when done. If a logger is provided, timing information is logged automatically at the configured level.
+
+Additional helpers exist internally to handle formatting, name filtering, and color output to keep logs readable.
+
+## Practical Examples
+
+- Minimal setup for a script:
+```python
+# Python
+from sclogging.sclogging_main import get_logger
+
+log = get_logger(__name__)
+log.info("Starting script...")
+# ... work ...
+log.info("Done.")
+```
+
+
+- Enable file logging and tune third-party verbosity once for the whole app:
+```python
+# Python
+from sclogging.sclogging_main import set_config, get_logger
+
+set_config({
+    "logging_log_to_file": True,
+    "logging_auto_create_dir": True,
+    "logging_path": "C:\\Logs",
+    "logging_level": "INFO",
+    "logging_file_level": "WARNING",
+    "logging_ext": "log",
+    "specific_loggers": {"urllib3": "WARNING", "selenium": "WARNING"},
+})
+
+app_log = get_logger("my_app")
+app_log.info("Application start")
+```
+
+
+- Timing a function call:
+```python
+# Python
+from sclogging.sclogging_main import get_logger, Timer
+
+log = get_logger(__name__)
+
+def compute():
+    t = Timer(logger=log, level="INFO")
+    t.start_timer("compute()")
+    # heavy work here...
+    t.stop_timer("compute() completed")
+
+compute()
+```
+
+
+## Tips
+
+- Use __name__ as the logger name to get a hierarchical logger corresponding to your module path.
+- Lower the verbosity of noisy dependencies with specific_loggers to keep outputs focused.
+- If you enable file logging, ensure logging_path is accessible and, if needed, let SCLogging create it for you via logging_auto_create_dir.
+
+## License
+
+This project is released under the terms of its included LICENSE. See the LICENSE file for details.
+
+## Contributing
+
+Issues and contributions that improve documentation, configuration options, or ergonomics are welcome. Before submitting changes, please ensure your updates maintain backwards compatibility and include concise examples when applicable.
+
+## Security
+
+Please see SECURITY.md for guidelines on reporting vulnerabilities.
