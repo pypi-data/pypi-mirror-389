@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "demo-kawaki"
+version = "0.1.1"
+description = "A demo Django app: demo_kawaki"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Your Name" }]
+license = { text = "MIT" }
+classifiers = [
+  "Framework :: Django",
+  "Framework :: Django :: 5",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = ["Django>=4.2"]
+
+[tool.setuptools.packages.find]
+include = ["demo_kawaki*"]
+
+[tool.setuptools.package-data]
+demo_kawaki = [
+  "templates/**",
+  "static/**",
+]
