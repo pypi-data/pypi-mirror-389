@@ -1,0 +1,24 @@
+[project]
+name = "extrakit"
+version = "0.1.1.dev1"
+description = "Extra kit for Python"
+readme = "README.md"
+authors = [
+    { name = "oyghen", email = "oyghen@duck.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "python-dateutil>=2.9.0.post0",
+    "stdkit>=0.1.1.dev3",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.2",
+    "ruff>=0.14.3",
+]
