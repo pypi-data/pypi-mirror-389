@@ -1,0 +1,124 @@
+# wear-sdk
+
+Python SDK for the WEAR (Warehouse Exchange Agent Resources) Gateway.
+
+## Installation
+
+```bash
+pip install wear-sdk
+```
+
+## Usage
+
+```python
+from wear_sdk import WearClient, WearClientOptions, WearError
+
+# Create client
+client = WearClient(WearClientOptions(
+    base_url="https://wear-gateway-staging-xxx.run.app",
+    timeout_ms=10000,  # optional, default 10s
+))
+
+try:
+    # Start a run (requires JWT from /v1/agents/token)
+    result = client.start_run("my-agent-id", jwt)
+    print(f"Run started: {result.run_id} at {result.started_at}")
+    
+except WearError as error:
+    print(f"Error {error.status_code}: {error}")
+    
+    # Check for specific denial types
+    if error.is_policy_denied():
+        print(f"Policy denied: {error.get_denial_reason()}")
+        print(f"Rule ID: {error.error_response.rule_id}")
+    elif error.is_budget_denied():
+        print(f"Budget exceeded: {error.get_denial_reason()}")
+
+finally:
+    client.close()
+```
+
+### Context Manager
+
+```python
+from wear_sdk import WearClient, WearClientOptions
+
+with WearClient(WearClientOptions(base_url="https://...")) as client:
+    result = client.start_run("my-agent-id", jwt)
+    print(f"Run ID: {result.run_id}")
+```
+
+## API
+
+### `WearClient`
+
+#### Constructor
+
+```python
+WearClient(options: WearClientOptions)
+```
+
+Options:
+- `base_url` (str, required): Base URL of the WEAR Gateway
+- `timeout_ms` (int, optional): Request timeout in milliseconds (default: 10000)
+
+#### Methods
+
+##### `start_run(agent_id: str, jwt: str) -> StartRunResponse`
+
+Starts a new agent run.
+
+**Headers sent:**
+- `Authorization: Bearer <jwt>`
+- `X-WEAR-Agent-ID: <agent_id>`
+
+**Returns:**
+```python
+StartRunResponse(
+    run_id: str,
+    started_at: str,
+    correlation_id: Optional[str]
+)
+```
+
+**Raises:** `WearError` on policy denial, budget exceeded, or other errors.
+
+##### `close() -> None`
+
+Closes the HTTP client. Always call this when done, or use the context manager.
+
+### `WearError`
+
+Custom exception class with additional context.
+
+**Attributes:**
+- `status_code` (int): HTTP status code
+- `error_response` (WearErrorResponse): Parsed error response from Gateway
+
+**Methods:**
+- `is_policy_denied()`: Returns True if this is a policy denial (403 with code)
+- `is_budget_denied()`: Returns True if this is a budget denial
+- `get_denial_reason()`: Returns the denial reason if available
+
+## Development
+
+```bash
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Run tests with coverage
+pytest --cov=wear_sdk --cov-report=html
+
+# Type checking
+mypy wear_sdk
+
+# Linting
+ruff check wear_sdk
+```
+
+## License
+
+MIT
