@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "macer"
+version = "0.1.0"
+description = "MACE + ASE based relaxer for fast atomic structure optimization with VASP compatible format"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "ase>=3.20",
+    "pymatgen",
+    "monty",
+    "mace-torch",
+]
+
+[project.scripts]
+macer = "macer.cli.main:main"
+macer_phonopy = "macer.cli.phonopy_main:main"
+
+[tool.setuptools.packages.find]
+# This tells setuptools to find packages in the current directory ('.')
+# and include 'macer' as a package.
+where = ["."]
+include = ["macer*"]
