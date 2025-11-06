@@ -1,0 +1,89 @@
+[project]
+name = "em27_metadata"
+version = "1.3.0"
+description = "Single source of truth for ESM's EM27 measurement logistics"
+authors = [
+    { name = "Moritz Makowski", email = "moritz.makowski@tum.de" },
+    { name = "Marlon Müller", email = "marlon.mueller@tum.de" },
+]
+dependencies = [
+    "requests>=2.32.5",
+    "pydantic>=2.12.3",
+    "tum-esm-utils>=2.10.0",
+    "ruff>=0.14.3",
+]
+requires-python = ">=3.10,<4.0"
+readme = "README.md"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.license]
+text = "MIT"
+
+[project.urls]
+repository = "https://github.com/tum-esm/em27-metadata"
+documentation = "https://em27-retrieval-pipeline.netlify.app/"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.4",
+    "mypy>=1.8.0",
+    "types-requests>=2.31.0.20240125",
+    "python-dotenv>=1.0.1",
+    "ruff>=0.14.3",
+    "pyright>=1.1.407",
+]
+
+[build-system]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+ignore = [
+    "E402",
+    "E741",
+]
+exclude = [
+    "tests/*",
+]
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.build]
+includes = [
+    "em27_metadata",
+]
+excludes = [
+    "tests",
+]
+
+[tool.mypy]
+strict = true
+implicit_reexport = true
+plugins = [
+    "pydantic.mypy",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "library: test the library in GitHub's CI or locally",
+    "action: run when using this repo as a GitHub Action",
+]
+addopts = "--exitfirst --verbose --durations=0 --no-header"
+
+[tool.pyright]
+strict = [
+    "em27_metadata",
+    "tests",
+]
