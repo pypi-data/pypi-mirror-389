@@ -1,0 +1,135 @@
+[build-system]
+# Pin setuptools to <75 to avoid emitting newer Core Metadata fields (e.g., License-Expression)
+# that older Twine/pkginfo may flag as invalid during upload.
+requires = ["setuptools<75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dicomaster"
+version = "0.9.2"
+description = "Secure DICOM Anonymizer & Batch Processor"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Santo Paul", email = "santopaul2005@gmail.com" }
+]
+maintainers = [
+    { name = "Santo Paul", email = "santopaul2005@gmail.com" }
+]
+license = { text = "MIT" }
+keywords = ["dicom", "anonymize", "medical-imaging", "pydicom", "healthcare", "radiology"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Security :: Cryptography",
+]
+
+dependencies = [
+    "pydicom>=3.0.1",
+    "colorama>=0.4.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/santopaul/dicomaster"
+Repository = "https://github.com/santopaul/dicomaster.git"
+Documentation = "https://github.com/santopaul/dicomaster/blob/main/README.md"
+"Bug Tracker" = "https://github.com/santopaul/dicomaster/issues"
+
+
+[tool.setuptools]
+py-modules = ["dicomaster"]
+license-files = ["LICENSE.txt"]
+
+[project.scripts]
+dicomaster = "dicomaster:main"
+
+[project.optional-dependencies]
+full = [
+    "cryptography>=46.0.3",
+    "pandas>=2.0.0",
+    "Pillow>=12.0.0",
+    "tqdm>=4.65.0",
+    "python-dateutil>=2.8.2",
+    "numpy>=1.24",
+    "pyfiglet>=0.8.post1",
+    "termcolor>=2.3.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.5.0",
+    "ruff>=0.1.0",
+    "build>=1.0.0",
+    "twine>=6.2.0"
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.5.0",
+    "ruff>=0.0.290",
+]
+dev = [
+    "black>=24.3.0",
+    "ruff>=0.6.0",
+    "isort>=5.13.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.7.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q --cov=dicomaster"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+ignore_missing_imports = true
+follow_imports = "silent"
+
+[tool.ruff]
+line-length = 200
+target-version = "py310"
+fix = true
+src = ["dicomaster"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "SIM", "UP"]
+ignore = []
+extend-ignore = ["E501", "E701", "E702", "E402"]
+
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311']
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
