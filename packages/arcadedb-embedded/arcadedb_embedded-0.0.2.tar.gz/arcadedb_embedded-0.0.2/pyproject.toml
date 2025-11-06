@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcadedb-embedded"
+version = "0.0.2"
+description = "ArcadeDB embedded multi-model database with bundled JRE - no Java installation required (PLACEHOLDER VERSION)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Arcade Data Ltd", email = "info@arcadedata.com"}
+]
+keywords = ["database", "graph", "document", "multi-model", "nosql", "arcadedb", "embedded", "jre", "java"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/humemai/arcadedb-embedded-python"
+Documentation = "https://humemai.github.io/arcadedb-embedded-python/"
+Repository = "https://github.com/humemai/arcadedb-embedded-python"
+"Bug Tracker" = "https://github.com/humemai/arcadedb-embedded-python/issues"
+"ArcadeDB Upstream" = "https://github.com/ArcadeData/arcadedb"
+
+[tool.setuptools]
+packages = ["arcadedb_embedded"]
+package-dir = {"" = "src"}
