@@ -1,0 +1,84 @@
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
+
+[project]
+name = "objdictgen"
+version = "3.5.4"
+authors = [
+    {name = "Svein Seldal", email = "sveinse@laerdal.com"},
+]
+description = "CanFestival Object Dictionary tool"
+readme = "README.md"
+license = "LGPL-2.1-or-later"
+requires-python = ">=3.10,<4"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+    "jsonschema",
+    "colorama",
+    "deepdiff",
+]
+
+[project.optional-dependencies]
+ui = [
+    "wxPython",
+]
+dev = [
+    "ruff",
+    "mypy",
+    "types-setuptools",
+    "types-colorama",
+    "types-wxpython",
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    "pytest-mock",
+    "freezegun",
+]
+
+[project.urls]
+Repository = "https://github.com/Laerdal/python-objdictgen"
+"Bug Tracker" = "https://github.com/Laerdal/python-objdictgen/issues"
+
+[project.scripts]
+odg = "objdictgen.__main__:main"
+
+[tool.uv.build-backend]
+source-include = [
+    "tests/**",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-l --tb=native"
+testpaths = [
+    "tests",
+]
+filterwarnings = "ignore::DeprecationWarning"
+
+[tool.ruff]
+line-length = 120
+exclude = [
+    "tests/od/**",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "S101",  # Allow use of assert statements in tests
+]
+"tests/test_imports.py" = [
+    "F401",  # Allow unused imports in this file
+]

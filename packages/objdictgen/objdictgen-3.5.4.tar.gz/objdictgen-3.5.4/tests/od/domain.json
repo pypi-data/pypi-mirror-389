@@ -1,0 +1,78 @@
+{
+  "$id": "od data",
+  "$version": "1",
+  "$description": "Canfestival object dictionary data",
+  "$tool": "odg 3.4",
+  "$date": "2024-04-13T23:37:31.909712",
+  "name": "domain",
+  "description": "",
+  "type": "master",
+  "id": 0,
+  "profile": "None",
+  "dictionary": [
+    {
+      "index": "0x2000",  // 8192
+      "name": "Extended",
+      "struct": "var",
+      "group": "user",
+      "mandatory": false,
+      "sub": [
+        {
+          "name": "Extended",
+          "type": "DOMAIN",  // 15
+          "access": "rw",
+          "pdo": true,
+          "value": "\u0000\u0011\"3DUfw\u0088\u0099\u00aa\u00bb\u00cc\u00dd\u00ee\u00ff"
+        }
+      ]
+    },
+    {
+      "index": "0x2001",  // 8193
+      "name": "Bytes",
+      "struct": "var",
+      "group": "user",
+      "mandatory": false,
+      "sub": [
+        {
+          "name": "Bytes",
+          "type": "DOMAIN",  // 15
+          "access": "rw",
+          "pdo": true,
+          "value": "\u00e2\u009c\u0093"
+        }
+      ]
+    },
+    {
+      "index": "0x2002",  // 8194
+      "name": "Utf8",
+      "struct": "var",
+      "group": "user",
+      "mandatory": false,
+      "sub": [
+        {
+          "name": "Utf8",
+          "type": "DOMAIN",  // 15
+          "access": "rw",
+          "pdo": true,
+          "value": "✓"
+        }
+      ]
+    },
+    {
+      "index": "0x2003",  // 8195
+      "name": "Unicode",
+      "struct": "var",
+      "group": "user",
+      "mandatory": false,
+      "sub": [
+        {
+          "name": "Unicode",
+          "type": "DOMAIN",  // 15
+          "access": "rw",
+          "pdo": true,
+          "value": "\u2713"
+        }
+      ]
+    }
+  ]
+}

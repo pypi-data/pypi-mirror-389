@@ -1,0 +1,49 @@
+{
+  "$id": "od data",
+  "$version": "1",
+  "$description": "Canfestival object dictionary data",
+  "$schema": "https://raw.githubusercontent.com/Laerdal/python-objdictgen/main/src/objdictgen/schema/od.schema.json",
+  "$tool": "odg 3.5.1a1",
+  "$date": "2024-09-11T18:14:48.704234+02:00",
+  "name": "JSON comments",
+  "description": "Test for JSON comments",
+  "type": "slave",
+  "id": 0,
+  "profile": "None",
+  "default_string_size": 24,
+  "dictionary": [
+    {
+      "index": "0x1003",
+      "name": "Pre-defined Error Field",
+      "struct": "array",
+      "group": "built-in",
+      "mandatory": false,
+      "profile_callback": true,
+      "each": {
+        "name": "Standard Error Field",
+        "type": "UNSIGNED32",
+        "access": "ro",
+        "pdo": false,
+        "nbmin": 1,
+        "nbmax": 254
+      },
+      "sub": [
+        {
+          "name": "Number of Errors",
+          "type": "UNSIGNED8",
+          "access": "rw",
+          "pdo": false
+        },
+        {
+          "value": 0
+        },
+        {
+          "value": 0
+        },
+        {
+          "value": 0
+        }
+      ]
+    }
+  ]
+}

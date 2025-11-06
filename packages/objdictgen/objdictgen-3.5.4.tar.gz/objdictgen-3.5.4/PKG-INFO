@@ -1,0 +1,185 @@
+Metadata-Version: 2.4
+Name: objdictgen
+Version: 3.5.4
+Summary: CanFestival Object Dictionary tool
+Author: Svein Seldal
+Author-email: Svein Seldal <sveinse@laerdal.com>
+License-Expression: LGPL-2.1-or-later
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Software Development :: Embedded Systems
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Requires-Dist: jsonschema
+Requires-Dist: colorama
+Requires-Dist: deepdiff
+Requires-Dist: ruff ; extra == 'dev'
+Requires-Dist: mypy ; extra == 'dev'
+Requires-Dist: types-setuptools ; extra == 'dev'
+Requires-Dist: types-colorama ; extra == 'dev'
+Requires-Dist: types-wxpython ; extra == 'dev'
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: coverage ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: pytest-mock ; extra == 'dev'
+Requires-Dist: freezegun ; extra == 'dev'
+Requires-Dist: wxpython ; extra == 'ui'
+Requires-Python: >=3.10, <4
+Project-URL: Bug Tracker, https://github.com/Laerdal/python-objdictgen/issues
+Project-URL: Repository, https://github.com/Laerdal/python-objdictgen
+Provides-Extra: dev
+Provides-Extra: ui
+Description-Content-Type: text/markdown
+
+# Objdictgen (`odg`)
+
+This is python tools for working with Object Dictionary (OD) files for
+the CanFestival communication library. CanFestival is an open source
+implementation of the [CANopen](https://www.can-cia.org/canopen/)
+communication protocol.
+
+This repo is located:
+
+> https://github.com/Laerdal/python-objdictgen
+
+objdictgen includes tools to generate c code that works in tandem with a
+canfestival library. This tool has been built to work together with the
+Laerdal Medical fork for the canfestival library:
+
+> https://github.com/Laerdal/canfestival-laerdal
+
+objdictgen is a tool to parse, view and manipulate files containing object
+dictionary (OD). An object dictionary is entries with data and configuration
+in CANopen devices. The `odg` executable is installed. It supports
+reading and writing OD files in `.json`/`.jsonc` format, in legacy XML `.od`
+and `.eds` files. It can generate c code for use with the canfestival library.
+
+
+## Install
+
+To use this package Python3 must be installed. Use the package manager of
+choice to install the package in a virtual manager. We recommend
+the [uv package manager](https://docs.astral.sh/uv/).
+
+Using uv (one of many methods)
+
+    $ uv venv
+    $ uv pip install objdictgen[ui]  # [ui] will install GUI tools
+    $ uv run odg
+
+Using pip (for Windows)
+
+    $ py -3 -mvenv venv
+    $ venv/Scripts/pip install objdictgen[ui]
+
+After this `venv/Scripts/odg.exe` (on Windows) or `venv\bin\odg` executable
+exists and can be called directly to run the command.
+
+The `objdictgen[ui]` suffix will install the wx dependency needed for the UI
+`odg edit`. If no UI is needed, this suffix can be omitted.
+
+
+## `odg` command-line tool
+
+`odg` is a command-line tool which is installed when the python package
+`objdictgen` is installed.
+
+Invocation:
+
+    $ odg <options>
+    $ python -mobjdictgen <options>   # <-- If odg is unavailable
+
+`odg --help` and `odg <command> --help` exists and shows the command options.
+The most useful commands are:
+
+    $ odg list <od-files...>              # List contents of the OD
+    $ odg convert <od-file1> <od-file2>   # Convert OD file
+    $ odg convert <od-file> <c-file>      # Convert OD to c code
+    $ odg diff <od-file1> <od-file2>      # Show differences between OD
+
+
+### Legacy commands
+
+The legacy commands `objdictgen` and `objdictedit` are no longer available. The
+commands are available under `odg gen` and `odg edit` respectively.
+
+
+## JSON schema
+
+[src/objdictgen/schema/od.schema.json](src/objdictgen/schema/od.schema.json)
+provides a JSON schema for the JSON OD format. This can be used for validation
+in editors.
+
+To use the schema in **VS Code**, the following configuration must be added to
+your `settings.json`. After this is is installed, IntelliSense will show field
+descriptions, help with values and validate the file.
+
+```json
+    "json.schemas": [
+      {
+        "fileMatch": [
+          "**.jsonc"
+        ],
+        "url": "./src/objdictgen/schema/od.schema.json"
+      }
+    ],
+```
+
+## Conversion
+
+The recommended way to convert existing/legacy `.od` files to the new JSON
+format is:
+
+    $ odg generate <file.od> <file.jsonc> --fix --drop-unused [--nosort]
+
+The `--fix` option might be necessary if the OD-file contains internal
+inconsistencies. It is safe to run this option as it will not delete any active
+parameters. The `--drop-unused` will remove any unused *profile* and *DS-302*
+parameter that might be used in the file.
+
+
+## Motivation
+
+The biggest improvement with the new tool over the original implementation is
+the introduction of a new `.jsonc` based format to store the object dictionary.
+The JSON format is well-known and easy to read. The tool use jsonc,
+allowing comments in the json file. `odg` will process the file in a repeatable
+manner, making it possible support diffing of the `.jsonc` file output. `odg`
+remains 100% compatible with the legacy `.od` format on both input and output.
+
+The original objdictedit and objdictgen tool were written in legacy python 2 and
+and this is a port to python 3.
+
+This tool is a fork from upstream canfestival-3-asc repo:
+
+> https://github.com/Laerdal/canfestival-3-asc
+
+
+## Making objdictedit excutable
+
+To be able build an executable that can be run from anywhere:
+
+    $ pip install pyinstaller
+    $ pyinstaller packaging/objdictedit.spec
+
+The file `dist/objdictedit.exe` can now be used anywhere. It does not need any
+pre-installed software.
+
+
+## License
+
+Objdictgen has been based on the python tool included in CanFestival. This
+original work from CanFestival is:
+
+    Copyright (C): Edouard TISSERANT, Francis DUPIN and Laurent BESSARD
+
+The Python 3 port and tool improvements have been implemented under
+
+    Copyright (C) 2022-2025 Svein Seldal, Laerdal Medical AS
