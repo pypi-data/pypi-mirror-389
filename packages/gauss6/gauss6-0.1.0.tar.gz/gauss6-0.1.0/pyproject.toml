@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gauss6"
+version = "0.1.0"
+description = "Gauss-Legendre 6th-order implicit integrator and finite-difference helpers built on JAX."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Eirik" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "jax>=0.4.20",
+    "jax-tqdm>=0.1.0",
+    "sparsejac>=0.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gauss6*"]
