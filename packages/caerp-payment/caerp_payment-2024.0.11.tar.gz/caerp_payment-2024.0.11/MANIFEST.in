@@ -1,0 +1,5 @@
+include MANIFEST.in README.rst LICENSE.txt setup.py setup.cfg requirements.txt pyproject.toml CHANGELOG
+graft src/caerp_payment/
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude *.egg-info
