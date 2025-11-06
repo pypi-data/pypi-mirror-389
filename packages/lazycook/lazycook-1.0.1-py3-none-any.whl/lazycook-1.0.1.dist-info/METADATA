@@ -1,0 +1,26 @@
+Metadata-Version: 2.4
+Name: lazycook
+Version: 1.0.1
+Summary: LazyCook is an autonomous multi-agent conversational assistant designed to intelligently process user queries, manage documents, store conversations, and maintain iterative AI reasoning loops. It uses **Gemini 2.5 Flash** model with a **four-agent architecture** for high-quality responses and continuous learning.
+Author: Hitarth Trivedi(Alpha.Kore),Harsh Bhatt(Alpha.Kore)
+Author-email: hitartht318@gmail.com, bhattharsh328@gmail.com
+Maintainer: Hitarth Trivedi(Alpha.Kore),Harsh Bhatt(Alpha.Kore)
+Maintainer-email: hitartht318@gmail.com, bhattharsh328@gmail.com
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: PyPDF2==3.0.1
+Requires-Dist: google-generativeai>=0.3.2
+Requires-Dist: rich>=13.7.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+LazyCook is an advanced multi-agent AI assistant that brings the power of Google’s Gemini models into a self-contained, autonomous Python application. It is designed for developers, researchers, and productivity enthusiasts who want an intelligent assistant that can chat, analyze, manage documents, track tasks, and evaluate quality — all locally. LazyCook operates on a four-agent architecture, where each agent specializes in a distinct stage of AI reasoning. Together, they create a loop of generation, analysis, optimization, and validation, resulting in high-quality, context-aware, and factually accurate responses. It maintains a persistent memory of user conversations, supports document uploads for contextual reference, and features real-time performance tracking, logging, and export tools
