@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: cwmeda
+Version: 0.0.2
+Summary: User-friendly customizable EDA plotting tools for data scientists.
+Home-page: 
+Author: Milind Chaudhari
+Author-email: codewithmilind@example.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: matplotlib
+Requires-Dist: seaborn
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# EDAHelper
+
+**EDAHelper** is a lightweight Python library that helps data scientists quickly visualize datasets with simple customizable plots.
+
+## Installation
+```bash
+pip install cwmeda
+```
+
+## Usage
+```python
+from cwmeda import plot_columns
+import pandas as pd
+
+df = pd.DataFrame({'Gender':['M','F','M','F'], 'Age':[22,25,30,28]})
+plot_columns(df, columns, plot_type='count', n_cols=3)
+```
