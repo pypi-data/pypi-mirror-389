@@ -1,0 +1,44 @@
+[build-system]
+requires = [
+    "setuptools>=45",
+    "setuptools_scm>=7",
+    "tomli>=1.0.0; python_version < '3.11'",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conda-forge-metadata"
+authors = [
+    {name = "conda-forge-tick development team", email = "condaforge@gmail.com"},
+]
+description = "programatic access to conda-forge's metadata"
+dynamic = ["version"]
+dependencies = [
+    "deprecated",
+    "requests",
+    "ruamel.yaml",
+    "typing-extensions",
+    "beautifulsoup4",
+    "conda-oci-mirror",
+    "conda_package_streaming >=0.12.0"
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+
+[project.optional-dependencies]
+oci = [
+  "conda-oci-mirror"
+]
+
+[project.urls]
+home = "https://github.com/conda-forge/conda-forge-metadata"
+
+[tool.setuptools_scm]
+write_to = "conda_forge_metadata/_version.py"
+write_to_template = "__version__ = '{version}'\n"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
