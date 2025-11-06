@@ -1,0 +1,316 @@
+Metadata-Version: 2.4
+Name: llm-instrumentation
+Version: 1.3.1
+Summary: A high-performance instrumentation framework for capturing, streaming, and analyzing internal activations of large language models
+Author-email: Ruben Fernandez Boullon <rubenfernandezboullon@gmail.com>
+Project-URL: Homepage, https://github.com/rubenfb23/STRAP-LLM
+Project-URL: Repository, https://github.com/rubenfb23/STRAP-LLM
+Project-URL: Bug Tracker, https://github.com/rubenfb23/STRAP-LLM/issues
+Project-URL: Documentation, https://github.com/rubenfb23/STRAP-LLM/tree/main/llm-instrumentation/docs
+Keywords: llm,instrumentation,interpretability,pytorch,transformers,profiling
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: System :: Monitoring
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: torch>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: lz4>=4.0.0
+Requires-Dist: zstandard>=0.20.0
+Requires-Dist: aiofiles>=23.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Provides-Extra: ebpf
+Requires-Dist: bcc>=0.1.0; extra == "ebpf"
+Provides-Extra: analysis
+Requires-Dist: matplotlib>=3.5.0; extra == "analysis"
+Requires-Dist: networkx>=3.0; extra == "analysis"
+Requires-Dist: pandas>=1.5.0; extra == "analysis"
+Provides-Extra: notebooks
+Requires-Dist: jupyter>=1.0.0; extra == "notebooks"
+Requires-Dist: ipython>=8.0.0; extra == "notebooks"
+Provides-Extra: huggingface
+Requires-Dist: transformers>=4.30.0; extra == "huggingface"
+Provides-Extra: monitoring
+Requires-Dist: psutil>=5.9.0; extra == "monitoring"
+Provides-Extra: all
+Requires-Dist: pytest>=7.0.0; extra == "all"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "all"
+Requires-Dist: black>=23.0.0; extra == "all"
+Requires-Dist: flake8>=6.0.0; extra == "all"
+Requires-Dist: mypy>=1.0.0; extra == "all"
+Requires-Dist: bcc>=0.1.0; extra == "all"
+Requires-Dist: matplotlib>=3.5.0; extra == "all"
+Requires-Dist: networkx>=3.0; extra == "all"
+Requires-Dist: jupyter>=1.0.0; extra == "all"
+Requires-Dist: ipython>=8.0.0; extra == "all"
+Requires-Dist: transformers>=4.30.0; extra == "all"
+Requires-Dist: psutil>=5.9.0; extra == "all"
+
+# LLM Instrumentation Framework
+
+A high-performance instrumentation framework for LLM interpretability and observability.
+
+## Objectives
+
+- **Throughput**: Maintain ≥ 90% of un-instrumented inference speed.
+- **Data rate**: Sustain ≥ 2 GB/s activation streaming to disk.
+- **Compression**: Achieve ≥ 3× reduction with lossy error < 1e-3 when enabled.
+- **Memory**: Keep host RAM usage ≤ 24 GB with backpressure and buffering.
+- **Resilience**: Automatic checkpoints safeguard long generations from data loss.
+
+## Stack
+
+- **Runtime**: PyTorch, asyncio, threading.
+- **GPU**: Optional CUDA streams and pinned buffers (see `memory/cuda_manager.py`).
+- **Compression**: LZ4, Zstd, optional no-op.
+- **Analysis**: Hooks for downstream causal graphs and SAE-based features.
+
+## Install
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+## Quick Usage
+
+```python
+import torch
+from llm_instrumentation import capture_activations
+from transformers import AutoModelForCausalLM
+
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf")
+
+with capture_activations(model, preset="balanced", output_path="output.stream") as framework:
+    _ = model(torch.randint(0, 100, (1, 16)))
+
+analysis = framework.analyze_activations("output.stream")
+
+## Per-token Tracking & Checkpointing (opt-in)
+
+Enable lightweight token boundary tracking without affecting the compression/streaming pipeline. Token metadata is stored in memory and saved to `{output_path}_tokens.json` on context exit. Optional checkpoints persist snapshots every _N_ tokens to make long streaming sessions resumable.
+
+```python
+from llm_instrumentation import analyze_activations_with_tokens
+
+with framework.capture_activations("gen.stream", track_per_token=True) as tracker:
+    ids = torch.randint(0, 100, (1, 8))
+    for _ in range(32):
+        with torch.no_grad():
+            out = model(ids)
+            next_tok = out.logits[:, -1, :].argmax(dim=-1, keepdim=True)
+        tracker.record_token(next_tok[0].item(), tokenizer.decode(next_tok[0]))
+        ids = torch.cat([ids, next_tok], dim=-1)
+        if next_tok[0].item() == tokenizer.eos_token_id:
+            break
+
+analysis = analyze_activations_with_tokens("gen.stream", framework)
+print("bytes_per_token:", analysis.get("bytes_per_token"))
+
+# Persist checkpoints every 64 tokens to allow resuming long captures.
+with framework.capture_activations(
+    "gen.stream",
+    track_per_token=True,
+    checkpoint_interval_tokens=64,
+) as tracker:
+    ...
+
+# Resume the same capture later (appends to the existing stream file).
+with framework.capture_activations(
+    "gen.stream",
+    track_per_token=True,
+    checkpoint_interval_tokens=64,
+    resume_from_checkpoint=True,
+) as tracker:
+    ...
+```
+
+Checkpoint files default to `{output_path}.ckpt.json`; override with `checkpoint_path` to control placement. Successful captures clean up checkpoints after flushing token metadata.
+
+## Configuration
+
+- `InstrumentationConfig.fast_capture()` - minimal overhead capture without compression.
+- `InstrumentationConfig.max()` - highest fidelity capture with maximum buffering.
+- `InstrumentationConfig.balanced()` - default preset balancing throughput and compression.
+- `InstrumentationConfig.max_compression()` - prioritize disk footprint with Zstd.
+- `InstrumentationConfig.attention_analysis()` / `.mlp_analysis()` - capture subsets for focused studies.
+- Builder-style overrides: e.g. `InstrumentationConfig.balanced().with_compression("zstd").with_memory_limit(16)`.
+- Direct parameters:
+  - `granularity` (`HookGranularity`): `FULL_TENSOR`, `SAMPLED_SLICES`, `ATTENTION_ONLY`, `MLP_ONLY`.
+  - `compression_algorithm` (`str`): `"lz4"`, `"zstd"`, or `"none"`.
+  - `target_throughput_gbps` (`float`): Desired streaming rate for tuning.
+  - `max_memory_gb` (`float|None`): Budget for host buffering policies.
+
+Refer to `docs/API.md` for full API details.
+
+## Automatic Configuration
+
+The `llm_instrumentation.core.auto_detect` module can derive sensible defaults from a model instance:
+
+```python
+from llm_instrumentation import capture_activations
+from llm_instrumentation.core.auto_detect import create_optimized_config, detect_model_architecture
+
+arch = detect_model_architecture(model)
+config = create_optimized_config(arch, purpose="performance_analysis")
+with capture_activations(model, config=config, output_path=f"{arch}.stream"):
+    ...
+```
+
+This path keeps manual overrides available via the builder helpers while accelerating setup for common analysis workflows.
+
+## Stream Format
+
+Each packet:
+
+- Header: network-endian `!HI` → `(name_len: uint16, data_len: uint32)`
+- Name: UTF-8 layer/module name (`name_len` bytes)
+- Data: compressed tensor bytes (`data_len` bytes)
+
+See `docs/STREAM_FORMAT.md` for a parsing example.
+
+## Architecture
+
+E2E path: PyTorch forward hooks → async enqueue → compression workers → ring buffer → async file writer. See `docs/ARCHITECTURE.md`.
+
+## Benchmarks & Performance
+
+Run `scripts/run_benchmarks.sh` and see `docs/PERFORMANCE.md` for targets, methodology, and how to generate reports.
+
+## Block I/O Instrumentation
+
+### Overview
+
+STRAP-LLM includes eBPF-based block I/O monitoring to correlate disk performance with activation streaming:
+
+- **`scripts/tracepoints.py`**: Captures latency histograms and queue depth using stable kernel tracepoints (`block:block_rq_issue`/`block:block_rq_complete`)
+- **`scripts/analyze_tracepoints.py`**: Generates summaries and PNG visualizations from persisted JSONL snapshots
+
+### Quick Start
+
+**Collect I/O metrics:**
+
+```bash
+sudo python3 scripts/tracepoints.py --interval 5 --output tracepoints.jsonl
+```
+
+**Analyze results:**
+
+```bash
+python3 scripts/analyze_tracepoints.py \
+  --input tracepoints.jsonl \
+  --output-dir ../benchmarks/systems/I-O
+```
+
+### Features
+
+- **Low overhead**: < 1% CPU usage, ~100ns per I/O request
+- **Stable ABI**: Uses kernel tracepoints (no kprobes)
+- **Async persistence**: Memory-mapped JSONL writer with batch flushes
+- **Log₂ histograms**: Constant memory usage at any IOPS level
+- **Queue depth tracking**: In-flight request monitoring per device
+
+### CLI Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--interval` | Sampling interval (seconds) | 5.0 |
+| `--output` | JSONL output file | `tracepoints.jsonl` |
+| `--no-output` | Disable file output | False |
+| `--flush-every` | Snapshots per flush | 12 |
+| `--fsync` | Force fsync after flush | False |
+
+### Output Format
+
+Each JSONL line contains:
+
+- Timestamp (Unix epoch + ISO 8601)
+- Per-device latency histogram (log₂ buckets in μs)
+- Per-device in-flight request count
+
+**Example:**
+
+```json
+{
+  "timestamp": 1696262400.123,
+  "iso_timestamp": "2025-10-02T14:20:00.123000+00:00",
+  "interval_s": 5.0,
+  "latency_histogram": [
+    {
+      "device_name": "nvme0n1",
+      "total": 45123,
+      "buckets": [
+        {"slot": 4, "count": 12000, "bucket_low": 16, "bucket_high": 31}
+      ]
+    }
+  ],
+  "inflight": [
+    {"device_name": "nvme0n1", "count": 24}
+  ]
+}
+```
+
+### Documentation
+
+See **`docs/BLOCK_IO_TRACEPOINTS.md`** for:
+
+- Prerequisites and installation
+- Detailed usage examples
+- Integration with LLM workflows
+- Troubleshooting guide
+- Performance characteristics
+- Advanced customization
+
+## CPU & Memory Metrics
+
+### Overview
+
+- **`scripts/system_metrics.py`**: Engancha tracepoints `exceptions:page_fault_user` y `sched:sched_switch` para capturar fallos de página por PID, tiempo fuera de CPU y presión PSI de CPU/I/O/memoria.
+- Se ejecuta como root y persiste snapshots JSONL con los campos `off_cpu_ns`, `page_faults` y `pressure` cada `N` segundos.
+- La salida complementa los histogramas de latencia/colas producidos por `tracepoints.py` para correlacionar latencia de servicio con contención de CPU, swapping y presión sistémica.
+
+### Quick Start
+
+```bash
+sudo python3 scripts/system_metrics.py --interval 5 --output system_metrics.jsonl
+```
+
+Cada línea JSON incluye `timestamp`, `iso_timestamp`, `interval_s`, un mapa `off_cpu_ns` (PID → nanosegundos fuera de CPU), `page_faults` (PID → fallos de página de usuario) y la estructura `pressure` con métricas PSI para CPU, I/O y memoria.
+
+Para ver las muestras sólo por pantalla añade `--no-output`. Usa `--flush-every` y `--fsync` para controlar el flushing asíncrono en disco.
+
+### CLI Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--interval` | Intervalo entre snapshots (s) | 5.0 |
+| `--output` | Archivo JSONL de salida | `system_metrics.jsonl` |
+| `--no-output` | Deshabilita escritura a disco | False |
+| `--flush-every` | Snapshots por flush | 12 |
+| `--fsync` | Forzar fsync tras cada flush | False |
+
+### Correlación
+
+Combina `system_metrics.jsonl` y `tracepoints.jsonl` con `scripts/analyze_tracepoints.py` o cargas personalizadas en pandas para atribuir latencia a contención de CPU, fallos de página, presión PSI o I/O de disco.
+
+## Development
+
+- Tests: `pytest -q` in repo root or the package directory.
+- Examples: `examples/basic_usage.py`.
+- Contributions: PRs welcome. Keep changes focused and covered by tests.
