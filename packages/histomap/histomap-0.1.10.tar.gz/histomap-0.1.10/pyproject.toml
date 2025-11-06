@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "histomap"
+version = "0.1.10"
+description = "visualize histology images with umap"
+readme = "README.md"
+authors = [
+    "Ajit Johnson Nirmal <nirmallab@bwh.harvar.edu>"
+]
+packages = [{ include = "histomap", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+numpy = "<=2.2"
+pyqt6 = ">=6.9.1,<7.0.0"
+pandas = ">=2.3.1,<3.0.0"
+matplotlib = ">=3.10.5,<4.0.0"
+napari = ">=0.6.4,<0.7.0"
+spatialdata = ">=0.5.0,<0.6.0"
+imagecodecs = ">=2025.8.2,<2026.0.0"
+umap-learn = "^0.5.9.post2"
+tifffile = "<2024.6"
+
+[tool.poetry.scripts]
+histomap-umap = "histomap.umap:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
