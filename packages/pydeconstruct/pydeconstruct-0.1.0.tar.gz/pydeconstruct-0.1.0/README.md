@@ -1,0 +1,185 @@
+# 🧩 PyDeconstruct
+
+**PyDeconstruct** is a developer tool that lets you **deconstruct any Python file** into the layers beneath it:
+
+```
+Python (.py)
+↓
+C code (via Cython)
+↓
+Assembly (.s)
+↓
+Machine code / Object (.o)
+```
+
+It’s a great way to **see how Python is implemented under the hood** and explore the compiler toolchain.
+
+---
+
+## 🚀 Features
+
+* Converts `.py` → `.c` (via **Cython**)
+* Generates `.s` assembly (via **GCC**)
+* Produces `.o` object file with real **machine code**
+* Optional disassembly and byte dump (`objdump` / `xxd`)
+* Command-line and Python API
+* Cross-platform (Linux, macOS, Windows with MSYS2)
+
+---
+
+## ⚙️ Requirements
+
+You’ll need:
+
+| Tool                              | Purpose                             | Install                                                        |
+| --------------------------------- | ----------------------------------- | -------------------------------------------------------------- |
+| **Python 3.8+**                   | runtime                             |                                                                |
+| **Cython**                        | generates C code from Python        | installed automatically                                        |
+| **gcc or clang**                  | compiles C to assembly/machine code | `sudo apt install build-essential` or `xcode-select --install` |
+| **objdump**, **xxd** *(optional)* | for disassembly and hex dump        | `sudo apt install binutils xxd`                                |
+
+> 💡 On Windows, install [MSYS2](https://www.msys2.org/) and ensure `gcc` is in your PATH.
+
+---
+
+## 📦 Installation
+
+### From PyPI (after publishing)
+
+```bash
+pip install pydeconstruct
+```
+
+### From source (local install)
+
+```bash
+git clone https://github.com/<yourusername>/pydeconstruct.git
+cd pydeconstruct
+pip install -e .
+```
+
+---
+
+## 🧪 Usage
+
+Deconstruct any Python file:
+
+```bash
+pydeconstruct myscript.py --show-c --show-asm --show-disasm
+```
+
+### Example output
+
+```
+Outputs written to: myscript_deconstruct
+- C file: myscript_deconstruct/myscript.c
+- Assembly: myscript_deconstruct/myscript.s
+- Object: myscript_deconstruct/myscript.o
+```
+
+Optional flags:
+
+| Flag             | Description                 |
+| ---------------- | --------------------------- |
+| `--show-c`       | print generated C           |
+| `--show-asm`     | print generated assembly    |
+| `--show-disasm`  | show objdump + xxd output   |
+| `--out DIR`      | specify output directory    |
+| `--no-keep-temp` | delete temp files after run |
+
+---
+
+## 🧩 Example
+
+Create a sample file:
+
+```python
+# tests/complex_sample.py
+import math
+
+def fib(n):
+    if n < 2:
+        return n
+    return fib(n-1) + fib(n-2)
+
+if __name__ == "__main__":
+    print("Fibonacci(6):", fib(6))
+```
+
+Then run:
+
+```bash
+pydeconstruct tests/complex_sample.py --show-asm
+```
+
+You’ll get a `tests/complex_sample_deconstruct/` directory containing:
+
+* `complex_sample.c`
+* `complex_sample.s`
+* `complex_sample.o`
+* Disassembly and hex dump (if tools available)
+
+---
+
+## 🧰 Local Development / Testing
+
+Clone and build locally:
+
+```bash
+git clone https://github.com/<yourusername>/pydeconstruct.git
+cd pydeconstruct
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv venv
+source venv/bin/activate   # or venv\Scripts\activate on Windows
+```
+
+Install dependencies:
+
+```bash
+pip install -e . cython build twine
+```
+
+Build package locally:
+
+```bash
+python -m build
+```
+
+Run the CLI locally:
+
+```bash
+pydeconstruct tests/complex_sample.py --show-c
+```
+
+Run tests (if you add pytest later):
+
+```bash
+pytest
+```
+
+Uninstall local version:
+
+```bash
+pip uninstall pydeconstruct
+```
+
+---
+
+## 🧱 Troubleshooting
+
+| Issue                                              | Fix                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `Tool missing: Required tool 'gcc' not found`      | Install build tools (`sudo apt install build-essential` or `xcode-select --install`) |
+| `fatal error: Python.h: No such file or directory` | Install Python headers (`sudo apt install python3-dev`)                              |
+| `cython: command not found`                        | Run `pip install cython`                                                             |
+| Permission errors                                  | Run in a writable directory or use `sudo` responsibly                                |
+
+---
+
+## 📜 License
+
+MIT License © 2025 Deven Shah
