@@ -1,0 +1,95 @@
+Metadata-Version: 2.4
+Name: trame-gofish
+Version: 1.0.0
+Summary: Trame widget for GoFish chart library
+Author: Kitware Inc.
+License: MIT License
+License-File: LICENSE
+Keywords: Application,Framework,Interactive,Python,Web
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.9
+Requires-Dist: trame-client>=3.10
+Provides-Extra: dev
+Requires-Dist: nox; extra == 'dev'
+Requires-Dist: pre-commit; extra == 'dev'
+Requires-Dist: pytest-cov>=3; extra == 'dev'
+Requires-Dist: pytest>=6; extra == 'dev'
+Requires-Dist: ruff; extra == 'dev'
+Description-Content-Type: text/x-rst
+
+trame-gofish
+----------------------------------------
+
+Trame widget for GoFish chart library that can be found at https://gofish.graphics/
+
+License
+----------------------------------------
+
+This library is OpenSource and follow the MIT License
+
+Installation
+----------------------------------------
+
+Install the application/library
+
+.. code-block:: console
+
+    pip install trame-gofish
+
+
+Development setup
+----------------------------------------
+
+We recommend using uv for setting up and managing a virtual environment for your development.
+
+.. code-block:: console
+
+    # Create venv and install all dependencies
+    uv sync --all-extras --dev
+
+    # Activate environment
+    source .venv/bin/activate
+
+    # Install commit analysis
+    pre-commit install
+    pre-commit install --hook-type commit-msg
+
+    # Allow live code edit
+    uv pip install -e .
+
+
+Build and install the Vue components
+
+.. code-block:: console
+
+    cd vue-components
+    npm i
+    npm run build
+    cd -
+
+For running tests and checks, you can run ``nox``.
+
+.. code-block:: console
+
+    # run all
+    nox
+
+    # lint
+    nox -s lint
+
+    # tests
+    nox -s tests
+
+Professional Support
+----------------------------------------
+
+* `Training <https://www.kitware.com/courses/trame/>`_: Learn how to confidently use trame from the expert developers at Kitware.
+* `Support <https://www.kitware.com/trame/support/>`_: Our experts can assist your team as you build your web application and establish in-house expertise.
+* `Custom Development <https://www.kitware.com/trame/support/>`_: Leverage Kitware’s 25+ years of experience to quickly build your web application.
