@@ -1,0 +1,59 @@
+import contextlib
+import csv
+import datetime
+import decimal
+import re
+from collections.abc import Iterable
+from logging import getLogger
+from typing import IO, Any, ClassVar
+
+from bankreader.models import Transaction
+
+from .base import BaseReader
+
+logger = getLogger(__name__)
+
+
+class CsvReader(BaseReader):
+    label = "CSV"
+    column_mapping: ClassVar[dict[str, str]] = {}
+    date_format = "%Y-%m-%d"
+    delimiter = ","
+    quotechar = '"'
+    encoding = "utf-8"
+    decimal_separator = "."
+    decimalregex = re.compile(r"[^0-9,-]")
+
+    def __init__(self) -> None:
+        self.decimal_cleaner = re.compile(rf"[^0-9-{self.decimal_separator}]")
+
+    def read_transactions(self, statement_file: IO) -> Iterable[Transaction]:
+        rows = statement_file.read().decode(self.encoding).split("\n")
+        column_mapping: dict[str, int] = {}
+        csv_reader = csv.reader(rows, delimiter=self.delimiter, quotechar=self.quotechar)
+        for row in csv_reader:
+            # skip empty lines
+            if row == []:
+                continue
+            # skip header until we find the column mapping
+            if not column_mapping:
+                with contextlib.suppress(ValueError):
+                    column_mapping = {key: row.index(csv_key) for key, csv_key in self.column_mapping.items()}
+                continue
+            # read individual transactions
+            try:
+                data = {key: self.get_value(key, row[column_mapping[key]]) for key in column_mapping}
+            except IndexError:
+                logger.error("Error reading CSV file: %s", {"row": row, "column_mapping": column_mapping})
+                continue
+            yield Transaction(**data)
+
+    def get_value(self, key: str, value: str) -> Any:
+        if key in ("accounted_date", "entry_date"):
+            return datetime.datetime.strptime(value, self.date_format).date()
+        elif key == "amount":
+            return decimal.Decimal(self.decimal_cleaner.sub("", value).replace(self.decimal_separator, "."))
+        elif key.endswith("_symbol"):
+            return int(value) if value.isdigit() else 0
+        else:
+            return value

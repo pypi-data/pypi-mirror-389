@@ -1,0 +1,98 @@
+[tool.ruff]
+line-length = 120
+# ignore = ["D100","D101","D102"]  # if you don't want strict docstring rules
+# exclude = ["migrations"]
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B", "C4", "SIM", "T20", "PIE", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/migrations/*.py" = ["RUF012"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bankreader", "bankreader_demo"]
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+docstring-code-format = true
+
+[tool.black]
+line-length = 120
+
+[tool.flake8]
+# exclude = "bankreader/migrations"
+max-line-length = 120
+
+[tool.isort]
+combine_as_imports = true
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 120
+multi_line_output = 3
+profile = "black"
+skip_glob = "*migrations*"
+use_parentheses = true
+
+[tool.mypy]
+python_version = "3.10"
+plugins = ["mypy_django_plugin.main"]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.django-stubs]
+django_settings_module = "bankreader_demo.settings"
+# if true, all unknown settings in django.conf.settings will fallback to Any,
+# specify it if your settings are loaded dynamically to avoid false positives
+# ignore_missing_settings = true
+
+[tool.poetry]
+name = "django-bankreader"
+version = "1.5.0"
+description = "Pluggable django application for reading and processing various formats of bank account statements"
+authors = ["Jakub Dorňák <jakub.dornak@qbsoftware.cz>"]
+license = "BSD-3-Clause"
+packages = [
+    { include = "bankreader" },
+    { include = "bankreader_demo" },
+]
+readme = "README.rst"
+repository = "https://github.com/qbsoftware/django-bankreader"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 3",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: Czech",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+Django = ">=3.0"
+django-localflavor = "*"
+mt-940 = "*"
+
+[tool.poetry.group.dev.dependencies]
+django-stubs = "*"
+django-stubs-ext = "*"
+ipython = "*"
+mypy = "*"
+pytest = "*"
+ruff = "*"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.5.0"]
