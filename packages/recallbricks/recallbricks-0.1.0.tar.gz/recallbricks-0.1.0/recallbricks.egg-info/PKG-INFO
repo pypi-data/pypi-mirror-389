@@ -1,0 +1,63 @@
+Metadata-Version: 2.4
+Name: recallbricks
+Version: 0.1.0
+Summary: The Memory Layer for AI - Persistent memory across all AI models
+Home-page: https://github.com/recallbricks/recallbricks-python
+Author: RecallBricks
+Author-email: support@recallbricks.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.31.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# RecallBricks Python SDK
+
+The Memory Layer for AI - Persistent memory across all AI models.
+
+## Installation
+```bash
+pip install recallbricks
+```
+
+## Quick Start
+```python
+from recallbricks import RecallBricks
+
+rb = RecallBricks("your-api-key")
+
+# Create a memory
+memory = rb.create_memory(
+    text="User prefers dark mode",
+    tags=["preference", "ui"]
+)
+
+# Search memories
+results = rb.search("dark mode", limit=5)
+for memory in results:
+    print(memory.text)
+```
+
+## Documentation
+
+Visit https://recallbricks.com/docs for full documentation.
+
+## License
+
+MIT
