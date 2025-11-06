@@ -1,0 +1,80 @@
+[project]
+name = "package-utils"
+version = "0.8.1"
+description = "Common utilities for Python packages"
+authors = [{name = "Quinten Roets", email = "qdr2104@columbia.edu"}]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.10, <3.14"
+dependencies = [
+    "typer>=0.9.0, <1",
+]
+
+[project.optional-dependencies]
+context = [
+    "dacite >=1.8.1, <2",
+    "powercli >= 0.2.0, <1",
+    "PyYaml >=6.0.1, <7",
+    "superpathlib >=2.0.0, <3",
+]
+dataclasses = [
+    "dacite >=1.8.1, <2",
+]
+storage = [
+    "superpathlib >= 2.0.0, <3",
+]
+dev = [
+    # context
+    "dacite >=1.8.1, <2",
+    "PyYaml >=6.0.1, <7",
+    "superpathlib >=2.0.0, <3",
+
+    "hypothesis >=6.91.0, <7",
+    "package-dev-tools >=0.7.1, <1",
+    "package-dev-utils >=0.1.6, <1",
+]
+
+[project.urls]
+"Source Code" = "https://github.com/quintenroets/package-utils"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.coverage.run]
+command_line = "-m pytest tests"
+
+[tool.coverage.report]
+precision = 4
+fail_under = 100
+
+[tool.mypy]
+strict = true
+no_implicit_reexport = false
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src", ".",
+]
+
+[tool.ruff]
+fix = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN401",   # annotated with Any
+    "D",        # docstrings
+    "G004",     # logging f-string
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "F401"  # unused import
+]
+"tests/*" = [
+    "S101"  # assert used
+]
+
+[tool.setuptools.package-data]
+package_utils = ["py.typed"]
