@@ -1,0 +1,41 @@
+Metadata-Version: 2.1
+Name: himpunan_sigma
+Version: 0.2.2
+Summary: Implementasi Himpunan Python untuk Tugas Matematika Diskrit
+Author: Mimimi
+Author-email: swissarchipelago@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+# Implementasi Himpunan Python (Tugas Matdis)
+
+Ini adalah sebuah paket Python sederhana yang mengimplementasikan konsep Himpunan (Set) untuk tugas mata kuliah Matematika Diskrit.
+
+Paket ini dibuat murni menggunakan Python, tanpa bergantung pada `set` bawaan Python, dan menggunakan *magic methods* untuk operasi himpunan.
+
+## ✨ Fitur
+
+Kelas `Himpunan` ini mendukung operasi-operasi berikut:
+
+* **Gabungan (Union):** `h1 + h2`
+* **Irisan (Intersect):** `h1 / h2`
+* **Selisih (Difference):** `h1 - h2`
+* **Selisih Simetris:** `h1 * h2`
+* **Cartesian Product:** `h1 ** h2`
+* **Pengecekan Subset:** `h1 <= h2` (subset) atau `h1 < h2` (proper subset)
+* **Pengecekan Superset:** `h1 >= h2`
+* **Pengecekan Kesamaan:** `h1 == h2`
+* **Komplemen:** `h1.komplement(S)`
+* **Himpunan Kuasa (Power Set):** `h1.ListKuasa()`
+* **Kardinalitas Himpunan Kuasa:** `abs(h1)`
+
+## 📦 Instalasi
+
+Kamu bisa meng-install paket ini menggunakan `pip`:
+
+```bash
+pip install himpunan-sigma==0.2.1
