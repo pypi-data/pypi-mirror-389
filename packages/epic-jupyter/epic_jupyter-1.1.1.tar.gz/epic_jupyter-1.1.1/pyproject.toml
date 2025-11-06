@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "epic-jupyter"
+version = "1.1.1"
+description = "Conveniences for working in Jupyter Notebook or Ipython"
+authors = ["Yonatan Perry", "Assaf Ben-David", "Uri Sternfeld"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/epic-framework/epic-jupyter"
+packages = [{include = "epic"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+IPython = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
