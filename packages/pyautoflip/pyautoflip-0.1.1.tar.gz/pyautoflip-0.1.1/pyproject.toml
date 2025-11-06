@@ -1,0 +1,63 @@
+[project]
+name = "pyautoflip"
+version = "0.1.1"
+description = "Intelligent video reframing library that automatically crops videos to different aspect ratios while preserving important content using AI"
+authors = [
+    {name = "Ahmed Hisham", email = "a7med.hish@gmail.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10,<3.14"
+keywords = ["video", "reframing", "cropping", "computer-vision", "face-detection", "object-detection", "autoflip", "aspect-ratio"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Video :: Conversion",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+dependencies = [
+    "opencv-python>=4.11.0.86",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.6.1",
+    "pillow>=10.0.0",
+    "tqdm>=4.65.0",
+    "scenedetect>=0.6.6",
+    "insightface>=0.7.3",
+    "onnxruntime>=1.21.0",
+    "mediapipe>=0.10.21",
+]
+
+[project.scripts]
+pyautoflip = "pyautoflip.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/AhmedHisham1/pyautoflip"
+Repository = "https://github.com/AhmedHisham1/pyautoflip"
+Documentation = "https://github.com/AhmedHisham1/pyautoflip#readme"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0,<8.0.0",
+    "black>=23.0.0,<24.0.0",
+    "isort>=5.0.0,<6.0.0",
+    "mypy>=0.990,<1.0.0",
+    "flake8>=6.0.0,<7.0.0",
+    "twine>=4.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyautoflip"]
