@@ -1,0 +1,94 @@
+Metadata-Version: 2.3
+Name: nbmask
+Version: 0.0.5
+Summary: IPython extension to mask sensitive data
+Keywords: ipython,notebook,extension,privacy
+Author: furechan
+Author-email: furechan <furechan@xsmail.com>
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Requires-Python: >=3.10
+Project-URL: homepage, https://github.com/furechan/nbmask
+Description-Content-Type: text/markdown
+
+# IPython extension to mask sensitive data
+
+Simple ipython extension to mask sensitive data like credentials from notebook cell outputs.
+This extensions may be useful to avoid inadvertently displaying sensitive data in public notebooks.
+The extension modifies the ipython display system to try and mask any occurence of any of the given strings
+that appear in textual outputs from printing, logging and the native display system.
+
+## Usage
+
+To load the extension use the magic command `%load_ext nbmask`. The extension will automatically
+mask the notebook display textual outputs without any further magic commands. When first loaded the
+extension will mask just the username.
+
+```python
+import os
+from pathlib import Path
+
+%load_ext nbmask
+
+username = os.getenv('USER')
+print("My name is {username}!")
+# >>> My name is ...!
+
+documents = Path(f"~/Documents").expanduser()
+documents
+# >>> PosixPath('/Users/.../Documents')
+```
+
+
+You can add more secrets with the `%nbmask` magic line command
+and a string parameter using python builtin variable expansion syntax.
+
+
+```python
+TOKEN = my_secret_token()
+
+%nbmask "$TOKEN"
+
+credentials = dict(user=username, token=TOKEN)
+
+credentials
+# >>> {'user': '...', 'token': '...'}
+```
+
+The extension modifies standard output, standard error and
+also the default logging handlers.
+
+```python
+import logging
+
+logging.basicConfig(level="DEBUG")
+
+logging.debug("Token is %s", TOKEN)
+# >>> DEBUG:root:Token is ...
+```
+
+## Example
+
+See nbmask-tests.ipynb in `extras`
+
+## Installation
+
+You can install the current version of this package with pip
+
+```console
+pip install nbmask
+```
+
+## Changelog
+
+### 0.05
+- Now using `uv_build` backend
+- Added testing with `pytest` and `nbmake`
+- Requires python >= 3.10 
+
+### 0.0.4
+- Cell magic `%%masked` is no longer needed. Will be removed
+
+### 0.0.3
+- Masking pattern is cached
