@@ -1,0 +1,49 @@
+Metadata-Version: 2.4
+Name: dataorigin
+Version: 0.1.3
+Summary: DataOrigin utilities in a single library.
+Author-email: DataOrigin <infodataorigin@gmail.com>
+License-Expression: GPL-3.0-or-later
+Project-URL: Homepage, https://github.com/DataOrigin/dataorigin
+Project-URL: Website, https://dataorigin.es/es/
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests
+Requires-Dist: beautifulsoup4
+Requires-Dist: scrapy
+Requires-Dist: pandas
+Requires-Dist: flask
+Requires-Dist: flask_cors
+Requires-Dist: flask_swagger_ui
+Requires-Dist: authlib
+Requires-Dist: PyJWT
+Requires-Dist: psycopg2-binary
+Requires-Dist: google-auth-oauthlib
+Requires-Dist: google-api-python-client
+Requires-Dist: google-auth-httplib2
+Dynamic: license-file
+
+# DataOrigin
+DataOrigin core
+
+DataOrigin utilities in a single library.
+
+## Instalación
+
+To install this library in your Python environment:
+
+pip install dataorigin
+
+
+## Documentation
+
+This library has built functionalities for the following topics:
+
+Databases: crud functions. Drive: functions to upload, delete or authenticate to Google Drive. FTP: functions to upload, delete or authenticate to an FTP, SFTP or FTPS server. Selenium: Selenium functions.
+
+## Licencia
+
+GNU General Public License v3 (GPLv3) (GNU General Public License v3 (GPLv3)) 
