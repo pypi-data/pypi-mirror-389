@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: pyboot-cli
+Version: 1.0.0
+Summary: PyBoot CLI - Python Spring Boot like framework command line tool
+Author-email: joinsunsoft <793875613@qq.com>
+Maintainer-email: joinsunsoft <inthirties.liu@hotmail.com>
+License-Expression: Apache-2.0
+Project-URL: Homepage, https://github.com/gohutool/pyboot
+Project-URL: Repository, https://github.com/gohutool/pyboot
+Project-URL: Issues, https://github.com/gohutool/pyboot
+Keywords: web,framework,cli,springboot,fastapi
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Requires-Python: >=3.12.10
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.0.0
+Requires-Dist: jinja2>=3.0.0
+Requires-Dist: rich>=10.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=3.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: isort>=5.0.0; extra == "dev"
+Requires-Dist: flake8>=4.0.0; extra == "dev"
