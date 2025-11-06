@@ -1,0 +1,329 @@
+0.16.1
+ - fix: plot extent does not match user settings (#42)
+0.16.0
+ - enh: update curve list even when ancillary computation fails
+ - ref: migrate from pyqt5 to pyqt6 (#35)
+ - setup: bump nanite to 4.2.1
+0.15.10
+ - ref: migrate from pkg_resources to importlib.resources (#33)
+0.15.9
+ - build: fix installation directory
+ - build: disable unsigned installer
+0.15.8
+ - docs: fix broken link to code signing
+0.15.7
+ - build: maintenance
+0.15.6
+ - build: maintenance
+0.15.5
+ - build: maintenance
+0.15.4
+ - build: fix signpath integration with test certificate
+0.15.3
+ - build: finish signpath integration with test certificate
+0.15.2
+ - setup: pin matplotlib>=3,3.7.5 until #32 is resolved
+ - build: migrate from appveyor to GHActions
+ - build: introduce code signing via signpath.org
+0.15.1
+ - fix: properly deregister a model
+ - ref: remove iterative "sneddon_spher" model in developer mode
+ - setup: bump nanite from 4.0.0 to 4.1.1
+0.15.0
+ - BREAKING CHANGE: Due to the upgrade of nanite, the rating values,
+   e.g. for the "zef18" dataset might change slightly (on average by
+   about 0.1). If you are excluding curves from your analysis based on
+   rating, please rerun your analysis.
+ - setup: bump nanite from 3.7.0 to 4.0.0 (support training sets that
+   contain nan-values for zero responses and infinity values; minor
+   other fixes)
+0.14.3
+ - setup: bump afmformats from 0.16.7 to 0.18.0 (support for specifying
+   custom metadata when opening JPK files)
+ - ci: maintenance
+0.14.2
+ - enh: support mirroring the input directory structure in the data
+   conversion tool (#29)
+ - docs: add info about data conversion tool
+0.14.1
+ - maintenance release
+0.14.0
+ - feat: support baseline corrections with linear slope (drift or shift)
+ - ref: generalize the view of preprocessing insights
+ - ref: support multiple options for nanite preprocessors
+ - setup: bump nanite from 3.5.2 to 3.7.0
+ - setup: bump Python version to 3.10
+0.13.4
+ - ref: don't use deprecated matplotlib.cm.get_cmap
+ - ref: use packaging.version.parse to compare versions
+ - ref: fix matplotlib deprecation warning for set_data
+ - tests: don't be so strict
+0.13.3
+ - setup: bump afmformats from 0.16.4 to 0.16.7
+ - setup: bump nanite from 3.5.0 to 3.5.2
+ - setup: require Python 3.9
+ - ci: update build pipelines
+ - tests: loosen allclose call
+0.13.2
+ - fix: model parameters defined via expressions were not exported
+ - fix: only export hidden parameters in developer mode
+ - enh: export ancillary parameters in autosave
+0.13.1
+ - fix: make sure fit parameters are identified by their label
+   instead of by an index (which can be wrong, now that we have
+   hidden parameters)
+ - fix: do not show "sneddon_spher" model in expert mode
+0.13.0
+ - feat: allow to specify the geometrical correction factor for
+   non-single-contact experiments (#16)
+ - fix: export fitting method and method kwargs with initial
+   parameters
+ - enh: add expert mode which is just a parital developer mode (#22)
+ - enh: add links to docs in two places (#19)
+ - enh: show "Axes" in fitting tab only in developer mode (#21)
+ - setup: bump nanite from 3.4.0 to 3.5.0 (#16)
+0.12.1
+ - build: fixed testing pipeline
+0.12.0
+ - feat: support loading nanite model files as extensions
+ - feat: added automatic update check during startup
+ - ref: add preferences dialog
+ - setup: bump nanite from 3.3.1 to 3.4.0
+0.11.2
+ - maintenance release
+0.11.1
+ - fix: check for identical label when updating parameters
+   (previously, a parameter that starts with the label of another
+   parameter got assigned the wrong boundaries)
+ - enh: allow to hide model parameters via key names (#20)
+ - enh: show hidden parameters in developer mode
+ - ref: code-cleanup and simplification using latest nanite version
+ - setup: bump nanite from 3.2.1 to 3.3.1
+0.11.0
+ - feat: allow custom fit methods with custom keyword arguments
+   in developer mode (#18)
+ - fix: correctly handle dependencies in preprocessing tab
+ - fix: set POC method when loading recommended preprocessing (#17)
+ - setup: bump nanite from 3.1.3 to 3.2.1 (new POC estimation
+   methods: Frechet distance and linear+polynomial fit)
+0.10.1
+ - enh: use human-readable units in missing-metadata entry dialogs
+ - enh: change default unit for spring constant to mN/m
+ - ref: IndentationPreprocessor is deprecated in nanite
+ - setup: bump nanite to version 3.1.3 (ask for missing spring
+   constant for tip position computation)
+0.10.0
+ - BREAKING CHANGE: The default contact point estimation method
+   changed. This means that your fitted contact points and any
+   E(delta)-related results will change!
+ - feat: allow to select point of contact method (#15)
+ - enh: restructure preprocessing tab and avoid situations where
+   preprocessing dependencies are not met (#15)
+ - enh: visualize contact point estimation algorithms in
+   preprocessing tab
+ - setup: bump nanite from 2.0.0 to 3.1.1 (improved preprocessing)
+0.9.4
+ - enh: only show exact sneddon model "sneddon_spher" in developer
+   mode to avoid confusion
+ - setup: bump afmformats from 0.15.0 to 0.16.0 (improve support for
+   AFM workshop data)
+ - setup: bump nanite from 1.7.6 to 2.0.0
+0.9.3
+ - fix: possible fix for TypeError in InfDoubleSpinBox
+ - setup: bump afmformats from 0.14.3 to 0.15.0 as well as
+   nanite from 1.7.6 to 1.7.8 (requirement for #14)
+0.9.2
+ - ref: improve speed when displaying QMap data
+ - enh: add developer mode for loading creep-compliance data (#14)
+ - setup: bump afmformats from 0.13.3 to 0.14.3 (mostly speed,
+   support AFM workshop maps)
+ - setup: bump nanite from 1.7.4 to 1.7.6 (mostly speed)
+ - ref: speed-up QMap visualization by caching nanite.QMap instances
+0.9.1
+ - docs: minor update
+ - fix: regression where left fitting range could not be set
+ - fix: improved checks for InfDoubleSpinBox which acted up when
+   entering absolutely sane floating point values
+0.9.0
+ - feat: allow users to enter missing metadata during loading
+   of data files (#5)
+ - fix: automatically append .h5 suffix when rating datasets
+ - enh: add busy cursor where applicable
+ - ref: directory for importing training datasets for rating changed
+   (but I think this currently affects nobody)
+ - setup: dump appdirs dependency (moved to QSettings)
+ - setup: bump afmformats from 0.12.5 to 0.13.3 (mostly #5 and speed)
+ - setup: bump nanite from 1.7.3 to 1.7.4 (mostly #5)
+ - tests: increase coverage
+0.8.8
+ - fix: handle bad curves properly when running bulk analysis (#13)
+ - ref: make sure there are no duplicate files when loading data
+   (possibly fixes #12)
+ - ref: cleanup - call overloaded processEvents
+ - ref: properly decorate pyqtSlots
+ - tests: add helper function for setting up datasets
+0.8.7
+ - fix: add workaround for macOS where the non-native PyQt5 dialogs
+   did not allow browsing to "/Volumes" (it is now added to the sidebar)
+ - build: bump afmformats from 0.12.4 to 0.12.5 (OSError:
+   "Too many files open" with the JPK file format)
+ - build: bump nanite from 1.6.2 to 1.7.3
+ - build: pin PyQt5 for GitHub releases
+ - tests: don't used deprecated weight_cp function from nanite
+0.8.6
+ - build: bump afmformats from 0.12.2 to 0.12.4 (AttributeError
+   when reading HDF5 files)
+ - tests: deprecate setup.py test
+0.8.5
+ - build: migrate from travisCI to GitHub Actions
+ - build: overhauled build pipeline (#9)
+0.8.4
+ - build: add pyinstaller hooks for afmformats
+0.8.3
+ - fix: main window not focused after startup
+ - fix: Windows installation location was confusing and did
+   not coincide configuration file location
+ - fix: files are sorted before batch loading
+ - fix: change visualization of fitting region by gray
+   wraparound instead of yellow highlight (not visible
+   on all screens)
+ - setup: bump afmformats from 0.11.0 to 0.12.2
+   (improved JPK file format speed)
+0.8.2
+ - setup: bump matplotlib to >=3
+   (NavigationToolbar2QT modifications)
+0.8.1
+ - fix: correctly handle lmfit models with expressions
+ - setup: bump nanite from 1.6.0 to 1.6.2 (improve contact point
+   retrieval for bad data, check models during registration)
+0.8.0
+ - fix: exclude misplaced 'available' method from preprocessors
+ - setup: bump nanite from 1.5.5 to 1.6.0 (improved contact point
+   estimation - this may introduce small changes in the fit result
+   which should not be significant, but which justify a new minor
+   version)
+0.7.6
+ - maintenance release (fix macOS build)
+ - setup: bump afmformats from 0.10.2 to 0.11.0
+ - setup: bump nanite from 1.5.4 to 1.5.5
+0.7.5
+ - maintenance release (fix build)
+0.7.4
+ - setup: bump afmfomats from 0.10.0 to 0.10.2
+ - setup: bump nanite from 1.5.2 to 1.5.4
+ - build: add command-line option --version to just print the
+   version and exit
+0.7.3
+ - fix: update initial parameters when the user edits the left
+   fitting interval boundary
+ - fix: conical indenter model did not work, because of a wrong
+   (and unnecessary) entry in the `human_units` scheme.
+0.7.2
+ - fix: setting bad fit range lead to ValueError during plotting
+0.7.1
+ - fix: wrong SI units assigend to fit results parameters
+ - setup: bump afmformats from 0.9.0 to 0.10.0
+   (new formats: JPK (.jpk-qi-data), AFM workshop (.csv),
+   NT-MDT (.txt exported by Nova))
+ - setup: bump nanite from 1.4.1 to 1.5.2
+0.7.0
+ - feat: add data conversion tool
+ - enh: allow to select multiple files when loading data
+ - ref: changed order and clarified meaning of options in file menu
+ - setup: bump afmformats from 0.7.0 to 0.9.0 (fix HDF5 export,
+   support new file formats)
+0.6.8
+ - setup: bump afmformats from 0.5.1 to 0.7.0 (improved metadata view
+   in info tab)
+ - setup: bump nanite from 1.4.1 to 1.5.1 (compatibility to afmformats)
+ - enh: fit results and parameter export dialog now supports new groups
+   in afmformats 0.7.0
+ - enh: autosave now only stores fit results and rating parameters
+ - enh: remember scroll position in info tab
+0.6.7
+ - setup: bump nanite from 1.4.0 to 1.4.1
+   (baseline is now a free parameter by default)
+ - docs: add first tutorial (PAAm gels)
+0.6.6
+ - fix: typo lead to error when using rating threshold
+0.6.5
+ - build: macOS build failed due to PyInstaller issue 4626
+0.6.4
+ - fix: info tab did not display QMap metadata
+ - fix: do not fit the entire dataset when applying a rating threshold
+   but take the values from previous ratings
+ - fix: deselecting curves of a qmap resulted in ValueError if QMap tab
+   was selected
+ - fix: set correct display range for residuals
+ - docs: UI section for basics FD analysis
+ - build: Windows build broken since 0.5.6
+0.6.3
+ - fix: support JPK data recorded in the "force-modulation" feedback mode
+   (bump afmformats from 0.5.0 to 0.5.1)
+ - fix: make sure ancillary parameters are computed from the initial
+   parameters set in the user interface (not from the default model
+   parameters)
+0.6.2
+ - enh: allow to select which metadata is exported
+ - fix: do not apply and fit to all before exporting metadata
+   (user may have performed individual fits)
+ - setup: bump nanite from 1.3.0 to 1.4.0
+0.6.1
+ - build: workaround for Pyinstaller issue 4626
+0.6.0
+ - feat: initial support for ancillary parameters
+ - fix: always display parameter units
+ - fix: other minor UI bugs
+ - setup: bump afmformats from 0.4.1 to 0.5.0
+ - setup: bump nanite from 1.2.4 to 1.3.0
+0.5.7
+ - enh: allow to also set right part of fitting range individually
+ - fix: improve layout of FD fitting panel
+ - setup: bump nanite from 1.2.3 to 1.2.4 (improved default params)
+0.5.6
+ - setup: bump nanite from 1.2.2 to 1.2.3 (fixes issue with fits not
+   being redone when the user changes an initial parameter)
+ - fix: IndexError when editing the fitting range
+0.5.5
+ - maintenance release
+0.5.4
+ - enh: write maximum indentation to statistics file (#3)
+ - fix: unicode characters were not read correctly from statistics
+   file by libre office (added UTF-8 BOM)
+0.5.3
+ - enh: improved visualization of meta data parameters in the Info tab
+ - setup: bump afmformats from 0.3.0 to 0.4.1
+ - setup: bump nanite from 1.2.0 to 1.2.2
+0.5.2
+ - ref: bump nanite to 1.2.0
+ - ref: migrate to afmformats (0.3.0)
+0.5.1
+ - fix: missing title in FD window and missing FD number in export menu
+ - enh: add help menu with link to docs, about, and software used (#1)
+ - docs: add quick guide for importing a nanite training set
+ - docs: add black/white logo
+0.5.0
+ - feat: allow to import training sets produced with nanite
+ - ref: major code refactoring of force-distance interface and cleanup
+ - setup: bump nanite dependency to >=1.1.1
+0.4.4
+ - ci: pin 'joblib==0.11.0' on travis-CI (workaround for infinite loop
+   in macOS build, https://github.com/pyinstaller/pyinstaller/issues/4067)
+ - docs: add installation instructions
+0.4.3
+ - maintenance release (migrate to GitHub infrastructure)
+ - experimental macOS builds
+0.4.2
+ - enh: merge training set and regressor selection into scheme selection
+   (prevents confusion for users that are unsure what to choose)
+ - enh: user rating is saved during rating, not afterwards
+ - enh: rating containers for user rating can be reused explicitly
+ - enh: qmap plot now better distinguishes between unavailable and
+   invalid data
+ - ref: migrate user rating output to nanite
+0.4.1
+ - fix: autoscaling according to fitting range did not work
+ - fix: not possible to load .jpk-force-map files
+ - ref: migrate qmap generation to nanite
+0.4.0
+ - migration to GitHub
