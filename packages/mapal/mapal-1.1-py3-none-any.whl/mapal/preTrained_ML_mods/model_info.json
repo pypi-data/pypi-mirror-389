@@ -1,0 +1,20 @@
+{
+    "M1": {
+		"model_key": "M1",
+		"description": "Predicts vickers hardness for as-cast multi-principal element alloys",
+		"reference": "D Beniwal, P Singh, S Gupta, MJ Kramer, DD Johnson, PK Ray, Distilling physical origins of hardness in multi-principal element alloys directly from ensemble neural network models, npj Computational Materials, 8 (2022) 153.",
+		"DOI": "https://doi.org/10.1038/s41524-022-00842-3",
+		"features": ["R_delta", "S_config", "VEC", "R_cov_delta", "density_avg", "E_delta", "G_delta", "Vm_delta", "H_ch_M_L_R", "H_el_M_S_R"],
+		"model_output": "Vickers hardness",
+		"model_input": "Takes alloy name as input -> converts it to a set of 10 physical & thermodynamic features that act as input for ML model"
+    },
+	"M2": {
+		"model_key": "M2",
+		"description": "Predicts phase fractions of FCC, BCC & IM phases for multi-principal element alloys",
+		"reference": "D Beniwal and PK Ray, Learning phase selection and assemblages in High-Entropy Alloys through a stochastic ensemble-averaging model, Computational Materials Science 197 (2021) 110647",
+		"DOI": "https://doi.org/10.1016/j.commatsci.2021.110647",
+		"features": ["R_delta", "S_config", "VEC", "R_cov_delta", "density_avg", "E_delta", "G_delta", "K_delta", "EN_Allen_avg", "Vm_delta", "E_coh_avg", "E_coh_delta", "H_ch_M_L_R", "H_el_M_S_R"],
+		"model_output": "Three outputs (Phase fractions of FCC, BCC and Intermetallic phases)",
+		"model_input": "Takes alloy name as input -> converts it to a set of 14 physical & thermodynamic features that act as input for ML model"
+    }
+}
