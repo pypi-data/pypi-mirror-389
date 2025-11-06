@@ -1,0 +1,58 @@
+_target_: meds_testing_helpers.dataset_generator.MEDSDataDFGenerator
+
+static_vocab_size: ???
+dynamic_vocab_size: ???
+birth_codes_vocab_size: 1
+death_codes_vocab_size: 1
+frac_subjects_with_birth: 1.0
+frac_subjects_with_death: ???
+
+birth_datetime_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.DatetimeGenerator
+  X: ???
+  freq: null
+
+start_data_datetime_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.DatetimeGenerator
+  X: ???
+  freq: null
+
+time_between_birth_and_data_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.PositiveTimeDeltaGenerator
+  X: ???
+  freq: null
+
+time_between_data_and_death_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.PositiveTimeDeltaGenerator
+  X: ???
+  freq: null
+
+time_between_data_events_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.PositiveTimeDeltaGenerator
+  X: ???
+  freq: null
+
+frac_static_code_occurrences_with_value:
+  _target_: meds_testing_helpers.dataset_generator.ProportionGenerator
+  X: [0]
+  freq: null
+
+frac_dynamic_code_occurrences_with_value:
+  _target_: meds_testing_helpers.dataset_generator.ProportionGenerator
+  X: ???
+  freq: null
+
+num_events_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.PositiveIntGenerator
+  X: ???
+  freq: null
+
+num_measurements_per_event:
+  _target_: meds_testing_helpers.dataset_generator.PositiveIntGenerator
+  X: ???
+  freq: null
+
+num_static_measurements_per_subject:
+  _target_: meds_testing_helpers.dataset_generator.PositiveIntGenerator
+  X: ???
+  freq: null
