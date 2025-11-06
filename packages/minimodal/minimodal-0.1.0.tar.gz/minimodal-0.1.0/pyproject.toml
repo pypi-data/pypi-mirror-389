@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minimodal"
+version = "0.1.0"
+description = "A simple tool to compile and run CUDA kernels on local GPUs or Modal cloud infrastructure"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Your Name", email = "you@example.com"},
+]
+keywords = ["cuda", "gpu", "compilation", "kernel"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: System :: Hardware",
+]
+
+dependencies = [
+    "click>=8.0.0",
+    "modal>=0.60.0",
+]
+
+[project.scripts]
+minimodal = "minimodal.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/minimodal"
+Repository = "https://github.com/yourusername/minimodal"
+Issues = "https://github.com/yourusername/minimodal/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+minimodal = []
+
