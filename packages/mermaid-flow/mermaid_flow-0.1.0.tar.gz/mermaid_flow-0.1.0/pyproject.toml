@@ -1,0 +1,32 @@
+[project]
+name = "mermaid-flow"
+version = "0.1.0"
+description = "Mermaid diagram agent: generate, describe, transform, validate."
+readme = "README.md"
+authors = [{ name = "Thanos Zikas" }]
+license = { text = "MIT" }
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "dotenv>=0.9.9",
+    "gradio>=5.23.1",
+    "ipykernel>=7.1.0",
+    "ipython>=9.6.0",
+    "langchain>=1.0.3",
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.0.2",
+    "langchain-openai>=1.0.1",
+    "langgraph>=1.0.2",
+    "pip>=25.3",
+    "pydantic>=2.12.3",
+    "requests>=2.32.5",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/zthanos/mermaid-flow"
+Issues = "https://github.com/zthanos/mermaid-flow/issues"
+
+
+[project.scripts]
+mermaid-flow = "mermaid_flow.cli:main"
