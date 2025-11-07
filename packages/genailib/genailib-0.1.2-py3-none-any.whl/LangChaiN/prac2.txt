@@ -1,0 +1,150 @@
+# --- Practical 2: Geometric Transformation ---
+!pip install opencv-python numpy matplotlib
+
+import cv2, numpy as np, matplotlib.pyplot as plt, os
+
+# --- Step 1: Load your image if present, else create base image ---
+path = "road.jpg"
+if os.path.exists(path):
+    print("✅ Custom image found! Using your image.")
+    img = cv2.imread(path)
+else:
+    print("⚠️ No image found. Using synthetic 'CV' image instead.")
+    img = np.zeros((200,200,3), np.uint8)
+    cv2.putText(img, 'CV', (40,120), cv2.FONT_HERSHEY_SIMPLEX, 3, (255,255,255), 5)
+
+h, w = img.shape[:2]
+
+# --- Step 2: Apply Geometric Transformations ---
+T = cv2.warpAffine(img, np.float32([[1,0,40],[0,1,30]]), (w+80,h+80))               # Translation
+R = cv2.warpAffine(img, cv2.getRotationMatrix2D((w//2,h//2), 45, 1), (w,h))         # Rotation
+F = cv2.warpAffine(img, np.float32([[-1,0,w],[0,1,0]]), (w,h))                      # Reflection
+S = cv2.warpAffine(img, np.float32([[1,0.5,0],[0,1,0]]), (int(w*1.5), h))           # Shearing
+
+# --- Step 3: Display Results ---
+titles = ['Original', 'Translated', 'Rotated', 'Reflected', 'Sheared']
+images = [img, T, R, F, S]
+
+plt.figure(figsize=(10,8))
+for i, (t, p) in enumerate(zip(titles, images), 1):
+    plt.subplot(2,3,i)
+    plt.imshow(cv2.cvtColor(p, cv2.COLOR_BGR2RGB))
+    plt.title(t)
+    plt.axis('off')
+plt.tight_layout()
+plt.show()
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To perform various geometric transformations on an image using OpenCV.
+# These transformations modify the image's position, orientation, or shape.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPTS:
+# A geometric transformation changes the spatial relationship between
+# pixels in an image using a transformation matrix.
+
+# The general affine transformation equation:
+# [x']   [a11 a12 tx] [x]
+# [y'] = [a21 a22 ty] [y]
+# [1 ]   [ 0   0   1 ] [1]
+#
+# Here:
+#  (x, y)  → Original coordinates
+#  (x', y') → Transformed coordinates
+#  tx, ty → translation (shift)
+#  a11, a12, a21, a22 → scaling, rotation, shearing parameters
+
+# -------------------------------------------------------------
+# 🔸 1. Translation:
+# Moves the image from one place to another without rotation.
+# Formula:
+# x' = x + tx
+# y' = y + ty
+# Used to reposition objects in an image.
+# Example: cv2.warpAffine(img, [[1,0,40],[0,1,30]], ...)
+
+# 🔸 2. Rotation:
+# Rotates the image around a given center by θ degrees.
+# Formula:
+# x' = x*cosθ - y*sinθ
+# y' = x*sinθ + y*cosθ
+# Example: cv2.getRotationMatrix2D(center, angle, scale)
+
+# 🔸 3. Reflection (Flipping):
+# Creates a mirror image of the original.
+# Reflection matrix (about Y-axis):
+# [[-1, 0, w],
+#  [ 0, 1, 0]]
+# Example: Flips horizontally.
+
+# 🔸 4. Shearing:
+# Distorts the image along an axis.
+# Formula:
+# x' = x + ky
+# y' = y
+# Used for perspective distortion.
+# Example: [[1, 0.5, 0], [0, 1, 0]]
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Image loading:
+#   - If custom image (road.jpg) exists, it’s used.
+#   - Else, a synthetic "CV" text image is created.
+#
+# 2️⃣ Translation:
+#   - Moves image 40 px right, 30 px down.
+#
+# 3️⃣ Rotation:
+#   - Rotates image 45° around its center.
+#
+# 4️⃣ Reflection:
+#   - Flips image horizontally by reversing X-coordinates.
+#
+# 5️⃣ Shearing:
+#   - Tilts the image sideways for skew effect.
+#
+# 6️⃣ Display:
+#   - Shows all results using matplotlib in a 2x3 grid.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+# ➤ Original: Base or custom image.
+# ➤ Translated: Shifted position.
+# ➤ Rotated: Tilted 45° view.
+# ➤ Reflected: Mirrored version.
+# ➤ Sheared: Skewed image (horizontal distortion).
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+# - Image registration and alignment.
+# - Robotics vision and motion correction.
+# - Object tracking and rotation correction.
+# - Augmented reality (image overlaying).
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+# Q1. What is an affine transformation?
+#     → A linear mapping that preserves points, straight lines, and planes.
+#
+# Q2. What is the difference between affine and perspective transform?
+#     → Affine keeps parallel lines parallel; perspective can converge them.
+#
+# Q3. Which function is used for affine transformations?
+#     → cv2.warpAffine()
+#
+# Q4. What is the role of getRotationMatrix2D()?
+#     → It creates a 2x3 rotation matrix for rotating around a center.
+#
+# Q5. What is shearing used for?
+#     → To tilt or distort an image along one axis.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully performed translation, rotation, reflection, and shearing
+# on both real and synthetic images using OpenCV geometric transformations.

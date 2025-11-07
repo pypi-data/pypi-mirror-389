@@ -1,0 +1,112 @@
+# --- Practical 1: Basic Image Handling and Processing ---
+!pip install opencv-python numpy matplotlib
+import cv2, numpy as np, matplotlib.pyplot as plt, os
+
+# Load your image if exists, else create synthetic one
+path = "road.jpg"
+img = cv2.imread(path) if os.path.exists(path) else cv2.circle(
+    cv2.rectangle(np.zeros((300,300,3), np.uint8),(50,50),(250,250),(0,255,0),-1),
+    (150,150),60,(255,0,0),-1)
+
+# Process image
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)     # Convert image from BGR (color) to grayscale
+blur = cv2.GaussianBlur(img, (5,5), 0)           # Apply Gaussian smoothing to reduce noise
+edge = cv2.Canny(img, 100, 200)                  # Detect edges using the Canny Edge Detector
+
+# Show all results
+for i,(t,p) in enumerate(zip(['Original','Gray','Blur','Edges'],[img,gray,blur,edge]),1):
+    plt.subplot(2,2,i)
+    plt.imshow(cv2.cvtColor(p, cv2.COLOR_BGR2RGB) if len(p.shape)==3 else p, cmap='gray')
+    plt.title(t); plt.axis('off')
+plt.show()
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To perform basic image handling and simple processing using OpenCV such as
+# grayscale conversion, Gaussian blur, and edge detection.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPTS:
+# 1. Image Handling:
+#    - Image is a matrix of pixel values.
+#    - OpenCV stores images as NumPy arrays in BGR (Blue-Green-Red) format.
+#    - Matplotlib displays in RGB format.
+
+# 2. Color Conversion (cv2.cvtColor):
+#    - Converts an image from one color space to another.
+#    - Here, BGR → GRAY to simplify further processing.
+
+# 3. Gaussian Blur (cv2.GaussianBlur):
+#    - A low-pass filter that smoothens the image.
+#    - Removes noise and small details using Gaussian kernel.
+#    - Syntax: cv2.GaussianBlur(src, (kernel_size), sigma)
+#    - (5,5) → 5x5 kernel used for smoothing.
+
+# 4. Edge Detection (cv2.Canny):
+#    - Detects strong changes in intensity — called edges.
+#    - Uses gradient magnitude and threshold values.
+#    - Syntax: cv2.Canny(image, threshold1, threshold2)
+#    - threshold1 = 100, threshold2 = 200 define edge sensitivity.
+
+# 5. Displaying Images (Matplotlib):
+#    - plt.subplot(rows, cols, index) divides figure area.
+#    - plt.imshow() displays image.
+#    - plt.axis('off') hides axes for clean view.
+
+# -------------------------------------------------------------
+# 🧩 EXPLANATION OF EACH CODE SECTION:
+
+# 1️⃣ Importing libraries:
+#    - cv2 → OpenCV for image processing
+#    - numpy → matrix operations
+#    - matplotlib.pyplot → display results
+#    - os → check if custom image exists
+
+# 2️⃣ Loading image:
+#    - If "road.jpg" exists, load it.
+#    - Else, create a black image using np.zeros().
+#    - Draw a green rectangle and blue circle to simulate a sample image.
+
+# 3️⃣ Processing:
+#    - gray → grayscale conversion
+#    - blur → smooths image
+#    - edge → detects boundaries of objects
+
+# 4️⃣ Display:
+#    - Loop through all 4 versions (original, gray, blur, edges)
+#    - Convert color image from BGR → RGB for correct display in Matplotlib
+#    - Arrange them in 2x2 grid
+
+# -------------------------------------------------------------
+# 📘 OUTPUT EXPLANATION:
+# ➤ Original: Colored image (custom or synthetic)
+# ➤ Gray: One-channel intensity image
+# ➤ Blur: Smoothed image with reduced sharpness
+# ➤ Edges: Only outlines/boundaries visible
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+# - Preprocessing step before object detection or segmentation.
+# - Used in OCR, medical imaging, robotics, and computer vision pipelines.
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS (expected):
+# Q1. Why do we convert to grayscale?
+#     → To reduce complexity and focus on intensity information.
+# Q2. What does Gaussian blur do?
+#     → Removes noise and smooths edges using Gaussian averaging.
+# Q3. What is the role of threshold in Canny?
+#     → It defines edge sensitivity — higher threshold = fewer edges.
+# Q4. Why convert BGR to RGB before showing?
+#     → OpenCV loads in BGR, while Matplotlib expects RGB order.
+# Q5. What is an image kernel?
+#     → A small matrix used for filtering or modifying images.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully performed image loading, grayscale conversion, blurring,
+# and edge detection on both real and synthetic images using OpenCV.
