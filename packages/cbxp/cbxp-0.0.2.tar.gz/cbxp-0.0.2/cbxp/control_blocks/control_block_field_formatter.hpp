@@ -1,0 +1,68 @@
+#ifndef __CB_EXPLORER_CONTROL_BLOCK_FIELD_FORMATTER
+#define __CB_EXPLORER_CONTROL_BLOCK_FIELD_FORMATTER
+
+#include <unistd.h>
+
+#include <cstdint>
+#include <iomanip>
+#include <sstream>
+#include <string>
+
+namespace CBXP {
+class ControlBlockFieldFormatter {
+ private:
+  template <typename T>
+  static T uint(const void* p_field) {
+    T uint_field;
+    std::memcpy(reinterpret_cast<char*>(&uint_field), p_field, sizeof(T));
+    return uint_field;
+  }
+
+ public:
+  static const std::string getString(const void* p_field, int length) {
+    auto ascii_field_unique_ptr = std::make_unique<char[]>(length);
+    std::memcpy(ascii_field_unique_ptr.get(), p_field, length);
+    __e2a_l(ascii_field_unique_ptr.get(), length);
+    return ascii_field_unique_ptr.get();
+  }
+  template <typename T>
+  static const std::string getHex(const void* p_field) {
+    std::ostringstream oss;
+    oss << "0x" << std::hex << std::setfill('0');
+    oss << std::setw(sizeof(T) * 2)
+        << ControlBlockFieldFormatter::uint<T>(p_field);
+    return oss.str();
+  }
+  template <typename T>
+  static const std::string getBitmap(const void* p_field) {
+    std::ostringstream oss;
+    oss << std::bitset<sizeof(T) * 8>{
+        ControlBlockFieldFormatter::uint<T>(p_field)};
+    return oss.str();
+  }
+  template <typename T>
+  static const std::string getBitmap(T field) {
+    std::ostringstream oss;
+    oss << std::bitset<sizeof(T) * 8>{field};
+    return oss.str();
+  }
+  static const std::string getPswSmall(const unsigned char* p_field) {
+    std::ostringstream oss;
+    oss << getBitmap<uint32_t>(p_field);
+    oss << " | ";
+    oss << getHex<uint32_t>(p_field + 4);
+    return oss.str();
+  }
+  // Do we plan on using this???
+  // cppcheck-suppress unusedFunction
+  static const std::string getPswBig(const unsigned char* p_field) {
+    std::ostringstream oss;
+    oss << getBitmap<uint64_t>(p_field);
+    oss << " | ";
+    oss << getHex<uint64_t>(p_field + 8);
+    return oss.str();
+  }
+};
+}  // namespace CBXP
+
+#endif
