@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "epics-sumo"
+version =     "4.7.1"
+authors = [
+  { name="Goetz Pfeiffer", email='Goetz.Pfeiffer@helmholtz-berlin.de'},
+]
+license = {text="GPL-3.0-only"}
+description ='Python support tool for EPICS software development'
+readme = "README.rst"
+# note: the current "pip" installed requires python>=3.8 !
+requires-python = ">=3.9"
+classifiers = [
+          'Development Status :: 6 - Mature',
+          'Environment :: Console',
+          'Intended Audience :: Developers',
+          'Intended Audience :: Science/Research',
+          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+          'Natural Language :: English',
+          'Operating System :: POSIX',
+          'Operating System :: Unix',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.9',
+          'Programming Language :: Python :: 3.10',
+          'Programming Language :: Python :: 3.11',
+          'Programming Language :: Python :: 3.12',
+          'Programming Language :: Python :: 3.13',
+          'Programming Language :: Python :: 3.14',
+          'Programming Language :: Python :: 3.15',
+          'Programming Language :: Python :: Implementation',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Topic :: Scientific/Engineering',
+          'Topic :: Scientific/Engineering :: Physics',
+          'Topic :: Software Development',
+          'Topic :: Software Development :: Build Tools',
+          'Topic :: Utilities',
+]
+
+[project.urls]
+"Homepage" ='https://epics-sumo.sourceforge.io/'
+"Bug Tracker" = 'https://sourceforge.net/p/epics-sumo/tickets/'
+
+[project.scripts]
+"sumo"        = "sumo.sumo_bin:main"
+"sumo-scan"   = "sumo.sumo_scan:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sumo.doc" = ["*"]
+"sumo.doc.rst" = ["*.rst", "*.png"]
+"sumo.doc.html" = ["*.*"]
+"sumo.doc.html._images" = ["*.*"]
+"sumo.doc.html._modules" = ["*.*"]
+"sumo.doc.html._modules.sumo" = ["*.*"]
+"sumo.doc.html._sources" = ["*.*"]
+"sumo.doc.html._static" = ["*.*"]
+"sumo.doc.html._static.css" = ["*.*"]
+"sumo.doc.html._static.css.fonts" = ["*.*"]
+"sumo.doc.html._static.js" = ["*.*"]
+"sumo.data" = ["*"]
+"sumo.data.templates" = ["*.*"]
+"sumo.data.templates.github" = ["*.*"]
+
