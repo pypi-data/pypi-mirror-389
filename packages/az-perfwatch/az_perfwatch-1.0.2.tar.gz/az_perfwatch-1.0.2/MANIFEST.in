@@ -1,0 +1,19 @@
+include README.md
+include LICENSE
+include requirements.txt
+include perfwatch.conf
+
+# Include all Python package files
+recursive-include perfwatch *.py
+
+# Include dashboard templates and static files - ALL subdirectories
+recursive-include perfwatch/dashboard/templates *
+recursive-include perfwatch/dashboard/static *
+
+# Exclude unnecessary files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude *~
+prune **/__pycache__
