@@ -1,0 +1,67 @@
+Metadata-Version: 2.4
+Name: cadenzaanalytics
+Version: 10.3.0
+Summary: Official Python Package for creation of disy Cadenza analytics extensions
+License: Apache-2.0
+License-File: LICENSE.md
+Author: Julian Janßen
+Author-email: julian.janssen@disy.net
+Requires-Python: >=3.8,<4.0
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Topic :: Scientific/Engineering
+Requires-Dist: Flask (==2.3.3)
+Requires-Dist: Flask-Cors (==3.0.10)
+Requires-Dist: Werkzeug (==3.0.4)
+Requires-Dist: chardet (==5.2.0)
+Requires-Dist: pandas (>=2.0.2,<3.0.0)
+Requires-Dist: requests-toolbelt (==1.0.0)
+Project-URL: Repository, https://github.com/DisyInformationssysteme/cadenza-analytics-python
+Description-Content-Type: text/markdown
+
+# Cadenza Analytics Python
+**cadenzaanalytics** is the official package for fast and easy creation of [disy Cadenza](https://www.disy.net/en/products/disy-cadenza/) analytics extensions with Python.
+It enables the extension of disy Cadenza for advanced analytics purposes with the usage of python code.
+
+Currently, this package is in **beta status**: it can be used for testing, but there may be breaking changes before a full release.
+
+Find the docs at https://disyinformationssysteme.github.io/cadenza-analytics-python
+
+[![CI](https://github.com/DisyInformationssysteme/cadenza-analytics-python/actions/workflows/ci.yml/badge.svg)](https://github.com/DisyInformationssysteme/cadenza-analytics-python/actions/workflows/ci.yml)
+[![Pylint](https://github.com/DisyInformationssysteme/cadenza-analytics-python/actions/workflows/pylint.yml/badge.svg)](https://github.com/DisyInformationssysteme/cadenza-analytics-python/actions/workflows/pylint.yml)
+
+## Dependencies:
+* Python 3
+* Flask
+* Pandas
+* requests-toolbelt
+* chardet
+
+## Example:
+Example extensions can be found in [examples](https://github.com/DisyInformationssysteme/cadenza-analytics-python/tree/main/examples).
+
+To test an example extension, clone this repository, install the dependencies, navigate to the folder, e.g. `examples/calculation/extension`.
+Run the example file in your python environment e.g.:
+```
+python example_extensions.py
+```
+A development server will be started on localhost `http://127.0.0.1:5005`.
+The analytics extension can now be registered and used in disy Cadenza.
+
+It is not recommended to use the development server in a production environment.
+
+## License:
+[License](https://github.com/DisyInformationssysteme/cadenza-analytics-python/tree/main/LICENSE.md)
+
