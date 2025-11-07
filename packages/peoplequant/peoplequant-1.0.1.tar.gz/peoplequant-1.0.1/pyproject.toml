@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peoplequant"
+version = "1.0.1"
+description = "PeopleQuant CTP API package"
+readme = "README.md"
+requires-python = ">=3.8"
+
+# 依赖库
+dependencies = [
+    "openctp-ctp",    # 假设这是公开的库，如果是私有库，可能需要额外配置
+    "requests",       
+    "polars",
+]
+
+# 作者信息
+authors = [
+    { name = "ZhuXueLi", email = "3416223155@qq.com" }
+]
+
+# 包的发现
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+peoplequant = [
+    "*.pyd",
+    "*.dll",
+    "*.so",
+    "*.json",
+    "*.txt",
+    "*.docx",
+    "*.chm",
+    "*.h",
+    "*.xml",
+]
+
+[tool.setuptools.exclude-package-data]
+peoplequant = ["__pycache__"]
+
+[project.urls]
+homepage = "https://github.com/zhuxueli-cta/PeopleQuant"   # 替换成你的项目主页
