@@ -1,0 +1,130 @@
+# --- Practical 5: Camera Calibration ---
+#!pip install opencv-python numpy
+
+import cv2, numpy as np, os
+
+# --- Step 1: Load real image points if available, else create synthetic data ---
+# (In real calibration, chessboard corners are used as image points)
+if os.path.exists("road.jpg"):
+    print("✅ Real image found! You can detect corners using cv2.findChessboardCorners().")
+else:
+    print("⚠️ No real image found. Using synthetic calibration data instead.")
+    objp = np.random.rand(10,3).astype(np.float32)*5   # 3D world points
+    objp[:,2] = 0                                     # flat plane (Z=0)
+    imgp = np.random.rand(10,2).astype(np.float32)*400 # 2D image points
+
+# --- Step 2: Calibrate camera using synthetic data ---
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera([objp], [imgp], (400,400), None, None)
+
+# --- Step 3: Display calibration results ---
+print("✅ Camera Calibration Successful\n")
+print("Camera Matrix (Intrinsic Parameters):\n", mtx)
+print("\nDistortion Coefficients:\n", dist)
+print("\nRotation Vectors (rvecs):\n", rvecs)
+print("\nTranslation Vectors (tvecs):\n", tvecs)
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To perform camera calibration using OpenCV to find the relationship between
+# 3D real-world coordinates and their 2D image projections.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT:
+# Camera calibration estimates parameters that define how a camera captures the world.
+
+# The goal is to find:
+# 1. **Intrinsic Parameters** → Camera’s internal characteristics.
+# 2. **Extrinsic Parameters** → Camera’s position and orientation in the world.
+# 3. **Distortion Coefficients** → Lens distortion correction factors.
+
+# -------------------------------------------------------------
+# 🔸 CAMERA MODEL (Pinhole Camera Model):
+#
+# [u]   [fx  0  cx][R|t][X]
+# [v] = [ 0 fy  cy][R|t][Y]
+# [1]   [ 0  0   1][R|t][Z]
+#
+# Where:
+# (X, Y, Z) → 3D real-world coordinates  
+# (u, v) → 2D image pixel coordinates  
+# fx, fy → focal lengths  
+# cx, cy → optical center  
+# [R|t] → rotation & translation between camera and world coordinates  
+
+# -------------------------------------------------------------
+# 🔸 OPEN CV FUNCTION:
+# cv2.calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs)
+#
+# ➤ objectPoints → 3D real-world coordinates
+# ➤ imagePoints → 2D image coordinates of the same points
+# ➤ imageSize → resolution of image (width, height)
+# ➤ Returns:
+#     ret   → RMS re-projection error
+#     mtx   → Intrinsic matrix
+#     dist  → Distortion coefficients
+#     rvecs → Rotation vectors
+#     tvecs → Translation vectors
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ objp → Set of 3D real-world coordinates (Z=0 for a flat plane).
+# 2️⃣ imgp → Corresponding 2D image points (pixels).
+# 3️⃣ cv2.calibrateCamera() → Estimates intrinsic, extrinsic, and distortion parameters.
+# 4️⃣ mtx → Intrinsic matrix = [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]
+# 5️⃣ dist → Distortion coefficients correct radial & tangential lens distortion.
+# 6️⃣ rvecs, tvecs → Describe camera position & orientation relative to the object.
+# 7️⃣ ret → Calibration accuracy (reprojection error).
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+
+# ➤ Camera Matrix:
+#   Contains focal lengths (fx, fy) and optical center (cx, cy)
+#   Example:
+#   [[400.3   0.   200.1]
+#    [  0.   398.7 210.4]
+#    [  0.     0.     1.]]
+
+# ➤ Distortion Coefficients:
+#   Correct lens imperfections like barrel or pincushion distortion.
+#   Example: [[k1, k2, p1, p2, k3]]
+
+# ➤ Rotation & Translation Vectors:
+#   Describe the camera's orientation and position relative to the object.
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+# - Removing lens distortion from images
+# - 3D reconstruction
+# - Augmented reality (placing 3D objects accurately)
+# - Stereo vision calibration
+# - Robotics navigation and mapping
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What is camera calibration?
+#     → The process of finding the camera’s internal parameters and lens distortion.
+
+# Q2. What is the difference between intrinsic and extrinsic parameters?
+#     → Intrinsic: Internal camera parameters (focal length, optical center).
+#       Extrinsic: Camera’s position and orientation in the world.
+
+# Q3. Why do we need distortion coefficients?
+#     → To correct the bending of straight lines caused by lens curvature.
+
+# Q4. What function is used in OpenCV for calibration?
+#     → cv2.calibrateCamera()
+
+# Q5. What type of images are used for calibration in practice?
+#     → Multiple chessboard images taken from different angles.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully simulated camera calibration using synthetic 3D-2D data.
+# Found intrinsic, extrinsic, and distortion parameters of the camera using OpenCV.
