@@ -1,0 +1,103 @@
+Metadata-Version: 2.4
+Name: gauss6
+Version: 0.1.1
+Summary: Gauss-Legendre 6th-order implicit integrator and finite-difference helpers built on JAX.
+Author: Eirik
+License: MIT License
+        
+        Copyright (c) 2024 Eirik
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: jax>=0.4.20
+Requires-Dist: jax-tqdm>=0.1.0
+Requires-Dist: sparsejac>=0.2.0
+Provides-Extra: dev
+Requires-Dist: build>=1.0.0; extra == "dev"
+Dynamic: license-file
+
+# Gauss6
+
+Gauss6 bundles a sixth-order implicit Gauss–Legendre time integrator together with high-order finite-difference helpers, all implemented with [JAX](https://github.com/google/jax).
+The method is A-stable and therefore useful for stiff systems. It is also symplectic, and therefore useful for solving Hamiltonian systems such as the KdV equation.
+
+The systems are solved based on methods described in *Solving Ordinary Differential Equations II: Stiff and Differential-Algebraic Problems* by Hairer and Wanner (Springer, 1996), section IV.8 Implementation of Implicit Runge-Kutta Methods: The Linear System. 
+The implicit steps are solved using a Newton-GMRES solver with backtracking, as explained in *Choosing the Forcing Terms in an Inexact Newton Method* by Stanley C. Eisenstat and Homer F. Walker (SIAM, 1996). We further use `jax` to automatically compute the Jacobian-vector products needed in the GMRES solver.
+
+## Installation
+
+The package targets Python 3.9+ and relies on JAX.  Install the right `jax`/`jaxlib` wheel for your platform (CPU-only shown below) and then install Gauss6:
+
+```bash
+pip install --upgrade pip
+pip install --upgrade "jax[cpu]"
+pip install gauss6
+```
+
+## Quick start
+
+```python
+import jax.numpy as jnp
+from gauss6 import Gauss6
+
+def f(t, u, args):
+    alpha = args["alpha"]
+    return alpha * u
+
+t = jnp.linspace(0.0, 2.0, 201)
+params = {"alpha": -1.0}
+u0 = jnp.array([1.0])  # initial condition
+
+solver = Gauss6(t, args=params, size=u0.size)
+solve = solver.make_solve(f)
+trajectory = solve(u0)
+```
+
+We currently do not support adaptive timestepping and assume a constant step size.
+
+The package also exposes high-order central-difference helpers:
+
+```python
+from gauss6 import dx_order_6
+
+x = jnp.linspace(0, 2*jnp.pi, 512, endpoint=False)
+dx = x[1]-x[0]
+values = jnp.sin(x)
+first_derivative = dx_order_6(values, dx)
+```
+
+We assume that the function is periodic and that the grid is equidistant.
+
+## License
+
+Gauss6 is released under the [MIT license](LICENSE).
