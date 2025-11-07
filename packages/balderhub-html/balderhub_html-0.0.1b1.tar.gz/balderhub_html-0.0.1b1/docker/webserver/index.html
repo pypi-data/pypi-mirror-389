@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        section { margin-bottom: 30px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Selenium Test Page</h1>
+    <p>This page contains various HTML elements for testing Selenium automation scripts.</p>
+
+    <section id="text-elements">
+        <h2>Text Elements</h2>
+        <p id="sample-paragraph">This is a sample paragraph for text extraction.</p>
+        <h3>Heading Level 3</h3>
+        <span class="highlight">Highlighted span text.</span>
+    </section>
+
+    <section id="links">
+        <h2>Links</h2>
+        <a href="https://www.example.com" id="external-link">External Link to Example.com</a><br>
+        <a href="#text-elements" id="internal-link">Internal Link to Text Elements Section</a>
+    </section>
+
+    <section id="forms">
+        <h2>Form Elements</h2>
+        <form id="test-form" action="#" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username"><br><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password"><br><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email"><br><br>
+
+            <label>Checkboxes:</label><br>
+            <input type="checkbox" id="option1" name="options" value="option1">
+            <label for="option1">Option 1</label><br>
+            <input type="checkbox" id="option2" name="options" value="option2">
+            <label for="option2">Option 2</label><br><br>
+
+            <label>Radio Buttons:</label><br>
+            <input type="radio" id="choice1" name="choices" value="choice1">
+            <label for="choice1">Choice 1</label><br>
+            <input type="radio" id="choice2" name="choices" value="choice2">
+            <label for="choice2">Choice 2</label><br><br>
+
+            <label for="dropdown">Select Dropdown:</label><br>
+            <select id="dropdown" name="dropdown">
+                <option value="">--Select an option--</option>
+                <option value="item1">Item 1</option>
+                <option value="item2">Item 2</option>
+                <option value="item3">Item 3</option>
+            </select><br><br>
+
+            <label for="textarea">Textarea:</label><br>
+            <textarea id="textarea" name="textarea" rows="4" cols="50" placeholder="Enter your message"></textarea><br><br>
+
+            <button type="submit" id="submit-button">Submit Form</button>
+            <button type="reset" id="reset-button">Reset Form</button>
+        </form>
+    </section>
+
+    <section id="buttons">
+        <h2>Buttons</h2>
+        <button id="alert-button" onclick="alert('Button clicked!')">Click for Alert</button>
+        <button id="disabled-button" disabled>Disabled Button</button>
+    </section>
+
+    <section id="tables">
+        <h2>Table</h2>
+        <table id="sample-table">
+            <thead>
+                <tr>
+                    <th>Header 1</th>
+                    <th>Header 2</th>
+                    <th>Header 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Row 1, Cell 1</td>
+                    <td>Row 1, Cell 2</td>
+                    <td>Row 1, Cell 3</td>
+                </tr>
+                <tr>
+                    <td>Row 2, Cell 1</td>
+                    <td>Row 2, Cell 2</td>
+                    <td>Row 2, Cell 3</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="images">
+        <h2>Images</h2>
+        <img src="https://via.placeholder.com/150" alt="Placeholder Image" id="sample-image">
+    </section>
+
+    <section id="iframes">
+        <h2>Iframe</h2>
+        <iframe src="https://www.example.com" width="600" height="300" id="sample-iframe"></iframe>
+    </section>
+
+    <section id="dynamic">
+        <h2>Dynamic Content</h2>
+        <div id="dynamic-div">Initial content</div>
+        <button id="change-content" onclick="document.getElementById('dynamic-div').innerText = 'Content changed!';">Change Content</button>
+    </section>
+
+    <script>
+        // Optional JavaScript for basic interactions
+        console.log('Page loaded for Selenium testing.');
+    </script>
+</body>
+</html>

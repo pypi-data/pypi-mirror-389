@@ -1,0 +1,28 @@
+services:
+  webserver:
+    # project https://github.com/nextcloud/docker
+    build: docker/webserver
+    container_name: ${CONTAINER_NAME_WEBSERVER:-webserver}
+    ports:
+      - 127.0.0.1:8000:8000
+  seleniumfirefox:
+    image: selenium/standalone-firefox:4.35
+    container_name: ${CONTAINER_NAME_SELENIUM:-seleniumfirefox}
+    shm_size: 2gb
+    ports:
+      - "127.0.0.1:4444:4444"
+    volumes:
+      - ./docker/firefox/upload-data:/uploads:ro
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_NAME_TEST:-test}
+    environment:
+      SELENIUM_HOSTNAME: seleniumfirefox
+    volumes:
+      - ./src:/code/src
+      - ./tests:/code/tests
+    depends_on:
+      - seleniumfirefox
+      - webserver
