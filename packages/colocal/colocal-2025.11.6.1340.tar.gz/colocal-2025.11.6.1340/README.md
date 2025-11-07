@@ -1,0 +1,85 @@
+# colocal
+
+**Colab or local — same behaviour, same results.**
+
+`colocal` is a lightweight utility that harmonises notebook environments across **Google Colab** and **local Jupyter**.
+
+It automatically ensures your repository structure, imports, and working directory are consistent — so your notebooks run the same everywhere.
+
+---
+
+## ✨ Features
+
+* **Seamless dual support** → Detects Colab vs Jupyter automatically.
+* **Clean imports** → Adds your repository root to `sys.path`.
+* **Consistent working directory** → Sets `cwd` to the notebook’s folder, avoiding fragile `../../` paths.
+* **Branch-aware in Colab** → Parses the Colab badge, checks out the correct branch, and mirrors your local repo structure.
+* **Fallback support** → If the notebook has no badge, you can specify the GitHub URL directly.
+* **Reproducibility** → Run the same notebook in Colab or locally with identical results.
+
+---
+
+## 🚀 Usage
+
+### 🟢 Running in Colab
+
+If your notebook has a Colab badge that points to a Github repo like:
+
+```markdown
+<a href="https://colab.research.google.com/github/org/repo/blob/main/notebooks/demo.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"/>
+</a>
+```
+
+just run:
+
+```python
+import colocal
+colocal.setup()
+```
+
+`colocal` will:
+
+* Clone the correct repo and branch into `/content/`
+* Add it to `sys.path`
+* Set the working directory to match the notebook’s location in the repo
+
+---
+
+### 🟡 No badge? Specify the repo manually
+
+If the notebook doesn’t include a Colab badge, just provide the repository URL:
+
+```python
+import colocal
+colocal.setup("https://github.com/org/repo")
+```
+
+This clones the repo’s **default branch**, adds it to `sys.path`, and sets the working directory to the repo root.
+
+---
+
+### ⚪ Running locally
+
+If you’re in a local Jupyter environment, `colocal`:
+
+* Detects the current notebook’s location
+* Finds the repository root (via `.git`)
+* Adds it to `sys.path`
+* Changes directory to the notebook’s folder
+
+That’s it — your imports and paths are now consistent with the Colab version.
+
+---
+
+### 🧩 Return values
+
+```python
+repo_root, branch, cwd = colocal.setup(...)
+```
+
+* `repo_root` → path to the repository root
+* `branch` → current branch name (if known)
+* `cwd` → current working directory after setup
+
+---
