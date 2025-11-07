@@ -1,0 +1,149 @@
+# --- Practical 7: Edge, Line, and Corner Detection ---
+!pip install opencv-python numpy matplotlib
+
+import cv2, numpy as np, matplotlib.pyplot as plt, os
+
+# --- Step 1: Load your image if available, else create synthetic one ---
+path = "road.jpg"
+if os.path.exists(path):
+    print("✅ Custom image found! Using your image.")
+    img = cv2.imread(path)
+else:
+    print("⚠️ No image found. Using synthetic image with shapes.")
+    img = np.zeros((300,300,3), np.uint8)
+    cv2.line(img, (50,250), (250,50), (255,255,255), 2)
+    cv2.rectangle(img, (100,100), (200,200), (255,255,255), 2)
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# --- Step 2: Edge Detection (Canny) ---
+edges = cv2.Canny(gray, 50, 150)
+
+# --- Step 3: Line Detection (Hough Transform) ---
+lines = cv2.HoughLinesP(edges, 1, np.pi/180, 30, minLineLength=30, maxLineGap=10)
+line_img = img.copy()
+if lines is not None:
+    for l in lines:
+        x1, y1, x2, y2 = l[0]
+        cv2.line(line_img, (x1, y1), (x2, y2), (0,255,0), 2)
+
+# --- Step 4: Corner Detection (Harris Corner) ---
+gray_f = np.float32(gray)
+corners = cv2.cornerHarris(gray_f, blockSize=2, ksize=3, k=0.04)
+corner_img = img.copy()
+corner_img[corners > 0.01 * corners.max()] = [0,0,255]   # mark corners in red
+
+# --- Step 5: Display Results ---
+plt.figure(figsize=(10,5))
+plt.subplot(1,3,1); plt.imshow(edges, cmap='gray'); plt.title('Edges (Canny)'); plt.axis('off')
+plt.subplot(1,3,2); plt.imshow(cv2.cvtColor(line_img, cv2.COLOR_BGR2RGB)); plt.title('Lines (Hough)'); plt.axis('off')
+plt.subplot(1,3,3); plt.imshow(cv2.cvtColor(corner_img, cv2.COLOR_BGR2RGB)); plt.title('Corners (Harris)'); plt.axis('off')
+plt.tight_layout(); plt.show()
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To perform and visualize edge, line, and corner detection using OpenCV
+# techniques like Canny, Hough Transform, and Harris Corner Detector.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT OVERVIEW:
+
+# ➤ Edges → Significant intensity changes in the image (object boundaries)
+# ➤ Lines → Continuous edges forming straight patterns
+# ➤ Corners → Points where two or more edges meet (features of interest)
+
+# -------------------------------------------------------------
+# 🔸 1. EDGE DETECTION (CANNY ALGORITHM)
+#
+# ➤ Steps:
+#   1️⃣ Noise reduction using Gaussian Blur
+#   2️⃣ Gradient calculation using Sobel filters
+#   3️⃣ Non-maximum suppression (thinning)
+#   4️⃣ Double thresholding and edge tracking
+#
+# ➤ Formula for gradient magnitude:
+#     G = sqrt(Gx² + Gy²)
+# ➤ Function: cv2.Canny(image, threshold1, threshold2)
+# ➤ Output: Binary image showing strong edges (white pixels)
+
+# -------------------------------------------------------------
+# 🔸 2. LINE DETECTION (HOUGH TRANSFORM)
+#
+# ➤ Principle:
+#   Each point in the image space corresponds to a sinusoidal line in parameter space.
+#   Points lying on the same line produce peaks in Hough space.
+#
+# ➤ Line equation:
+#     ρ = x*cos(θ) + y*sin(θ)
+#
+# ➤ Function: cv2.HoughLinesP(edges, ρ_res, θ_res, threshold, minLineLength, maxLineGap)
+# ➤ Returns: Endpoints of detected line segments.
+
+# -------------------------------------------------------------
+# 🔸 3. CORNER DETECTION (HARRIS CORNER)
+#
+# ➤ Principle:
+#   A corner is a point where the local neighborhood shows intensity changes
+#   in all directions.
+#
+# ➤ Corner measure formula:
+#     R = det(M) – k*(trace(M))²
+#     where M is the structure tensor of image gradients.
+#
+# ➤ Function: cv2.cornerHarris(image, blockSize, ksize, k)
+# ➤ High R values correspond to corners.
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Load image → Either from file or synthetic pattern.
+# 2️⃣ Convert to grayscale → Easier to process edges and corners.
+# 3️⃣ Detect Edges using Canny → Identifies boundaries.
+# 4️⃣ Detect Lines using Hough Transform → Draws green lines over detected ones.
+# 5️⃣ Detect Corners using Harris → Marks red dots at strong corner points.
+# 6️⃣ Display → Show all three results side by side using Matplotlib.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+
+# ➤ Edges (Canny): White lines where intensity changes sharply.
+# ➤ Lines (Hough): Detected straight segments highlighted in green.
+# ➤ Corners (Harris): Red dots marking corner points of rectangles or intersections.
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+
+# - Object detection and recognition
+# - Lane and road detection in autonomous driving
+# - Feature extraction for image matching
+# - Shape analysis and motion tracking
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What are edges in an image?
+#     → Points where pixel intensity changes abruptly.
+
+# Q2. Which operator is used in Canny for gradient calculation?
+#     → Sobel operator.
+
+# Q3. What is the difference between Canny and Sobel edge detection?
+#     → Sobel gives raw gradients; Canny adds thresholding & non-maximum suppression.
+
+# Q4. What does the Hough Transform detect?
+#     → Straight lines, circles, or other parametric shapes.
+
+# Q5. What parameter "k" in Harris Corner Detector represents?
+#     → Sensitivity constant, typically between 0.04–0.06.
+
+# Q6. What is the use of corner detection?
+#     → To identify key points/features for matching or tracking in computer vision.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully implemented and visualized edge, line, and corner detection
+# using Canny, Hough Transform, and Harris Corner methods in OpenCV.

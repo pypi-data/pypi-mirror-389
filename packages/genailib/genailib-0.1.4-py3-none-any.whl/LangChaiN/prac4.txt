@@ -1,0 +1,126 @@
+# --- Practical 4: Perspective Transformation ---
+#!pip install opencv-python numpy matplotlib
+
+import cv2, numpy as np, matplotlib.pyplot as plt, os
+
+# --- Step 1: Load your image if available, else create a synthetic one ---
+path = "road.jpg"
+if os.path.exists(path):
+    print("✅ Custom image found! Using your image.")
+    img = cv2.imread(path)
+else:
+    print("⚠️ No image found. Using synthetic rectangle image instead.")
+    img = np.zeros((300,300,3), np.uint8)
+    cv2.rectangle(img, (50,50), (250,250), (255,255,255), 3)
+
+# --- Step 2: Define source and destination points ---
+# These points define how the image will be transformed (like changing viewpoint)
+pts1 = np.float32([[50,50],[250,50],[50,250],[250,250]])   # Source points
+pts2 = np.float32([[30,70],[260,40],[80,260],[230,270]])   # Destination points
+
+# --- Step 3: Compute perspective transformation matrix & apply warp ---
+matrix = cv2.getPerspectiveTransform(pts1, pts2)            # 3x3 matrix
+warped = cv2.warpPerspective(img, matrix, (300,300))        # Apply transformation
+
+print("Perspective Transformation Matrix:\n", matrix)
+
+# --- Step 4: Display Original & Transformed Images ---
+plt.figure(figsize=(8,4))
+plt.subplot(1,2,1); plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)); plt.title('Original Image'); plt.axis('off')
+plt.subplot(1,2,2); plt.imshow(cv2.cvtColor(warped, cv2.COLOR_BGR2RGB)); plt.title('Perspective Transformed'); plt.axis('off')
+plt.tight_layout(); plt.show()
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To perform Perspective Transformation using OpenCV and visualize how an image
+# changes when viewed from a different angle or perspective.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT:
+# Perspective Transformation is a projective mapping where an image plane
+# is transformed into another plane, giving the illusion of depth or tilt.
+
+# It’s a special case of Homography used when projecting one plane onto another.
+
+# -------------------------------------------------------------
+# 🔸 MATHEMATICAL FORMULATION:
+
+# The relation between original and transformed coordinates:
+#
+# [x']   [a11 a12 a13] [x]
+# [y'] = [a21 a22 a23] [y]
+# [w']   [a31 a32 a33] [1]
+#
+# After dividing by w':
+# x' = (a11*x + a12*y + a13) / (a31*x + a32*y + a33)
+# y' = (a21*x + a22*y + a23) / (a31*x + a32*y + a33)
+#
+# The 3x3 matrix is called the **Perspective Transformation Matrix**.
+
+# -------------------------------------------------------------
+# 🔸 OpenCV Functions Used:
+
+# ➤ cv2.getPerspectiveTransform(src_points, dst_points)
+#     - Calculates 3x3 transformation matrix (requires 4 pairs of points).
+
+# ➤ cv2.warpPerspective(image, matrix, size)
+#     - Applies the perspective warp to the image.
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Image Loading:
+#     - Loads custom image ("road.jpg") if available, else uses a rectangle shape.
+
+# 2️⃣ Points Definition:
+#     - src (pts1): Original corner points.
+#     - dst (pts2): Target positions (simulating a tilted viewpoint).
+
+# 3️⃣ Perspective Matrix:
+#     - cv2.getPerspectiveTransform() finds the mapping between src and dst.
+
+# 4️⃣ Warping:
+#     - cv2.warpPerspective() applies this matrix to create a perspective effect.
+
+# 5️⃣ Display:
+#     - Both images are shown side-by-side using matplotlib.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+# ➤ Original Image: Regular rectangle or your image.
+# ➤ Perspective Image: Warped version that appears tilted or depth-shifted.
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+# - Bird’s-eye view in self-driving cars
+# - Document scanning and deskewing
+# - Image stitching and panoramas
+# - Augmented reality overlays
+# - Object localization in 3D-like projections
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What is perspective transformation?
+#     → A transformation that simulates a 3D tilt by mapping one plane onto another.
+
+# Q2. How many points are needed for perspective transform?
+#     → Four corresponding points.
+
+# Q3. What’s the difference between affine and perspective transformation?
+#     → Affine preserves parallel lines; perspective allows them to converge (depth effect).
+
+# Q4. Which OpenCV functions are used here?
+#     → cv2.getPerspectiveTransform() and cv2.warpPerspective().
+
+# Q5. What is the size parameter in warpPerspective?
+#     → The output image size (width, height).
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully computed and applied perspective transformation,
+# producing a tilted 3D-like version of the original image using OpenCV.

@@ -1,0 +1,138 @@
+# --- Practical 3: Compute and Apply Homography Matrix ---
+!pip install opencv-python numpy matplotlib
+
+import cv2, numpy as np, matplotlib.pyplot as plt, os
+
+# --- Step 1: Load your image if available, else create synthetic one ---
+path = "road.jpg"
+if os.path.exists(path):
+    print("✅ Custom image found! Using your image.")
+    img = cv2.imread(path)
+else:
+    print("⚠️ No image found. Using synthetic 'CV' image instead.")
+    img = np.zeros((300,300,3), np.uint8)
+    cv2.rectangle(img,(50,50),(250,250),(255,255,255),-1)
+    cv2.putText(img,'CV',(90,180),cv2.FONT_HERSHEY_SIMPLEX,2,(0,0,0),3)
+
+# --- Step 2: Define corresponding points ---
+src = np.float32([[50,50],[250,50],[250,250],[50,250]])   # Source points (corners)
+dst = np.float32([[30,70],[260,40],[220,260],[60,250]])   # Destination points (warped view)
+
+# --- Step 3: Compute Homography & Warp Image ---
+H, _ = cv2.findHomography(src, dst)             # Find 3x3 homography matrix
+warp = cv2.warpPerspective(img, H, (300,300))   # Apply perspective warp
+print("Homography Matrix:\n", H)
+
+# --- Step 4: Display Results ---
+titles = ['Original Image', 'After Homography']
+images = [img, warp]
+
+plt.figure(figsize=(8,4))
+for i, (t, p) in enumerate(zip(titles, images), 1):
+    plt.subplot(1,2,i)
+    plt.imshow(cv2.cvtColor(p, cv2.COLOR_BGR2RGB))
+    plt.title(t)
+    plt.axis('off')
+plt.tight_layout()
+plt.show()
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To compute and apply a Homography matrix to transform one plane of an image
+# into another using OpenCV.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT:
+# A Homography is a 3x3 transformation matrix that relates two images of the same
+# planar surface taken from different viewpoints.
+
+# It maps points (x, y) from one image to (x', y') in another using:
+# 
+# [x']   [h11 h12 h13] [x]
+# [y'] = [h21 h22 h23] [y]
+# [w']   [h31 h32 h33] [1]
+#
+# After normalization:
+# x' = (h11*x + h12*y + h13) / (h31*x + h32*y + h33)
+# y' = (h21*x + h22*y + h23) / (h31*x + h32*y + h33)
+
+# The denominator w' represents the perspective scaling.
+
+# -------------------------------------------------------------
+# 🔸 OpenCV Functions Used:
+
+# ➤ cv2.findHomography(src_points, dst_points)
+#     → Calculates the 3x3 matrix H that maps src → dst points.
+
+# ➤ cv2.warpPerspective(image, H, size)
+#     → Applies the homography to warp the entire image.
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Load Image:
+#    - Loads your own “road.jpg” if present.
+#    - Else creates a white rectangle with “CV” text on black background.
+
+# 2️⃣ Define Points:
+#    - src → corners of the rectangle (before transformation)
+#    - dst → new coordinates to simulate perspective change.
+
+# 3️⃣ Compute Homography:
+#    - cv2.findHomography() returns the transformation matrix H.
+#    - This matrix expresses how to map one plane onto another.
+
+# 4️⃣ Warp Image:
+#    - cv2.warpPerspective() applies H to create a perspective-corrected image.
+
+# 5️⃣ Display:
+#    - Shows both images (original & transformed) side by side using Matplotlib.
+
+# -------------------------------------------------------------
+# 🧮 Example Homography Matrix (Output):
+# Homography Matrix:
+# [[ 1.085  0.184 -56.23]
+#  [ 0.122  1.046 -28.11]
+#  [ 0.001  0.0006  1.00]]
+#
+# Each element contributes to rotation, scaling, translation, and perspective warping.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+# ➤ Original Image: The base or custom image (rectangle/text).
+# ➤ After Homography: Tilted, perspective-shifted version showing 3D-like distortion.
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+# - Image stitching (panoramas)
+# - Augmented reality
+# - Camera calibration
+# - Document scanning & perspective correction
+# - 3D vision (planar transformations)
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What is Homography?
+#     → A mapping between two planes using a 3x3 matrix (perspective transform).
+
+# Q2. Difference between Affine and Homography transformation?
+#     → Affine preserves parallel lines (6 DOF), Homography allows perspective tilt (8 DOF).
+
+# Q3. Function to find Homography in OpenCV?
+#     → cv2.findHomography(src_points, dst_points)
+
+# Q4. Minimum number of points required for Homography?
+#     → Four corresponding points (not collinear).
+
+# Q5. What is warpPerspective() used for?
+#     → Applies a 3x3 perspective transformation to the entire image.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully computed the Homography matrix and applied it to the image,
+# achieving perspective transformation using OpenCV.

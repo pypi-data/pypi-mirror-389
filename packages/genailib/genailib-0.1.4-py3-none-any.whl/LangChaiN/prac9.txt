@@ -1,0 +1,187 @@
+# --- Practical 9: SURF and HOG Feature Descriptor ---
+#!pip install opencv-python opencv-contrib-python numpy matplotlib
+
+import cv2
+import numpy as np
+
+# --- Function to compute HOG features ---
+def compute_hog(img):
+    hog = cv2.HOGDescriptor()
+    img_resized = cv2.resize(img, (64, 128))
+    return hog.compute(img_resized)
+
+# --- Load Image ---
+path = input("Enter image path: ").strip()
+img = cv2.imread(path)
+if img is None:
+    print("Error: Cannot read image.")
+    exit()
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# --- Try SURF (if available), else fallback to SIFT ---
+try:
+    surf = cv2.xfeatures2d.SURF_create(400)
+    method = "SURF"
+except:
+    surf = cv2.SIFT_create()
+    method = "SIFT"
+
+# --- Detect keypoints and descriptors ---
+kp, des = surf.detectAndCompute(gray, None)
+print(f"{method} detected {len(kp)} keypoints with descriptor shape {des.shape}")
+
+# --- Draw keypoints ---
+out_img = cv2.drawKeypoints(img, kp, None, (0, 255, 0), flags=2)
+cv2.imwrite("keypoints.jpg", out_img)
+print("Saved keypoints image as 'keypoints.jpg'")
+
+# --- Compute HOG ---
+hog_features = compute_hog(gray)
+np.save("hog.npy", hog_features)
+print(f"HOG descriptor shape: {hog_features.shape}")
+
+# -------------------------------------------------------------
+# 2️⃣ HOG (Histogram of Oriented Gradients)
+# -------------------------------------------------------------
+hog = cv2.HOGDescriptor()
+hog_features = hog.compute(img)
+
+print("\n✅ HOG Descriptor Computed Successfully")
+print("HOG Descriptor Shape:", hog_features.shape)
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To detect and describe local image features using SURF and HOG descriptors in OpenCV.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT OVERVIEW:
+
+# ➤ Feature Descriptors:
+# These are numerical representations of important image regions (edges, corners, textures)
+# used for tasks like matching, recognition, and classification.
+
+# -------------------------------------------------------------
+# 🔸 1. SURF (Speeded-Up Robust Features)
+
+# ➤ Overview:
+#   - Based on SIFT but faster.
+#   - Uses **Hessian Matrix** to detect interest points (blobs).
+#   - Provides scale and rotation invariance.
+
+# ➤ Key Concepts:
+#   - Hessian Matrix (H):
+#       H(x, y, σ) = [[Lxx, Lxy],
+#                     [Lxy, Lyy]]
+#     where Lxx, Lyy, Lxy are second-order Gaussian derivatives.
+#
+#   - Points with large determinant |H| are potential keypoints.
+
+# ➤ Steps:
+#   1️⃣ Interest Point Detection using Hessian Matrix.
+#   2️⃣ Orientation Assignment based on Haar wavelet responses.
+#   3️⃣ Descriptor Computation using 4x4 sub-regions (each 64-D vector).
+
+# ➤ Advantages:
+#   - Faster than SIFT.
+#   - Robust to scale, rotation, and illumination changes.
+
+# ➤ OpenCV Functions:
+#   - cv2.xfeatures2d.SURF_create(hessianThreshold)
+#   - detectAndCompute(image, mask)
+#   - drawKeypoints(image, keypoints, output, color, flags)
+
+# -------------------------------------------------------------
+# 🔸 2. HOG (Histogram of Oriented Gradients)
+
+# ➤ Overview:
+#   - Describes local object appearance by gradient orientation distribution.
+#   - Widely used in **human detection** and **object classification**.
+
+# ➤ Steps:
+#   1️⃣ Compute gradients (Gx, Gy) for each pixel.
+#   2️⃣ Calculate gradient magnitude and orientation.
+#   3️⃣ Divide the image into cells (e.g., 8×8 pixels).
+#   4️⃣ For each cell, build histogram of gradient directions (bins = 0°–180°).
+#   5️⃣ Normalize over blocks for lighting invariance.
+
+# ➤ Mathematical Formulas:
+#   Gx = ∂I/∂x,   Gy = ∂I/∂y
+#   Magnitude = √(Gx² + Gy²)
+#   Orientation = tan⁻¹(Gy / Gx)
+
+# ➤ OpenCV Function:
+#   - cv2.HOGDescriptor() → creates a HOG descriptor object.
+#   - .compute(image) → returns HOG feature vector.
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Load grayscale image (real or synthetic).
+# 2️⃣ Apply SURF:
+#     - Detect keypoints (features of interest).
+#     - Compute 64D or 128D descriptors.
+#     - Draw detected points in green.
+# 3️⃣ Apply HOG:
+#     - Compute gradient-based features.
+#     - Returns a long vector of features for classification tasks.
+# 4️⃣ Display outputs and descriptor details.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+
+# ➤ SURF Keypoints:
+#     - Displayed as green circles with size and orientation.
+#     - len(keypoints): Number of features detected.
+#     - descriptors.shape: (number of keypoints, 64 or 128)
+
+# ➤ HOG Descriptor:
+#     - Printed as a long feature vector of shape (N, 1)
+#     - Represents local gradient patterns.
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+
+# - Object and face recognition
+# - Image retrieval and matching
+# - Human detection (especially HOG)
+# - Robotics and navigation
+# - Computer vision pipelines for scene analysis
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What does SURF stand for?
+#     → Speeded-Up Robust Features.
+
+# Q2. What is the main advantage of SURF over SIFT?
+#     → SURF uses integral images and approximations to compute faster.
+
+# Q3. What is the Hessian Matrix used for in SURF?
+#     → To find blob-like structures (keypoints) by detecting curvature changes.
+
+# Q4. What does HOG stand for?
+#     → Histogram of Oriented Gradients.
+
+# Q5. What are the main advantages of HOG?
+#     → Simple, effective, and robust for object detection (especially pedestrians).
+
+# Q6. What is the difference between SURF and HOG?
+#     → SURF detects keypoints and descriptors; HOG describes the entire image region.
+
+# Q7. Can SURF and HOG be used together?
+#     → Yes, combining local (SURF) and global (HOG) features improves recognition accuracy.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully detected and described features using SURF and HOG descriptors.
+# SURF extracted local keypoints and descriptors, while HOG provided gradient-based
+# global features representing object appearance. SURF is not included in the default opencv-python package.
+#SURF a patented algorithm, so OpenCV moved it under the contrib module (cv2.xfeatures2d).
+#Your HOG feature vector contains 51,683,940 elements (≈ 51 million)
+#Each element represents part of the gradient histogram information extracted from your image.
+#In simple terms, it’s a very long 1D vector — the numerical description of your image’s texture and structure.
