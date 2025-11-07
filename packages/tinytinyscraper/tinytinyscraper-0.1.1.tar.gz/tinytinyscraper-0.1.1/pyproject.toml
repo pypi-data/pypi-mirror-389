@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tinytinyscraper"
+version = "0.1.1"
+description = "A Python library that scrapes URLs and returns their contents. Special handling for YouTube URLs to extract transcripts and PDF files to extract text. Built with BeautifulSoup, Requests, YouTube-Transcript-API, and PyPDF."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Justin Irabor", email = "justin@holeyfox.co"}
+]
+maintainers = [
+    {name = "Justin Irabor", email = "justin@holeyfox.co"}
+]
+keywords = ["scraper", "youtube", "transcript", "web-scraping", "url", "pdf", "pdf-extraction"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "requests>=2.32.0",
+    "beautifulsoup4>=4.12.0",
+    "youtube-transcript-api>=0.6.0",
+    "lxml>=4.9.0",
+    "pypdf>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/vunderkind/tinytinyscraper"
+Repository = "https://github.com/vunderkind/tinytinyscraper"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.flake8]
+max-line-length = 150
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
