@@ -1,0 +1,66 @@
+Metadata-Version: 2.4
+Name: fw-utils
+Version: 5.1.1
+Summary: Common Flywheel helper utilities.
+Project-URL: Repository, https://gitlab.com/flywheel-io/tools/lib/fw-utils
+Project-URL: Documentation, https://gitlab.com/flywheel-io/tools/lib/fw-utils
+Author-email: Flywheel <support@flywheel.io>
+License-Expression: MIT
+License-File: LICENSE
+Keywords: Flywheel,helper,utility
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: <4,>=3.9
+Requires-Dist: python-dateutil<3,>=2.8.2
+Requires-Dist: tzdata>=2022
+Requires-Dist: tzlocal>=4.1
+Provides-Extra: all
+Requires-Dist: pymongo<5,>=4.8.0; extra == 'all'
+Requires-Dist: starlette>=0.41.3; extra == 'all'
+Description-Content-Type: text/markdown
+
+# fw-utils
+
+Helper utilities for common tasks including pluralization, formatting and
+parsing human-readable file-sizes/time-deltas, creating attribute-accessible
+dictionaries and opening files.
+
+## Installation
+
+Add as a `poetry` dependency to your project:
+
+```bash
+poetry add fw-utils
+```
+
+## Usage
+
+```python
+import fw_utils
+
+# common string formatters
+fw_utils.pluralize("file") == "files"
+fw_utils.quantify(3, "file") == "3 files"
+fw_utils.hrsize(1024) == "1.0K"
+fw_utils.hrtime(90) == "1h 30m"
+
+# get a dictionary with keys accessible as attrs
+data = fw_utils.attrify({"key": "value"})
+data.key == "value"
+
+# File works with str|Path|file-like objects alike
+with fw_utils.BinFile("/tmp/test.txt", write=True) as file:
+    file.write(b"text")
+```
+
+## Development
+
+Install the project using `poetry` and enable `pre-commit`:
+
+```bash
+poetry install
+pre-commit install
+```
+
+## License
+
+[![MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
