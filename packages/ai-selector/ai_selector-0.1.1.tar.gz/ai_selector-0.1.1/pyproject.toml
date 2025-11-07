@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-selector"
+version = "0.1.1"
+description = "Interactive CLI tool for managing and executing multiple AI agents"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [{ name = "Ramñón Pin", email = "ramon.pin@gmail.com" }]
+keywords = ["ai", "cli", "agent", "selector", "interactive", "tool"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Environment :: Console",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: Utilities",
+]
+dependencies = ["python-dotenv>=1.2.1", "questionary>=2.1.1"]
+
+[project.urls]
+Homepage = "https://github.com/ramonpin/ai-selector"
+Repository = "https://github.com/ramonpin/ai-selector.git"
+Issues = "https://github.com/ramonpin/ai-selector/issues"
+
+[project.scripts]
+ai-selector = "src.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"logo.txt" = "logo.txt"
