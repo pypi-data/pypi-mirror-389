@@ -1,0 +1,12 @@
+{% filter indent(width=4, first=False) %}
+{% include "./_mem_offset.jinja" %}
+const {{ out_cdtype[0] }}* {{ name }}_inputs[] = { {{ in_name|join(", ") }} };
+export_cpp::concat_forward<{{ name|upper }}_AXIS_SIZE_POST,
+                           {{ name|upper }}_AXIS_SIZE_PRE,
+                           {{ name|upper }}_AXIS_SIZE,
+                           {{ name|upper }}_TOTAL_AXIS_SIZE,
+                           {{ nb_in }}> 
+                          ({{ name }}_inputs,
+                           {{ out_name[0] }});
+
+{%- endfilter %}

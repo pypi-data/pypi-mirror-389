@@ -1,0 +1,20 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+
+#include <cstddef>
+
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+{# For layer configuration -#}
+#define {{ name|upper }}_NB_DIMS {{ in_dims[0] | length }}
+#define {{ name|upper }}_NB_ELTS {{ in_dims[0]|join('*') }}
+#define {{ name|upper }}_NB_AXES {{ axes| length }}
+constexpr size_t {{ name|upper }}_STARTS[] = { {{ starts | join(', ') }} };
+constexpr size_t {{ name|upper }}_ENDS[] = { {{ ends | join(', ') }} };
+constexpr size_t {{ name|upper }}_STEPS[] = { {{ steps | join(', ') }} };
+constexpr size_t {{ name|upper }}_AXES_MOD[] = { {{ axes_mod | join(', ') }} };
+constexpr size_t {{ name|upper }}_AXES_DIV[] = { {{ axes_div | join(', ') }} };
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */

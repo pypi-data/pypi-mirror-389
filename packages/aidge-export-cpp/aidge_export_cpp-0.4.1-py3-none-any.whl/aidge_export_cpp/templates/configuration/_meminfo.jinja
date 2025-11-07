@@ -1,0 +1,34 @@
+// MEMINFO CONF
+{% for inidx in range(nb_in) -%}
+{% if in_name[inidx] %}
+{# Specify a default memory layout for standalone input tensors -#}
+{% if not in_node[inidx] %}
+{% if in_dformat[inidx]|string == 'dformat.nhwc' or in_dformat[inidx]|string == 'dformat.nwc' %}
+#define {{ in_name[inidx]|upper }}_MEM_SIZE {{ in_chan[inidx] * in_sizeof[inidx] }}
+#define {{ in_name[inidx]|upper }}_MEM_OFFSET 0
+#define {{ in_name[inidx]|upper }}_MEM_STRIDE {{ in_chan[inidx] * in_sizeof[inidx] }}
+#define {{ in_name[inidx]|upper }}_MEM_LENGTH {{ in_width[inidx] }}
+{% else %}
+#define {{ in_name[inidx]|upper }}_MEM_SIZE {{ in_size[inidx] * in_sizeof[inidx] }}
+#define {{ in_name[inidx]|upper }}_MEM_OFFSET 0
+#define {{ in_name[inidx]|upper }}_MEM_STRIDE {{ in_size[inidx] * in_sizeof[inidx] }}
+#define {{ in_name[inidx]|upper }}_MEM_LENGTH 1
+{% endif %}
+#define {{ in_name[inidx]|upper }}_MEM_CONT_SIZE {{ in_size[inidx] * in_sizeof[inidx] }}
+#define {{ in_name[inidx]|upper }}_MEM_CONT_OFFSET 0
+#define {{ in_name[inidx]|upper }}_MEM_WRAP_OFFSET 0
+#define {{ in_name[inidx]|upper }}_MEM_WRAP_SIZE 0
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% for outidx in range(nb_out) -%}
+#define {{ out_name[outidx]|upper }}_MEM_SIZE {{ mem_info_size[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_OFFSET {{ mem_info_offset[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_STRIDE {{ mem_info_stride[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_LENGTH {{ mem_info_length[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_CONT_SIZE {{ mem_info_cont_size[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_CONT_OFFSET {{ mem_info_cont_offset[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_WRAP_OFFSET {{ mem_info_wrap_offset[outidx]}}
+#define {{ out_name[outidx]|upper }}_MEM_WRAP_SIZE {{ mem_info_wrap_size[outidx]}}
+{% endfor %}

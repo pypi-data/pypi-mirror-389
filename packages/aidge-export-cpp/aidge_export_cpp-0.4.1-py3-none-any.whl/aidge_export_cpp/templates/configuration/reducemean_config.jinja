@@ -1,0 +1,27 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+
+#include <cstddef>
+
+{# For layer configuration -#}
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+
+#define {{ in_name[0]|upper }}_NB_DIMS {{ in_nb_dims }}
+#define {{ in_name[0]|upper }}_NB_ELTS {{ in_nb_elts }}
+#define {{ out_name[0]|upper }}_NB_ELTS {{ out_nb_elts }}
+#define {{ name|upper }}_NB_AXES_TO_REDUCES {{ nb_axes_to_reduce }}
+constexpr size_t {{ in_name[0]|upper }}_DIMS[{{ in_nb_dims }}] =
+  { {{ in_dims|join(", ") }} };
+constexpr size_t {{ name|upper }}_AXES_TO_REDUCE[{{ nb_axes_to_reduce }}] =
+  { {{ axes_to_reduce|join(", ") }} };
+constexpr size_t {{ name|upper }}_PREAXIS_STRIDES[{{ in_nb_dims }}] =
+  { {{ pre_axis_strides|join(", ") }} };
+constexpr size_t {{ name|upper }}_POSTAXIS_STRIDES[{{ in_nb_dims }}] =
+  { {{ post_axis_strides|join(", ") }} };
+
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */
+

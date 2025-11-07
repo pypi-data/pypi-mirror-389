@@ -1,0 +1,53 @@
+{#- For libraries -#}
+#include <stdint.h>
+#include "utils/cpp/typedefs.hpp"
+
+{# Design header of the array -#}
+static const {{ dtype }} {{ name }}[{{ dims | join("*") }}] __attribute__((section(".nn_data"))) =
+{
+{# 1D #}
+{%- if dims | length == 1 -%}
+{%- for x in range(dims[0]) -%}
+{{ "{:>20}".format(values[x]) }}, 
+{%- endfor -%}
+{%- endif -%}
+
+{#- 2D #}
+{%- if dims | length == 2 -%}
+{%- for y in range(dims[0]) %}
+{{ ' ' }}
+    {%- for x in range(dims[1]) -%}
+        {{ "{:>20}".format(values[y][x]) }}, 
+    {%- endfor %}
+{%- endfor -%}
+{%- endif -%}
+
+{#- 3D #}
+{%- if dims | length == 3 -%}
+{%- for z in range(dims[0]) %}
+{{ ' ' }}
+    {%- for y in range(dims[1]) %}
+    {{ ' ' }}
+        {%- for x in range(dims[2]) -%}
+            {{ "{:>20}".format(values[z][y][x]) }}, 
+        {%- endfor -%}
+    {%- endfor %}
+{%- endfor -%}
+{%- endif -%}
+
+{#- 4D #}
+{%- if dims | length == 4 -%}
+{%- for n in range(dims[0]) %}
+{{ ' ' }}
+    {%- for z in range(dims[1]) %}
+    {{ ' ' }}
+        {%- for y in range(dims[2]) %}
+        {{ ' ' }}
+            {%- for x in range(dims[3]) -%}
+                {{ "{:>20}".format(values[n][z][y][x]) }}, 
+            {%- endfor -%}
+        {%- endfor %}
+    {%- endfor %}
+{%- endfor %}
+{%- endif %}
+};

@@ -1,0 +1,20 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+
+#include <cstddef>
+
+{# For layer configuration -#}
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+{# Export suppose that batchsize = 1#}
+#define {{ name|upper }}_NB_ELTS {{ in_dims[0]|join('*') }}
+#define {{ name|upper }}_NB_DIMS {{ in_dims[0] | length }}
+constexpr size_t {{ name|upper }}_IN_STRIDES[] = { {{ in_strides | join(', ') }} };
+constexpr size_t {{ name|upper }}_OUT_STRIDES[] = { {{ out_strides | join(', ') }} };
+
+constexpr size_t {{ name|upper }}_PERMUTE[] = { {{ output_dims_order | join(', ') }} };
+constexpr size_t {{ name|upper }}_DIMS[] = { {{ in_dims[0] | join(', ') }} };
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */

@@ -1,0 +1,30 @@
+{% filter indent(width=4, first=False) %}
+{% include "./_mem_offset.jinja" %}
+export_cpp::elemwise_forward<{{name|upper}}_NB_MAT,
+                             {{name|upper}}_ELEM_OP,
+                             {{name|upper}}_INPUT1_CONT_SIZE,
+                             {{name|upper}}_INPUT2_CONT_SIZE,
+                             {{name|upper}}_OUTPUT_CONT_SIZE,
+                             {{name|upper}}_OFFSET_IN1,
+                             {{name|upper}}_OFFSET_IN2,
+                             {{name|upper}}_ACTIVATION,
+                             {{ in_name[0]|upper }}_MEM_CONT_OFFSET,
+                             {{ in_name[0]|upper }}_MEM_CONT_SIZE,
+                             {{ in_name[0]|upper }}_MEM_WRAP_OFFSET,
+                             {{ in_name[0]|upper }}_MEM_WRAP_SIZE,
+                             {{ in_name[0]|upper }}_MEM_STRIDE,
+                             {{ in_name[1]|upper }}_MEM_CONT_OFFSET,
+                             {{ in_name[1]|upper }}_MEM_CONT_SIZE,
+                             {{ in_name[1]|upper }}_MEM_WRAP_OFFSET,
+                             {{ in_name[1]|upper }}_MEM_WRAP_SIZE,
+                             {{ in_name[1]|upper }}_MEM_STRIDE,
+                             {{ out_name[0]|upper }}_MEM_CONT_OFFSET,
+                             {{ out_name[0]|upper }}_MEM_CONT_SIZE,
+                             {{ out_name[0]|upper }}_MEM_WRAP_OFFSET,
+                             {{ out_name[0]|upper }}_MEM_WRAP_SIZE,
+                             {{ out_name[0]|upper }}_MEM_STRIDE,
+                             {{ accumulation_type }}>
+                             ({{out_name[0]}}, {{name|upper}}_RESCALING, {{in_name[0]}}, {{in_name[1]}});
+{% include "./_save_outputs.jinja" %}
+{% include "./_aidge_cmp.jinja" %}
+{% endfilter %}

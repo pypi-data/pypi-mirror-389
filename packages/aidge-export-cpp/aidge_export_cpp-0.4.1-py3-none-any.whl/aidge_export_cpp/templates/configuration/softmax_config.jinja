@@ -1,0 +1,13 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+{# For layer configuration -#}
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+
+#define {{ name|upper }}_AXIS_SIZE {{ axis_size }}
+#define {{ name|upper }}_AXIS_SIZE_POST {{ axis_size_post }}
+#define {{ name|upper }}_AXIS_SIZE_PRE {{ axis_size_pre }}
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */

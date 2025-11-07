@@ -1,0 +1,14 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+{# For layer configuration -#}
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+#define {{ name|upper }}_PADDING_BOTTOM {{ padding[2] }}
+#define {{ name|upper }}_PADDING_RIGHT {{ padding[3] }}
+#define {{ name|upper }}_PADDING_TOP {{ padding[0] }}
+#define {{ name|upper }}_PADDING_LEFT {{ padding[1] }}
+#define {{ name|upper }}_CONSTANT_VALUE {{ constant_value }}
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */

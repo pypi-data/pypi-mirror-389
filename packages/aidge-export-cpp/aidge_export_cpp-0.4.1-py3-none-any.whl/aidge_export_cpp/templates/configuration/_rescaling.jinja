@@ -1,0 +1,7 @@
+{%- if rescaling == "NoScaling" %}
+static const export_cpp::NoScaling {{ name|upper }}_RESCALING = {};
+{%- elif rescaling == "SingleShiftScaling" %}
+static const export_cpp::SingleShiftScaling<{{ shift_value }}> {{ name|upper }}_RESCALING = {};
+{%- elif rescaling == "FixedPointScaling" %}
+static const export_cpp::FixedPointScaling<{{ coef_value }}, {{ shift_value }}> {{ name|upper }}_RESCALING = {};
+{%- endif %}

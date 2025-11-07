@@ -1,0 +1,28 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+
+#include <cstddef>
+#include "utils/cpp/rescaling_utils.hpp"
+#include "utils/cpp/typedefs.hpp"
+
+{# For layer configuration -#}
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+#define {{ name|upper }}_NB_MAT {{ offset_in1|length }}
+constexpr size_t {{name|upper}}_OFFSET_IN1[] =  { {{ offset_in1|join(", ") }} };
+constexpr size_t {{name|upper}}_OFFSET_IN2[] = { {{ offset_in2|join(", ") }} };
+
+#define {{ name|upper }}_N {{ n }}
+#define {{ name|upper }}_M {{ m }}
+#define {{ name|upper }}_K {{ k }}
+
+#define {{ name|upper }}_ACTIVATION export_cpp::ActivationFunction_T::{{ activation }}
+
+{% include "./_save_outputs.jinja" %}
+
+{% include "./_rescaling.jinja" %}
+{#- Calculate sizes #}
+
+
+#endif /* {{ name|upper }}_LAYER_H */

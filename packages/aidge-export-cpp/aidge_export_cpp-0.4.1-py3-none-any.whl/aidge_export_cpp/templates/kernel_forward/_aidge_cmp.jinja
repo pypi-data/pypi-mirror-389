@@ -1,0 +1,14 @@
+{%- if aidge_cmp is defined and aidge_cmp %}
+#ifdef AIDGE_CMP
+    export_cpp::aidge_cmp<{{ out_name[0] | upper }}_NB_OUTPUTS, 
+                          {{ out_name[0] | upper }}_OUT_HEIGHT, 
+                          {{ out_name[0] | upper }}_OUT_WIDTH,
+                          {{ out_name[0]|upper }}_MEM_CONT_OFFSET,
+                          {{ out_name[0]|upper }}_MEM_CONT_SIZE,
+                          {{ out_name[0]|upper }}_MEM_WRAP_OFFSET,
+                          {{ out_name[0]|upper }}_MEM_WRAP_SIZE,
+                          {{ out_name[0] | upper }}_AIDGE_FMT,
+                          {{ out_name[0] | upper }}_DEV_FMT>
+                          ("{{ name }}", ({{out_cdtype[0]}}*) {{ out_name[0] }}_aidge, {{ out_name[0] }});
+#endif
+{%- endif %}

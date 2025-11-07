@@ -1,0 +1,21 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+
+#include <cstddef>
+
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+
+// Attributes
+#define {{ name|upper }}_NB_INPUTS {{ nb_in }}
+#define {{ name|upper }}_AXIS {{ axis }}
+constexpr size_t {{name|upper}}_AXIS_SIZE[] =  { {{ axis_size|join(", ") }} };
+#define {{name|upper}}_TOTAL_AXIS_SIZE ({{ axis_size|join('+') }})
+
+#define {{ name|upper }}_AXIS_SIZE_POST {{ axis_size_post }}
+#define {{ name|upper }}_AXIS_SIZE_PRE {{ axis_size_pre }}
+
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */

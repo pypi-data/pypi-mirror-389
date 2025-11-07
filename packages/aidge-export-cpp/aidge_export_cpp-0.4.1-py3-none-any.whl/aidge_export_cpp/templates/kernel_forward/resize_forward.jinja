@@ -1,0 +1,22 @@
+{% filter indent(width=4, first=False) %}
+{% include "./_mem_offset.jinja" %}
+export_cpp::resize_forward<{{ in_name[0] | upper }}_NB_CHANNELS,
+                           {{ in_name[0] | upper }}_IN_HEIGHT, 
+                           {{ in_name[0] | upper }}_IN_WIDTH,
+                           {{ out_name[0] | upper }}_NB_OUTPUTS,
+                           {{ out_name[0] | upper }}_OUT_HEIGHT, 
+                           {{ out_name[0] | upper }}_OUT_WIDTH,
+                           {{ in_name[0]|upper }}_MEM_CONT_OFFSET,
+                           {{ in_name[0]|upper }}_MEM_CONT_SIZE,
+                           {{ in_name[0]|upper }}_MEM_WRAP_OFFSET,
+                           {{ in_name[0]|upper }}_MEM_WRAP_SIZE,
+                           {{ in_name[0]|upper }}_MEM_STRIDE,
+                           {{ out_name[0]|upper }}_MEM_CONT_OFFSET,
+                           {{ out_name[0]|upper }}_MEM_CONT_SIZE,
+                           {{ out_name[0]|upper }}_MEM_WRAP_OFFSET,
+                           {{ out_name[0]|upper }}_MEM_WRAP_SIZE,
+                           {{ out_name[0]|upper }}_MEM_STRIDE>
+                           ({{ in_name[0] }}, {{ out_name[0] }});
+{% include "./_save_outputs.jinja" %}
+{% include "./_aidge_cmp.jinja" %}
+{% endfilter %}

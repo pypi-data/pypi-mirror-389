@@ -1,0 +1,16 @@
+
+#ifdef SAVE_OUTPUTS
+printf("[NOTICE] - Saving outputs of node {{ name }}\n");
+FILE* {{ out_name[0] | upper }}_STREAM = fopen("data/export_outputs/{{out_name[0]}}.txt", "w");
+export_cpp::saveOutputs<{{ out_name[0] | upper }}_NB_OUTPUTS,
+                        {{ out_name[0] | upper }}_OUT_HEIGHT,
+                        {{ out_name[0] | upper }}_OUT_WIDTH,
+                        {{ out_name[0]|upper }}_MEM_CONT_OFFSET,
+                        {{ out_name[0]|upper }}_MEM_CONT_SIZE,
+                        {{ out_name[0]|upper }}_MEM_WRAP_OFFSET,
+                        {{ out_name[0]|upper }}_MEM_WRAP_SIZE,
+                        {{ out_name[0] | upper }}_DEV_FMT>
+                        ({{ out_name[0] }},
+                        {{ out_name[0] | upper }}_STREAM);
+fclose({{ out_name[0] | upper }}_STREAM);
+#endif

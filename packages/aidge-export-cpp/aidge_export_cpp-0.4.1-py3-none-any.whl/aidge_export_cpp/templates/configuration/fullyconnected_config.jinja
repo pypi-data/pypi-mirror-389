@@ -1,0 +1,21 @@
+{#- For name header -#}
+#ifndef {{ name|upper }}_LAYER_H
+#define {{ name|upper }}_LAYER_H
+
+#include "utils/cpp/rescaling_utils.hpp"
+#include "utils/cpp/typedefs.hpp"
+
+{# For layer configuration -#}
+{% include "./_def_io.jinja" %}
+{% include "./_meminfo.jinja" %}
+#define {{ name|upper }}_ACTIVATION export_cpp::ActivationFunction_T::{{ activation }}
+{% include "./_rescaling.jinja" %}
+
+{#- Calculate sizes #}
+{%- set weights_size = out_chan[0] * in_chan[0] * in_height[0] * in_width[0] %}
+#define {{ name|upper }}_WEIGHTS_SIZE {{ weights_size }}
+#define {{ name|upper }}_BIASES_SIZE {{ out_chan[0] }}
+
+{% include "./_save_outputs.jinja" %}
+
+#endif /* {{ name|upper }}_LAYER_H */
