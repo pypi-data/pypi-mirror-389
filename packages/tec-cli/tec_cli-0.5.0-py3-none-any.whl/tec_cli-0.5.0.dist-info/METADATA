@@ -1,0 +1,25 @@
+Metadata-Version: 2.3
+Name: tec-cli
+Version: 0.5.0
+Summary: Add your description here
+Requires-Dist: mecompyapi>=0.0.3
+Requires-Dist: typer>=0.20.0
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+
+# tec-cli
+
+A CLI for interacting with the Meerstetter TEC peltier heaters.
+
+## Installation
+
+```bash
+uv tool install tec-cli
+```
+
+## Usage
+
+```bash
+$ tec read temperature
+31.4
+```
