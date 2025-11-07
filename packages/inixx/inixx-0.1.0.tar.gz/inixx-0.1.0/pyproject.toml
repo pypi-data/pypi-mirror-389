@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inixx"
+version = "0.1.0"
+authors = [
+  { name = "Yuvraj", email = "yuvrajbiswalofficial@gmail.com" },
+]
+description = "Clustering validation metrics like Dunn Index and Silhouette Score."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.urls]
+Homepage = "https://github.com/Yuvraj-cyborg/inixx"
+"Bug Tracker" = "https://github.com/Yuvraj-cyborg/inixx/issues"
