@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pixi run pytest:*)",
+      "Bash(uv run pytest:*)",
+      "WebFetch(domain:pixi.sh)",
+      "Bash(uv run ruff:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
