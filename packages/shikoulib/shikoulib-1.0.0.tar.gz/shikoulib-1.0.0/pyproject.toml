@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shikoulib"
+version = "1.0.0"
+description = "A short description"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["paramiko", "loguru"]
+
+[project.urls]
+Homepage = "https://github.com/shikou-git/shikoulib"
+Repository = "https://github.com/shikou-git/shikoulib"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["network*"]
