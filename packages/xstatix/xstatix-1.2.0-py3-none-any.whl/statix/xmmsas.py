@@ -1,0 +1,862 @@
+"""
+Module implementing various functions to handle XMM-Newton SAS tasks.
+All functions need a working SAS installation.
+"""
+import logging
+import os
+import warnings
+from datetime import datetime
+from tempfile import NamedTemporaryFile
+
+import numpy as np
+from astropy import units as u
+from astropy.io import fits
+from astropy.table import Table
+from astropy.wcs import WCS, FITSFixedWarning
+from rich.progress import track
+
+from .utils import working_directory, all_logging_disabled
+
+logger = logging.getLogger(__name__)
+
+try:
+    import pxsas
+
+except ImportError as e:
+    logger.warning(e)
+    logger.warning("SAS-related functions not available!!!")
+
+IMG_XSIZE = 600
+IMG_YSIZE = 600
+
+
+def make_ccf(path, date=None):
+    """
+    Create the CCF file in the given path. If date is None, use the calibration for the current date.
+    
+    Parameters
+    ----------
+    path : pathlib.Path
+        Path where to create the CCF file.
+    date : str or None, optional
+        Date for the calibration file in ISO format (YYYY-MM-DDTHH:MM:SS). 
+        If None, use the current date. By default None.
+
+    Returns
+    -------
+    pathlib.Path
+        Path to the created CCF file.
+    """
+    if date is None:
+        date = datetime.now()
+        date = date.isoformat()
+
+    if not path.exists():
+        path.mkdir(parents=True)
+
+    cif_path = path.joinpath("ccf.cif")
+    
+    pxsas.run(
+        "cifbuild",
+        calindexset=str(cif_path),
+        withobservationdate=True,
+        observationdate=date,
+    )
+    return cif_path
+
+
+def make_image(evl_path, detector="PN", emin=500, emax=2000, flag=0):
+    """
+    Create an image from the event list.
+
+    Parameters
+    ----------
+    evl_path : pathlib.Path
+        Path to the event list.
+    detector : str, optional
+        Detector name ("PN" or "MOS"), by default "PN".
+    emin : int, optional
+        Minimum energy channel, by default 500.
+    emax : int, optional
+        Maximum energy channel, by default 2000.
+    flag : int, optional
+        Flag to apply, by default 0.
+
+    Returns
+    -------
+    pathlib.Path
+        Path to the created image file.
+    """
+    imageset = _set_imageset(evl_path)
+    expression = _set_image_expression(detector, emin, emax, flag)
+
+    _extract_image(evl_path, imageset, expression)
+
+    return imageset
+
+
+def make_cube(
+    evl_path, detector="PN", emin=500, emax=2000, flag=0, zsize=32, use_gti=True
+):
+    """
+    Create a 3D image cube from the event list.
+
+    Parameters
+    ----------
+    evl_path : pathlib.Path
+        Path to the event list.
+    detector : str, optional
+        Detector name ("PN" or "MOS"), by default "PN".
+    emin : int, optional
+        Minimum energy channel, by default 500.
+    emax : int, optional
+        Maximum energy channel, by default 2000.
+    flag : int, optional
+        Flag to apply, by default 0.
+    zsize : int, optional
+        Size of the z-axis, by default 32.
+    use_gti : bool, optional
+        Use GTI information to define the time bins, by default True.
+
+    Returns
+    -------
+    pathlib.Path
+        Path to the created cube file.
+    """
+    cubeset = _set_cubeset(evl_path)
+    cube = _set_cube(evl_path, zsize)
+
+    time_edges, gti = _set_time_edges(evl_path, zsize, use_gti)
+    expression_image = _set_image_expression(detector, emin, emax, flag)
+
+    for zidx in track(range(zsize), description="Extracting 3D cube..."):
+        expression_time = _set_time_expression(zidx, time_edges)
+        expression = f"{expression_image} && {expression_time}"
+
+        zframe, img_header = _extract_zframe(evl_path, expression)
+        cube[zidx, :, :] = _pad_zframe(cube.shape, zframe)
+
+    _save_cube_to_fits(cube, img_header, time_edges, gti, cubeset)
+
+    return cubeset
+
+
+def make_expmap(
+    evl_path,
+    att_path,
+    emin=500,
+    emax=2000,
+):
+    """
+    Create an exposure map from the event list and attitude file.
+
+    Parameters
+    ----------
+    evl_path : pathlib.Path
+        Path to the event list.
+    att_path : pathlib.Path
+        Path to the attitude file.
+    emin : int, optional
+        Minimum energy channel, by default 500.
+    emax : int, optional
+        Maximum energy channel, by default 2000.
+
+    Returns
+    -------
+    pathlib.Path
+        Path to the created exposure map file.
+    """
+    set_sas_ccf(evl_path.parent)
+
+    imageset = _set_imageset(evl_path)
+    expimageset = _set_expmapset(evl_path)
+
+    with working_directory(evl_path.parent):
+        pxsas.run(
+            "eexpmap",
+            eventset=evl_path,
+            attitudeset=att_path,
+            expimageset=expimageset,
+            imageset=imageset,
+            pimin=emin,
+            pimax=emax,
+            withdetcoords="no",
+            withvignetting="yes",
+            usefastpixelization="no",
+            usedlimap="no",
+            attrebin=4,
+        )
+
+    return expimageset
+
+def emldetect(
+    evl_path,
+    att_path,
+    detector="PN",
+    likemin=10,
+    emin=500,
+    emax=2000,
+    ecf=7.3866,
+    bkg_path=None,
+):
+    """
+    Run the emldetect SAS source detection task. Intermediate products
+    (images, exposure maps, background maps) are created as needed. For 
+    using a custom background map, a previous run with the default background 
+    is required.
+
+    Parameters
+    ----------
+    evl_path : pathlib.Path
+        Path to the event list.
+    att_path : pathlib.Path
+        Path to the attitude file.
+    detector : str, optional
+        Detector name ("PN" or "MOS"), by default "PN".
+    likemin : int, optional
+        Minimum likelihood for source detection, by default 10.
+    emin : int, optional
+        Minimum energy channel, by default 500.
+    emax : int, optional
+        Maximum energy channel, by default 2000.
+    ecf : float, optional
+        Energy conversion factor, by default 7.3866.
+    bkg_path : pathlib.Path, optional
+        Path to custom background file, by default None. 
+    """
+    set_sas_ccf(evl_path.parent)
+
+    with working_directory(evl_path.parent):
+        make_image(evl_path, detector, emin=emin, emax=emax)
+
+        if bkg_path is None:
+            _edetect_chain(evl_path, att_path, emin, emax, ecf, likemin)
+            _srcmatch(evl_path, likemin)
+        else:
+            # This only works if a previous run of _edetect_chain has been done.
+            _edetect_custom_bkg(evl_path, bkg_path, emin, emax, ecf, likemin)
+            _srcmatch_bkg(evl_path, likemin)
+
+
+def _set_imageset(evl_path):
+    return _set_fileset(evl_path, "img")
+
+
+def _set_cubeset(evl_path):
+    return _set_fileset(evl_path, "cube")
+
+
+def _set_expmapset(evl_path):
+    return _set_fileset(evl_path, "imgexp")
+
+
+def _set_maskset(evl_path):
+    return _set_fileset(evl_path, "imgmask")
+
+
+def _set_bkgimageset(evl_path):
+    return _set_fileset(evl_path, "imgbkg")
+
+
+def _set_fileset(path, strid):
+    parent = path.parent
+    prefix = path.stem.split("-")[0]
+    suffix = path.suffix
+
+    return parent.joinpath(f"{prefix}-{strid}{suffix}")
+
+
+def _set_image_expression(detector, emin, emax, flag):
+    if detector == "PN":
+        # detector_flag = "#XMMEA_EP"
+        detector_flag = "(FLAG & 0xcfa0000)==0"
+        pattern = "[0:4]"
+    else:
+        detector_flag = "(FLAG & 0x766b0808)==0"
+        pattern = "[0:12]"
+
+    expression = (
+        f"{detector_flag} && "
+        f"(PI in [{emin}:{emax}]) && "
+        f"(PATTERN in {pattern}) && "
+        f"(FLAG=={flag})"
+    )
+    return expression
+
+
+def _set_cube(evl_path, zsize):
+    imageset = _set_imageset(evl_path)
+    header = fits.getheader(imageset)
+    xsize, ysize = header["NAXIS1"], header["NAXIS2"]
+
+    return np.zeros((zsize, ysize, xsize))
+
+
+def _extract_image(evl_path, imageset, expression):
+    pxsas.run(
+        "evselect",
+        table=f"{evl_path.as_posix()}:EVENTS",
+        imageset=imageset,
+        expression=expression,
+        xcolumn="X",
+        ycolumn="Y",
+        ximagesize=IMG_XSIZE,
+        yimagesize=IMG_YSIZE,
+        withimagedatatype="true",
+        imagedatatype="Real32",
+        squarepixels="true",
+        imagebinning="imageSize",
+        withimageset="true",
+        writedss="true",
+        keepfilteroutput="false",
+        updateexposure="true",
+    )
+
+
+def _extract_zframe(evl_path, expression):
+    with NamedTemporaryFile() as image_file:
+        with all_logging_disabled(highest_level=logging.WARNING):
+            _extract_image(evl_path, image_file.name, expression)
+
+        with fits.open(image_file.name) as hdul:
+            return hdul[0].data, hdul[0].header
+
+
+def _pad_zframe(shape, frame):
+    padding_width_x = shape[2] - frame.shape[1]
+    padding_width_y = shape[1] - frame.shape[0]
+
+    frame_padded = np.pad(
+        frame, [(0, padding_width_y), (0, padding_width_x)], mode="constant"
+    )
+
+    return frame_padded
+
+
+def _set_time_edges(evl_path, zsize, use_gti=True):
+    if use_gti:
+        logger.info("Using GTIs defined in the event list.")
+        edges, gti = _time_edges_gti(evl_path, zsize)
+    else:
+        logger.info("Not using GTI information.")
+        edges, gti = _time_edges_nogti(evl_path, zsize)
+
+    return edges, gti
+
+
+def _time_edges_nogti(evl_path, zsize):
+    header = fits.getheader(evl_path, 1)
+    tmin = header["TSTART"]
+    tmax = header["TSTOP"]
+    gti = None
+
+    return np.linspace(tmin, tmax, num=zsize + 1), gti
+
+
+def _time_edges_gti(evl_path, zsize):
+    with all_logging_disabled():
+        gti, TSTART = _read_and_merge_gti(evl_path)
+    
+    edges = _calc_time_edges(gti, zsize)
+
+    edges += TSTART
+    gti["START"] += TSTART
+    gti["STOP"] += TSTART
+
+    return edges, gti
+
+
+def _read_and_merge_gti(evl_path):
+    with fits.open(evl_path) as hdul:
+        gti_list_str = " ".join(
+            f"{evl_path}:{hdu.name}" 
+            for hdu in hdul 
+            if hdu.name.find("GTI") >= 0
+        )
+
+    with NamedTemporaryFile() as gti_file:
+        pxsas.run(
+            "gtimerge",
+            tables=gti_list_str,
+            withgtitable=True,
+            gtitable=gti_file.name,
+            mergemode="and"
+        )
+        gti = Table.read(gti_file.name)
+
+    T0 = gti["START"][0]
+    gti["START"] = gti["START"] - T0
+    gti["STOP"] = gti["STOP"] - T0
+
+    return gti, T0
+
+
+def _calc_time_edges(gti, zsize):
+    duration = np.sum(gti["STOP"] - gti["START"])
+    dt_frame_target = duration / zsize
+
+    # INITIALISE: THE STARTING POINT IS THE FIRST
+    # GTI INTERVAL
+    i = 0
+    t0, t1 = gti[i]["START"], gti[i]["STOP"]
+    dt_frame_remaining = dt_frame_target
+    edges = [t0]
+
+    # In principle we could set up the condition to duration > 0,
+    # but due to floating point arithmetics this fails if zsize is
+    # not a power of 2. For other values of zsize there is a rounding
+    # error in the dt_frame_target value, so the last interval is slightly 
+    # bigger than dt_frame_target and the loop continues for one more
+    # iteration than needed, raising an exception because it tries to 
+    # acces a row in the gti table larger than the number that actually exists.
+    while not np.isclose(duration, 0):
+        # GIVEN a time interval [t0, t1] and
+        # a desired duration dt_frame_target
+        # estimate how much frwrd time can one move
+        # without exceeding t1 (ie remain in the time inerval)
+        #
+        # It returns the new fwrd point in time (t0)
+        # If the desired deltat is larger than the
+        # interval [t0, t1] then only part of the desired
+        # duration can be achieved. The returned parameter
+        # deltat is then the left over time required to
+        # achieve the target deltat.
+        # It also returns the elapsed time for the
+        # frwrd move in time.
+        t0, dt_frame_remaining, t_elapsed = _frwrd(t0, t1, dt_frame_remaining)
+        duration -= t_elapsed
+
+        if t0 == -1:
+            # This is the case where the desired deltat is larger than the
+            # intervalq [t0, t1]. In this case only part of the target DT_FRAME
+            # can be achieved. The remaining has to completed from the next GTI
+            # interval
+            i += 1
+            t0, t1 = gti[i]["START"], gti[i]["STOP"]
+        else:
+            # This is the case where the target DT_FRAME has been achieved.
+            dt_frame_remaining = dt_frame_target
+            edges.append(t0)
+
+    return np.array(edges)
+
+
+def _frwrd(t0, t1, dt_target):
+    # Given an interval gti with start time 't0' and end time 't1', 
+    # and a desired duration 'dt_target', estimate the next time stamp, 
+    # 't_edge', so that 't_edge = t0 + deltat'.
+
+    # If the interval duration 'dt' is larger than 'dt_target' then 
+    # move forward in time by 't0 + dt_target' and return the new
+    # time stap 't = t0 + dt_target'. In this case the elapsed time is 
+    # 'dt_target'. The remaining time required to achieve 'dt_target' 
+    # is then 'dt_remaining = 0'. It represents the left over time to 
+    # complete the desired target duration
+
+    # If the interval duration 'dt' is smaller than 'dt_target' then 
+    # move forward in time to t1. The new time stamp is then -1. In 
+    # this case the  elapsed time is 't_elapsed = dt' (i.e. the full 
+    # interval). In this case the desired duration has not been 
+    # completed and remains a left over time duration 
+    # 'dt_remaining = dt_target - dt'
+    dt = t1 - t0
+
+    # The "isclose" condition is to avoid an error when dt is very 
+    # close to zero. Since we are dealing with floating point arithmetics,
+    # the value of dt_target is not exactly equal to duration / zsize
+    # if zsize is not a power of 2. Hence, it can occur that dt is not
+    # exactly zero, but less than dt_target, but nevertheless the 
+    # "else" condition should happen.
+    if dt < dt_target and not np.isclose(dt, dt_target):
+        t_edge, t_elapsed = -1, dt
+        dt_remaining = dt_target - dt
+    else:
+        t_edge, t_elapsed = t0 + dt_target, dt_target
+        dt_remaining = 0
+
+    return t_edge, dt_remaining, t_elapsed
+
+
+def _set_time_expression(idx, edges):
+    t0 = edges[idx]
+    t1 = edges[idx + 1]
+
+    return f"(TIME >= {t0:.04f} && TIME < {t1:.04f})"
+
+
+def _save_cube_to_fits(data, img_header, time_edges, gti, output_path):
+    cube_header, wcs_table = _set_time_wcs(img_header, time_edges)
+
+    primary_hdu = fits.PrimaryHDU(data, header=cube_header)
+    hdu_list = [primary_hdu, wcs_table]
+    
+    if gti is not None:
+        gti_hdu = fits.BinTableHDU(gti)
+        gti_hdu.header["EXTNAME"] = "GTI"
+        hdu_list.append(gti_hdu)
+
+    hdul = fits.HDUList(hdu_list)
+    hdul.writeto(output_path, overwrite=True)
+
+
+def _set_time_wcs(img_header, time_edges):
+    wcs_table = _set_wcs_table(time_edges)
+    
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=FITSFixedWarning)
+        wcs = WCS(img_header)
+
+    time_wcs_dict = {
+        "CTYPE1": wcs.wcs.ctype[0],
+        "CUNIT1": str(wcs.wcs.cunit[0]),
+        "CDELT1": wcs.wcs.cdelt[0],
+        "CRPIX1": wcs.wcs.crpix[0],
+        "CRVAL1": wcs.wcs.crval[0],
+        "NAXIS1": wcs.array_shape[0],
+    
+        "CTYPE2": wcs.wcs.ctype[1],
+        "CUNIT2": str(wcs.wcs.cunit[1]),
+        "CDELT2": wcs.wcs.cdelt[1],
+        "CRPIX2": wcs.wcs.crpix[1],
+        "CRVAL2": wcs.wcs.crval[1],
+        "NAXIS2": wcs.array_shape[1],
+        
+        "CTYPE3": "TIME-TAB",
+        "CUNIT3": "s",
+        "CDELT3": 1.0,
+        "CRPIX3": 1.0,
+        "CRVAL3": 0.0,
+        "PS3_0": "WCS-table",
+        "PS3_1": "TimeCoord",
+        "PS3_2": "TimeIndex",
+        "NAXIS3": len(time_edges) - 1,
+
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=FITSFixedWarning)
+        time_wcs = WCS(time_wcs_dict, fits.HDUList(wcs_table))
+        cube_header = time_wcs.to_header()
+
+    time_keywords = {
+        "TIMESYS": "TT",
+        "TIMEUNIT": "s",
+        "MJDREF": 50814.0,         
+        # "TIMEZERO": 0, 
+        # "TIMEREF": "LOCAL", 
+        # "TASSIGN": "SATELLITE",
+    }
+    for key, default_value in time_keywords.items():
+        cube_header[key] = img_header.get(key, default_value)
+
+    return cube_header, wcs_table
+
+
+def _set_wcs_table(time_edges):
+    idx = np.arange(len(time_edges), dtype=np.float32)
+
+    wcs_table = Table()
+    wcs_table["TimeIndex"] = [idx]
+    # wcs_table["TimeCoord"] = [time] << u.s
+    wcs_table["TimeCoord"] = [time_edges] << u.s
+    wcs_table.meta["EXTNAME"] = "WCS-table"
+    
+    return fits.BinTableHDU(wcs_table)
+
+
+
+def save_to_fits(data, output_path):
+    hdu = fits.PrimaryHDU(data)
+    hdu.writeto(output_path, overwrite=True)
+
+
+def set_sas_odf(path):
+    """
+    Set the SAS_ODF environment variable to the given path.
+    """
+    # `path` is either the ODF folder, or the PPS folder
+    # where a summary file for the ODF has been generated
+    path_absolute = path.resolve()
+    try:
+        sas_odf = next(path_absolute.glob("*SUM.SAS"))
+    except StopIteration:
+        sas_odf = path_absolute
+
+    os.environ["SAS_ODF"] = sas_odf.as_posix()
+
+
+def set_sas_ccf(path, ccf_file="ccf.cif"):
+    """
+    Set the SAS_CCF environment variable to the given CCF file in the given path.
+    """
+    path_absolute = path.resolve() / ccf_file
+    os.environ["SAS_CCF"] = path_absolute.as_posix()
+
+
+def event_list_from_odf(odf_path, pps_path, detector="PN"):
+    """
+    Generate the event list from the ODF path and return the list of event list files.
+
+    Parameters
+    ----------
+    odf_path : pathlib.Path
+        Path to the ODF folder.
+    pps_path : pathlib.Path
+        Path to the PPS folder where the event lists will be created.
+    detector : str, optional
+        Detector name ("PN" or "MOS"), by default "PN".
+
+    Returns
+    -------
+    list of pathlib.Path
+        List of event list files.
+    """
+    set_sas_odf(odf_path)
+    set_sas_ccf(pps_path)
+
+    with working_directory(pps_path):
+        pxsas.run("cifbuild")
+        pxsas.run("odfingest")
+        set_sas_odf(pps_path)
+
+        if detector == "PN":
+            pxsas.run("epproc")
+        elif detector == "MOS":
+            pxsas.run("emproc")
+        else:
+            raise ValueError(f"Unknown detector: {detector}")
+
+    return _find_event_lists(pps_path, detector)
+
+
+def _find_event_lists(pps_path, detector):
+    evl = []
+    for f in pps_path.glob(f"*{detector}_*Evts.ds"):
+        datamode = fits.getval(f, "DATAMODE")
+
+        if datamode.find("TIMING") == 0:
+            logger.warn("The observations %s is in Timing mode. Cannot be processed.", f)
+        else:
+            evl.append(f)
+
+    if not len(evl):
+        logger.warn("No valids event lists found!")
+        evl = None
+
+    return evl
+
+
+def filter_event_list(evl_path, pps_path, **kwargs):
+    """
+    Filter the event list using the espfilt SAS task.
+
+    Parameters
+    ----------
+    evl_path : pathlib.Path
+        Path to the event list.
+    pps_path : pathlib.Path
+        Path to the PPS folder where the filtered event list will be created.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the espfilt task.
+    """
+    with working_directory(pps_path):
+        # pxsas.run("espfilt", eventset=evl_path.as_posix())  ## SAS 19
+        pxsas.run("espfilt", eventfile=evl_path.as_posix(), **kwargs)  ## SAS 20
+
+
+def _set_eboxl_list(evl_path):
+    return _set_fileset(evl_path, "eboxlist_l")
+
+
+def _set_eboxm_list(evl_path):
+    return _set_fileset(evl_path, "eboxlist_m")
+
+
+def _set_eboxm_list_bkg(evl_path):
+    return _set_fileset(evl_path, "bkg_eboxlist_m")
+
+
+def _set_eml_list(evl_path, likemin):
+    return _set_fileset(evl_path, f"emllist_DETML{likemin}")
+
+
+def _set_eml_list_bkg(evl_path, likemin):
+    return _set_fileset(evl_path, f"bkg_emllist_DETML{likemin}")
+
+
+def _edetect_chain(evl_path, att_path, emin=500, emax=2000, ecf=7.3866, likemin=10):
+    imageset = _set_imageset(evl_path)
+    eboxl_list = _set_eboxl_list(evl_path)
+    eboxm_list = _set_eboxm_list(evl_path)
+    eml_list = _set_eml_list(evl_path, likemin)
+
+    # TODO: I'm using the ecf value for 0.2-2 keV band.
+    # At this point I don't care about the actual flux values
+    pxsas.run(
+        "edetect_chain",
+        imagesets=imageset,
+        eventsets=evl_path,
+        attitudeset=att_path,
+        pimin=emin,
+        pimax=emax,
+        ecf=ecf,
+        eboxl_list=eboxl_list,
+        eboxm_list=eboxm_list,
+        esp_nsplinenodes=16,
+        eml_list=eml_list,
+        esen_mlmin=15,
+        eboxl_likemin=likemin - 2,
+        eboxm_likemin=likemin - 2,
+        likemin=likemin,
+    )
+
+
+def _edetect_custom_bkg(
+    evl_path, bkgimageset, emin=500, emax=2000, ecf=7.3866, likemin=10
+):
+    imageset = _set_imageset(evl_path)
+    expmapset = _set_expmapset(evl_path)
+    maskset = _set_maskset(evl_path)
+    eboxm_list = _set_eboxm_list_bkg(evl_path)
+    eml_list = _set_eml_list_bkg(evl_path, likemin)
+
+    _eboxdetect(
+        imageset,
+        expmapset,
+        eboxm_list,
+        maskset=maskset,
+        bkgimageset=bkgimageset,
+        likemin=likemin - 2,
+        emin=emin,
+        emax=emax,
+    )
+    _emldetect(
+        imageset,
+        expmapset,
+        bkgimageset,
+        eboxm_list,
+        eml_list,
+        maskset=maskset,
+        emin=emin,
+        emax=emax,
+        ecf=ecf,
+        likemin=likemin,
+        determineerrors="yes",
+    )
+
+
+def _eboxdetect(
+    imageset,
+    expmapset,
+    eboxlist,
+    maskset=None,
+    bkgimageset=None,
+    likemin=8,
+    emin=200,
+    emax=10000,
+):
+    if maskset is not None:
+        withdetmask = "yes"
+    else:
+        withdetmask = "no"
+
+    if bkgimageset is not None:
+        usemap = "yes"
+    else:
+        usemap = "no"
+
+    pxsas.run(
+        "eboxdetect",
+        imagesets=imageset,
+        expimagesets=expmapset,
+        boxlistset=eboxlist,
+        withdetmask=withdetmask,
+        detmasksets=maskset,
+        usemap=usemap,
+        bkgimagesets=bkgimageset,
+        likemin=likemin,
+        pimin=emin,
+        pimax=emax,
+    )
+
+
+def _emldetect(
+    imageset,
+    expmapset,
+    bkgimageset,
+    eboxlist,
+    emllist,
+    maskset=None,
+    emin=300,
+    emax=12000,
+    ecf=2.0,
+    likemin=10,
+    determineerrors="no",
+):
+    if maskset is not None:
+        withdetmask = "yes"
+    else:
+        withdetmask = "no"
+
+    pxsas.run(
+        "emldetect",
+        imagesets=imageset,
+        expimagesets=expmapset,
+        bkgimagesets=bkgimageset,
+        detmasksets=maskset,
+        boxlistset=eboxlist,
+        mllistset=emllist,
+        withdetmask=withdetmask,
+        pimin=emin,
+        pimax=emax,
+        ecf=ecf,
+        mlmin=likemin,
+        determineerrors=determineerrors,
+    )
+
+
+def _srcmatch(evl_path, likemin):
+    inputlistsets = _set_eml_list(evl_path, likemin)
+    outputlistset = _set_fileset(evl_path, f"summarylist_DETML{likemin}")
+
+    nsrcs = fits.getval(inputlistsets, "NAXIS2", ext=1)
+
+    if nsrcs:
+        pxsas.run(
+            "srcmatch",
+            inputlistsets=inputlistsets,
+            outputlistset=outputlistset,
+            htmloutput="/dev/null",
+        )
+    else:
+        logger.warning("No sources detected, summary list will be empty.")
+        _make_empty_summarylist(inputlistsets, outputlistset)
+
+
+def _srcmatch_bkg(evl_path, likemin):
+    inputlistsets = _set_eml_list_bkg(evl_path, likemin)
+    outputlistset = _set_fileset(evl_path, f"bkg_summarylist_DETML{likemin}")
+
+    nsrcs = fits.getval(inputlistsets, "NAXIS2", ext=1)
+
+    if nsrcs:
+        pxsas.run(
+            "srcmatch",
+            inputlistsets=inputlistsets,
+            outputlistset=outputlistset,
+            htmloutput="/dev/null",
+        )
+    else:
+        logger.warning("No sources detected, summary list will be empty.")
+        _make_empty_summarylist(inputlistsets, outputlistset)
+
+
+def _make_empty_summarylist(inputlistsets, outputlistset):
+    if inputlistsets.exists():
+        outputlist = Table(names=["SRC_NUM", "RA", "DEC", "RADEC_ERR"])
+        outputlist["RA"].unit = "deg"
+        outputlist["DEC"].unit = "deg"
+        outputlist["RADEC_ERR"].unit = "arcsec"
+
+        outputlist.write(outputlistset, format="fits", overwrite=True)
+    else:
+        raise ValueError("emldetect source list %s does not exist!", inputlistsets.name)
