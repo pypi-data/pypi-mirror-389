@@ -1,0 +1,59 @@
+Metadata-Version: 2.4
+Name: agentlys_tools
+Version: 0.2.0
+Summary: Shared tools for Agentlys
+Author-email: Benjamin Derville <benjamin@myriade.ai>
+Project-URL: Repository, https://github.com/myriade-ai/agentlys-tools
+Project-URL: Changelog, https://github.com/myriade-ai/agentlys-tools/blob/master/CHANGELOG.md
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Provides-Extra: code-editor
+Requires-Dist: pillow>=11.3.0; extra == "code-editor"
+Requires-Dist: ruff>=0.13.0; extra == "code-editor"
+Provides-Extra: terminal
+Provides-Extra: all
+Requires-Dist: agentlys_tools[code_editor,terminal]; extra == "all"
+
+# Agentlys Tools
+
+Repository of tools for [agentlys](https://github.com/myriade-ai/agentlys).
+
+## Installation
+
+Install with all tools:
+
+```bash
+pip install 'agentlys-tools[all]'
+```
+
+Install with only specific tools:
+
+```bash
+pip install 'agentlys-tools[code-editor,terminal]'
+```
+
+## Available Tools
+
+- Terminal: Open a shell session, run commands and scripts
+- CodeEditor: Code editor for working on code files
+
+## Usage
+
+```python
+from agentlys import Agentlys
+from agentlys_tools.code_editor import CodeEditor
+from agentlys_tools.terminal import Terminal
+
+agent = Agentlys()
+code_editor = CodeEditor()
+agent.add_tool(code_editor, "code_editor")
+agent.add_tool(Terminal)
+
+instruction = """
+You are a developer agent.
+Create a new file called 'test.py' and write 'print('Hello, World!')' to it.
+"""
+
+for msg in agent.run_conversation(instruction):
+    print(msg.content.to_terminal())
+```
