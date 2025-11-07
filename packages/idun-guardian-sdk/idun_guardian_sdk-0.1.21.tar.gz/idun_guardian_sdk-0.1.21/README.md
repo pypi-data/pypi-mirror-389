@@ -1,0 +1,138 @@
+# ![Company Logo](https://iduntechnologies.com/hubfs/0038d341-b6eb-4cbe-ac38-bcbd794c4d79-1654710055388-1.png)
+
+[![Python Versions](https://img.shields.io/pypi/pyversions/idun-guardian-sdk.svg)](https://pypi.org/project/idun-guardian-sdk/)
+
+# Idun Guardian SDK
+
+**Idun Guardian SDK** is a Python package for interacting with the Guardian Earbud. It enables device search, battery monitoring, impedance streaming, real-time data collection, and report generation.
+
+📖 **[Read the full documentation here](https://sdk-docs.idunguardian.com/)**
+
+🎧 **[Have a look at the user manual here](https://docs.idunguardian.com/en/page-1c-igeb-quickstart)**
+
+🔗 **[Learn more about us here](https://iduntechnologies.com/)**
+
+---
+
+## Main features
+
+- 🔍 **Search for Device**: Locate the Guardian Earbud.
+- 🔋 **Check Battery**: Monitor battery levels.
+- 📡 **Stream Impedance**: Analyze impedance in real-time.
+- 🎧 **Connect & Record Data**:
+  - Real-time insights (raw & filtered EEG)
+  - Real-time predictions (FFT, jaw clench, eye movements, quality score)
+- 💾 **Download & Manage Data**:
+  - Retrieve recorded sessions
+  - Delete unwanted recordings
+- 📊 **Generate Reports**:
+  - Sleep report
+  - Daytime report
+
+---
+
+## Python version
+
+**3.9 - 3.13**
+
+---
+
+## Installation
+
+It is advised to create a new Python Virtual Environment:
+  
+```bash
+  python -m venv idun_env
+  source idun_env/bin/activate
+```
+
+Alternatively you can use third party tools such as [Conda](https://www.anaconda.com/products/distribution) or [Pipenv](https://pypi.org/project/pipenv/):
+
+1. First activate the virtual environment, this command must always be run before using the python SDK:
+
+  
+```bash
+  source idun_env/bin/activate
+```
+
+2. After the environment is activated, install the Python SDK using the following command:
+
+  
+```bash
+  pip install idun-guardian-sdk
+```
+
+3. After installing the package, make sure that the dependencies are correctly installed by running the following command and inspecting the packages installed in the terminal output:
+
+  
+```bash
+  pip list
+```
+
+You should see as output a package named `idun-guardian-sdk`
+
+---
+
+## Quick Start
+
+📖 **[Read the full documentation here](https://sdk-docs.idunguardian.com/)**
+
+### **Authentication**
+
+To use the API, set your token:
+
+```bash
+export IDUN_API_TOKEN=my-api-token
+```
+
+Or initialize the client in Python:
+
+```python
+from idun_guardian_sdk import GuardianClient
+client = GuardianClient(api_token="my-api-token")
+```
+
+### **Search for Device**
+
+```python
+import asyncio
+from idun_guardian_sdk import GuardianClient
+
+client = GuardianClient()
+device_address = asyncio.run(client.search_device())
+```
+
+### **Check Battery Level**
+
+```python
+battery_level = asyncio.run(client.check_battery())
+print(f"Battery Level: {battery_level}%")
+```
+
+### **Stream Impedance**
+
+```python
+asyncio.run(client.stream_impedance(mains_freq_60hz=False))
+```
+
+### **Start a Recording**
+
+```python
+RECORDING_TIMER = 600  # 10 minutes
+asyncio.run(client.start_recording(recording_timer=RECORDING_TIMER))
+```
+
+### **Retrieve & Download Recording**
+
+```python
+recordings = client.get_recordings(status="COMPLETED", limit=10)
+recording_id = recordings[0]['id']
+client.download_file(recording_id=recording_id)
+```
+
+### **Generate Reports**
+
+```python
+client.generate_and_download_sleep_report(recording_id=recording_id)
+```
+
