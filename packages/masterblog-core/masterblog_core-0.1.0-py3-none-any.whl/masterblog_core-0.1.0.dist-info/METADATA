@@ -1,0 +1,181 @@
+Metadata-Version: 2.4
+Name: masterblog-core
+Version: 0.1.0
+Summary: A blog engine core with JSON storage
+License-Expression: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# Masterblog‑core 📦
+
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Code style: PEP8](https://img.shields.io/badge/code%20style-PEP8-yellow)
+![Status](https://img.shields.io/badge/status-learning--project-orange)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
+---
+
+## 📑 Table of Contents  
+
+- [⚠️ Disclaimer](#-disclaimer)  
+- [📝 Description](#-description)  
+- [✨ Features](#-features)  
+- [📁 Project Structure](#-project-structure)  
+- [🛠️ Development Setup](#-development-setup)  
+  - [🚀 Quick Start](#-quick-start)  
+  - [📖 Step‑by‑Step Guide](#-step-by-step-guide)  
+  - [🚀 Usage](#-usage)  
+- [👥 Contributing](#-contributing)  
+- [📄 License](#-license)  
+
+---
+
+## ⚠️ Disclaimer  
+This project began as part of my learning journey during a multi‑month software engineering course. It should be viewed as such: a work in progress where I applied my best effort and current knowledge.  
+
+The original **Masterblog** repository included a Flask server and frontend. This fork, **Masterblog‑core**, strips away the web layer and focuses only on the reusable backend logic. The emphasis has shifted toward **packaging and redistribution** as a standalone Python library.  
+
+- No new features have been added — in fact, the frontend has been removed.  
+- The goal is to ensure the underlying models and storage still work as expected.  
+- It remains a **learning project** and is **not intended for production use**.  
+
+---
+
+## 📝 Description  
+**Masterblog‑core** provides the essential building blocks of a simple blogging system:  
+
+- `Blog` and `Post` classes for managing posts.  
+- JSON‑based persistence with auto‑incrementing IDs.  
+- A lightweight storage layer (`filestore`, `sequence`).  
+
+This package is designed for **reuse in other projects** or as a **learning reference** for object‑oriented design and Python packaging.  
+
+---
+
+## ✨ Features  
+- ➕ Create new blog posts  
+- ✏️ Update existing posts  
+- ❌ Delete posts  
+- ❤️ Like posts (with persistence)  
+- 📦 JSON storage with auto‑increment IDs  
+- 🔌 File‑path injection for flexible persistence  
+
+---
+
+## 📁 Project Structure  
+
+```
+.
+├── .gitignore           # Ignore sensitive/generated files
+├── LICENSE              # MIT license text
+├── pyproject.toml       # Project metadata and dependencies
+├── README.md            # Project documentation
+└── src/                 # Main application source code
+    └── masterblog_core
+        ├── models/      # Data models
+        │   ├── blog.py  # Blog class managing posts
+        │   └── post.py  # Post class with attributes and methods
+        └── storage/     # Persistence layer
+            ├── filestore.py  # JSON read/write helpers
+            └── sequence.py   # Auto-increment ID handling
+```
+
+---
+
+## 🛠️ Development Setup  
+
+### 🚀 Quick Start  
+For experienced users who just want to get the app running:  
+```bash
+git clone https://github.com/paul-wosch/Masterblog-core.git \
+&& cd Masterblog-core \
+&& pip install -e .
+```
+Then open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.  
+On a fresh install, you’ll see a message with a link to **Add Post**.  
+
+---
+
+### 📖 Step‑by‑Step Guide  
+1. **Clone the repository**:  
+   ```bash
+   git clone https://github.com/paul-wosch/Masterblog-core.git
+   cd Masterblog-core
+   ```
+
+2. **Create virtual environment** (optional):  
+   ```bash
+   python -m venv .venv
+   ```
+
+3. **Activate virtual environment** (optional):  
+   ```bash
+   source .venv/bin/activate   # Mac/Linux
+   .venv\Scripts\activate      # Windows
+   ```
+
+4. **Install local package**:  
+   ```bash
+   pip install -e .
+   ```
+
+5. **Use the app**  
+
+   [See below!](#-usage)  
+
+
+7. **Deactivate environment** (optional):   
+   ```bash
+   deactivate
+   ```
+
+The `pip install -e .` makes `masterblog_core` importable, ensuring imports resolve correctly.  
+
+---
+
+### 🚀 Usage  
+
+Import and use in Python:  
+
+```python
+from pathlib import Path
+from masterblog_core.models.blog import Blog
+
+# Define file paths for persistence
+PARENT_FOLDER_COUNT = 0
+PROJECT_ROOT = Path(__file__).resolve().parents[PARENT_FOLDER_COUNT]
+BLOG_FILE = "blog.json"
+SEQUENCE_FILE = "sequence.json"
+
+BLOG_FILE_PATH = (PROJECT_ROOT / BLOG_FILE).resolve()
+SEQUENCE_FILE_PATH = (PROJECT_ROOT / SEQUENCE_FILE).resolve()
+
+# Initialize Blog with file paths
+my_blog = Blog(BLOG_FILE_PATH, SEQUENCE_FILE_PATH)
+
+# Example usage
+my_post = {"author": "Your Name",
+           "title": "Hello World",
+           "content": "This is my first post!",
+           "likes": 0
+           }
+my_blog.add(my_post)
+```
+
+---
+
+## 👥 Contributing  
+This project is primarily a learning exercise, but contributions, suggestions, or feedback are welcome. If you’d like to propose improvements:  
+1. Fork the repository  
+2. Create a feature branch (`git checkout -b feature/your-feature`)  
+3. Commit your changes (`git commit -m "feat: Add your feature"`)  
+4. Push to the branch (`git push origin feature/your-feature`)  
+5. Open a Pull Request  
+
+---
+
+## 📄 License
+This project is licensed under the terms of the [MIT License](./LICENSE).
+See the LICENSE file for full details.
