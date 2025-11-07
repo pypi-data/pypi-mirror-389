@@ -1,0 +1,35 @@
+# Include documentation files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include QUICKSTART.md
+include ARCHITECTURE.md
+include CONTRIBUTING.md
+include PROJECT_SUMMARY.md
+include STRUCTURE.md
+include REFACTORING_COMPLETE.md
+
+# Include configuration files
+include requirements.txt
+include pyproject.toml
+include Makefile
+
+# Include scripts
+recursive-include scripts *.sh
+
+# Include Docker files
+include Dockerfile
+include docker-compose.yml
+include .env.example
+
+# Exclude unwanted files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.swp
+global-exclude .coverage
+recursive-exclude htmlcov *
+recursive-exclude .pytest_cache *
+recursive-exclude __pycache__ *
+

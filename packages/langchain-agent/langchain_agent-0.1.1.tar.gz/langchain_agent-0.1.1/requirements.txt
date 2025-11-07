@@ -1,0 +1,14 @@
+# 核心依赖
+langchain>=1.0.3
+langchain-ollama>=1.0.0
+
+# 可选依赖（用于其他功能）
+python-dotenv>=1.0.0  # 用于加载 .env 文件
+
+# 开发依赖
+pytest>=7.0.0  # 测试框架
+pytest-cov>=4.0.0  # 测试覆盖率
+black>=23.0.0  # 代码格式化
+flake8>=6.0.0  # 代码检查
+mypy>=1.0.0  # 类型检查
+

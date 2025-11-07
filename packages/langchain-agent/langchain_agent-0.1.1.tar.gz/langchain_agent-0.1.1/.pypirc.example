@@ -1,0 +1,18 @@
+# PyPI 配置文件模板
+# 将此文件复制到 ~/.pypirc 并填入你的凭据
+# 注意: 不要将包含真实凭据的 .pypirc 文件提交到版本控制
+
+[distutils]
+index-servers =
+    pypi
+    testpypi
+
+[pypi]
+username = __token__
+password = pypi-YOUR_PYPI_TOKEN_HERE
+
+[testpypi]
+repository = https://test.pypi.org/legacy/
+username = __token__
+password = pypi-YOUR_TESTPYPI_TOKEN_HERE
+

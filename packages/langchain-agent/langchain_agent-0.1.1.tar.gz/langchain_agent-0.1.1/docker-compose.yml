@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  langchain_agent:
+    build: .
+    container_name: langchain-agent
+    environment:
+      # 从 .env 文件加载环境变量
+      - LLM_MODEL=${LLM_MODEL:-gpt-oss}
+      - LLM_TEMPERATURE=${LLM_TEMPERATURE:-0.0}
+      - LLM_MAX_TOKENS=${LLM_MAX_TOKENS:-1000}
+      - LLM_VERBOSE=${LLM_VERBOSE:-false}
+      - AGENT_SYSTEM_PROMPT=${AGENT_SYSTEM_PROMPT:-You are a helpful assistant}
+    stdin_open: true
+    tty: true
+    networks:
+      - langchain-network
+    volumes:
+      # 挂载配置文件（可选）
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+
+networks:
+  langchain-network:
+    driver: bridge
+
