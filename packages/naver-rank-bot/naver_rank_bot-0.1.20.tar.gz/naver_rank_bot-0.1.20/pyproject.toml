@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "naver-rank-bot"
+version = "0.1.20"
+description = "NoDriver-based browser automation tool for Naver SmartStore product ranking analysis"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "AGPL-3.0-or-later"}
+authors = [
+    {name = "Benjamin Lee", email = "ibank21@gmail.com"}
+]
+keywords = ["naver", "smartstore", "bot", "scraping", "nodriver", "ranking"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "nodriver>=0.35.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/marqetly/naver-rank-bot"
+Documentation = "https://github.com/marqetly/naver-rank-bot#readme"
+Repository = "https://github.com/marqetly/naver-rank-bot"
+Issues = "https://github.com/marqetly/naver-rank-bot/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["naver_rank_bot"]
+
+[tool.setuptools.package-data]
+naver_rank_bot = ["py.typed"]
