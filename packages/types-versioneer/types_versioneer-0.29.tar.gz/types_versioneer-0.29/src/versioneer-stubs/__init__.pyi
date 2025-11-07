@@ -1,0 +1,6 @@
+import setuptools
+
+def get_version() -> str: ...
+def get_cmdclass(
+    cmdclass: dict[str, type[setuptools.Command]] | None = None
+) -> dict[str, type[setuptools.Command]]: ...
