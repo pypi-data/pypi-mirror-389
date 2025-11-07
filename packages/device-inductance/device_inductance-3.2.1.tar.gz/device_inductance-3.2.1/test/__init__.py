@@ -1,0 +1,78 @@
+import pytest
+
+import device_inductance
+
+
+@pytest.fixture(scope="session")
+def typical_outputs() -> device_inductance.TypicalOutputs:
+    # Set up a regular computational grid
+    # It would be nice to use a coarser grid,
+    # but in order for the tables to be testable,
+    # we need a fairly fine one
+    dxgrid = (0.05, 0.04)  # Different resolution to make sure they are never swapped
+    # NOTE: min_extent here is slightly larger than the others in order to
+    # reproduce the padding cell from the approximate method while using the exact method instead.
+    min_extent = (2.0 * dxgrid[0], 4.55, -3.0, 3.04)
+    rmin, rmax, zmin, zmax = min_extent
+    dr, dz = dxgrid
+    gridspec = (rmin, int((rmax - rmin) / dr), zmin, int((zmax - zmin) / dz))
+
+    # Load the default device
+    ods = device_inductance.load_default_ods()
+
+    # Pre-compute the usual set of matrices and tables
+    typical_outputs = device_inductance.typical(
+        ods, gridspec=gridspec, dxgrid=dxgrid, max_nmodes=int(1e6), show_prog=False
+    )
+
+    return typical_outputs
+
+
+@pytest.fixture(scope="session")
+def typical_outputs_many_slices() -> device_inductance.TypicalOutputs:
+    # Set up a regular computational grid
+    # It would be nice to use a coarser grid,
+    # but in order for the tables to be testable,
+    # we need a fairly fine one
+    dxgrid = (0.05, 0.04)  # Different resolution to make sure they are never swapped
+    min_extent = (2.0 * dxgrid[0], 4.5, -3.0, 3.0)
+
+    # Load the default device
+    ods = device_inductance.load_default_ods()
+
+    # Pre-compute the usual set of matrices and tables
+    typical_outputs = device_inductance.typical(
+        ods, min_extent, dxgrid, max_nmodes=int(1e6), show_prog=False, n_radial_slices=100
+    )
+
+    return typical_outputs
+
+
+@pytest.fixture(scope="session")
+def typical_outputs_stabilized_eigenmode() -> device_inductance.TypicalOutputs:
+    """With alternate options for model reduction method and plasma-coil force method"""
+    # Because the device is immutable after init, we have to make a whole new one
+    # to get the other model reduction method
+
+    # Set up a regular computational grid
+    # It would be nice to use a coarser grid,
+    # but in order for the tables to be testable,
+    # we need a fairly fine one
+    dxgrid = (0.05, 0.04)  # Different resolution to make sure they are never swapped
+    min_extent = (2.0 * dxgrid[0], 4.5, -3.0, 3.0)
+
+    # Load the default device
+    ods = device_inductance.load_default_ods()
+
+    # Pre-compute the usual set of matrices and tables
+    typical_outputs = device_inductance.typical(
+        ods,
+        min_extent,
+        dxgrid,
+        max_nmodes=int(1e6),
+        show_prog=False,
+        model_reduction_method="stabilized eigenmode",
+        plasma_coil_force_method="tables"
+    )
+
+    return typical_outputs
