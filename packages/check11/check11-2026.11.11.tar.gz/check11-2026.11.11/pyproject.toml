@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "check11"
+version = "2026.11.011"
+authors = [
+  { name="Victor G.B. Peters", email="victor@jeex.eu" },
+]
+dependencies = [
+    "PyYAML",
+    "pytz",
+    "certifi",
+    "requests",
+    "pyperclip",
+    "colorama",
+    "platformdirs"
+]
+description = "Check11 by Monze.EU makes you dig coding"
+readme = "README.md"
+requires-python = ">= 3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+check11 = "check11:main"
