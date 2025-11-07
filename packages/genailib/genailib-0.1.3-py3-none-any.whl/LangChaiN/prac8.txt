@@ -1,0 +1,143 @@
+# --- Practical 8: SIFT Feature Descriptor ---
+!pip install opencv-python opencv-contrib-python numpy matplotlib
+
+import cv2, numpy as np, matplotlib.pyplot as plt, os
+
+# --- Step 1: Load your image if available, else create a synthetic one ---
+path = "road.jpg"
+if os.path.exists(path):
+    print("✅ Custom image found! Using your image.")
+    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+else:
+    print("⚠️ No image found. Using synthetic image instead.")
+    img = np.zeros((300,300), np.uint8)
+    cv2.circle(img, (150,150), 60, 255, -1)
+    cv2.line(img, (50,250), (250,50), 255, 2)
+
+# --- Step 2: Detect and compute SIFT features ---
+sift = cv2.SIFT_create()
+keypoints, descriptors = sift.detectAndCompute(img, None)
+
+# --- Step 3: Draw keypoints on the image ---
+img_kp = cv2.drawKeypoints(img, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+# --- Step 4: Display results ---
+plt.figure(figsize=(6,6))
+plt.imshow(img_kp, cmap='gray')
+plt.title(f'SIFT Keypoints Detected: {len(keypoints)}')
+plt.axis('off')
+plt.show()
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To detect and describe keypoints in an image using the SIFT (Scale-Invariant Feature Transform) algorithm.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT:
+# SIFT is a feature detection and description technique that extracts distinctive,
+# invariant keypoints from images, useful for object recognition and matching.
+
+# It is **invariant to**:
+# - Scale (zoom level)
+# - Rotation
+# - Illumination
+# - Small affine distortions
+
+# -------------------------------------------------------------
+# 🔸 STEPS IN SIFT ALGORITHM:
+
+# 1️⃣ Scale-space Extrema Detection:
+#     - Finds potential keypoints by locating maxima/minima of Difference of Gaussian (DoG)
+#       in scale-space.
+#     - DoG = Gaussian(x, y, kσ) – Gaussian(x, y, σ)
+
+# 2️⃣ Keypoint Localization:
+#     - Eliminates low-contrast and unstable edge points.
+
+# 3️⃣ Orientation Assignment:
+#     - Assigns orientation based on local image gradient direction.
+
+# 4️⃣ Keypoint Descriptor:
+#     - For each keypoint, computes gradient magnitude and direction in a local neighborhood.
+#     - Creates a 128-dimensional feature vector per keypoint.
+
+# 5️⃣ Keypoint Matching (Optional):
+#     - Descriptors can be compared between images using distance metrics (like Euclidean distance).
+
+# -------------------------------------------------------------
+# 🔸 IMPORTANT OPENCV FUNCTIONS:
+
+# ➤ cv2.SIFT_create()
+#     → Creates a SIFT detector object.
+
+# ➤ detectAndCompute(image, mask)
+#     → Detects keypoints and computes descriptors.
+
+# ➤ drawKeypoints(image, keypoints, outImage, flags)
+#     → Draws keypoints on the image.
+#     → flag cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS shows scale & orientation.
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Load Image:
+#     - If 'road.jpg' exists, use it. Otherwise, create a synthetic image.
+#
+# 2️⃣ SIFT Creation:
+#     - cv2.SIFT_create() initializes the detector.
+#
+# 3️⃣ Feature Detection:
+#     - sift.detectAndCompute(img, None) returns keypoints and their 128D descriptors.
+#
+# 4️⃣ Visualization:
+#     - cv2.drawKeypoints() draws circles and arrows on detected keypoints.
+#
+# 5️⃣ Display:
+#     - Matplotlib shows image with detected SIFT points and total count.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+
+# ➤ Detected Keypoints:
+#   - Marked as circles (size = scale, arrow = orientation).
+#
+# ➤ Descriptors:
+#   - Numerical vector (128 dimensions per keypoint), used for matching features between images.
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+
+# - Object recognition and tracking
+# - Image stitching and panorama creation
+# - Robot vision and 3D mapping
+# - Augmented reality alignment
+# - Feature-based image matching
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What does SIFT stand for?
+#     → Scale-Invariant Feature Transform.
+
+# Q2. What are keypoints in SIFT?
+#     → Distinctive image features that are stable under scale and rotation changes.
+
+# Q3. What is a SIFT descriptor?
+#     → A 128-dimensional vector that describes the local gradient distribution around a keypoint.
+
+# Q4. Why is SIFT called scale-invariant?
+#     → Because it detects features at multiple scales using Gaussian pyramids.
+
+# Q5. What are alternatives to SIFT?
+#     → SURF (Speeded-Up Robust Features), ORB (Oriented FAST and BRIEF).
+
+# Q6. What is the advantage of SIFT over edge or corner detection?
+#     → SIFT features are stable, distinctive, and robust for matching across different images.
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully implemented SIFT feature detection and description.
+# Extracted scale- and rotation-invariant keypoints using OpenCV’s SIFT algorithm.
