@@ -1,0 +1,9 @@
+[tool.ruff]
+# Disable rules that overlap with Pyright
+ignore = [
+    "F401",  # unused imports
+    "F821",  # undefined name
+    "F841",  # unused variable
+    "E501",  # line too long
+]
+
