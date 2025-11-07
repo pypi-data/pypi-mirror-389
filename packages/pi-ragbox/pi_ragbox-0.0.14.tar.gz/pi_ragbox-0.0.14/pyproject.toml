@@ -1,0 +1,45 @@
+[project]
+name = "pi-ragbox"
+dynamic = ["version"]
+license = "LicenseRef-PiLabs-Proprietary"
+description = "Pi-RagBox CLI tool"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "typer>=0.20.0",
+    "click>=8.0.0",
+    "httpx>=0.27.0",
+    "platformdirs>=4.0.0",
+    "rich>=13.0.0",
+    "websockets>=12.0",
+    "watchdog>=4.0.0",
+    "indexer",
+    "indexing-model",
+    "indexing-client",
+]
+readme = "README.md"
+authors = [
+    {name = "Zach Clifford", email = "zach@withpi.ai"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.scripts]
+pi-ragbox = "pilabs.pi_ragbox.main:main"
+
+[build-system]
+requires = ["hatchling", "tomli>=2.0.0", "mypy>=1.0.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/pilabs/pi_ragbox/__about__.py"
+
+[tool.hatch.metadata.hooks.custom]
+
+[tool.hatch.build.hooks.custom]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pilabs"]
