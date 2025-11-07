@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: rossum_api
+Version: 3.5.1
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: aiofiles
+Requires-Dist: dacite>=1.9.0
+Requires-Dist: httpx
+Requires-Dist: tenacity
+Provides-Extra: tests
+Requires-Dist: codecov; extra == "tests"
+Requires-Dist: pytest; extra == "tests"
+Requires-Dist: pytest-asyncio; extra == "tests"
+Requires-Dist: pytest-httpx>=0.34.0; extra == "tests"
+Requires-Dist: pytest-cov; extra == "tests"
+Requires-Dist: ruff; extra == "tests"
+Requires-Dist: types-aiofiles; extra == "tests"
+Requires-Dist: pre-commit; extra == "tests"
+Provides-Extra: docs
+Requires-Dist: sphinx>=8.2; extra == "docs"
+Requires-Dist: sphinx-rtd-theme; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints; extra == "docs"
+Dynamic: license-file
