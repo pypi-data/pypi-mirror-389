@@ -1,0 +1,97 @@
+# Materials-SimPro Dependencies
+# Python 3.10+
+
+# Core Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+h5py>=3.8.0
+
+# Materials Science Libraries
+pymatgen>=2023.10.11
+ase>=3.22.1
+spglib>=2.1.0
+seekpath>=2.1.0
+
+# Machine Learning
+torch>=2.1.0
+jax>=0.4.20
+jaxlib>=0.4.20
+scikit-learn>=1.3.0
+optuna>=3.4.0
+
+# Deep Learning for Materials
+matgl>=0.9.0  # Graph neural networks
+dgl>=1.1.0  # Deep Graph Library
+
+# Molecular Dynamics Integration
+# lammps-python>=0.1.0  # LAMMPS Python interface (requires special installation from LAMMPS source)
+
+# Database
+psycopg2-binary>=2.9.9  # PostgreSQL
+pymongo>=4.6.0  # MongoDB
+redis>=5.0.0  # Redis cache
+neo4j>=5.14.0  # Graph database
+elasticsearch>=8.11.0  # Search engine
+
+# API & Web
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+python-multipart>=0.0.6
+
+# Cloud & Orchestration
+kubernetes>=28.1.0
+boto3>=1.29.0  # AWS SDK
+google-cloud-storage>=2.10.0  # GCP SDK
+
+# Workflow Management
+apache-airflow>=2.7.0
+dask[complete]>=2023.11.0
+ray[default]>=2.8.0
+
+# LLM Integration for AI Agents
+langchain>=0.0.335
+openai>=1.3.0
+anthropic>=0.7.0
+
+# Visualization
+plotly>=5.18.0
+bokeh>=3.3.0
+nglview>=3.0.8  # Molecular visualization
+
+# Data Formats
+cif2cell>=2.0.0
+pycifrw>=4.4.5
+zarr>=2.16.0
+parquet>=1.3.1
+
+# Numerical Libraries
+numba>=0.58.0  # JIT compilation
+cupy-cuda12x>=12.3.0  # GPU NumPy (CUDA 12.x)
+
+# Utilities
+tqdm>=4.66.0
+click>=8.1.0  # CLI framework
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+loguru>=0.7.2
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+black>=23.11.0  # Code formatter
+isort>=5.12.0  # Import sorter
+flake8>=6.1.0  # Linter
+mypy>=1.7.0  # Type checker
+
+# Documentation
+sphinx>=7.2.0
+sphinx-rtd-theme>=1.3.0
+nbsphinx>=0.9.3  # Jupyter notebook docs
+
+# Optional: GPU Acceleration
+# tensorflow>=2.15.0  # If using TensorFlow
+# torch-geometric>=2.4.0  # Geometric deep learning

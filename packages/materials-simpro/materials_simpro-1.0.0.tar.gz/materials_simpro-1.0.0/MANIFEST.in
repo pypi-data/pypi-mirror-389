@@ -1,0 +1,28 @@
+include README.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+include setup.py
+
+recursive-include src *.py
+recursive-include src *.txt
+recursive-include src *.json
+recursive-include src *.yaml
+recursive-include src *.yml
+
+include ingest_complete_knowledge.py
+
+include *.md
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+exclude *.db
+exclude *.db-shm
+exclude *.db-wal
+exclude *.pkl
+exclude test_*.db
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+recursive-exclude * .git*
