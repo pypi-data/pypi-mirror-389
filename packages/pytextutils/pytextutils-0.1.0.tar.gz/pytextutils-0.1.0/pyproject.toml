@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytextutils"
+version = "0.1.0"
+description = "Common string helpers - reverse, slugify, capitalize, remove punctuation"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "PyLib Contributors"}
+]
+keywords = ["string", "text", "utilities", "helpers"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/PyLib"
+Repository = "https://github.com/yourusername/PyLib"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
