@@ -1,0 +1,86 @@
+[project]
+name = "aiondemand"
+description = "Python SDK for the AIoD metadata catalogue"
+authors = [
+  { name = "Jean Matias", email = "smatias.jean@gmail.com" },
+  { name = "Pieter Gijsbers", email = "p.gijsbers@tue.nl" },
+]
+readme = "docs/README.md"
+requires-python = ">=3.10"
+dependencies = ["aiohttp", "pandas", "python-keycloak", "requests", "tomlkit"]
+license = "MIT"
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://www.aiod.eu"
+Documentation = "https://aiondemand.github.io/aiondemand/"
+Repository = "https://github.com/aiondemand/aiondemand"
+Issues = "https://github.com/aiondemand/aiondemand/issues"
+Changelog = "https://aiondemand.github.io/aiondemand/changelog/"
+
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "responses",
+    "aioresponses",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+doc = [
+    "mkdocs-material",
+    "mkdocstrings-python",
+    "mkdocs-jupyter",
+]
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/aiod/__version__.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiod"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.6"
+version_files = ["pyproject.toml:version", "src/aiod/__version__.py"]
+
+[project.entry-points."mkdocs.plugins"]
+asset-type-replacer = "docs.tools.asset_type_replacer:AssetTypeReplacer"
+
+[tool.pytest.ini_options]
+markers = [
+    "server: connects to an AIoD server",
+]
+addopts = "-m 'not server'"
+
+[tool.ruff]
+fix = true
+
+[tool.ruff.lint]
+select = [
+    "D",  # enables pydocstyle checks
+]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+#    "D407",
+#    "D408",
+]
+#extend-select = ["D416"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
