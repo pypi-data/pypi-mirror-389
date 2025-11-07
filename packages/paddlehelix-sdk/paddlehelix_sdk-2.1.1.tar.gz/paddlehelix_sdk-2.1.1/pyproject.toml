@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paddlehelix-sdk"
+# version = "2.0.0.dev0"
+authors = [
+  { name="Paddlehelix Team", email="bcp@baidu.com" },
+]
+description = "PaddleHelix SDK"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: Apache Software License",
+]
+dynamic = ["version"]
+dependencies=[       # 依赖包列表
+    "requests~=2.32.3",
+    "pyyaml~=6.0.2",
+    "pandas",
+    "termcolor~=2.4.0",
+    "six",
+    "python-dateutil",
+    "urllib3~=1.26.20",
+    "certifi",
+    "tabulate"
+]
+
+[project.urls]
+Homepage = "https://gitee.com/paddlehelix/paddlehelix"
+
+[tool.setuptools.dynamic]
+version = {attr = "paddlehelix.__version__"}
