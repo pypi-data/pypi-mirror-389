@@ -1,0 +1,127 @@
+# --- Practical 6: Compute Fundamental Matrix ---
+!pip install opencv-python numpy
+
+import cv2, numpy as np, os
+
+# --- Step 1: Generate or Load Point Correspondences ---
+# (In real cases, these come from feature matching between two camera images)
+if os.path.exists("left.jpg") and os.path.exists("right.jpg"):
+    print("✅ Real stereo images found! You can use feature matching to get points.")
+else:
+    print("⚠️ No real images found. Using synthetic points for demonstration.")
+    # Generate 8 random corresponding points (simulating stereo pair)
+    pts1 = np.random.randint(0, 400, (8, 2)).astype(np.float32)
+    pts2 = pts1 + np.random.randint(-10, 10, (8, 2)).astype(np.float32)  # small shift between cameras
+
+# --- Step 2: Compute Fundamental Matrix using 8-point algorithm ---
+F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT)
+
+# --- Step 3: Display Results ---
+print("✅ Fundamental Matrix Computed Successfully\n")
+print("Fundamental Matrix (F):\n", F)
+print("\nInlier Mask:\n", mask)
+
+
+# -------------------------------------------------------------
+# 🔹 THEORY & EXPLANATION FOR VIVA 🔹
+# -------------------------------------------------------------
+
+# 🎯 AIM:
+# To compute the Fundamental Matrix that defines the geometric relationship
+# between two images taken from different viewpoints of the same scene.
+
+# -------------------------------------------------------------
+# 🧠 CONCEPT:
+# The **Fundamental Matrix (F)** encodes the **epipolar geometry** between two cameras.
+
+# ➤ It relates corresponding points between two images:
+#     [x2, y2, 1]ᵀ · F · [x1, y1, 1] = 0
+#
+# This means every point in one image corresponds to an **epipolar line** in the other.
+
+# -------------------------------------------------------------
+# 🔸 EPIPOLAR GEOMETRY OVERVIEW:
+# - When two cameras view the same 3D scene from different angles:
+#   ➤ A 3D point (P) projects to two 2D points: p₁ in image 1 and p₂ in image 2.
+# - The fundamental matrix (F) maps p₁ to its corresponding **epipolar line** in the second image.
+
+# Equation:  
+#     l₂ = F · p₁    → line in second image  
+#     l₁ = Fᵀ · p₂  → line in first image  
+
+# -------------------------------------------------------------
+# 🔸 MATHEMATICAL FORMULATION:
+
+# If P is a point in 3D space,
+# Projection in image 1:  p₁ = K₁ [R₁ | t₁] P  
+# Projection in image 2:  p₂ = K₂ [R₂ | t₂] P
+#
+# The fundamental matrix F satisfies:
+#     p₂ᵀ F p₁ = 0
+
+# -------------------------------------------------------------
+# 🔸 OPEN CV FUNCTION:
+# cv2.findFundamentalMat(pts1, pts2, method)
+# ➤ pts1, pts2 → Matching 2D points in both images
+# ➤ method options:
+#     cv2.FM_8POINT       : Classic 8-point algorithm
+#     cv2.FM_RANSAC       : Robust version (ignores outliers)
+#     cv2.FM_LMEDS        : Least Median of Squares (robust)
+# ➤ Returns:
+#     F → Fundamental Matrix (3x3)
+#     mask → Inlier/Outlier mask (1 = used, 0 = rejected)
+
+# -------------------------------------------------------------
+# 🧩 CODE EXPLANATION:
+
+# 1️⃣ Generate 8 random corresponding points (synthetic stereo match).
+# 2️⃣ Add slight shift to simulate left and right camera differences.
+# 3️⃣ Use cv2.findFundamentalMat() with cv2.FM_8POINT method.
+# 4️⃣ Display resulting 3x3 fundamental matrix and inlier mask.
+
+# -------------------------------------------------------------
+# 📘 OUTPUT DESCRIPTION:
+
+# ➤ Fundamental Matrix (F):
+#   Example:
+#   [[ 2.13e-07  4.92e-06 -1.13e-03]
+#    [-4.76e-06 -8.12e-08  1.02e-03]
+#    [ 1.35e-03 -9.97e-04  1.00e+00]]
+
+# ➤ Inlier Mask:
+#   Array showing which point pairs were used in computation (1 = inlier).
+
+# -------------------------------------------------------------
+# 💡 APPLICATIONS:
+
+# - Stereo vision (3D reconstruction)
+# - Camera calibration
+# - Epipolar line visualization
+# - Structure from motion
+# - Depth estimation and correspondence search
+
+# -------------------------------------------------------------
+# 🗣️ VIVA QUESTIONS:
+
+# Q1. What does the Fundamental Matrix represent?
+#     → The relationship between corresponding points in two different camera images.
+
+# Q2. What is the size of the Fundamental Matrix?
+#     → It is a 3x3 matrix.
+
+# Q3. Minimum number of point pairs required to compute F?
+#     → 8 points (hence the “8-point algorithm”).
+
+# Q4. What is the difference between Fundamental and Essential Matrix?
+#     → F uses pixel coordinates; E uses normalized camera coordinates (depends on intrinsic parameters).
+
+# Q5. What are epipolar lines?
+#     → Lines in one image where the projection of a 3D point from the other image must lie.
+
+# Q6. What OpenCV function is used for F computation?
+#     → cv2.findFundamentalMat()
+
+# -------------------------------------------------------------
+# ✅ RESULT:
+# Successfully computed the Fundamental Matrix (F) from 2D point correspondences,
+# representing the epipolar geometry between two stereo images using OpenCV.
