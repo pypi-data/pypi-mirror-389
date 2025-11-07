@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: pylangdetect
+Version: 0.1.0
+Summary: Lightweight language detection (rule-based + ML hybrid)
+Author: PyLib Contributors
+License: MIT
+Keywords: language,detection,nlp,i18n
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+# pylangdetect
+
+Lightweight language detection (rule-based + ML hybrid).
+
+## Installation
+
+```bash
+pip install pylangdetect
+```
+
+## Usage
+
+```python
+from pylangdetect import detect_language, is_english
+
+detect_language("Hello world")  # "en"
+is_english("Hello world")  # True
+```
+
+## License
+
+MIT
+
