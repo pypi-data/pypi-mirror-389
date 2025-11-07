@@ -1,0 +1,47 @@
+Metadata-Version: 2.1
+Name: txtcleanen
+Version: 1.0.0
+Summary: A lightweight Python package to clean English text by removing HTML tags, URLs, emojis, digits, and punctuation.
+Author: Md. Ismiel Hossen Abir
+Author-email: ismielabir1971@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Text Processing :: Filters
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: License
+
+# txtcleanen
+
+**txtcleanen** is a simple Python package for cleaning English text by removing HTML tags, URLs, emojis, numbers, punctuation, and extra whitespace for Natural Language Processing task.
+
+---
+
+## Features
+
+- Remove HTML tags  
+- Remove URLs  
+- Remove emojis  
+- Remove digits and punctuation  
+- Normalize Unicode text  
+- Compact multiple spaces into one  
+
+---
+
+## Installation
+
+```bash
+pip install txtcleanen
+```
+## Example
+```
+import txtcleanen
+
+text = "Hello <b>World!</b> Visit https://example.com now!"
+clean_text = txtcleanen(text)
+print(clean_text)
+# Output: "Hello World Visit now"
+```
