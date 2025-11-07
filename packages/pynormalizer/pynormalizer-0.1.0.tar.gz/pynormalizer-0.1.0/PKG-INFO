@@ -1,0 +1,37 @@
+Metadata-Version: 2.4
+Name: pynormalizer
+Version: 0.1.0
+Summary: Unicode, whitespace, and accent normalization for multilingual text
+Author: PyLib Contributors
+License: MIT
+Keywords: unicode,normalization,text,multilingual
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+
+# pynormalizer
+
+Unicode, whitespace, and accent normalization for multilingual text.
+
+## Installation
+
+```bash
+pip install pynormalizer
+```
+
+## Usage
+
+```python
+from pynormalizer import normalize_whitespace, remove_accents
+
+normalize_whitespace("hello    world")  # "hello world"
+remove_accents("café")  # "cafe"
+```
+
+## License
+
+MIT
+
