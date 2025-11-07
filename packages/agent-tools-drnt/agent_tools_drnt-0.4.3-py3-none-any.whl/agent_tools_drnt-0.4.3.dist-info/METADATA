@@ -1,0 +1,166 @@
+Metadata-Version: 2.4
+Name: agent-tools-drnt
+Version: 0.4.3
+Summary: Worktree-based agent workflow management toolkit
+Author: Agent Tools Contributors
+License: MIT
+Requires-Python: >=3.11
+Requires-Dist: colorama>=0.4.6
+Provides-Extra: cli
+Requires-Dist: colorama>=0.4.6; extra == 'cli'
+Provides-Extra: dev
+Requires-Dist: pytest-cov>=4.0.0; extra == 'dev'
+Requires-Dist: pytest-xdist>=3.0.0; extra == 'dev'
+Requires-Dist: pytest>=7.0.0; extra == 'dev'
+Requires-Dist: ruff>=0.1.0; extra == 'dev'
+Description-Content-Type: text/markdown
+
+# agent-tools
+
+Worktree-based agent workflow management toolkit.
+
+## Overview
+
+`agent-tools` provides a Python-based CLI for managing isolated Git worktrees for agent workflows. It replaces shell scripts with a maintainable, testable Python package that can be used locally, as a submodule, or in CI/CD pipelines.
+
+## Features
+
+- **Isolated Worktrees**: Each agent gets its own isolated Git worktree
+- **Domain-based CLI**: `ws`, `cfg`, `env` domains with clear action names
+- **Backward Compatible**: Legacy aliases supported (deprecated in v0.3, removed in v0.4)
+- **Manual PR Creation**: Push branch and create PR manually in GitHub UI
+- **Cross-platform**: Works on Windows, Linux, and macOS
+- **Installable**: Can be installed via pip or used as submodule
+
+## Quick Start
+
+### Installation
+
+```bash
+# From source
+cd agt
+uv pip install -e .  # or: pip install -e .
+
+# Or as submodule
+git submodule add -b main https://github.com/tnedr/agent-ops .tools
+cd .tools/agt
+uv pip install -e .  # or: pip install -e .
+```
+
+**Note**: This project follows UV Cache Workflow Guidelines. If using `uv`, ensure `UV_CACHE_DIR` is set (e.g., `E:\uv-cache` on Windows).
+
+### Usage
+
+**New domain-based commands (v0.3+):**
+
+```bash
+# Start a new agent worktree
+agt ws new
+
+# Run commands in the worktree
+agt ws run python my_script.py
+
+# Commit changes
+agt ws save "feat: new feature"
+
+# Push to remote (then open PR manually)
+agt ws push
+
+# Optional: cleanup after PR is merged
+agt ws clean
+```
+
+**Legacy aliases (deprecated, will be removed in v0.4):**
+
+```bash
+agt start    # → agt ws new
+agt commit   # → agt ws save
+agt run      # → agt ws run
+agt push     # → agt ws push
+agt clean    # → agt ws clean
+```
+
+See [COMMANDS.md](docs/COMMANDS.md) for complete command reference.
+
+### VS Code Integration
+
+Generate VS Code Command Runner settings with agt commands:
+
+```bash
+agt vscode init  # Creates/updates .vscode/settings.json
+```
+
+This adds the following commands to VS Code/Cursor:
+- `agt start`: Start a new agent worktree
+- `agt run`: Run a command in the agent worktree (with input prompt)
+- `agt commit`: Commit changes (with input prompt for message)
+- `agt push`: Push branch to remote
+- `agt merge`: Merge agent branch back to base
+- `agt clean`: Remove agent worktree
+
+**Usage in VS Code/Cursor:**
+- Press `F1` → `Command Runner: Run...`
+- Select any `agt *` command
+- Or use in chat: `> run command: agt start`
+
+**Note:** The `agt vscode init` command preserves existing commands in your `.vscode/settings.json`, so you can combine it with other Command Runner configurations.
+
+## Documentation
+
+- [Quick Start Guide](docs/quick_start.md)
+- [CLI Reference](docs/cli_reference.md)
+- [Architecture](docs/architecture.md)
+- [Changelog](docs/CHANGELOG.md)
+
+## Examples
+
+See the [examples/](examples/) directory for:
+- `demo_local.sh`: Local workflow example
+- `demo_action.yml`: GitHub Actions workflow example
+
+## Development
+
+### Setup
+
+```bash
+cd agt
+uv pip install -e ".[dev]"  # or: pip install -e ".[dev]"
+```
+
+**Note**: Uses UV Cache Workflow - minimal `.venv`, global cache.
+
+### Run Tests
+
+```bash
+uv run pytest tests/ -v  # or: pytest tests/ -v
+```
+
+### Run Linter
+
+```bash
+uv run ruff check .  # or: ruff check .
+```
+
+## Project Structure
+
+```
+agt/
+├── __init__.py          # Package metadata
+├── __main__.py          # Allows `python -m agt`
+├── worktree.py          # Low-level Git worktree operations
+├── cli.py               # CLI entrypoint and command handlers
+└── pyproject.toml        # Package configuration
+
+bin/
+└── agt                  # Standalone entrypoint script
+
+docs/                    # Documentation
+tests/                   # Test suite
+examples/                # Usage examples
+.github/                 # CI/CD workflows and actions
+```
+
+## License
+
+MIT
+
