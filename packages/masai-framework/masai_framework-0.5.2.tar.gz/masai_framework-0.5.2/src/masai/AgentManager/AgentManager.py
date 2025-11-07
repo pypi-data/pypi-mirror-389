@@ -1,0 +1,454 @@
+import os, json
+from typing import List, Tuple, Type, Union, Literal, Dict, Optional, Callable
+from ..prompts import ChatPromptTemplate, HumanMessagePromptTemplate, PromptTemplate, SystemMessagePromptTemplate
+from ..GenerativeModel.generativeModels import MASGenerativeModel
+from ..Agents.singular_agent import Agent
+from ..pydanticModels.AnswerModel import answermodel
+from dataclasses import dataclass
+from ..prompts.prompt_templates import get_agent_prompts
+from ..Memory.LongTermMemory import QdrantConfig, RedisConfig, LongTermMemory
+@dataclass
+class AgentDetails:
+    capabilities: List[str]  # e.g., ["reasoning", "coding", "science"]
+    description: str = ""  # Optional additional description
+    style: str = "gives very elaborate answers"  # Communication style
+
+class AgentManager:
+    def __init__(self, logging=True, context:dict=None, model_config_path=None, chat_log:str=None, streaming:bool= False, streaming_callback : Optional[Callable]=None, user_id: Optional[Union[str, int]] = None, memory_config: Optional[Union[QdrantConfig, RedisConfig, Dict]] = None, categories_resolver: Optional[Callable] = None):
+        """Initialize the AgentManager with an empty registry of agents.
+
+            The AgentManager class serves as a central registry for creating, managing, and
+            coordinating multiple agents in a multi-agent system.
+
+            Args:
+                logging (bool, optional): Enable or disable logging of agent activities.
+                    Defaults to True.
+                context (dict, optional): Additional contextual information to be shared
+                    with all agents. Defaults to None.
+                model_config_path (str): Path to the model configuration file.
+                    This is a required argument.
+                chat_log (str, optional): Path to file where chat log needs to be saved.
+                    Defaults to None.
+                streaming (bool, optional): Enable or disable streaming of responses from
+                    LLMs. Defaults to False.
+                streaming_callback (Optional[Callable], optional): An async callable
+                    function that will be called with chunks of streamed content if
+                    `streaming` is True. Must be provided if `streaming` is True.
+                    Defaults to None.
+                user_id (Optional[Union[str, int]], optional): User identifier for isolation of AgentManager
+                memory_config (Optional[Union[QdrantConfig, RedisConfig, Dict]], optional): Configuration for persistent memory backend.
+                    Can be QdrantConfig, RedisConfig, or a dictionary representing either.
+                categories_resolver (Optional[Callable], optional): Function to extract categories from documents for filtering.
+
+
+        Attributes:
+            agents (dict[str, Agent]): Dictionary storing agent instances,
+                where keys are agent names and values are Agent objects.
+            agent_prompts (dict): Dictionary storing system prompts for each agent.
+            logging (bool): Flag to control logging behavior.
+            context (dict): Shared context available to all agents.
+            model_config_path (str): Path to the model configuration file.
+            chat_log (str or None): Path to the chat log file, or None if logging
+                to file is disabled.
+            streaming (bool): Flag indicating if streaming is enabled.
+            streaming_callback (Optional[Callable]): The callback function for streaming,
+                or None if streaming is disabled.
+
+        Raises:
+            ValueError: If `model_config_path` is not provided or if `streaming` is
+                        True but `streaming_callback` is not provided.
+        """
+        self.agents : Dict[str, Agent] = {}
+        self.agent_prompts = {}
+        self.logging = logging
+        self.context = context
+        self.chat_log=chat_log
+        self.streaming = streaming
+        self.streaming_callback = streaming_callback
+        self.user_id: Optional[Union[str, int]] = user_id
+        self.categories_resolver = categories_resolver
+        self.long_term_memory: Optional[LongTermMemory] = None
+
+        if self.streaming and not self.streaming_callback:
+            raise ValueError("Streaming callback needs to be provided for streaming. Should be async callable that takes in chunks.")
+
+        # model_config_path should be provided by user
+        if not model_config_path:
+            raise ValueError("model_config_path must be provided")
+        self.model_config_path = model_config_path
+
+
+        self.memory_config = memory_config
+
+        # Initialize shared LongTermMemory if memory_config is provided
+        if self.memory_config:
+            try:
+                self.long_term_memory = LongTermMemory(
+                    backend_config=self.memory_config,
+                    categories_resolver=self.categories_resolver,
+                )
+                backend_type = "Qdrant" if isinstance(self.memory_config, QdrantConfig) or (isinstance(self.memory_config, dict) and "url" in self.memory_config) else "Redis"
+                if self.logging:
+                    print(f"✅ Shared LongTermMemory initialized ({backend_type}) for user_id: {self.user_id}")
+            except Exception as e:
+                raise ValueError(f"Failed to initialize shared LongTermMemory: {e}")
+
+    def load_prompts(self) -> Tuple[str, str, str]:
+        """Load prompts from module."""
+        return get_agent_prompts()
+
+    def promptformatter(self, router_prompt: str, evaluator_prompt: str, reflector_prompt: str, planner_prompt: str, system_prompt: str) -> Tuple[ChatPromptTemplate, ChatPromptTemplate, ChatPromptTemplate, ChatPromptTemplate]:
+        """Format prompts into ChatPromptTemplates."""
+        input_variables = ['question', 'history', 'schema','current_time','useful_info','coworking_agents_info','long_context']
+        template = """
+        <INFO>:\n {useful_info} \n</INFO>
+        \n\n<TIME>:{current_time}</TIME>
+        \n\n<AVAILABLE COWORKING AGENTS>:{coworking_agents_info}</AVAILABLE COWORKING AGENTS>
+        \n\n<RESPONSE FORMAT>:{schema}</RESPONSE FORMAT>
+        \n\n<CHAT HISTORY>:{history}</CHAT HISTORY>
+        \n\n<EXTENDED CONTEXT>:{long_context}</EXTENDED CONTEXT>
+        \n<QUESTION>:{question}</QUESTION>
+        """
+
+        human_message_template = HumanMessagePromptTemplate(
+            prompt=PromptTemplate(input_variables=input_variables, template=template)
+        )
+
+        system_message_template_1 = SystemMessagePromptTemplate(
+            prompt=PromptTemplate(template =system_prompt + "\nFOLLOW THESE INSTRUCTIONS:" + router_prompt )
+        )
+        system_message_template_2 = SystemMessagePromptTemplate(
+            prompt=PromptTemplate(template=system_prompt +"\nFOLLOW THESE INSTRUCTIONS:" + evaluator_prompt )
+        )
+        system_message_template_3 = SystemMessagePromptTemplate(
+            prompt=PromptTemplate(template=system_prompt + "\nFOLLOW THESE INSTRUCTIONS:" + reflector_prompt )
+        )
+
+        system_message_template_4 = SystemMessagePromptTemplate(
+            prompt=PromptTemplate(template=system_prompt + "\nFOLLOW THESE INSTRUCTIONS:" + planner_prompt if planner_prompt else "")
+        )
+
+        router_chat_prompt = ChatPromptTemplate.from_messages([system_message_template_1, human_message_template])
+        evaluator_chat_prompt = ChatPromptTemplate.from_messages([system_message_template_2, human_message_template])
+        reflector_chat_prompt = ChatPromptTemplate.from_messages([system_message_template_3, human_message_template])
+        if planner_prompt:
+            planner_chat_prompt = ChatPromptTemplate.from_messages([system_message_template_4, human_message_template])
+        else:
+            planner_chat_prompt = None
+        return router_chat_prompt, evaluator_chat_prompt, reflector_chat_prompt, planner_chat_prompt
+
+    def _load_model_config(self, agent_name: str) -> dict:
+        """Load model configuration from a JSON file."""
+        if not os.path.exists(self.model_config_path):
+            raise FileNotFoundError(f"Model config file not found at {self.model_config_path}.")
+
+        with open(self.model_config_path, "r") as f:
+            data=json.load(f)
+
+        if agent_name in data:
+            return data[agent_name]
+        elif 'all' in data:
+            return data['all']
+
+    def create_agent(self, agent_name: str, tools: List[object], agent_details: AgentDetails,
+                 memory_order: int = 10, long_context: bool = True,long_context_order: int = 20, shared_memory_order: int = 10,
+                 plan: bool = False,temperature=0.2,context_callable:Optional[Union[Callable, List[Callable]]]=None,retain_messages_order: int = 10,
+                 max_tool_output_words: int = 3000, persist_memory: Optional[bool] = None, callable_config: Optional[Union[Dict[str, Callable], Dict[str, List[Callable]]]] = None, **kwargs):
+        """Create and register a new agent in the AgentManager.
+
+        Args:
+            agent_name (str): Unique identifier for the agent (converted to lowercase).
+            tools (List[object]): Tools the agent can use, each with a 'name' attribute.
+            agent_details (AgentDetails): Configuration with capabilities, description, and style.
+            memory_order (int, optional): Number of past interactions to keep. Defaults to 20.
+            long_context (bool, optional): Use long context if True. Defaults to True.
+            long_context_order (int, optional): Number of past interactions summary to keep in long context. Defaults to 10.
+            shared_memory_order (int, optional): Shared memory size for components. Defaults to 10.
+            plan (bool, optional): Include planner if True. Defaults to False.
+            context_callable (Optional[Union[Callable, List[Callable]]]): Callable or list of callables that use user input to give more context to the llm during inference. Only called for user queries when role='user' and not agent-to-agent delegation or internal node to node processing. If list, results are combined with newlines. Defaults to None.
+            retain_messages_order (int, optional): Number of past interactions to keep in memory for an agent's internal state across multiple queries. Defaults to 10.
+            max_tool_output_words (int, optional): Maximum number of words from tool output to include in LLM prompts. Defaults to 3000.
+            persist_memory (Optional[bool], optional): Enable persistent memory if True. Defaults to None.
+            callable_config (Optional[Union[Dict[str, Callable], Dict[str, List[Callable]]]], optional): Dictionary mapping node names to context callables or lists of callables. If list, results are combined with newlines. Defaults to None.
+            **kwargs: Additional keyword arguments to be passed to the agent.
+
+            **kwargs: Additional keyword arguments.  Can include:
+                - `config_dict` (dict, optional): A dictionary specifying memory order overrides for individual LLMs.
+                  The dictionary should have the following structure:
+                  ```
+                  {
+                      "router_memory_order": int,  # Memory order for the router LLM
+                      "router_long_context_context": int, # Long context order for the router LLM
+                      "router_temperature": int, # temperature for router
+                      "evaluator_memory_order": int, # Memory order for the evaluator LLM
+                      "evaluator_long_context_order": int, # Long context order for the evaluator LLM
+                      "evaluator_temperature": int, # temperature for evaluator
+                      "reflector_memory_order": int, # Memory order for the reflector LLM
+                      "reflector_long_context_order": int, # Long context order for the reflector LLM
+                      "reflector_temperature": int, # temperature for reflector
+                      "planner_memory_order": int, # Memory order for the planner LLM (if plan is True)
+                      "planner_long_context_order": int # Long context order for the planner LLM (if plan is True)
+                      "planner_temperature": int, # temperature for planner
+                  }
+                  ```
+
+                If a specific component's memory order is not provided in the dictionary, the default `memory_order` and `long_context_order` values will be used.
+
+        Raises:
+            ValueError: If agent_name already exists.
+            FileNotFoundError: If prompts file is missing.
+        """
+        agent_name = agent_name.lower()
+        if agent_name in self.agents:
+            raise ValueError(f"Agent '{agent_name}' already exists.")
+
+        # Load and format prompts
+        prompts = self.load_prompts()
+        system_prompt = self._create_system_prompt(agent_name, agent_details)
+        chat_prompts = self.promptformatter(*prompts, system_prompt=system_prompt)
+
+        # Configure tools and answer format
+        tool_mapping = {tool.name: tool for tool in tools}
+        AnswerFormat = answermodel(tool_names=list(tool_mapping.keys()) + ['None'], tools=tools)
+
+        # Cache JSON schema once at agent creation and attach to the model class
+        AnswerFormat._cached_schema = AnswerFormat.model_json_schema()
+
+        # Initialize LLM models
+        model_config = self._load_model_config(agent_name)
+
+        # Validate persist_memory with memory_config
+        # If persist_memory=True but no memory_config in AgentManager, raise error
+        if persist_memory is True and not self.memory_config:
+            raise ValueError(
+                "persist_memory=True requires memory_config to be set in AgentManager. "
+                "Either set memory_config in AgentManager.__init__() or set persist_memory=False."
+            )
+
+        # Determine persist_memory: use AgentManager's memory_config if available
+        effective_persist_memory = persist_memory if persist_memory is not None else (True if self.memory_config else False)
+        # Build llm_args with all necessary parameters
+        llm_args = {
+            "temperature": temperature,
+            "memory_order": memory_order,
+            "extra_context": self.context,
+            "long_context": long_context,
+            "long_context_order": long_context_order,
+            "chat_log": self.chat_log,
+            "streaming": self.streaming,
+            "streaming_callback": self.streaming_callback,
+            "context_callable": context_callable,
+            "callable_config": callable_config,
+            "user_id": self.user_id or kwargs.get('user_id'),
+            "long_term_memory": self.long_term_memory,  # Pass shared LongTermMemory
+            "persist_memory": effective_persist_memory,
+        }
+
+        # Remove None values to keep llm_args clean
+        llm_args = {k: v for k, v in llm_args.items() if v is not None}
+
+        def extract_model_params(component_config):
+            """
+            Extract ALL model-specific parameters from component config.
+
+            This function is intentionally simple and scalable:
+            - Extracts ALL parameters except core ones (model_name, category)
+            - No hardcoded parameter lists
+            - BaseGenerativeModel handles filtering and mapping automatically
+
+            Users should refer to wrapper docstrings for available parameters:
+            - ChatGoogleGenerativeAI: See docstring for Gemini parameters
+            - ChatOpenAI: See docstring for OpenAI parameters
+            """
+            params = {}
+
+            # Core parameters that should NOT be passed as kwargs
+            core_params = {'model_name', 'category'}
+
+            # Extract ALL other parameters from component config
+            for key, value in component_config.items():
+                if key not in core_params:
+                    params[key] = value
+
+            return params
+
+
+        def override_config(component, llm_args, memory_order, long_context_order, temperature, **kwargs):
+            temp_args = llm_args.copy()
+
+            # Extract parameters from model_config.json for this component
+            component_params = extract_model_params(model_config[component])
+            temp_args.update(component_params)
+
+            # Override with config_dict if provided (highest priority)
+            if "config_dict" in kwargs:
+                config_dict = kwargs["config_dict"]
+
+                # Core MASAI parameters (always handled)
+                temp_args["temperature"] = config_dict.get(f"{component}_temperature", temp_args.get("temperature", temperature))
+                temp_args["memory_order"] = config_dict.get(f"{component}_memory_order", memory_order)
+                temp_args["long_context_order"] = config_dict.get(f"{component}_long_context_order", long_context_order)
+                temp_args['streaming'] = config_dict.get(f"{component}_streaming", self.streaming)
+                temp_args['streaming_callback'] = config_dict.get(f"{component}_streaming_callback", self.streaming_callback)
+
+                # Extract ALL other parameters prefixed with component name
+                # This is scalable - no hardcoded parameter lists
+                # Users should refer to wrapper docstrings for available parameters
+                component_prefix = f"{component}_"
+                core_keys = {'temperature', 'memory_order', 'long_context_order', 'streaming', 'streaming_callback'}
+
+                for config_key, value in config_dict.items():
+                    if config_key.startswith(component_prefix):
+                        # Extract parameter name (remove component prefix)
+                        param_name = config_key[len(component_prefix):]
+
+                        # Skip core parameters (already handled above)
+                        if param_name not in core_keys:
+                            temp_args[param_name] = value
+
+            return temp_args
+
+        llm_router_args = override_config("router", llm_args, memory_order, long_context_order,temperature, **kwargs)
+        # print("LLM R)outer Args: ", llm_router_args)
+        llm_router = MASGenerativeModel(model_config["router"]["model_name"], category=model_config["router"]["category"], prompt_template=chat_prompts[0], **llm_router_args)
+
+        llm_evaluator_args = override_config("evaluator", llm_args, memory_order, long_context_order,temperature, **kwargs)
+        # print("LLM Evaluator Args: ", llm_evaluator_args)
+        llm_evaluator = MASGenerativeModel(model_config["evaluator"]["model_name"], category=model_config["evaluator"]["category"], prompt_template=chat_prompts[1], **llm_evaluator_args)
+
+
+        llm_reflector_args = override_config("reflector", llm_args, memory_order, long_context_order,temperature, **kwargs)
+        # print("LLM Reflector Args: ", llm_reflector_args)
+        llm_reflector = MASGenerativeModel(model_config["reflector"]["model_name"], category=model_config["reflector"]["category"], prompt_template=chat_prompts[2], **llm_reflector_args)
+
+        if plan:
+            llm_planner_args = override_config("planner", llm_args, memory_order, long_context_order, temperature, **kwargs)
+            # print("LLM Planner Args: ", llm_planner_args)
+            llm_planner = MASGenerativeModel(model_config["planner"]["model_name"], category=model_config["planner"]["category"], prompt_template=chat_prompts[3], **llm_planner_args)
+        else:
+            llm_planner = None
+
+        agent = Agent(agent_name, llm_router, llm_evaluator, llm_reflector, llm_planner, tool_mapping, AnswerFormat, self.logging, shared_memory_order=shared_memory_order, retain_messages_order=retain_messages_order, max_tool_output_words=max_tool_output_words, **kwargs)
+        self.agents[agent_name.lower()] = agent
+        self.agent_prompts[agent_name.lower()] = system_prompt
+        return agent
+
+    def _compile_agents(self,type='decentralized',agent_context:dict=None):
+        """Share agent system prompts among all registered agents.
+
+        This method ensures each agent is aware of other agents' capabilities and characteristics
+        by sharing their system prompts. For each agent, it creates a dictionary of all other
+        agents' prompts (excluding itself) and stores it in the agent's context.
+
+        Example:
+            If there are agents A, B, and C:
+            - Agent A will receive prompts from B and C
+            - Agent B will receive prompts from A and C
+            - Agent C will receive prompts from A and B
+
+        Note:
+            This method should be called after all agents have been created and before
+            starting any agent interactions to ensure proper inter-agent awareness.
+        """
+        if type=='decentralized':
+            for agents in self.agents.values():
+                prompts ={}
+                for agent_name in self.agent_prompts:
+                    if agent_name!=agents.agent_name:
+                        prompts[agent_name]=self.agent_prompts[agent_name]
+
+                # print(prompts)
+                agents.agent_context = prompts
+        elif type=='hierarchical':
+            for agents in self.agents.values():
+                agents.agent_context = agent_context
+        return
+
+    def _create_system_prompt(self, agent_name: str, details: AgentDetails) -> str:
+        """Convert AgentDetails into a system prompt."""
+        capabilities_str = ",".join(details.capabilities)
+
+        prompt_parts = [
+            f"\n NAME: {agent_name}.\n YOUR CHARACTERISTICS AND CAPABILITIES {capabilities_str}",
+            f"RESPONSE STYLE: {details.style}."
+        ]
+
+        if details.description:
+            prompt_parts.append(details.description)
+
+        return "\n".join(prompt_parts)
+
+
+    def get_agent(self, agent_name: str)->Agent:
+        """Retrieve an agent by name."""
+        if agent_name.lower() not in self.agents:
+            raise ValueError(f"No agent found with name '{agent_name}'.")
+
+        return self.agents[agent_name.lower()]
+
+    def list_agents(self) -> List[str]:
+        """List all registered agents."""
+        return list(self.agents.keys())
+    
+    def update_context(self, new_context: dict, agent_name: Optional[str] = None) -> None:
+        """Update the context with new information."""
+        self.context.update(new_context)
+        if agent_name:
+            self.agents[agent_name.lower()].set_context(new_context, mode='update')
+        else:
+            for agent in self.agents.values():
+                agent.set_context(new_context, mode='update')
+
+        
+    def cleanup(self) -> None:
+        """
+        Cleanup all resources held by AgentManager.
+
+        This method is called when AgentManager is removed from cache (after 30 min TTL).
+        It ensures all agents, LLM instances, and their memory are properly freed.
+        """
+        try:
+            # Clear all agents and their resources
+            for agent_name, agent in self.agents.items():
+                # Clear agent's retained state
+                if hasattr(agent, 'retained_state'):
+                    agent.retained_state = None
+
+                # Clear LLM chat histories
+                if hasattr(agent, 'llm_router') and agent.llm_router:
+                    if hasattr(agent.llm_router, 'chat_history'):
+                        agent.llm_router.chat_history.clear()
+
+                if hasattr(agent, 'llm_evaluator') and agent.llm_evaluator:
+                    if hasattr(agent.llm_evaluator, 'chat_history'):
+                        agent.llm_evaluator.chat_history.clear()
+
+                if hasattr(agent, 'llm_reflector') and agent.llm_reflector:
+                    if hasattr(agent.llm_reflector, 'chat_history'):
+                        agent.llm_reflector.chat_history.clear()
+
+                if hasattr(agent, 'llm_planner') and agent.llm_planner:
+                    if hasattr(agent.llm_planner, 'chat_history'):
+                        agent.llm_planner.chat_history.clear()
+
+                # Clear tool mapping
+                if hasattr(agent, 'tool_mapping'):
+                    agent.tool_mapping.clear()
+
+            # Clear agent registry
+            self.agents.clear()
+            self.agent_prompts.clear()
+
+            # Clear context
+            if self.context:
+                self.context.clear()
+
+        except Exception as e:
+            # Don't fail cleanup, just log if possible
+            print(f"Error during AgentManager cleanup: {e}")
+
+    
+
+    def __del__(self):
+        """Destructor to ensure cleanup when AgentManager is garbage collected."""
+        self.cleanup()

@@ -1,0 +1,456 @@
+# MASAI - Multi-Agent System AI Framework
+
+A powerful, production-ready framework for building multi-agent AI systems with advanced features like persistent memory, long-context management, and sophisticated agent orchestration.
+
+|                                                                 |
+|:---------------------------------------------------------------:|
+|![MAS AI](/MAS/Logo/image.png)                                   |
+
+> ⭐ **Please star this project if you find it useful!**
+
+## 🆕 New Documentation
+
+We've added comprehensive guides to help you get the most out of MASAI:
+
+- **[Model Parameters Guide](docs/MODEL_PARAMETERS.md)** - Complete reference for all supported models (Gemini, OpenAI, Anthropic) with ALL parameters, examples, and best practices
+- **[Tools Guide](docs/TOOLS_GUIDE.md)** - How to define tools, use them, implement Redis caching, and integrate with agents
+- **[Singular Agent Guide](docs/SINGULAR_AGENT_GUIDE.md)** - Complete guide for single agent architecture, execution, memory, and tools
+- **[Multi-Agent System Guide](docs/MULTIAGENT_SYSTEM_GUIDE.md)** - Comprehensive guide for decentralized and hierarchical multi-agent coordination
+- **[OMAN Guide](docs/OMAN_GUIDE.md)** - Orchestrated Multi-Agent Network for enterprise-level multi-domain systems
+
+---
+
+## 📋 Quick Navigation
+
+### Getting Started
+| Document | Description |
+|----------|-------------|
+| [Quick Start](docs/QUICK_START.md) | Get started in 5 minutes |
+| [Installation](docs/INSTALLATION.md) | Setup instructions and requirements |
+| [Configuration](docs/CONFIGURATION.md) | Configuration options and setup |
+
+### Core Concepts
+| Document | Description |
+|----------|-------------|
+| [Framework Overview](docs/FRAMEWORK_OVERVIEW.md) | Architecture and design principles |
+| [Model Parameters](docs/MODEL_PARAMETERS.md) | **NEW!** Complete model configuration guide |
+| [Tools Guide](docs/TOOLS_GUIDE.md) | **NEW!** Tool definition, usage, and caching |
+| [Memory System](docs/MEMORY_SYSTEM.md) | Persistent memory and long-context management |
+
+### Agent Systems
+| Document | Description |
+|----------|-------------|
+| [Agent Manager Detailed](docs/AGENTMANAGER_DETAILED.md) | AgentManager API and usage |
+| [Singular Agent Guide](docs/SINGULAR_AGENT_GUIDE.md) | **NEW!** Single agent architecture and usage |
+| [Multi-Agent System Guide](docs/MULTIAGENT_SYSTEM_GUIDE.md) | **NEW!** Decentralized and hierarchical MAS |
+| [OMAN Guide](docs/OMAN_GUIDE.md) | **NEW!** Orchestrated Multi-Agent Network |
+
+### Advanced Topics
+| Document | Description |
+|----------|-------------|
+| [Advanced Usage](docs/ADVANCED.md) | Expert patterns and techniques |
+| [Multi-Agent Orchestration](docs/MULTI_AGENT_ORCHESTRATION.md) | Complex multi-agent workflows |
+| [LangChain Agnostic Guide](docs/LANGCHAIN_AGNOSTIC_GUIDE.md) | Using MASAI without LangChain |
+
+### Reference
+| Document | Description |
+|----------|-------------|
+| [API Reference](docs/API_REFERENCE.md) | Complete API documentation |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions |
+| [Usage Guide](docs/USAGE_GUIDE.md) | Common usage patterns |
+
+---
+
+## Quick Start
+
+### Installation
+
+```bash
+pip install masai-framework
+```
+
+### Basic Usage
+
+```python
+from masai.AgentManager import AgentManager, AgentDetails
+import asyncio
+
+# Create agent manager
+manager = AgentManager(user_id="user_123")
+
+# Create an agent
+agent = manager.create_agent(
+    agent_name="assistant",
+    tools=[],  # Add LangChain tools here
+    agent_details=AgentDetails(
+        capabilities=["analysis", "reasoning"],
+        description="Helpful assistant",
+        style="concise"
+    )
+)
+
+# Use the agent - Full execution
+result = await agent.initiate_agent(
+    query="What is 2+2?",
+    passed_from="user"
+)
+print(result["answer"])
+
+# Or use streaming for real-time updates
+async for state in agent.initiate_agent_astream(
+    query="What is 2+2?",
+    passed_from="user"
+):
+    node_name, state_dict = state
+    state_value = [v for k, v in state_dict.items()][0]
+    print(f"Node: {state_value['current_node']}")
+```
+
+**See [docs/QUICK_START.md](docs/QUICK_START.md) for detailed examples.**
+
+---
+
+## Core Features
+
+### 🧠 Multi-Agent Architecture
+- **Router-Evaluator-Reflector Pattern**: Sophisticated agent decision-making
+- **Agent Orchestration**: Coordinate multiple agents for complex tasks
+- **Tool Integration**: Seamless integration with LangChain tools
+- **Streaming Support**: Real-time response streaming
+
+### 💾 Persistent Memory
+- **Redis Backend**: Fast vector storage with RediSearch
+- **Qdrant Backend**: Distributed vector database support
+- **User Isolation**: Multi-user support with automatic filtering
+- **Deduplication**: Automatic duplicate detection and merging
+
+### 🔄 Long-Context Management
+- **Context Summarization**: Automatic summarization of long conversations
+- **Memory Overflow Handling**: Intelligent flushing to persistent storage
+- **Semantic Search**: Find relevant memories using embeddings
+- **Category Filtering**: Organize memories by categories
+
+### 🎯 Flexible Configuration
+- **Multiple LLM Providers**: OpenAI, Google Gemini, Anthropic Claude
+- **Custom Embeddings**: Support for any embedding model
+- **Scalable Parameters**: Configure all model parameters via config
+- **Component Customization**: Override any component behavior
+
+### 🤝 Multi Agent Orchestration
+- **Sequential Workflow**: Fixed agent pipeline
+- **Hierarchical Workflow**: Supervisor-based delegation
+- **Decentralized Workflow**: Peer-to-peer collaboration
+- **Orchestrated Multi-Agent Network (OMAN)**: Coordinate multiple MAS instances
+- **Data & Context Management**: Shared memory, context propagation, isolation
+- **See [docs/MULTI_AGENT_ORCHESTRATION.md](docs/MULTI_AGENT_ORCHESTRATION.md) for details**
+
+---
+
+## 📚 Documentation
+
+### Core Documentation
+- **[Quick Start](docs/QUICK_START.md)** - Get started in 5 minutes
+- **[Architecture](docs/ARCHITECTURE.md)** - System design and components
+- **[Memory System](docs/MEMORY_SYSTEM.md)** - Persistent memory and long-context management
+- **[Installation](docs/INSTALLATION.md)** - Complete setup guide
+- **[Configuration](docs/CONFIGURATION.md)** - All configuration options
+
+### Advanced Documentation
+- **[Multi-Agent Orchestration](docs/MULTI_AGENT_ORCHESTRATION.md)** - Sequential, hierarchical, decentralized, and OMAN patterns
+- **[Data & Context Management](docs/DATA_CONTEXT_MANAGEMENT.md)** - Data flow, context sharing, and isolation
+- **[Usage Guide](docs/USAGE_GUIDE.md)** - Common usage patterns
+- **[Advanced Topics](docs/ADVANCED.md)** - Expert patterns and customization
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
+
+---
+
+## Architecture
+
+### System Overview
+
+```
+User Application
+       ↓
+AgentManager (Orchestrator)
+       ↓
+Agent (Router-Evaluator-Reflector)
+       ├─ MASGenerativeModel (LLM + Memory)
+       ├─ Tool Executor
+       └─ State Manager
+       ↓
+Memory System
+       ├─ LongTermMemory
+       ├─ Redis/Qdrant Backend
+       └─ Embedding Model
+```
+
+**See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture.**
+
+---
+
+## Installation
+
+### Requirements
+- Python 3.8+
+- Redis (for persistent memory) or Qdrant
+- API keys for LLM providers (OpenAI, Google, etc.)
+
+### Setup
+
+```bash
+# Clone repository
+git clone https://github.com/shaunthecomputerscientist/mas-ai.git
+cd mas-ai
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys
+```
+
+**See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed setup.**
+
+---
+
+## Usage Guide
+
+### Creating Agents
+
+```python
+agent = manager.create_agent(
+    agent_name="research_agent",
+    agent_details=AgentDetails(
+        capabilities=["research", "analysis"],
+        description="Research specialist",
+        style="detailed"
+    ),
+    tools=[]  # Add LangChain tools here
+)
+```
+
+### Executing Agent
+
+```python
+# Full execution
+result = await agent.initiate_agent(
+    query="Explain quantum computing",
+    passed_from="user"
+)
+print(result["answer"])
+print(f"Reasoning: {result['reasoning']}")
+print(f"Satisfied: {result['satisfied']}")
+```
+
+### Streaming Responses
+
+```python
+async for state in agent.initiate_agent_astream(
+    query="Tell me a story",
+    passed_from="user"
+):
+    node_name, state_dict = state
+    state_value = [v for k, v in state_dict.items()][0]
+
+    # Access state information
+    if state_value.get("answer"):
+        print(state_value["answer"])
+```
+
+**See [docs/USAGE_GUIDE.md](docs/USAGE_GUIDE.md) for comprehensive examples.**
+
+---
+
+## Memory System
+
+### Persistent Memory Setup
+
+```python
+from masai.AgentManager import AgentManager
+from masai.Memory.LongTermMemory import RedisConfig
+from langchain_openai import OpenAIEmbeddings
+
+# Configure memory backend
+redis_config = RedisConfig(
+    redis_url="redis://localhost:6379",
+    index_name="masai_vectors",
+    vector_size=1536,
+    embedding_model=OpenAIEmbeddings(model="text-embedding-3-small")
+)
+
+# Create manager with memory config
+manager = AgentManager(
+    user_id="user_123",
+    model_config_path="model_config.json",
+    memory_config=redis_config  # Pass to AgentManager
+)
+
+# Create agent with persistent memory enabled
+agent = manager.create_agent(
+    agent_name="assistant",
+    agent_details=AgentDetails(
+        capabilities=["reasoning"],
+        description="Assistant"
+    ),
+    persist_memory=True,  # Enable persistence
+    long_context=True,
+    long_context_order=5
+)
+```
+
+### Memory Operations
+
+```python
+# Access long-term memory through agent's LLM components
+from masai.schema.Document import Document
+
+# Save memories
+await agent.llm_router.long_term_memory.save(
+    user_id="user_123",
+    documents=[Document(page_content="User likes Python")]
+)
+
+# Search memories
+memories = await agent.llm_router.long_term_memory.search(
+    user_id="user_123",
+    query="What does user like?",
+    k=5
+)
+```
+
+**See [docs/MEMORY_SYSTEM.md](docs/MEMORY_SYSTEM.md) for detailed memory docs.**
+
+---
+
+## Configuration
+
+### Agent Configuration Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `agent_name` | str | Required | Unique agent identifier |
+| `agent_details` | AgentDetails | Required | Agent capabilities and style |
+| `tools` | list | [] | LangChain tools |
+| `memory_order` | int | 10 | Messages to keep in memory |
+| `long_context` | bool | True | Enable long-context mode |
+| `long_context_order` | int | 20 | Context summarization threshold |
+| `persist_memory` | bool | None | Enable persistent storage (requires memory_config in AgentManager) |
+| `plan` | bool | False | Enable planner component |
+| `temperature` | float | 0.2 | Sampling temperature |
+
+**See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for all options.**
+
+---
+
+## Advanced Topics
+
+### Custom Tool Integration
+
+```python
+from langchain.tools import tool
+
+@tool
+def calculate(expression: str) -> str:
+    """Calculate mathematical expressions"""
+    return str(eval(expression))
+
+agent = manager.create_agent(
+    agent_name="calculator",
+    tools=[calculate]
+)
+```
+
+### Multi-Agent Orchestration
+
+```python
+from masai.MultiAgents.MultiAgent import MultiAgentSystem, SupervisorConfig
+
+# Decentralized MAS (peer-to-peer)
+mas = MultiAgentSystem(agentManager=manager)
+result = await mas.initiate_decentralized_mas(
+    query="Complex task",
+    set_entry_agent=agent1,
+    memory_order=3
+)
+
+# Hierarchical MAS (supervisor-based)
+supervisor_config = SupervisorConfig(
+    model_name="gpt-4o",
+    temperature=0.7,
+    model_category="openai",
+    memory_order=20,
+    memory=True,
+    extra_context={}
+)
+
+mas_hierarchical = MultiAgentSystem(
+    agentManager=manager,
+    supervisor_config=supervisor_config
+)
+result = await mas_hierarchical.initiate_hierarchical_mas(query="Complex task")
+```
+
+**See [docs/ADVANCED.md](docs/ADVANCED.md) for advanced patterns.**
+
+---
+
+## API Reference
+
+### Core Classes
+
+- **AgentManager**: Orchestrates agent creation and management
+- **Agent**: Router-Evaluator-Reflector architecture
+- **MASGenerativeModel**: LLM with memory management
+- **LongTermMemory**: Persistent memory interface
+- **RedisConfig/QdrantConfig**: Backend configuration
+
+**See [docs/API_REFERENCE.md](docs/API_REFERENCE.md) for complete API.**
+
+---
+
+## Troubleshooting
+
+### Redis Connection Refused
+```bash
+redis-server
+# or
+docker run -d -p 6379:6379 redis:latest
+```
+
+### OpenAI API Key Not Found
+```bash
+export OPENAI_API_KEY="your-key-here"
+```
+
+### Memory Not Being Retrieved
+```python
+# Verify context overflow (access through LLM component)
+print(f"Summaries: {len(agent.llm_router.context_summaries)}")
+print(f"Long context order: {agent.llm_router.long_context_order}")
+print(f"Persist memory: {agent.llm_router.persist_memory}")
+```
+
+**See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for more solutions.**
+
+---
+
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Support
+
+- 📖 [Documentation](docs/)
+- 🐛 [Issues](https://github.com/shaunthecomputerscientist/mas-ai/issues)
+- 💬 [Discussions](https://github.com/shaunthecomputerscientist/mas-ai/discussions)
+
+---
+
+**Last Updated**: October 31, 2025
+
