@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=78", "mypy[mypyc]"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+    "hwloc_xml_parser",
+]
+
+[tool.setuptools.package-dir]
+"hwloc_xml_parser" = "hwloc_xml_parser"
+
+[tool.setuptools.dynamic]
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
+version = {attr = "hwloc_xml_parser.__version__"}
+
+[project]
+name = 'hwloc-xml-parser'
+description = 'Parse xml output of hwloc.'
+license = "MIT"
+license-files = ["LICENSE"]
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">= 3.10"
+dependencies = []
+dynamic = [
+    "version",
+]
+authors = [
+  {name = "Arnst Maarten"},
+  {name = "Tomasetti Romin"},
+]
+
+[project.urls]
+Homepage = "https://github.com/uliegecsm/hwloc-xml-parser"
+
+[tool.cibuildwheel]
+build = ["cp31[0-9]-manylinux*"]
+archs = []
+
+test-requires = ["pytest"]
+test-sources = ["tests"]
+test-command = "pytest {project}/tests"
+
+build-verbosity = 1
