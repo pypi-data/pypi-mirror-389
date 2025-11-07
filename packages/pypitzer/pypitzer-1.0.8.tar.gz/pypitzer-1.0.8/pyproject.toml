@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.17.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pypitzer"
+version = "1.0.8"
+authors = [
+  { name = "Yiping Liu", email = "yiping.liu@rwth-aachen.de" },
+]
+description = "A library for thermodynamic modeling with the Pitzer model and its application in quantification of fluid inclusion data."
+readme = "README.md"
+requires-python = ">=3.9"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+keywords = ["thermodynamics", "pitzer", "geochemistry", "fluid-inclusions"]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/pypitzer/pypitzer"
+"Bug Tracker" = "https://github.com/pypitzer/pypitzer/issues"
