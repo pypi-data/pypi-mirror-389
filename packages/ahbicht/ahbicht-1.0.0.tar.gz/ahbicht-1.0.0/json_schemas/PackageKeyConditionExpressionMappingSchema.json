@@ -1,0 +1,56 @@
+{
+  "$defs": {
+    "EdifactFormat": {
+      "description": "existing EDIFACT formats",
+      "enum": [
+        "APERAK",
+        "COMDIS",
+        "CONTRL",
+        "IFTSTA",
+        "INSRPT",
+        "INVOIC",
+        "MSCONS",
+        "ORDCHG",
+        "ORDERS",
+        "ORDRSP",
+        "PRICAT",
+        "QUOTES",
+        "REMADV",
+        "REQOTE",
+        "PARTIN",
+        "UTILMD",
+        "UTILMDG",
+        "UTILMDS",
+        "UTILMDW",
+        "UTILTS"
+      ],
+      "title": "EdifactFormat",
+      "type": "string"
+    }
+  },
+  "description": "maps a package key from a specified EDIFACT format onto a (not yet parsed) condition expression as it is found in\nthe AHB.",
+  "properties": {
+    "edifact_format": {
+      "$ref": "#/$defs/EdifactFormat"
+    },
+    "package_expression": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Package Expression"
+    },
+    "package_key": {
+      "title": "Package Key",
+      "type": "string"
+    }
+  },
+  "required": ["edifact_format", "package_key"],
+  "title": "PackageKeyConditionExpressionMapping",
+  "type": "object"
+}

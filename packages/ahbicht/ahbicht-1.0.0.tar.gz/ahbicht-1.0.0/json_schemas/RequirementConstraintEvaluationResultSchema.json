@@ -1,0 +1,57 @@
+{
+  "description": "A class for the result of the requirement constraint evaluation.",
+  "properties": {
+    "format_constraints_expression": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Format Constraints Expression"
+    },
+    "hints": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Hints"
+    },
+    "requirement_constraints_fulfilled": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Requirement Constraints Fulfilled"
+    },
+    "requirement_is_conditional": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Requirement Is Conditional"
+    }
+  },
+  "required": [
+    "requirement_constraints_fulfilled",
+    "requirement_is_conditional"
+  ],
+  "title": "RequirementConstraintEvaluationResult",
+  "type": "object"
+}

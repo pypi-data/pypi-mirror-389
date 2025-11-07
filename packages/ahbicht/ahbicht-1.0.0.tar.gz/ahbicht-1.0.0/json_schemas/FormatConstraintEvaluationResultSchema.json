@@ -1,0 +1,24 @@
+{
+  "description": "A class for the result of the format constraint evaluation.",
+  "properties": {
+    "error_message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Message"
+    },
+    "format_constraints_fulfilled": {
+      "title": "Format Constraints Fulfilled",
+      "type": "boolean"
+    }
+  },
+  "required": ["format_constraints_fulfilled"],
+  "title": "FormatConstraintEvaluationResult",
+  "type": "object"
+}
