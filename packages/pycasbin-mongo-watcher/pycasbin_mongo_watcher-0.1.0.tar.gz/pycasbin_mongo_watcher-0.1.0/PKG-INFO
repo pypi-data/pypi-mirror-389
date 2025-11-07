@@ -1,0 +1,69 @@
+Metadata-Version: 2.4
+Name: pycasbin-mongo-watcher
+Version: 0.1.0
+Summary: MongoDB watcher for PyCasbin that enables distributed policy synchronization using MongoDB change streams
+Author: PyCasbin Contributors
+Maintainer: PyCasbin Contributors
+License: Apache-2.0
+Project-URL: Homepage, https://github.com/pycasbin/pycasbin-mongo-watcher
+Project-URL: Repository, https://github.com/pycasbin/pycasbin-mongo-watcher
+Project-URL: Documentation, https://github.com/pycasbin/pycasbin-mongo-watcher
+Project-URL: Issues, https://github.com/pycasbin/pycasbin-mongo-watcher/issues
+Keywords: casbin,mongodb,watcher,rbac,abac,access-control,authorization
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Security
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pymongo>=4.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Dynamic: license-file
+
+# PyCasbin MongoDB Watcher
+
+MongoDB watcher for [PyCasbin](https://github.com/casbin/pycasbin). It enables distributed policy synchronization across multiple Casbin instances using MongoDB Change Streams.
+
+## Installation
+
+```bash
+pip install pycasbin-mongo-watcher
+```
+
+## Quick Start
+
+```python
+import casbin
+from mongo_watcher import new_watcher
+
+# Reload policy on updates
+def on_update():
+    enforcer.load_policy()
+
+# Create MongoDB watcher
+watcher = new_watcher(
+    dsn="mongodb://localhost:27017",
+    db_name="casbin",
+    collection="casbin_watcher",
+)
+watcher.set_update_callback(on_update)
+
+# Initialize Casbin enforcer
+enforcer = casbin.Enforcer("path/to/model.conf", "path/to/policy.csv")
+# Bind watcher to enforcer
+enforcer.set_watcher(watcher)
+```
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE).

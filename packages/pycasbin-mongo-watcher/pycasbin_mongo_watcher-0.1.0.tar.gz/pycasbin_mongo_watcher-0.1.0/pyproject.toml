@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycasbin-mongo-watcher"
+version = "0.1.0"
+description = "MongoDB watcher for PyCasbin that enables distributed policy synchronization using MongoDB change streams"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "PyCasbin Contributors"}
+]
+maintainers = [
+    {name = "PyCasbin Contributors"}
+]
+keywords = ["casbin", "mongodb", "watcher", "rbac", "abac", "access-control", "authorization"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Security",
+]
+dependencies = [
+    "pymongo>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/pycasbin/pycasbin-mongo-watcher"
+Repository = "https://github.com/pycasbin/pycasbin-mongo-watcher"
+Documentation = "https://github.com/pycasbin/pycasbin-mongo-watcher"
+Issues = "https://github.com/pycasbin/pycasbin-mongo-watcher/issues"
+
+[tool.setuptools]
+packages = ["mongo_watcher"]
+
