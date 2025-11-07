@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nersemble_benchmark"
+version = "0.0.16"
+description = "Official toolkit for the NeRSemble Photorealistic 3D Head Avatar Benchmark"
+authors = [
+    { name = "Tobias Kirschstein", email = "tobias.kirschstein@gmail.com" },
+]
+readme = "README.md"
+license = { text = "Apache 2.0" }
+requires-python = ">=3.8.0"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+# urls = { Documentation = "<<<ENTER_LINK_TO_DOCUMENTATION>>>" }
+# Main dependencies
+dependencies = [
+    "tyro",
+    "environs",
+    "elias",
+    "dreifus",
+    "tqdm",
+    "open3d",
+    "flame-model",
+    "mediapy",
+    "imageio[pyav]"
+]
+
+[project.optional-dependencies]
+# Development packages, install via <<<PROJECT_NAME>>>[dev]
+dev = [
+]
+
+[project.scripts]
+nersemble-benchmark-download = "nersemble_benchmark.scripts.download_data:main_cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["nersemble_benchmark*"]  # Keep the '*', otherwise submodules are not found
