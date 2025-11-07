@@ -1,0 +1,33 @@
+/*---------------------------------*- C++ -*----------------------------------*\
+filetype dictionary; coding utf-8; version 0.1; local --; purpose --;
+\*----------------------------------------------------------------------------*/
+_environment
+{
+    libSource                 'C:\Users\fralum\Documents\SystemSimulation\ModelVerification\tools\CyberSea\test\fmu';
+    root                      .;
+}
+systemStructure
+{
+    components
+    {
+        demoSource
+        {
+            prototype             demoSource\demoSource.fmu;
+        }
+        scalarReceiver
+        {
+            prototype             scalarReceiver\scalarReceiver.fmu;
+        }
+        scalarSender
+        {
+            prototype             scalarSender\scalarSender.fmu;
+        }
+    }
+}
+
+
+simulation
+{
+    name                      tx-rx-test;
+}
+
