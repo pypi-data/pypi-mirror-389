@@ -1,0 +1,84 @@
+# 1.1: cut the cluster and the environment
+# 1.2: genarate the 1.1 type input for REST
+# 1.3: cut a pseudo-surrounded phase along with the cluster
+# 1.4: genarate the 1.3 type incar for REST
+jobtype = 1.1
+
+# If set False, the output for cluster and environment will be in POSCAR format
+# When the cluster exceeds the boundary of the cell, this option does no effect
+force_xyz_output = True
+
+#If this set, dir has name "clean-opt" will be set as ref base_num, dir has name absorb should return a same base_num
+#If not, will raise error
+check_base_num_consistant = False
+
+# base and absorbate separation method.
+# 1: treat the system as regular multi layer slab, split it into layers to decide absorbate and slab
+# 2: input a absorbate_atoms_num, treat the last atoms in POSCAR as absorbate 
+separation_method = 1
+absorbate_atoms_num = 0
+
+# cluster cut major method
+# 1: set with cluster_ori_point argument, search the nearest atom to ori_point as central atom
+# 2: set the cluster_ori_point as the average of absorbate atoms, and search the central atom accordingly
+# 3: set the cluster_ori_point but not searching the central atom
+# 4: for some non-close-packed system, like Cu(100), search a nearest hollow site for the average of the absorbate atoms
+cluster_cutting_major_method = 1
+
+# cluster cut minor method
+# 1: set with cluster_radius argument, cut the cluster spherically
+# 2: set with cluster_radius argument, cut the cluster as a cylinder
+# 3: set with expand_num argument, cut the metal/nacl-crystal according to nearest atom(packing)
+# 4: set with cluster_radius and cluster_height/cluster_layers, cut the cluster into a set height/layer cylinder
+# 5: set with expand_num and cluster_height/cluster_layers, cut the cluster into a set height/layer x.3
+# 6: set with expand_num argument, cut the Nacl-crystal into a more reasonable cube
+# 7: set with expand_num and cluster_height/cluster_layers, cut the cluster into a set height/layer x.6 
+cluster_cutting_minor_method = 1
+# Note that, 3+3 and 3+5 are not valid choices
+# Also, 3+6, 3+7, 4+6, 4+7 are not valid choices
+
+# in angstrom
+cluster_radius = 1000.0
+cluster_height = 1000.0
+cluster_layers = 1000
+
+cluster_expand_num = 1000
+cluster_ori_point = [1000,1000,1000]
+
+# if jobtype set as 2.x, then a bigger pseudo cluster will be cut
+# the ori will be inherited, but the cut method and radius will also needed
+
+# first decide whether to do pseudo cut
+pseudo_cutting = true
+# pseudo cutting may accept multiple methods, but args should be greater
+pseudo_cutting_sub_method = 1
+
+# in angstrom
+pseudo_radius = 1000.0
+pseudo_height = 1000.0
+pseudo_layers = 1000
+pseudo_expand_num = 1000
+
+# then for the point charge cut
+# but this only accept method sphere or layered cylinder, which means only 1 or 4 available
+charge_cutting_sub_method = 1
+
+# in angstrom
+charge_radius = 1000.0
+#charge_height = 1000.0
+charge_layers = 1000
+
+# if you need REST input genaration, this is a needed part
+ctrl_template = '''
+print_level = 2
+auxbas_path = "/opt/rest_workspace/rest/basis-set-pool/def2-SV(P)-JKFIT"
+max_scf_cycle = 100
+scf_acc_rho = 1.0e-5
+scf_acc_eev = 1.0e-4
+scf_acc_etot = 1.0e-7
+initial_guess = "sad"
+chkfile = "rest.chk"
+'''
+
+
+
