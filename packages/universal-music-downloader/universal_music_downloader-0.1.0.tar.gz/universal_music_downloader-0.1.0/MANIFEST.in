@@ -1,0 +1,16 @@
+# Excluir directorios que no son del código fuente
+prune venv
+prune .venv
+prune tests
+prune _test_downloads
+prune .idea
+prune .vscode
+prune build
+prune dist
+prune *.egg-info
+
+# Excluir archivos de prueba
+prune run_*.py
+
+# Excluir artefactos de Python
+global-exclude *.pyc __pycache__
