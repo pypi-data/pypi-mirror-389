@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as s}from"./chunks/framework.BWJnyEUZ.js";const p=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"lfssdir.md","filePath":"lfssdir.md"}'),r={name:"lfssdir.md"};function a(o,c,n,d,i,f){return s(),t("div")}const _=e(r,[["render",a]]);export{p as __pageData,_ as default};
