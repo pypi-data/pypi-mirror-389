@@ -1,0 +1,267 @@
+Metadata-Version: 2.1
+Name: pyinstallerex
+Version: 0.1.2
+Summary: 扩展PyInstaller 使其拥有单文件安装功能 不用每次都解压执行
+Home-page: https://gitee.com/iiixxxiii/py-installer-ex
+Author: lixin
+Author-email: iiixxxiii@qq.com
+License: MIT
+Keywords: PyInstaller,expand,single-file,installer
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Build Tools
+Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*
+Description-Content-Type: text/markdown
+Requires-Dist: PyInstaller (>=3.2.1)
+
+# PyInstallerEx
+Enhanced PyInstaller packaging tool that creates single-file executable programs with installation capabilities
+
+## 🎯 Project Overview
+
+PyInstallerEx is an enhanced packaging tool based on PyInstaller that can package Python applications into single-file executable programs with installation capabilities. Unlike traditional PyInstaller which creates standalone executable files, the installer executable files created by PyInstallerEx have the following characteristics:
+
+- **Extract on first run**: Applications are extracted to a temporary directory
+- **Reuse installed versions**: Subsequent runs use already extracted versions
+- **Automatic cleanup**: Intelligent management of temporary files
+
+### 🔧 Environment Requirements
+- Python >= 2.7
+- PyInstaller >= 3.2.1
+- Go >= 1.21 (for building launchers)
+
+### ⚙️ How It Works
+1. **PyInstaller Packaging**: Use PyInstaller's `--onedir` mode to create a complete application directory
+2. **Configuration Processing**: Apply user configurations and generate metadata
+3. **Compression**: Compress the application directory into a ZIP file
+4. **Binary Merging**: Merge the platform-specific launcher binary with the ZIP file
+5. **Final Executable**: Create a single executable file that handles extraction and execution
+
+## ✅ Completed Features
+
+### 1. Core Packaging Features
+- ✅ **PyInstaller Integration**: Use `--onedir` mode to create complete application directories
+- ✅ **Configuration System**: JSON format configuration file support
+- ✅ **ZIP Compression**: Compress application directories into ZIP files
+- ✅ **Binary Merging**: Merge Go launcher with ZIP file into final executable file
+
+### 2. Go Launcher Implementation
+- ✅ **Cross-platform Support**: Windows, Linux x86, Linux ARM
+- ✅ **Smart Installation**: Automatically extract on first run, reuse installed versions on subsequent runs
+- ✅ **Configuration Parsing**: Read and process configuration information from executable files
+- ✅ **Temporary Directory Management**: Automatic management of temporary files and cleanup
+
+### 3. Project Structure Improvement
+- ✅ **Modular Design**: Clear code organization structure
+- ✅ **Error Handling**: Complete exception handling and logging
+- ✅ **Build Scripts**: Automated compilation and testing scripts
+- ✅ **Complete Documentation**: Detailed usage instructions and API documentation
+
+## 🌟 New Features
+
+### 1. Enhanced Cache Management
+- ✅ **Smart Cache Reuse**: Check if the application is already installed before extracting (based on `ex_{filename}_{md5}` directory pattern)
+- ✅ **Automatic Old Cache Cleanup**: Before extracting, search and remove old directories with the same filename prefix (`ex_{filename}_*`)
+- ✅ **Cache Isolation**: Ensure only one version of the application is kept in the temporary directory
+
+### 2. Improved Configuration Handling
+- ✅ **Embedded Configuration Reading**: Read embedded configuration from the executable file instead of using hardcoded defaults
+- ✅ **Dynamic Temporary Directory Naming**: Use `ex_{filename}_{md5}` pattern for temporary directories
+- ✅ **Fallback Mechanism**: Use default configuration when embedded configuration cannot be read
+
+## 📁 Project File Structure
+```
+PyInstallerEx-master/
+├── src/
+│   ├── PyInstallerEx/           # Python packaging logic
+│   │   ├── __init__.py
+│   │   ├── __main__.py          # CLI entry point
+│   │   ├── PyInstallerEx.py     # Main module
+│   │   ├── core/
+│   │   │   ├── config.py        # Configuration management
+│   │   │   └── packager.py      # Packaging logic
+│   │   └── utils/
+│   │       ├── compression.py   # Compression tools
+│   │       ├── file_utils.py    # File operations
+│   │       ├── logging.py       # Logging processing
+│   │       └── system_utils.py  # System detection
+│   └── launcher/                # Go launcher source code
+│       ├── main.go              # Launcher main program
+│       └── go.mod               # Go module configuration
+├── test/                       # Test files
+│   ├── test_script.py          # Test script
+│   ├── test_config.json        # Test configuration
+│   └── test_python27_compatibility.py  # Compatibility test
+├── bin/                         # Compiled launchers
+│   ├── launcher_windows.exe
+│   ├── launcher_linux_x86
+│   ├── launcher_linux_arm
+│   └── launcher_linux_arm64
+├── build_launchers.sh           # Launcher build script
+└── README.md                    # Project documentation
+```
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+pip install -e .
+```
+
+### Basic Usage
+
+```bash
+# Package simple script
+python -m PyInstallerEx my_script.py
+
+# Package with custom configuration
+python -m PyInstallerEx my_script.py --cfg config.json
+
+# Specify output directory
+python -m PyInstallerEx my_script.py -o ./dist/
+
+# Verbose output
+python -m PyInstallerEx my_script.py --verbose
+
+# Specify output filename
+python -m PyInstallerEx my_script.py -n my_app
+```
+
+### Configuration File
+
+Create a `config.json` file:
+
+```json
+{
+    "filename": "{filename}",
+    "version": "1.0.0",
+    "installer": "/tmp",
+    "tmp_dir": "ex_{filename}_{md5}",
+    "description": "My Application",
+    "author": "Your Name"
+}
+```
+
+## 🔧 Go Launcher Source Code
+
+The Go launcher source code is located at `src/launcher/main.go`. It provides the following features:
+
+### Key Features
+- **Automatic Extraction**: Extract applications from merged executable files on first run
+- **Smart Caching**: Check if the application is already installed before extraction
+- **Cross-platform Support**: Compiled for Windows, Linux x86, and Linux ARM
+- **Configuration Processing**: Read and process installation configuration
+
+### Build Launchers
+
+Build launchers for all platforms:
+
+```bash
+# Build all launchers
+./build_launchers.sh
+
+# Or build individually:
+
+# Windows
+GOOS=windows GOARCH=amd64 go build -o bin/launcher_windows.exe src/launcher/main.go
+
+# Linux x86
+GOOS=linux GOARCH=amd64 go build -o bin/launcher_linux_x86 src/launcher/main.go
+
+# Linux ARM
+GOOS=linux GOARCH=arm go build -o bin/launcher_linux_arm src/launcher/main.go
+
+# Linux ARM64
+GOOS=linux GOARCH=arm64 go build -o bin/launcher_linux_arm64 src/launcher/main.go
+```
+
+## 🛠 Development
+
+### Build from Source
+
+```bash
+git clone <repository>
+cd PyInstallerEx-master
+
+# Development test installation
+pip install -e .
+
+# Build package using traditional setup.py
+python setup.py sdist bdist_wheel
+
+# Uninstall old version
+pip uninstall PyInstallerEx
+
+# Test installation
+pip install dist/PyInstallerEx-0.1.0-py2-none-any.whl
+
+# Test packaging
+python -m PyInstallerEx test/test_script.py 
+
+# Build Go launcher
+./build_launchers.sh
+```
+
+### Testing
+
+```bash
+# Test using included test
+python -m PyInstallerEx test/test_script.py --cfg test/test_config.json
+
+# Or from test directory
+cd test
+python -m PyInstallerEx test_script.py --cfg test_config.json
+
+
+```
+
+## 🌟 Key Features
+
+1. **Single-file Distribution**: Single executable file contains complete application
+2. **Automatic Installation**: Automatically extract to temporary directory on first run
+3. **Smart Caching**: Directly use installed version on subsequent runs
+4. **Cross-platform Support**: Full platform coverage (Windows, Linux x86/ARM)
+5. **Flexible Configuration**: Support custom installation paths and parameters
+
+## 🔧 Tech Stack
+
+- **Python 2.7+**: Main development language
+- **PyInstaller**: Application packaging foundation
+- **Go 1.21+**: Launcher development language
+- **JSON**: Configuration file format
+- **ZIP**: Application compression format
+
+## 📝 Changelog
+
+- 2025-11-06 V 0.1.1
+  - Enhanced cache management with automatic cleanup of old directories
+  - Improved configuration handling with embedded configuration reading
+  - Added support for Linux ARM64 platform
+  - Added command-line option for specifying output filename
+
+- 2025-10-23 V 0.1.0
+  - Initial version, implemented temporary file installation functionality
+  - Complete Go launcher implementation
+  - Cross-platform support (Windows, Linux x86/ARM)
+  - Configuration system
+  - Automated build scripts
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
