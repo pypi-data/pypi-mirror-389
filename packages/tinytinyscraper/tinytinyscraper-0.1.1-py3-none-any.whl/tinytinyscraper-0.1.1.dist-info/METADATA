@@ -1,0 +1,350 @@
+Metadata-Version: 2.4
+Name: tinytinyscraper
+Version: 0.1.1
+Summary: A Python library that scrapes URLs and returns their contents. Special handling for YouTube URLs to extract transcripts and PDF files to extract text. Built with BeautifulSoup, Requests, YouTube-Transcript-API, and PyPDF.
+Author-email: Justin Irabor <justin@holeyfox.co>
+Maintainer-email: Justin Irabor <justin@holeyfox.co>
+License: MIT
+Project-URL: Homepage, https://github.com/vunderkind/tinytinyscraper
+Project-URL: Repository, https://github.com/vunderkind/tinytinyscraper
+Keywords: scraper,youtube,transcript,web-scraping,url,pdf,pdf-extraction
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.32.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: youtube-transcript-api>=0.6.0
+Requires-Dist: lxml>=4.9.0
+Requires-Dist: pypdf>=3.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Dynamic: license-file
+
+# URL Scraper
+
+[![PyPI version](https://badge.fury.io/py/url-scraper.svg)](https://badge.fury.io/py/url-scraper)
+[![Python Versions](https://img.shields.io/pypi/pyversions/url-scraper.svg)](https://pypi.org/project/url-scraper/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A Python library that scrapes URLs and returns their contents. Special handling for YouTube URLs (returns transcripts) and PDF files (extracts text).
+
+## Features
+
+- 🎥 **YouTube Transcript Extraction**: Automatically detects YouTube URLs and extracts video transcripts
+- 📄 **PDF Text Extraction**: Extracts text from PDF documents
+- 🌐 **Web Scraping**: Scrapes text content from any webpage
+- 🔄 **Multiple Language Support**: Get transcripts in different languages
+- 📝 **Detailed Transcript Data**: Access timestamps and segments for YouTube videos
+- 🔁 **Automatic Retry**: Failed requests are retried with exponential backoff
+- 🚀 **Simple API**: Easy-to-use interface with sensible defaults
+
+## Installation
+
+Install from PyPI:
+
+```bash
+pip install url-scraper
+```
+
+Or install from source for development:
+
+```bash
+# Clone the repository
+git clone https://github.com/vunderkind/tinytinyscraper.git
+cd url-scraper
+
+# Install in development mode
+pip install -e ".[dev]"
+```
+
+## Quick Start
+
+```python
+from tinytinyscraper import URLScraper
+
+# Initialize the scraper
+scraper = URLScraper()
+
+# Scrape a YouTube video (returns detailed transcript data)
+youtube_result = scraper.scrape("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+print(youtube_result['text'])  # Full transcript text
+print(youtube_result['segments'])  # List of segments with timestamps
+
+# Scrape a PDF document (returns extracted text)
+pdf_text = scraper.scrape("https://example.com/document.pdf")
+print(pdf_text)
+
+# Scrape a regular webpage (returns text content)
+webpage_text = scraper.scrape("https://example.com")
+print(webpage_text)
+
+# Get only text (works for YouTube, PDFs, and webpages)
+text = scraper.scrape_text_only("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+print(text)
+```
+
+## Usage Examples
+
+### PDF Document Extraction
+
+```python
+from tinytinyscraper import URLScraper
+
+scraper = URLScraper()
+
+# Extract text from a PDF
+text = scraper.scrape("https://www.irs.gov/pub/irs-pdf/fw4.pdf")
+print(text)
+
+# PDFs are automatically detected by .pdf extension or Content-Type header
+```
+
+### YouTube Video Transcript
+
+```python
+from tinytinyscraper import URLScraper
+
+scraper = URLScraper()
+
+# Get transcript with detailed information
+result = scraper.scrape("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+
+print(f"Full text: {result['text']}")
+print(f"Language: {result['language']}")
+print(f"Language code: {result['language_code']}")
+print(f"Auto-generated: {result['is_generated']}")
+
+# Access individual segments with timestamps
+for segment in result['segments']:
+    print(f"[{segment['start']:.2f}s] {segment['text']}")
+```
+
+### Different YouTube URL Formats
+
+The scraper supports various YouTube URL formats:
+
+```python
+scraper = URLScraper()
+
+# Standard watch URL
+scraper.scrape("https://www.youtube.com/watch?v=VIDEO_ID")
+
+# Short URL
+scraper.scrape("https://youtu.be/VIDEO_ID")
+
+# Embed URL
+scraper.scrape("https://www.youtube.com/embed/VIDEO_ID")
+```
+
+### Multi-Language Support
+
+```python
+scraper = URLScraper()
+
+# Try German first, then English
+result = scraper.scrape(
+    "https://www.youtube.com/watch?v=VIDEO_ID",
+    languages=['de', 'en']
+)
+
+print(f"Retrieved transcript in: {result['language']}")
+```
+
+### Regular Web Scraping
+
+```python
+scraper = URLScraper()
+
+# Scrape a webpage (automatically retries on failure)
+text = scraper.scrape("https://www.example.com/article")
+print(text)
+
+# Custom timeout and retry settings
+scraper = URLScraper(timeout=60, max_retries=5, retry_delay=2.0)
+text = scraper.scrape("https://slow-website.com")
+```
+
+### Retry Configuration
+
+The scraper automatically retries failed requests with exponential backoff:
+
+```python
+# Default: 3 retries with 1s, 2s, 4s delays
+scraper = URLScraper()
+
+# Custom retry settings for unreliable sites
+scraper = URLScraper(
+    max_retries=5,      # Try up to 5 times
+    retry_delay=0.5     # Start with 0.5s, then 1s, 2s, 4s, 8s
+)
+
+# Disable retries (not recommended)
+scraper = URLScraper(max_retries=1)
+```
+
+**Retry behavior:**
+- Retries on: timeouts, connection errors, 429 (rate limit) errors
+- No retry on: 4xx errors (except 429)
+- Uses exponential backoff: delay × 2^attempt
+
+### Custom User Agent
+
+```python
+scraper = URLScraper(
+    user_agent="MyBot/1.0 (+http://mybot.com)"
+)
+
+text = scraper.scrape("https://example.com")
+```
+
+### Text-Only Mode
+
+```python
+scraper = URLScraper()
+
+# Always returns a string, regardless of URL type
+text = scraper.scrape_text_only("https://www.youtube.com/watch?v=VIDEO_ID")
+print(text)  # Just the transcript text
+
+text = scraper.scrape_text_only("https://example.com")
+print(text)  # Just the webpage text
+```
+
+## API Reference
+
+### `URLScraper`
+
+Main scraper class.
+
+#### Constructor
+
+```python
+URLScraper(timeout=30, user_agent=None, max_retries=3, retry_delay=1.0)
+```
+
+**Parameters:**
+- `timeout` (int): Request timeout in seconds (default: 30)
+- `user_agent` (str, optional): Custom user agent string
+- `max_retries` (int): Maximum number of retry attempts for failed requests (default: 3)
+- `retry_delay` (float): Initial delay between retries in seconds, uses exponential backoff (default: 1.0)
+
+#### Methods
+
+##### `scrape(url, languages=None)`
+
+Scrape content from a URL.
+
+**Parameters:**
+- `url` (str): The URL to scrape
+- `languages` (list, optional): List of preferred language codes for YouTube transcripts (default: ['en'])
+
+**Returns:**
+- For YouTube URLs: Dictionary with keys:
+  - `text` (str): Full transcript text
+  - `segments` (list): List of transcript segments with `text`, `start`, and `duration`
+  - `language` (str): Language name
+  - `language_code` (str): Language code
+  - `is_generated` (bool): Whether transcript is auto-generated
+- For PDF files: String containing the extracted text
+- For other URLs: String containing the text content
+
+**Raises:**
+- `ValueError`: If the URL is invalid
+- `Exception`: If scraping fails
+
+##### `scrape_text_only(url, languages=None)`
+
+Scrape content and return only the text.
+
+**Parameters:**
+- `url` (str): The URL to scrape
+- `languages` (list, optional): List of preferred language codes for YouTube transcripts
+
+**Returns:**
+- String containing the text content
+
+## Error Handling
+
+```python
+from tinytinyscraper import URLScraper
+
+scraper = URLScraper()
+
+try:
+    result = scraper.scrape("https://www.youtube.com/watch?v=INVALID")
+except ValueError as e:
+    print(f"Invalid URL: {e}")
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+Common errors:
+- `TranscriptsDisabled`: Video has transcripts disabled
+- `NoTranscriptFound`: No transcript available in requested languages
+- `VideoUnavailable`: Video is private or doesn't exist
+- `RequestException`: Network or HTTP errors (automatically retried up to 3 times with exponential backoff)
+
+**Note:** The scraper automatically retries failed requests up to 3 times with exponential backoff (1s, 2s, 4s) to handle temporary network issues.
+
+## Dependencies
+
+- `requests`: HTTP library for making web requests
+- `beautifulsoup4`: HTML/XML parser for web scraping
+- `lxml`: Parser for BeautifulSoup
+- `pypdf`: PDF text extraction
+- `youtube-transcript-api`: YouTube transcript extraction
+
+## Development
+
+### Setup
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd yt-transcript
+
+# Install in development mode with dev dependencies
+pip install -e ".[dev]"
+```
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black src/
+```
+
+### Linting
+
+```bash
+flake8 src/
+```
+
+## License
+
+MIT License - feel free to use this library in your projects!
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Acknowledgments
+
+- [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) for YouTube transcript extraction
+- [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) for HTML parsing
+- [Requests](https://requests.readthedocs.io/) for HTTP requests
