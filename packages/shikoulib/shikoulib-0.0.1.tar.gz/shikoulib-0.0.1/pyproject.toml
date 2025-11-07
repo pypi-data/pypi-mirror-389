@@ -1,0 +1,45 @@
+[build-system]
+# PEP 517/518 构建后端最小依赖
+requires = ["setuptools>=61.0", "wheel"]
+# 使用 setuptools 作为 PEP 517 构建后端
+build-backend = "setuptools.build_meta"
+
+[project]
+# 项目基础元数据（PEP 621）
+name = "shikoulib"
+version = "0.0.1"
+description = "A short description"
+# 从 README.md 读取 PyPI 长描述（Markdown）
+readme = { file = "README.md", content-type = "text/markdown" }
+# 许可证
+license = { text = "MIT" }
+# Trove 分类器（用于 PyPI 展示与搜索）
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+# 最低支持的 Python 版本
+requires-python = ">=3.10"
+# 运行时依赖（安装时自动安装）
+dependencies = ["paramiko", "loguru"]
+
+[project.urls]
+# 项目相关链接（PyPI 页面展示）
+Homepage = "https://github.com/shikou-git/shikoulib"
+Repository = "https://github.com/shikou-git/shikoulib"
+
+[tool.setuptools]
+# 包含 package data（结合 MANIFEST.in 或默认规则）
+include-package-data = true
+
+[tool.setuptools.packages.find]
+# 包发现设置：从当前目录查找
+where = ["."]
+# 仅包含 network 顶级包及其子包
+include = ["network*"]
